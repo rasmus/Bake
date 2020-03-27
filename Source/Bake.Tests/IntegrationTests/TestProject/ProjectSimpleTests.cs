@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Bake.Tests.Helpers;
+﻿using Bake.Tests.Helpers;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.TestProject
@@ -9,9 +9,13 @@ namespace Bake.Tests.IntegrationTests.TestProject
         protected override string ProjectFolder => "Simple";
 
         [Test]
-        public async Task Build()
+        public void Build()
         {
-            await ExecuteAsync();
+            // Act
+            var exitCode = Execute();
+
+            // Assert
+            exitCode.Should().Be(0);
         }
     }
 }

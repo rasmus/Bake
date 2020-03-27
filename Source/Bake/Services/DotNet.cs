@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -7,11 +8,14 @@ namespace Bake.Services
 {
     public class DotNet : IDotNet
     {
+        private readonly ILogger<DotNet> _logger;
         private readonly ICli _cli;
 
         public DotNet(
+            ILogger<DotNet> logger,
             ICli cli)
         {
+            _logger = logger;
             _cli = cli;
         }
 
@@ -33,14 +37,22 @@ namespace Bake.Services
             string workingDirectory,
             CancellationToken cancellationToken)
         {
-            await using var command = _cli.CreateCommand(
+            _logger.LogInformation("Clearing NuGet HTTP cache");
+            await using var clearCommand = _cli.CreateCommand(
+                "dotnet",
+                workingDirectory,
+                "nuget", "locals", "http-cache",
+                "--clear");
+
+            _logger.LogInformation("Restoring NuGet packages");
+            await using var restoreCommand = _cli.CreateCommand(
                 "dotnet",
                 workingDirectory,
                 "restore",
                 "--verbosity", "minimal",
                 "--locked-mode");
 
-            await command.ExecuteAsync(cancellationToken);
+            await restoreCommand.ExecuteAsync(cancellationToken);
         }
 
         public async Task BuildAsync(

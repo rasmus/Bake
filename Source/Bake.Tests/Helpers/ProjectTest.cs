@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Bake.Core;
 
@@ -8,7 +9,7 @@ namespace Bake.Tests.Helpers
     {
         protected abstract string ProjectFolder { get; }
 
-        protected async Task<int> ExecuteAsync(params string[] args)
+        protected int Execute(params string[] args)
         {
             var path = Path.Join(
                 ProjectRoot.Get(),
@@ -16,10 +17,18 @@ namespace Bake.Tests.Helpers
                 ProjectFolder);
             var current = Directory.GetCurrentDirectory();
 
+            args = args
+                .Concat(
+                    new[]
+                    {
+                        "--log-level", "debug"
+                    })
+                .ToArray();
+
             using (DisposableAction.With(() => Directory.SetCurrentDirectory(current)))
             {
                 Directory.SetCurrentDirectory(path);
-                return await Program.Main(args);
+                return Program.Main(args);
             }
         }
     }
