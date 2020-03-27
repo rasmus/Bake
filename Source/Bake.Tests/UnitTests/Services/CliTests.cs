@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using FluentAssertions;
@@ -23,8 +24,10 @@ namespace Bake.Tests.UnitTests.Services
             var exitCode = await command.ExecuteAsync(CancellationToken.None);
 
             // Assert
-            command.Out.Should().HaveCount(1);
-            command.Out.Single().Should().Be("black magic");
+            exitCode.Should().Be(0);
+            var output = command.NonEmptyOut().ToList();
+            output.Should().HaveCount(1);
+            output.Single().Should().Be("black magic");
         }
 
         private ICommand CreateShellCommand(

@@ -70,14 +70,22 @@ namespace Bake.Services
         
         private void OnStdOut(object sender, DataReceivedEventArgs e)
         {
-            _out.Add(e.Data ?? string.Empty);
-            _stdOut.OnNext(e.Data ?? string.Empty);
+            var output = CleanupOutput(e.Data);
+            _out.Add(output);
+            _stdOut.OnNext(output);
         }
 
         private void OnStdErr(object sender, DataReceivedEventArgs e)
         {
-            _err.Add(e.Data);
-            _stdErr.OnNext(e.Data);
+            var output = CleanupOutput(e.Data);
+            _err.Add(output);
+            _stdErr.OnNext(output);
+        }
+
+        private static string CleanupOutput(string str)
+        {
+            return (str ?? string.Empty)
+                .Trim('\n', '\r');
         }
 
         private static Process CreateProcess(
