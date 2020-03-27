@@ -18,7 +18,7 @@ namespace Bake.Tests.UnitTests.Services
         {
             // Arrange
             var command = CreateShellCommand(
-                "cmd", null, "/c", "echo", "black", "magic");
+                "echo", "black", "magic");
 
             // Act
             var exitCode = await command.ExecuteAsync(CancellationToken.None);
