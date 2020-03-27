@@ -73,6 +73,7 @@ namespace Bake.Services
             var output = CleanupOutput(e.Data);
             _out.Add(output);
             _stdOut.OnNext(output);
+            Console.Out.WriteLine(output);
         }
 
         private void OnStdErr(object sender, DataReceivedEventArgs e)
@@ -80,6 +81,7 @@ namespace Bake.Services
             var output = CleanupOutput(e.Data);
             _err.Add(output);
             _stdErr.OnNext(output);
+            Console.Error.WriteLine(output);
         }
 
         private static string CleanupOutput(string str)

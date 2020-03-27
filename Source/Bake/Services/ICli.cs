@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bake.Services
+﻿namespace Bake.Services
 {
-    interface ICli
+    public interface ICli
     {
         ICommand CreateCommand(
             string command,
