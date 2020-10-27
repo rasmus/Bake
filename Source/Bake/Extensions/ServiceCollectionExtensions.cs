@@ -1,5 +1,6 @@
 ﻿using Bake.Commands;
 using Bake.Commands.Init;
+using Bake.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bake.Extensions
@@ -11,8 +12,9 @@ namespace Bake.Extensions
         {
             serviceCollection
                 // Core
-                .AddTransient<IExecutor, Executor>()
-                .AddTransient<ICommandFactory, CommandFactory>()
+                .AddSingleton<IExecutor, Executor>()
+                .AddSingleton<ICommandFactory, CommandFactory>()
+                .AddSingleton<IRunnerFactory, RunnerFactory>()
 
                 // Commands
                 .AddTransient<InitCommand>();
