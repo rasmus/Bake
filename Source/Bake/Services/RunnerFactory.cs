@@ -2,9 +2,9 @@
 
 namespace Bake.Services
 {
-    public class Cli : ICli
+    public class RunnerFactory : IRunnerFactory
     {
-        public ICommand CreateCommand(
+        public IRunner CreateRunner(
             string command,
             string workingDirectory,
             params string[] arguments)
@@ -14,7 +14,7 @@ namespace Bake.Services
                 workingDirectory = Directory.GetCurrentDirectory();
             }
 
-            return new Command(
+            return new Runner(
                 command,
                 workingDirectory,
                 arguments);

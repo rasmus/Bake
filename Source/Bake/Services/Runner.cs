@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bake.Services
 {
-    public class Command : ICommand
+    public class Runner : IRunner
     {
         private readonly string _command;
         private readonly IReadOnlyCollection<string> _arguments;
@@ -22,7 +22,7 @@ namespace Bake.Services
         public IReadOnlyCollection<string> Out => _out;
         public IReadOnlyCollection<string> Err => _err;
 
-        public Command(
+        public Runner(
             string command,
             string workingDirectory,
             IReadOnlyCollection<string> arguments)

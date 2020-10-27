@@ -6,9 +6,9 @@ namespace Bake.Extensions
 {
     public static class CommandExtensions
     {
-        public static IEnumerable<string> NonEmptyOut(this ICommand command)
+        public static IEnumerable<string> NonEmptyOut(this IRunner runner)
         {
-            return command.Out
+            return runner.Out
                 .Where(l => !string.IsNullOrWhiteSpace(l));
         }
     }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Bake.Services
 {
-    public interface ICommand : IAsyncDisposable
+    public interface IRunner : IAsyncDisposable
     {
         Task<int> ExecuteAsync(CancellationToken cancellationToken);
         IObservable<string> StdOut { get; }

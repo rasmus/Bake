@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Bake": {
+      "commandName": "Project",
+      "commandLineArgs": "init"
+    }
+  }
+}

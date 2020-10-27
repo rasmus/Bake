@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
 {
-    public class CliTests : TestFor<Cli>
+    public class RunnerFactoryTests : TestFor<RunnerFactory>
     {
         [Test]
         public async Task ReadStdOut()
@@ -30,13 +30,13 @@ namespace Bake.Tests.UnitTests.Services
             output.Single().Should().Be("black magic");
         }
 
-        private ICommand CreateShellCommand(
+        private IRunner CreateShellCommand(
             params string[] arguments)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 arguments = arguments.Prepend("/c").ToArray();
-                return Sut.CreateCommand(
+                return Sut.CreateRunner(
                     "cmd", null, arguments);
             }
 
@@ -47,7 +47,7 @@ namespace Bake.Tests.UnitTests.Services
                         "-c",
                         $"\"{string.Join(" ", arguments)}\""
                     };
-                return Sut.CreateCommand(
+                return Sut.CreateRunner(
                     "/bin/bash", null, arguments);
             }
 
