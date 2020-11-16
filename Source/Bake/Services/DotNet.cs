@@ -16,7 +16,24 @@ namespace Bake.Services
             _runnerFactory = runnerFactory;
         }
 
-        public async Task BuildAsync(string workingDirectory,
+        public async Task CleanAsync(
+            DotNetCleanArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+                {
+                    "clean"
+                };
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "dotnet",
+                argument.WorkingDirectory,
+                arguments);
+
+            var result = await buildRunner.ExecuteAsync(cancellationToken);
+        }
+
+        public async Task BuildAsync(
             DotNetBuildArgument argument,
             CancellationToken cancellationToken)
         {
@@ -27,7 +44,7 @@ namespace Bake.Services
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
-                workingDirectory,
+                argument.WorkingDirectory,
                 arguments);
 
             var result = await buildRunner.ExecuteAsync(cancellationToken);

@@ -1,7 +1,17 @@
-﻿namespace Bake.Core
+﻿using System;
+
+namespace Bake.Core
 {
     public class SemVer
     {
+        private static readonly Random R = new Random();
+
+        public static SemVer Random => new SemVer(
+            R.Next(10, 100),
+            R.Next(10, 100),
+            R.Next(10, 100),
+            "meta");
+
         public static SemVer With(int major,
             int minor = 0,
             int patch = 0,

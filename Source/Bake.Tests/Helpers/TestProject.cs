@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Bake.Tests.Helpers
 {
-    public abstract class TestProject
+    public abstract class TestProject : TestIt
     {
         protected string ProjectName { get; }
         protected string WorkingDirectory => _folder.Path;
@@ -35,11 +35,6 @@ namespace Bake.Tests.Helpers
         public async Task TearDownTestProject()
         {
             await _folder.DisposeAsync();
-        }
-
-        protected Task<int> ExecuteAsync(params string[] args)
-        {
-            return Program.Main(args);
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName)

@@ -6,7 +6,11 @@ namespace Bake.Services
 {
     public interface IDotNet
     {
-        Task BuildAsync(string workingDirectory,
+        Task CleanAsync(
+            DotNetCleanArgument argument,
+            CancellationToken cancellationToken);
+
+        Task BuildAsync(
             DotNetBuildArgument argument,
             CancellationToken cancellationToken);
     }

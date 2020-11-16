@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests
 {
-    public class NetCoreConsoleTests : TestProject
+    public class NetCoreConsoleTests : BakeTest
     {
         public NetCoreConsoleTests() : base("NetCore.Console")
         {

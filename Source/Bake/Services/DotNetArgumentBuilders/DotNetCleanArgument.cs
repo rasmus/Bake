@@ -1,8 +1,8 @@
 ﻿namespace Bake.Services.DotNetArgumentBuilders
 {
-    public class DotNetBuildArgument : DotNetArgument
+    public class DotNetCleanArgument : DotNetArgument
     {
-        public DotNetBuildArgument(
+        public DotNetCleanArgument(
             string workingDirectory)
             : base(workingDirectory)
         {
