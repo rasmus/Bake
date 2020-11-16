@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 

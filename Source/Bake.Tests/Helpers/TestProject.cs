@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Bake.Core;
-using Bake.Tests.Helpers;
 using NUnit.Framework;
 
-namespace Bake.Tests.IntegrationTests
+namespace Bake.Tests.Helpers
 {
     public abstract class TestProject
     {

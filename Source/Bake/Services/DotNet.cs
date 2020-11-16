@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
+using Bake.Services.DotNetArgumentBuilders;
 
 namespace Bake.Services
 {
@@ -13,14 +16,19 @@ namespace Bake.Services
             _runnerFactory = runnerFactory;
         }
 
-        public async Task BuildAsync(
-            string workingDirectory,
+        public async Task BuildAsync(string workingDirectory,
+            DotNetBuildArgument argument,
             CancellationToken cancellationToken)
         {
+            var arguments = new List<string>
+                {
+                    "build"
+                };
+
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 workingDirectory,
-                "build");
+                arguments);
 
             var result = await buildRunner.ExecuteAsync(cancellationToken);
         }

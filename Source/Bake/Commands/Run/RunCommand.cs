@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bake.Commands.Init
+namespace Bake.Commands.Run
 {
     [CommandVerb("run")]
     public class RunCommand : ICommand
