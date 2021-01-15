@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Bake
 {
@@ -11,7 +12,7 @@ namespace Bake
         public static async Task<int> Main(string[] args)
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging()
+                .AddLogging(b => b.AddConsole())
                 .AddBake();
 
             var commandType = typeof(ICommand);

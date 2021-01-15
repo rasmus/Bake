@@ -1,10 +1,10 @@
-﻿using Bake.Books;
-using Bake.Books.Composers;
-using Bake.Books.Cooks;
-using Bake.Books.Cooks.DotNet;
-using Bake.Books.Recipes.DotNet;
-using Bake.Commands;
+﻿using Bake.Commands;
+using Bake.Commands.Build;
 using Bake.Commands.Init;
+using Bake.Cooking;
+using Bake.Cooking.Composers;
+using Bake.Cooking.Cooks;
+using Bake.Cooking.Cooks.DotNet;
 using Bake.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +18,8 @@ namespace Bake.Extensions
             serviceCollection
                 // Core
                 .AddSingleton<IExecutor, Executor>()
+                .AddTransient<IEditor, Editor>()
+                .AddTransient<IKitchen, Kitchen>()
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
 
@@ -29,7 +31,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetBuildCook>()
 
                 // Commands
-                .AddTransient<InitCommand>();
+                .AddTransient<InitCommand>()
+                .AddTransient<BuildCommand>();
 
             return serviceCollection;
         }

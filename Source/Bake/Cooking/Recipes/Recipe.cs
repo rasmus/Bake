@@ -1,4 +1,4 @@
-﻿namespace Bake.Books.Recipes
+﻿namespace Bake.Cooking.Recipes
 {
     public abstract class Recipe
     {

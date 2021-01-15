@@ -9,6 +9,7 @@ namespace Bake.Tests.Helpers
     {
         protected string ProjectName { get; }
         protected string WorkingDirectory => _folder.Path;
+        private string _previousCurrentDirectory;
 
         private Folder _folder;
 
@@ -29,11 +30,15 @@ namespace Bake.Tests.Helpers
                     "TestProjects",
                     ProjectName),
                 _folder.Path);
+
+            _previousCurrentDirectory = Directory.GetCurrentDirectory();
+            Directory.SetCurrentDirectory(WorkingDirectory);
         }
 
         [TearDown]
         public async Task TearDownTestProject()
         {
+            Directory.SetCurrentDirectory(_previousCurrentDirectory);
             await _folder.DisposeAsync();
         }
 

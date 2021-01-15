@@ -1,4 +1,4 @@
-﻿namespace Bake.Books.Recipes.DotNet
+﻿namespace Bake.Cooking.Recipes.DotNet
 {
     public class DotNetCleanSolution : Recipe
     {

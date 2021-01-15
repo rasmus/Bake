@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bake.Books
+namespace Bake.Cooking
 {
     public class Editor : IEditor
     {
@@ -15,11 +15,19 @@ namespace Bake.Books
             _composers = composers.ToList();
         }
 
-        public Task ComposeAsync(
-            string workingDirectory,
+        public async Task<Book> ComposeAsync(
+            IContext context,
             CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var tasks = _composers
+                .Select(c => c.ComposeAsync(context, cancellationToken))
+                .ToList();
+
+            var recipes = (await Task.WhenAll(tasks))
+                .SelectMany(c => c)
+                .ToList();
+
+            return new Book(recipes);
         }
     }
 }

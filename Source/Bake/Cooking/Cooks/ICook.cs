@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Books.Recipes;
+using Bake.Cooking.Recipes;
 
-namespace Bake.Books.Cooks
+namespace Bake.Cooking.Cooks
 {
     public interface ICook
     {
-        Type CanCook { get; }
+        string Name { get; }
 
-        void Initialize(ICookInitializer cookInitializer);
+        Type CanCook { get; }
 
         Task CookAsync(
             IContext context,

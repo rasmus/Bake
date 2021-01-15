@@ -1,12 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bake.Books
+namespace Bake.Cooking
 {
     public interface IEditor
     {
-        Task ComposeAsync(
-            string workingDirectory,
+        Task<Book> ComposeAsync(
+            IContext context,
             CancellationToken cancellationToken);
     }
 }

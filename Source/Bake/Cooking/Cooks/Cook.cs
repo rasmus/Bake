@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Books.Recipes;
+using Bake.Cooking.Recipes;
 using Bake.Extensions;
 
-namespace Bake.Books.Cooks
+namespace Bake.Cooking.Cooks
 {
     public abstract class Cook<T> : ICook
         where T : Recipe
     {
+        public abstract string Name { get; }
         public Type CanCook { get; } = typeof(T);
-
-        public virtual void Initialize(ICookInitializer cookInitializer)
-        {
-        }
 
         public Task CookAsync(
             IContext context,

@@ -3,25 +3,24 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Books.Recipes;
-using Bake.Books.Recipes.DotNet;
+using Bake.Cooking.Recipes;
+using Bake.Cooking.Recipes.DotNet;
 
-namespace Bake.Books.Composers
+namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : IComposer
     {
         public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
-            string workingDirectory,
             CancellationToken cancellationToken)
         {
             var solutionFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(workingDirectory, "*.sln", SearchOption.AllDirectories),
+                () => Directory.GetFiles(context.WorkingDirectory, "*.sln", SearchOption.AllDirectories),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
             var projectFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(workingDirectory, "*.csproj", SearchOption.AllDirectories),
+                () => Directory.GetFiles(context.WorkingDirectory, "*.csproj", SearchOption.AllDirectories),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);

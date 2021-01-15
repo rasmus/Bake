@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bake.Books.Composers;
+using Bake.Cooking.Composers;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using NUnit.Framework;
@@ -18,8 +18,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             // Act
             var recipes = await Sut.ComposeAsync(
-                new Context(SemVer.Random), 
-                WorkingDirectory,
+                new Context(SemVer.Random, WorkingDirectory), 
                 CancellationToken.None);
         }
     }
