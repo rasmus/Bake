@@ -24,7 +24,8 @@ namespace Bake.Cooking.Cooks.DotNet
             CancellationToken cancellationToken)
         {
             var argument = new DotNetCleanArgument(
-                recipe.Path);
+                recipe.Path,
+                recipe.Configuration);
 
             return await _dotNet.CleanAsync(
                 argument,

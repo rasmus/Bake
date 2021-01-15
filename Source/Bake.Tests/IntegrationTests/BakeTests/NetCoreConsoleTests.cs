@@ -12,11 +12,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
 
         [Test]
-        public async Task Build()
+        public async Task Run()
         {
             // Act
             var returnCode = await ExecuteAsync(
-                "build");
+                "run");
 
             // Assert
             returnCode.Should().Be(0);

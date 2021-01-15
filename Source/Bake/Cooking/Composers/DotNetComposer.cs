@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
 
@@ -11,6 +12,14 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : IComposer
     {
+        private readonly ICsProjParser _csProjParser;
+
+        public DotNetComposer(
+            ICsProjParser csProjParser)
+        {
+            _csProjParser = csProjParser;
+        }
+
         public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
@@ -36,42 +45,74 @@ namespace Bake.Cooking.Composers
                 .ToList();
         }
 
-        private static async Task<VisualStudioSolution> LoadVisualStudioSolutionAsync(
+        private async Task<VisualStudioSolution> LoadVisualStudioSolutionAsync(
             string solutionPath,
             IEnumerable<string> projectFiles,
             CancellationToken cancellationToken)
         {
             var solutionFileContent = await File.ReadAllTextAsync(solutionPath, cancellationToken);
 
-            // TODO: Handle duplicate names in different locations
-            var projectFilesInSolution = projectFiles
+            var tasks = projectFiles
                 .Where(f => solutionFileContent.Contains(Path.GetFileName(f)))
-                .Select(f => new VisualStudioProject(f));
+                .Select(f => LoadVisualStudioProjectAsync(f, cancellationToken))
+                .ToList();
+
+            var projectFilesInSolution = await Task.WhenAll(tasks);
 
             return new VisualStudioSolution(
                 solutionPath,
                 projectFilesInSolution);
         }
 
+        private async Task<VisualStudioProject> LoadVisualStudioProjectAsync(
+            string projectPath,
+            CancellationToken cancellationToken)
+        {
+            var csProj = await _csProjParser.ParseAsync(
+                projectPath,
+                cancellationToken);
+
+            return new VisualStudioProject(
+                projectPath,
+                csProj);
+        }
+
         private static IEnumerable<Recipe> CreateRecipe(
             VisualStudioSolution visualStudioSolution,
             SemVer version)
         {
+            const string configuration = "Release";
+
             yield return new DotNetCleanSolution(
-                visualStudioSolution.Path);
+                visualStudioSolution.Path,
+                configuration);
             yield return new DotNetRestoreSolution(
                 visualStudioSolution.Path,
                 true);
             yield return new DotNetBuildSolution(
                 visualStudioSolution.Path,
-                "Release",
+                configuration,
                 false,
                 false,
                 version);
             yield return new DotNetTestSolution(
                 visualStudioSolution.Path,
                 false,
-                false);
+                false,
+                configuration);
+
+            foreach (var visualStudioProject in visualStudioSolution.Projects
+                .Where(p => p.ShouldBePacked))
+            {
+                yield return new DotNetPackProject(
+                    visualStudioProject.Path,
+                    false,
+                    false,
+                    true,
+                    true,
+                    configuration,
+                    version);
+            }
         }
     }
 }

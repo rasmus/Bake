@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
 
-namespace Bake.Commands.Build
+namespace Bake.Commands.Run
 {
-    [CommandVerb("build")]
-    public class BuildCommand : ICommand
+    [CommandVerb("run")]
+    public class RunCommand : ICommand
     {
         private readonly IEditor _editor;
         private readonly IKitchen _kitchen;
 
-        public BuildCommand(
+        public RunCommand(
             IEditor editor,
             IKitchen kitchen)
         {

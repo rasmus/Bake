@@ -4,15 +4,18 @@
     {
         public bool Build { get; }
         public bool Restore { get; }
+        public string Configuration { get; }
 
         public DotNetTestArgument(
-            string solutionPath,
+            string filePath,
             bool build,
-            bool restore)
-            : base(solutionPath)
+            bool restore,
+            string configuration)
+            : base(filePath)
         {
             Build = build;
             Restore = restore;
+            Configuration = configuration;
         }
     }
 }

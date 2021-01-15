@@ -13,14 +13,20 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "restore")]
         public bool Restore { get; }
 
+        [YamlMember(Alias = "configuration")]
+        public string Configuration { get; }
+
         public DotNetTestSolution(
             string path,
             bool build,
-            bool restore)
+            bool restore,
+            string configuration)
+            : base("dotnet-test")
         {
             Path = path;
             Build = build;
             Restore = restore;
+            Configuration = configuration;
         }
     }
 }

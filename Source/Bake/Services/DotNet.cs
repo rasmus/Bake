@@ -47,7 +47,9 @@ namespace Bake.Services
             var arguments = new List<string>
                 {
                     "clean",
-                    argument.SolutionPath,
+                    argument.FilePath,
+                    "--nologo",
+                    "--configuration", argument.Configuration,
                 };
 
             var buildRunner = _runnerFactory.CreateRunner(
@@ -67,7 +69,7 @@ namespace Bake.Services
             var arguments = new List<string>
                 {
                     "restore",
-                    argument.SolutionPath,
+                    argument.FilePath,
                 };
 
             var buildRunner = _runnerFactory.CreateRunner(
@@ -87,7 +89,7 @@ namespace Bake.Services
             var arguments = new List<string>
                 {
                      "build",
-                     argument.SolutionPath,
+                     argument.FilePath,
                      "--nologo",
                      "--configuration", argument.Configuration,
                     $"-p:Version={argument.Version.LegacyVersion}",
@@ -115,8 +117,9 @@ namespace Bake.Services
             var arguments = new List<string>
                 {
                     "test",
-                    argument.SolutionPath,
-                    "--nologo"
+                    argument.FilePath,
+                    "--nologo",
+                    "--configuration", argument.Configuration,
                 };
 
             AddIf(!argument.Restore, arguments, "--no-restore");
@@ -132,15 +135,43 @@ namespace Bake.Services
             return result == 0;
         }
 
+        public async Task<bool> PackAsync(
+            DotNetPackArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+                {
+                    "pack",
+                    argument.FilePath,
+                    "--nologo",
+                    "--configuration", argument.Configuration,
+                };
 
-        private static void AddIf(bool predicate, List<string> arguments, string arg)
+            AddIf(!argument.Restore, arguments, "--no-restore");
+            AddIf(!argument.Build, arguments, "--no-build");
+            AddIf(argument.IncludeSource, arguments, "--include-source");
+            AddIf(argument.IncludeSymbols, arguments, "--include-symbols");
+            AddIf(argument.Build, arguments, "--no-build");
+            AddIf(!string.IsNullOrEmpty(argument.Version.Meta), arguments, "--version-suffix", argument.Version.Meta);
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "dotnet",
+                argument.WorkingDirectory,
+                arguments);
+
+            var result = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return result == 0;
+        }
+
+        private static void AddIf(bool predicate, List<string> arguments, params string[] args)
         {
             if (!predicate)
             {
                 return;
             }
 
-            arguments.Add(arg);
+            arguments.AddRange(args);
         }
     }
 }

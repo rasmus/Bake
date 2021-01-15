@@ -65,6 +65,7 @@ namespace Bake.Cooking
                 break;
             }
 
+            var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
             foreach (var cookResult in cookResults)
             {
                 var status = cookResult.Success
@@ -72,6 +73,7 @@ namespace Bake.Cooking
                     : "failed";
                 Console.WriteLine($"{cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
+            Console.WriteLine($"total {totalSeconds:0.##} seconds");
 
             return successful;
         }

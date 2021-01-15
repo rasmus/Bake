@@ -1,12 +1,11 @@
 ﻿using Bake.Commands;
-using Bake.Commands.Build;
 using Bake.Commands.Init;
+using Bake.Commands.Run;
 using Bake.Cooking;
 using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Services;
-using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bake.Extensions
@@ -23,6 +22,7 @@ namespace Bake.Extensions
                 .AddTransient<IKitchen, Kitchen>()
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
+                .AddTransient<ICsProjParser, CsProjParser>()
 
                 // Cli wrappers
                 .AddTransient<IDotNet, DotNet>()
@@ -35,10 +35,11 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetBuildCook>()
                 .AddTransient<ICook, DotNetRestoreCook>()
                 .AddTransient<ICook, DotNetTestCook>()
+                .AddTransient<ICook, DotNetPackCook>()
 
                 // Commands
                 .AddTransient<InitCommand>()
-                .AddTransient<BuildCommand>();
+                .AddTransient<RunCommand>();
 
             return serviceCollection;
         }

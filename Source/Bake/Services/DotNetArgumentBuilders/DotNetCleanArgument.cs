@@ -2,10 +2,14 @@
 {
     public class DotNetCleanArgument : DotNetArgument
     {
+        public string Configuration { get; }
+
         public DotNetCleanArgument(
-            string solutionPath)
-            : base(solutionPath)
+            string filePath,
+            string configuration)
+            : base(filePath)
         {
+            Configuration = configuration;
         }
     }
 }

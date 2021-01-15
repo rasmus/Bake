@@ -3,8 +3,8 @@
     public class DotNetRestoreArgument : DotNetArgument
     {
         public DotNetRestoreArgument(
-            string solutionPath)
-            : base(solutionPath)
+            string filePath)
+            : base(filePath)
         {
         }
     }

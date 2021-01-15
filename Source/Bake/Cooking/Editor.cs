@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.ValueObjects;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Bake.Cooking
 {
@@ -28,7 +32,17 @@ namespace Bake.Cooking
                 .SelectMany(c => c)
                 .ToList();
 
-            return new Book(recipes);
+            var book = new Book(recipes);
+
+            var serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithTypeConverter(new SemVerYamlTypeConverter())
+                .Build();
+            var yaml = serializer.Serialize(book);
+
+            Console.WriteLine(yaml);
+
+            return book;
         }
     }
 }

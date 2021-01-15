@@ -89,6 +89,10 @@ namespace Bake.Commands
                         {
                             argument.SetDefaultValue(parameterInfo.DefaultValue);
                         }
+                        else if (parameterInfo.ParameterType == typeof(bool))
+                        {
+                            argument.SetDefaultValueFactory(() => false);
+                        }
                         else
                         {
                             argument.SetDefaultValueFactory(() => null);

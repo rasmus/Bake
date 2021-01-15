@@ -24,5 +24,9 @@ namespace Bake.Services
 
         Task<bool> ClearNuGetLocalsAsync(
             CancellationToken cancellationToken);
+
+        Task<bool> PackAsync(
+            DotNetPackArgument argument,
+            CancellationToken cancellationToken);
     }
 }

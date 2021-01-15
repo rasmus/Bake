@@ -12,6 +12,11 @@ namespace Bake.Core
             R.Next(10, 100),
             "meta");
 
+        public static SemVer Parse(string str)
+        {
+            return null;
+        }
+
         public static SemVer With(int major,
             int minor = 0,
             int patch = 0,

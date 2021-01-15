@@ -26,6 +26,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool restore,
             bool incremental,
             SemVer version)
+            :base("dotnet-build")
         {
             Path = path;
             Configuration = configuration;

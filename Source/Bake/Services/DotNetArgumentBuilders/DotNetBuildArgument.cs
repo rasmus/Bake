@@ -10,12 +10,12 @@ namespace Bake.Services.DotNetArgumentBuilders
         public SemVer Version { get; }
 
         public DotNetBuildArgument(
-            string solutionPath,
+            string filePath,
             string configuration,
             bool incremental,
             bool restore,
             SemVer version)
-            : base(solutionPath)
+            : base(filePath)
         {
             Configuration = configuration;
             Incremental = incremental;

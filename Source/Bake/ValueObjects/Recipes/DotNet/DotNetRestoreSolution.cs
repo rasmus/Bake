@@ -13,6 +13,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public DotNetRestoreSolution(
             string path,
             bool clearLocalHttpCache)
+            : base("dotnet-restore")
         {
             Path = path;
             ClearLocalHttpCache = clearLocalHttpCache;
