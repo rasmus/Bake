@@ -6,13 +6,13 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetCleanCook : Cook<DotNetCleanSolution>
+    public class DotNetTestCook : Cook<DotNetTestSolution>
     {
-        public override string Name => "dotnet-clean";
+        public override string Name => "dotnet-test";
 
         private readonly IDotNet _dotNet;
 
-        public DotNetCleanCook(
+        public DotNetTestCook(
             IDotNet dotNet)
         {
             _dotNet = dotNet;
@@ -20,13 +20,15 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetCleanSolution recipe,
+            DotNetTestSolution recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new DotNetCleanArgument(
-                recipe.Path);
+            var argument = new DotNetTestArgument(
+                recipe.Path,
+                recipe.Build,
+                recipe.Restore);
 
-            return await _dotNet.CleanAsync(
+            return await _dotNet.TestAsync(
                 argument,
                 cancellationToken);
         }

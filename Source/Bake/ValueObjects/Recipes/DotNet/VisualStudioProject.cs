@@ -1,4 +1,4 @@
-﻿namespace Bake.Cooking.Recipes.DotNet
+﻿namespace Bake.ValueObjects.Recipes.DotNet
 {
     public class VisualStudioProject
     {

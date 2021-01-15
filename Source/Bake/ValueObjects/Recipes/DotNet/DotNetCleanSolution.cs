@@ -1,7 +1,10 @@
-﻿namespace Bake.Cooking.Recipes.DotNet
+﻿using YamlDotNet.Serialization;
+
+namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class DotNetCleanSolution : Recipe
+    public class DotNetCleanSolution : DotNetRecipe
     {
+        [YamlMember(Alias = "path")]
         public string Path { get; }
 
         public DotNetCleanSolution(

@@ -6,6 +6,7 @@ using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Services;
+using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bake.Extensions
@@ -23,12 +24,17 @@ namespace Bake.Extensions
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
 
+                // Cli wrappers
+                .AddTransient<IDotNet, DotNet>()
+
                 // Composers
                 .AddTransient<IComposer, DotNetComposer>()
 
                 // Cooks
                 .AddTransient<ICook, DotNetCleanCook>()
                 .AddTransient<ICook, DotNetBuildCook>()
+                .AddTransient<ICook, DotNetRestoreCook>()
+                .AddTransient<ICook, DotNetTestCook>()
 
                 // Commands
                 .AddTransient<InitCommand>()

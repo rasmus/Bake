@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Bake.Commands;
+using Bake.Core;
 using Bake.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Bake
 {
@@ -12,7 +13,7 @@ namespace Bake
         public static async Task<int> Main(string[] args)
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging(b => b.AddConsole())
+                .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger()))
                 .AddBake();
 
             var commandType = typeof(ICommand);

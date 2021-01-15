@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Cooks;
 using Bake.Extensions;
+using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking
@@ -25,11 +27,14 @@ namespace Bake.Cooking
                     c => c);
         }
 
-        public async Task CookAsync(
+        public async Task<bool> CookAsync(
             IContext context,
             Book book,
             CancellationToken cancellationToken)
         {
+            var cookResults = new List<CookResult>();
+            var successful = true;
+
             foreach (var recipe in book.Recipes)
             {
                 var recipeType = recipe.GetType();
@@ -40,11 +45,35 @@ namespace Bake.Cooking
 
                 _logger.LogInformation("Starting cook {CookName}", cook.Name);
 
-                await cook.CookAsync(
+                var stopwatch = Stopwatch.StartNew();
+                var success = await cook.CookAsync(
                     context,
                     recipe,
                     cancellationToken);
+
+                cookResults.Add(new CookResult(
+                    cook.Name,
+                    stopwatch.Elapsed,
+                    success));
+
+                if (success)
+                {
+                    continue;
+                }
+
+                successful = false;
+                break;
             }
+
+            foreach (var cookResult in cookResults)
+            {
+                var status = cookResult.Success
+                    ? "success"
+                    : "failed";
+                Console.WriteLine($"{cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+            }
+
+            return successful;
         }
     }
 }

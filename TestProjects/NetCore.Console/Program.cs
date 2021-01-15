@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace NetCore.Console
+﻿namespace NetCore.Console
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            System.Console.WriteLine("Hello world");
         }
     }
 }

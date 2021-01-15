@@ -31,12 +31,12 @@ namespace Bake.Commands.Build
                 content,
                 cancellationToken);
 
-            await _kitchen.CookAsync(
+            var success = await _kitchen.CookAsync(
                 content,
                 book,
                 cancellationToken);
 
-            return 0;
+            return success ? 0 : -1;
         }
     }
 }

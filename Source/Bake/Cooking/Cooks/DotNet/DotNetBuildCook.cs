@@ -1,28 +1,38 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Recipes.DotNet;
 using Bake.Services;
+using Bake.Services.DotNetArgumentBuilders;
+using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetBuildCook : Cook<DotNetBuildSolution>
     {
-        public override string Name => "dotnet:build";
-
-        private readonly IRunnerFactory _runnerFactory;
+        public override string Name => "dotnet-build";
+        
+        private readonly IDotNet _dotNet;
 
         public DotNetBuildCook(
-            IRunnerFactory runnerFactory)
+            IDotNet dotNet)
         {
-            _runnerFactory = runnerFactory;
+            _dotNet = dotNet;
         }
 
-        protected override Task CookAsync(
+        protected override async Task<bool> CookAsync(
             IContext context,
             DotNetBuildSolution recipe,
             CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var argument = new DotNetBuildArgument(
+                recipe.Path,
+                recipe.Configuration,
+                recipe.Incremental,
+                recipe.Restore,
+                recipe.Version);
+
+            return await _dotNet.BuildAsync(
+                argument,
+                cancellationToken);
         }
     }
 }

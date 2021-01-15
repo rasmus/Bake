@@ -1,4 +1,4 @@
-﻿namespace Bake.Cooking.Recipes
+﻿namespace Bake.ValueObjects.Recipes
 {
     public abstract class Recipe
     {

@@ -24,6 +24,7 @@ namespace Bake.Core
         public int Minor { get; }
         public int Patch { get; }
         public string Meta { get; }
+        public Version LegacyVersion { get; }
 
         private SemVer(
             int major,
@@ -35,6 +36,7 @@ namespace Bake.Core
             Minor = minor;
             Patch = patch;
             Meta = (meta ?? string.Empty).Trim('-');
+            LegacyVersion = new Version(major, minor, patch);
         }
 
         public override string ToString()

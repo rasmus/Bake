@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Bake.Cooking.Recipes;
+using Bake.ValueObjects.Recipes;
 
-namespace Bake.Cooking
+namespace Bake.ValueObjects
 {
     public class Book
     {

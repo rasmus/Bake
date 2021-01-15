@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Recipes;
+using Bake.ValueObjects.Recipes;
 
 namespace Bake.Cooking.Cooks
 {
@@ -11,7 +11,7 @@ namespace Bake.Cooking.Cooks
 
         Type CanCook { get; }
 
-        Task CookAsync(
+        Task<bool> CookAsync(
             IContext context,
             Recipe recipe,
             CancellationToken cancellationToken);

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
+using Bake.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using Serilog;
 
 namespace Bake.Tests.Helpers
 {
@@ -35,7 +36,7 @@ namespace Bake.Tests.Helpers
         protected virtual T CreateSut()
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging(l => l.AddConsole());
+                .AddLogging(l => l.AddSerilog(LoggerBuilder.CreateLogger()));
 
             Configure(serviceCollection);
 

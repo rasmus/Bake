@@ -1,8 +1,8 @@
 ﻿namespace Bake.Services.DotNetArgumentBuilders
 {
-    public class DotNetCleanArgument : DotNetArgument
+    public class DotNetRestoreArgument : DotNetArgument
     {
-        public DotNetCleanArgument(
+        public DotNetRestoreArgument(
             string solutionPath)
             : base(solutionPath)
         {

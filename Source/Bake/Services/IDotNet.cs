@@ -6,12 +6,23 @@ namespace Bake.Services
 {
     public interface IDotNet
     {
-        Task CleanAsync(
+        Task<bool> CleanAsync(
             DotNetCleanArgument argument,
             CancellationToken cancellationToken);
 
-        Task BuildAsync(
+        Task<bool> BuildAsync(
             DotNetBuildArgument argument,
+            CancellationToken cancellationToken);
+
+        Task<bool> RestoreAsync(
+            DotNetRestoreArgument argument,
+            CancellationToken cancellationToken);
+
+        Task<bool> TestAsync(
+            DotNetTestArgument argument,
+            CancellationToken cancellationToken);
+
+        Task<bool> ClearNuGetLocalsAsync(
             CancellationToken cancellationToken);
     }
 }

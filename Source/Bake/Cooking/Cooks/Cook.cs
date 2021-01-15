@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Recipes;
 using Bake.Extensions;
+using Bake.ValueObjects.Recipes;
 
 namespace Bake.Cooking.Cooks
 {
@@ -12,7 +12,7 @@ namespace Bake.Cooking.Cooks
         public abstract string Name { get; }
         public Type CanCook { get; } = typeof(T);
 
-        public Task CookAsync(
+        public Task<bool> CookAsync(
             IContext context,
             Recipe recipe,
             CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ namespace Bake.Cooking.Cooks
             return CookAsync(context, myRecipe, cancellationToken);
         }
 
-        protected abstract Task CookAsync(
+        protected abstract Task<bool> CookAsync(
             IContext context,
             T recipe,
             CancellationToken cancellationToken);

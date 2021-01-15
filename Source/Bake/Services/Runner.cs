@@ -4,12 +4,15 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Services
 {
     public class Runner : IRunner
     {
+        private readonly ILogger _logger;
         private readonly string _command;
+        private readonly string _workingDirectory;
         private readonly IReadOnlyCollection<string> _arguments;
         private readonly Process _process;
         private readonly Subject<string> _stdOut = new Subject<string>();
@@ -23,11 +26,14 @@ namespace Bake.Services
         public IReadOnlyCollection<string> Err => _err;
 
         public Runner(
+            ILogger logger,
             string command,
             string workingDirectory,
             IReadOnlyCollection<string> arguments)
         {
+            _logger = logger;
             _command = command;
+            _workingDirectory = workingDirectory;
             _arguments = arguments;
             _process = CreateProcess(
                 command,
@@ -49,6 +55,12 @@ namespace Bake.Services
 
         private int Execute()
         {
+            _logger.LogDebug(
+                "Executing '{Program} {Arguments}' in {Directory}",
+                _command,
+                string.Join(" ", _arguments),
+                _workingDirectory);
+
             _process.Start();
             _process.BeginErrorReadLine();
             _process.BeginOutputReadLine();
@@ -73,6 +85,7 @@ namespace Bake.Services
             var output = CleanupOutput(e.Data);
             _out.Add(output);
             _stdOut.OnNext(output);
+            Console.WriteLine(output);
         }
 
         private void OnStdErr(object sender, DataReceivedEventArgs e)
@@ -80,6 +93,7 @@ namespace Bake.Services
             var output = CleanupOutput(e.Data);
             _err.Add(output);
             _stdErr.OnNext(output);
+            Console.Error.WriteLine(output);
         }
 
         private static string CleanupOutput(string str)

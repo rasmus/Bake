@@ -3,8 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Recipes;
-using Bake.Cooking.Recipes.DotNet;
+using Bake.Core;
+using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Composers
 {
@@ -31,7 +32,7 @@ namespace Bake.Cooking.Composers
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
             return visualStudioSolutions
-                .SelectMany(CreateRecipe)
+                .SelectMany(s => CreateRecipe(s, context.Version))
                 .ToList();
         }
 
@@ -52,10 +53,25 @@ namespace Bake.Cooking.Composers
                 projectFilesInSolution);
         }
 
-        private static IEnumerable<Recipe> CreateRecipe(VisualStudioSolution visualStudioSolution)
+        private static IEnumerable<Recipe> CreateRecipe(
+            VisualStudioSolution visualStudioSolution,
+            SemVer version)
         {
-            yield return new DotNetCleanSolution(visualStudioSolution.Path);
-            yield return new DotNetBuildSolution(visualStudioSolution.Path);
+            yield return new DotNetCleanSolution(
+                visualStudioSolution.Path);
+            yield return new DotNetRestoreSolution(
+                visualStudioSolution.Path,
+                true);
+            yield return new DotNetBuildSolution(
+                visualStudioSolution.Path,
+                "Release",
+                false,
+                false,
+                version);
+            yield return new DotNetTestSolution(
+                visualStudioSolution.Path,
+                false,
+                false);
         }
     }
 }
