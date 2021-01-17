@@ -21,6 +21,8 @@ namespace Bake.Commands.Run
         }
 
         public async Task<int> ExecuteAsync(
+            SemVer buildVersion,
+            int retry,
             CancellationToken cancellationToken)
         {
             var content = new Context(

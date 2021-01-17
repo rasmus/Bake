@@ -16,7 +16,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Act
             var returnCode = await ExecuteAsync(
-                "run");
+                "run",
+                "--retry", "42");
 
             // Assert
             returnCode.Should().Be(0);

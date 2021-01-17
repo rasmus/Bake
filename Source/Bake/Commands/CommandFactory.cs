@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -40,8 +41,6 @@ namespace Bake.Commands
 
             foreach (var type in types)
             {
-                _logger.LogTrace("Adding command {Type} to list of commands for Bake", type.PrettyPrint());
-
                 if (!commandType.IsAssignableFrom(type))
                 {
                     throw new ArgumentException($"Type '{type.PrettyPrint()}' is not of type '{commandType.PrettyPrint()}'");
@@ -93,18 +92,22 @@ namespace Bake.Commands
                         {
                             argument.SetDefaultValueFactory(() => false);
                         }
-                        else
-                        {
-                            argument.SetDefaultValueFactory(() => null);
-                        }
                     }
 
-                    command.AddOption(new Option($"--{argumentName}")
+                    var option = new Option($"--{argumentName}")
                         {
                             Argument = argument,
                             Description = argumentAttribute?.Description,
-                        });
+                            IsRequired = !parameterInfo.HasDefaultValue,
+                        };
+
+                    command.AddOption(option);
                 }
+
+                _logger.LogTrace(
+                    "Adding command {} with arguments {Arguments}",
+                    verb,
+                    command.Options.Select(o => $"{o.Name} (isRequired:{o.IsRequired})"));
 
                 command.Handler = CommandHandler.Create(methodInfo, _serviceProvider.GetRequiredService(type));
 
