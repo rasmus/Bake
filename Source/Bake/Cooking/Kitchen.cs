@@ -68,10 +68,11 @@ namespace Bake.Cooking
             var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
             foreach (var cookResult in cookResults)
             {
+                var percent = (cookResult.Time.TotalSeconds / totalSeconds) * 100.0;
                 var status = cookResult.Success
                     ? "success"
                     : "failed";
-                Console.WriteLine($"{cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                Console.WriteLine($"{cookResult.Name,-20} {status, 7} {percent,5:0.0}% {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
 
