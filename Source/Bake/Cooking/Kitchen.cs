@@ -13,6 +13,7 @@ namespace Bake.Cooking
 {
     public class Kitchen : IKitchen
     {
+        private const int BarWidth = 10;
         private readonly ILogger<Kitchen> _logger;
         private readonly IReadOnlyDictionary<Type, ICook> _cooks;
 
@@ -71,7 +72,9 @@ namespace Bake.Cooking
                 var status = cookResult.Success
                     ? "success"
                     : "failed";
-                Console.WriteLine($"{cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                var percent = cookResult.Time.TotalSeconds / totalSeconds;
+                var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
+                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
 
