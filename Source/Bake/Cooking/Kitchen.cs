@@ -74,7 +74,7 @@ namespace Bake.Cooking
                     : "failed";
                 var percent = cookResult.Time.TotalSeconds / totalSeconds;
                 var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
-                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
 
