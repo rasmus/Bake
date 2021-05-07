@@ -96,6 +96,7 @@ namespace Bake.Services
                     $"-p:Version={argument.Version.LegacyVersion}",
                     $"-p:AssemblyVersion={argument.Version.LegacyVersion}",
                     $"-p:AssemblyFileVersion={argument.Version.LegacyVersion}",
+                    $"-p:Description=\"{argument.Description.Replace("\"", string.Empty)}\""
                 };
 
             AddIf(!argument.Incremental, arguments, "--no-incremental");
@@ -146,6 +147,7 @@ namespace Bake.Services
                     argument.FilePath,
                     "--nologo",
                     "--configuration", argument.Configuration,
+                    $"-p:PackageVersion={argument.Version}"
                 };
 
             AddIf(!argument.Restore, arguments, "--no-restore");

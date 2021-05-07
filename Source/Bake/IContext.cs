@@ -4,7 +4,6 @@ namespace Bake
 {
     public interface IContext
     {
-        string WorkingDirectory { get; }
-        Metadata Metadata { get; }
+        Ingredients Ingredients { get; }
     }
 }

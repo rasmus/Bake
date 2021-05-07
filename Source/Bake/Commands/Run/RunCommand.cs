@@ -27,9 +27,7 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken)
         {
             var content = new Context(
-                new Metadata()
-                    .Set(SemVer.With(0, 1)),
-                Directory.GetCurrentDirectory());
+                Ingredients.New(Directory.GetCurrentDirectory()));
 
             var book = await _editor.ComposeAsync(
                 content,

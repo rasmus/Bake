@@ -5,6 +5,7 @@ using Bake.Cooking;
 using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.DotNet;
+using Bake.Cooking.Ingredients.Gathers;
 using Bake.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +24,9 @@ namespace Bake.Extensions
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
                 .AddTransient<ICsProjParser, CsProjParser>()
+
+                // Gathers
+                .AddTransient<IGather, GitGather>()
 
                 // Cli wrappers
                 .AddTransient<IDotNet, DotNet>()

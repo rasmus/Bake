@@ -20,7 +20,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             // Act
             var recipes = await Sut.ComposeAsync(
-                new Context(new Metadata(), WorkingDirectory), 
+                new Context(
+                    Ingredients.New(WorkingDirectory)), 
                 CancellationToken.None);
         }
 

@@ -4,15 +4,12 @@ namespace Bake
 {
     public class Context : IContext
     {
-        public Metadata Metadata { get; }
-        public string WorkingDirectory { get; }
+        public Ingredients Ingredients { get; }
 
         public Context(
-            Metadata metadata,
-            string workingDirectory)
+            Ingredients ingredients)
         {
-            Metadata = metadata;
-            WorkingDirectory = workingDirectory;
+            Ingredients = ingredients;
         }
     }
 }

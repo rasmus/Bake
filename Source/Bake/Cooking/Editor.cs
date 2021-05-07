@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.ValueObjects;
 using YamlDotNet.Serialization;
@@ -12,11 +13,14 @@ namespace Bake.Cooking
 {
     public class Editor : IEditor
     {
+        private readonly IReadOnlyCollection<IGather> _gathers;
         private readonly IReadOnlyCollection<IComposer> _composers;
 
         public Editor(
+            IEnumerable<IGather> gathers,
             IEnumerable<IComposer> composers)
         {
+            _gathers = gathers.ToList();
             _composers = composers.ToList();
         }
 
@@ -24,6 +28,8 @@ namespace Bake.Cooking
             IContext context,
             CancellationToken cancellationToken)
         {
+            await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, cancellationToken)));
+
             var tasks = _composers
                 .Select(c => c.ComposeAsync(context, cancellationToken))
                 .ToList();
@@ -33,7 +39,7 @@ namespace Bake.Cooking
                 .ToList();
 
             var book = new Book(
-                context.Metadata,
+                context.Ingredients,
                 recipes);
 
             var serializer = new SerializerBuilder()

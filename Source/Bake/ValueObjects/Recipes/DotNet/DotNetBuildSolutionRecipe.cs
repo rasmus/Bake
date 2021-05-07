@@ -20,11 +20,15 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "version")]
         public SemVer Version { get; }
 
+        [YamlMember(Alias = "description")]
+        public string Description { get; }
+
         public DotNetBuildSolutionRecipe(
             string path,
             string configuration,
             bool restore,
             bool incremental,
+            string description,
             SemVer version)
             :base(RecipeNames.DotNet.Build)
         {
@@ -32,6 +36,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Configuration = configuration;
             Restore = restore;
             Incremental = incremental;
+            Description = description;
             Version = version;
         }
 

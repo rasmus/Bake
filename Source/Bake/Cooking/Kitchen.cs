@@ -66,6 +66,7 @@ namespace Bake.Cooking
                 break;
             }
 
+            Console.WriteLine();
             var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
             foreach (var cookResult in cookResults)
             {
@@ -77,6 +78,7 @@ namespace Bake.Cooking
                 Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
+            Console.WriteLine();
 
             return successful;
         }

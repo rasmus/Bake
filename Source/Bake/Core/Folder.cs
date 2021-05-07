@@ -31,7 +31,7 @@ namespace Bake.Core
         {
             var start = DateTimeOffset.Now;
 
-            while (DateTimeOffset.Now - start <= TimeSpan.FromMinutes(1))
+            while (DateTimeOffset.Now - start <= TimeSpan.FromSeconds(5))
             {
                 try
                 {

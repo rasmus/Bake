@@ -24,6 +24,8 @@ namespace Bake.Tests.Helpers
         {
             _folder = Folder.New;
 
+            GitHelper.Create(_folder.Path);
+
             DirectoryCopy(
                 Path.Combine(
                     ProjectHelper.GetRoot(),

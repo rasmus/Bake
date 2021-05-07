@@ -9,6 +9,8 @@ using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : IComposer
@@ -26,12 +28,12 @@ namespace Bake.Cooking.Composers
             CancellationToken cancellationToken)
         {
             var solutionFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.WorkingDirectory, "*.sln", SearchOption.AllDirectories),
+                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.sln", SearchOption.AllDirectories),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
             var projectFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.WorkingDirectory, "*.csproj", SearchOption.AllDirectories),
+                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.csproj", SearchOption.AllDirectories),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
@@ -41,10 +43,8 @@ namespace Bake.Cooking.Composers
             var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
-            var version = context.Metadata.Get<SemVer>();
-
             return visualStudioSolutions
-                .SelectMany(s => CreateRecipe(s, version))
+                .SelectMany(s => CreateRecipe(s, context.Ingredients))
                 .ToList();
         }
 
@@ -82,9 +82,13 @@ namespace Bake.Cooking.Composers
 
         private static IEnumerable<Recipe> CreateRecipe(
             VisualStudioSolution visualStudioSolution,
-            SemVer version)
+            ValueObjects.Ingredients ingredients)
         {
             const string configuration = "Release";
+
+            var description = ingredients.Git != null
+                ? $"SHA:{ingredients.Git.Sha}"
+                : visualStudioSolution.Name;
 
             yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
@@ -97,7 +101,8 @@ namespace Bake.Cooking.Composers
                 configuration,
                 false,
                 false,
-                version);
+                description,
+                ingredients.Version);
             yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
                 false,
@@ -114,14 +119,14 @@ namespace Bake.Cooking.Composers
                     true,
                     true,
                     configuration,
-                    version);
+                    ingredients.Version);
             }
 
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePushed))
             {
                 yield return new DotNetNuGetPushRecipe(
-                    $"TODO: read path to NuGet package {visualStudioProject.Path}",
+                    Path.Combine(visualStudioProject.Directory, "bin", configuration, $"{visualStudioProject.Name}.{ingredients.Version}.nupkg"),
                     "1234567890",
                     "https://api.nuget.org/v3/index.json");
             }

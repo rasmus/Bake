@@ -6,6 +6,7 @@ namespace Bake.ValueObjects.DotNet
     public class VisualStudioSolution
     {
         public string Path { get; }
+        public string Name { get; }
         public IReadOnlyCollection<VisualStudioProject> Projects { get; }
 
         public VisualStudioSolution(
@@ -14,6 +15,7 @@ namespace Bake.ValueObjects.DotNet
         {
             Path = path;
             Projects = projects.ToList();
+            Name = System.IO.Path.GetFileNameWithoutExtension(path);
         }
     }
 }

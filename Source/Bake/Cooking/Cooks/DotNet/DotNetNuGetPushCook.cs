@@ -1,8 +1,10 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
 using Bake.Services.DotNetArgumentBuilders;
 using Bake.ValueObjects.Recipes.DotNet;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
@@ -10,11 +12,14 @@ namespace Bake.Cooking.Cooks.DotNet
     {
         public override string Name => RecipeNames.DotNet.NuGetPush;
 
+        private readonly ILogger<DotNetNuGetPushCook> _logger;
         private readonly IDotNet _dotNet;
 
         public DotNetNuGetPushCook(
+            ILogger<DotNetNuGetPushCook> logger,
             IDotNet dotNet)
         {
+            _logger = logger;
             _dotNet = dotNet;
         }
 
@@ -23,6 +28,14 @@ namespace Bake.Cooking.Cooks.DotNet
             DotNetNuGetPushRecipe recipe,
             CancellationToken cancellationToken)
         {
+            if (!File.Exists(recipe.FilePath))
+            {
+                _logger.LogCritical(
+                    "NuGet package not found at {NuGetPackagePath}",
+                    recipe.FilePath);
+                return false;
+            }
+
             var argument = new DotNetNuGetPushArgument(
                 recipe.ApiKey,
                 recipe.Source,
