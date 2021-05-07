@@ -18,7 +18,7 @@ namespace Bake.Services
                 cancellationToken);
             var xDocument = XDocument.Parse(xml);
 
-            var packAsTool = ReadBool(xDocument ,"/Project/PropertyGroup/PackAsTool");
+            var packAsTool = ReadBool(xDocument ,"/Project/PropertyGroup/IsTool");
             var isPackable = ReadBool(xDocument, "/Project/PropertyGroup/IsPackable");
             var isPublishable = ReadBool(xDocument, "/Project/PropertyGroup/IsPublishable");
             var toolCommandName = ReadString(xDocument ,"/Project/PropertyGroup/ToolCommandName");
@@ -42,7 +42,8 @@ namespace Bake.Services
             string xPath,
             bool defaultValue = false)
         {
-            return bool.TryParse(xDocument.XPathSelectElement(xPath)?.Value, out var b)
+            var value = xDocument.XPathSelectElement(xPath)?.Value;
+            return bool.TryParse(value, out var b)
                 ? b
                 : defaultValue;
         }

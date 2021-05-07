@@ -45,9 +45,9 @@ namespace Bake.Tests.Helpers
             return _serviceProvider.GetRequiredService<T>();
         }
 
-        protected virtual void Configure(IServiceCollection serviceCollection)
+        protected virtual IServiceCollection Configure(IServiceCollection serviceCollection)
         {
-            serviceCollection
+            return serviceCollection
                 .AddTransient<T>();
         }
     }
