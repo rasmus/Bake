@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Bake.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ namespace Bake.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public RootCommand Create(IEnumerable<Type> types)
+        public Parser Create(IEnumerable<Type> types)
         {
             var commandType = typeof(ICommand);
             var cancellationTokenType = typeof(CancellationToken);
@@ -75,29 +77,27 @@ namespace Bake.Commands
                     var argumentAttribute = parameterInfo.GetCustomAttribute<ArgumentAttribute>();
 
                     var argumentName = UpperReplacer.Replace(parameterInfo.Name, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
-                    var argument = new Argument
-                        {
-                            ArgumentType = parameterInfo.ParameterType,
-                            Arity = ArgumentArity.ExactlyOne,
-                            Name = parameterInfo.Name,
-                        };
 
+                    Func<object?> defaultValue = null;
                     if (parameterInfo.HasDefaultValue)
                     {
                         if (parameterInfo.DefaultValue != null)
                         {
-                            argument.SetDefaultValue(parameterInfo.DefaultValue);
+                            defaultValue = () => parameterInfo.DefaultValue;
                         }
                         else if (parameterInfo.ParameterType == typeof(bool))
                         {
-                            argument.SetDefaultValueFactory(() => false);
+                            defaultValue = () => false;
                         }
                     }
 
-                    var option = new Option($"--{argumentName}")
+                    var option = new Option(
+                        $"--{argumentName}",
+                        argumentAttribute?.Description,
+                        parameterInfo.ParameterType,
+                        defaultValue,
+                        ArgumentArity.ExactlyOne)
                         {
-                            Argument = argument,
-                            Description = argumentAttribute?.Description,
                             IsRequired = !parameterInfo.HasDefaultValue,
                         };
 
@@ -105,8 +105,9 @@ namespace Bake.Commands
                 }
 
                 _logger.LogTrace(
-                    "Adding command {} with arguments {Arguments}",
+                    "Adding command {Verb} of type {Type} with arguments {Arguments}",
                     verb,
+                    type.PrettyPrint(),
                     command.Options.Select(o => $"{o.Name} (isRequired:{o.IsRequired})"));
 
                 command.Handler = CommandHandler.Create(methodInfo, _serviceProvider.GetRequiredService(type));
@@ -114,7 +115,18 @@ namespace Bake.Commands
                 rootCommand.AddCommand(command);
             }
 
-            return rootCommand;
+            var commandLineBuilder = new CommandLineBuilder(rootCommand)
+                .UseHelp()
+                .UseVersionOption()
+                .CancelOnProcessTermination()
+                .UseMiddleware(Middleware);
+
+            return commandLineBuilder.Build();
+        }
+
+        private Task Middleware(InvocationContext context, Func<InvocationContext, Task> next)
+        {
+            return next(context);
         }
     }
 }

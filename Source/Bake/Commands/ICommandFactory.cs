@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.CommandLine;
+using System.CommandLine.Parsing;
 
 namespace Bake.Commands
 {
     public interface ICommandFactory
     {
-        RootCommand Create(IEnumerable<Type> types);
+        Parser Create(IEnumerable<Type> types);
     }
 }
