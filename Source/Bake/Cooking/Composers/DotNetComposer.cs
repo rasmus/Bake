@@ -116,6 +116,15 @@ namespace Bake.Cooking.Composers
                     configuration,
                     version);
             }
+
+            foreach (var visualStudioProject in visualStudioSolution.Projects
+                .Where(p => p.ShouldBePushed))
+            {
+                yield return new DotNetNuGetPushRecipe(
+                    $"TODO: read path to NuGet package {visualStudioProject.Path}",
+                    "1234567890",
+                    "https://api.nuget.org/v3/index.json");
+            }
         }
     }
 }

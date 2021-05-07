@@ -10,7 +10,7 @@ namespace Bake.Services.DotNetArgumentBuilders
 
         protected DotNetArgument(string filePath)
         {
-            FilePath = filePath;
+            FilePath = Path.GetFullPath(filePath);
             WorkingDirectory = Path.GetDirectoryName(filePath);
         }
     }

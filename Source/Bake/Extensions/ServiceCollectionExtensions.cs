@@ -36,6 +36,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetRestoreCook>()
                 .AddTransient<ICook, DotNetTestCook>()
                 .AddTransient<ICook, DotNetPackCook>()
+                .AddTransient<ICook, DotNetNuGetPushCook>()
 
                 // Commands
                 .AddTransient<InitCommand>()

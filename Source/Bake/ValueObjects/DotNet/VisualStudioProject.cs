@@ -6,6 +6,7 @@
         public CsProj CsProj { get; }
 
         public bool ShouldBePacked => CsProj.IsPackable || CsProj.PackAsTool;
+        public bool ShouldBePushed => CsProj.IsPackable || CsProj.PackAsTool;
 
         public VisualStudioProject(
             string path,

@@ -9,6 +9,7 @@
             public const string Pack = "dotnet-pack";
             public const string Restore = "dotnet-restore";
             public const string Test = "dotnet-test";
+            public const string NuGetPush = "dotnet-nuget-push";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -162,6 +163,25 @@ namespace Bake.Services
             var result = await buildRunner.ExecuteAsync(cancellationToken);
 
             return result == 0;
+        }
+
+        public Task<bool> NuGetPushAsync(
+            DotNetNuGetPushArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+                {
+                    "nuget", "push",
+                    argument.FilePath,
+                    "--api-key", argument.ApiKey,
+                    "--source", argument.Source,
+                };
+
+            // TODO: Actually invoke it
+
+            Console.WriteLine($"dotnet {string.Join(" ", arguments)}");
+
+            return Task.FromResult(true);
         }
 
         private static void AddIf(bool predicate, List<string> arguments, params string[] args)
