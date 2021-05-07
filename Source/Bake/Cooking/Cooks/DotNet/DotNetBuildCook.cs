@@ -6,9 +6,9 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetBuildCook : Cook<DotNetBuildSolution>
+    public class DotNetBuildCook : Cook<DotNetBuildSolutionRecipe>
     {
-        public override string Name => "dotnet-build";
+        public override string Name => RecipeNames.DotNet.Build;
         
         private readonly IDotNet _dotNet;
 
@@ -20,7 +20,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetBuildSolution recipe,
+            DotNetBuildSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
             var argument = new DotNetBuildArgument(

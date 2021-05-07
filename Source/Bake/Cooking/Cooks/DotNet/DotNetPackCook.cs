@@ -6,9 +6,9 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetPackCook : Cook<DotNetPackProject>
+    public class DotNetPackCook : Cook<DotNetPackProjectRecipe>
     {
-        public override string Name => "dotnet-pack";
+        public override string Name => RecipeNames.DotNet.Pack;
 
         private readonly IDotNet _dotNet;
 
@@ -20,7 +20,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetPackProject recipe,
+            DotNetPackProjectRecipe recipe,
             CancellationToken cancellationToken)
         {
             var argument = new DotNetPackArgument(

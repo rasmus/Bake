@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects.DotNet
 {
     public class VisualStudioSolution
     {

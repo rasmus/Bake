@@ -6,9 +6,9 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetCleanCook : Cook<DotNetCleanSolution>
+    public class DotNetCleanCook : Cook<DotNetCleanSolutionRecipe>
     {
-        public override string Name => "dotnet-clean";
+        public override string Name => RecipeNames.DotNet.Clean;
 
         private readonly IDotNet _dotNet;
 
@@ -20,7 +20,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetCleanSolution recipe,
+            DotNetCleanSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
             var argument = new DotNetCleanArgument(

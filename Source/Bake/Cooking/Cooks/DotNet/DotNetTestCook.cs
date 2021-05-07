@@ -6,9 +6,9 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetTestCook : Cook<DotNetTestSolution>
+    public class DotNetTestCook : Cook<DotNetTestSolutionRecipe>
     {
-        public override string Name => "dotnet-test";
+        public override string Name => RecipeNames.DotNet.Test;
 
         private readonly IDotNet _dotNet;
 
@@ -20,7 +20,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetTestSolution recipe,
+            DotNetTestSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
             var argument = new DotNetTestArgument(

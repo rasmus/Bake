@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
+using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
 
@@ -83,19 +84,19 @@ namespace Bake.Cooking.Composers
         {
             const string configuration = "Release";
 
-            yield return new DotNetCleanSolution(
+            yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
                 configuration);
-            yield return new DotNetRestoreSolution(
+            yield return new DotNetRestoreSolutionRecipe(
                 visualStudioSolution.Path,
                 true);
-            yield return new DotNetBuildSolution(
+            yield return new DotNetBuildSolutionRecipe(
                 visualStudioSolution.Path,
                 configuration,
                 false,
                 false,
                 version);
-            yield return new DotNetTestSolution(
+            yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
                 false,
                 false,
@@ -104,7 +105,7 @@ namespace Bake.Cooking.Composers
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePacked))
             {
-                yield return new DotNetPackProject(
+                yield return new DotNetPackProjectRecipe(
                     visualStudioProject.Path,
                     false,
                     false,

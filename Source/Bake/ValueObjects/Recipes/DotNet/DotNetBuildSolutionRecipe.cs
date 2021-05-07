@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class DotNetBuildSolution : DotNetRecipe
+    public class DotNetBuildSolutionRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
         public string Path { get; }
@@ -20,13 +20,13 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "version")]
         public SemVer Version { get; }
 
-        public DotNetBuildSolution(
+        public DotNetBuildSolutionRecipe(
             string path,
             string configuration,
             bool restore,
             bool incremental,
             SemVer version)
-            :base("dotnet-build")
+            :base(RecipeNames.DotNet.Build)
         {
             Path = path;
             Configuration = configuration;

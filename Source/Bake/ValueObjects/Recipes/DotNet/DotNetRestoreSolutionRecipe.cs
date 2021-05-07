@@ -2,7 +2,7 @@
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class DotNetRestoreSolution : DotNetRecipe
+    public class DotNetRestoreSolutionRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
         public string Path { get; }
@@ -10,10 +10,10 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "clear-local-http-cache")]
         public bool ClearLocalHttpCache { get; }
 
-        public DotNetRestoreSolution(
+        public DotNetRestoreSolutionRecipe(
             string path,
             bool clearLocalHttpCache)
-            : base("dotnet-restore")
+            : base(RecipeNames.DotNet.Restore)
         {
             Path = path;
             ClearLocalHttpCache = clearLocalHttpCache;

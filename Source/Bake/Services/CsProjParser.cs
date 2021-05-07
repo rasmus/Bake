@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Services

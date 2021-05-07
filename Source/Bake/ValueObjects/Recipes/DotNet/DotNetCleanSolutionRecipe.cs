@@ -2,31 +2,26 @@
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class DotNetTestSolution : DotNetRecipe
+    public class DotNetCleanSolutionRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
         public string Path { get; }
 
-        [YamlMember(Alias = "build")]
-        public bool Build { get; }
-
-        [YamlMember(Alias = "restore")]
-        public bool Restore { get; }
-
         [YamlMember(Alias = "configuration")]
         public string Configuration { get; }
 
-        public DotNetTestSolution(
+        public DotNetCleanSolutionRecipe(
             string path,
-            bool build,
-            bool restore,
             string configuration)
-            : base("dotnet-test")
+            : base(RecipeNames.DotNet.Clean)
         {
             Path = path;
-            Build = build;
-            Restore = restore;
             Configuration = configuration;
+        }
+
+        public override string ToString()
+        {
+            return $".NET clean {Path}";
         }
     }
 }

@@ -6,9 +6,9 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetRestoreCook : Cook<DotNetRestoreSolution>
+    public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
     {
-        public override string Name => "dotnet-restore";
+        public override string Name => RecipeNames.DotNet.Restore;
         
         private readonly IDotNet _dotNet;
 
@@ -20,7 +20,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DotNetRestoreSolution recipe,
+            DotNetRestoreSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
             if (recipe.ClearLocalHttpCache)

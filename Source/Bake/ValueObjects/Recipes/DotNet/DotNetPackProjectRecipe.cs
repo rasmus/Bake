@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class DotNetPackProject : DotNetRecipe
+    public class DotNetPackProjectRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
         public string Path { get; }
@@ -26,7 +26,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "version")]
         public SemVer Version { get; }
 
-        public DotNetPackProject(
+        public DotNetPackProjectRecipe(
             string path,
             bool restore,
             bool build,
@@ -34,7 +34,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSource,
             string configuration,
             SemVer version)
-            : base("dotnet-pack")
+            : base(RecipeNames.DotNet.Pack)
         {
             Path = path;
             Restore = restore;
