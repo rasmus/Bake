@@ -1,17 +1,17 @@
-﻿using Bake.Core;
+﻿using Bake.ValueObjects;
 
 namespace Bake
 {
     public class Context : IContext
     {
-        public SemVer Version { get; }
+        public Metadata Metadata { get; }
         public string WorkingDirectory { get; }
 
         public Context(
-            SemVer version,
+            Metadata metadata,
             string workingDirectory)
         {
-            Version = version;
+            Metadata = metadata;
             WorkingDirectory = workingDirectory;
         }
     }

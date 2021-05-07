@@ -32,12 +32,15 @@ namespace Bake.Cooking
                 .SelectMany(c => c)
                 .ToList();
 
-            var book = new Book(recipes);
+            var book = new Book(
+                context.Metadata,
+                recipes);
 
             var serializer = new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .Build();
+
             var yaml = serializer.Serialize(book);
 
             Console.WriteLine(yaml);

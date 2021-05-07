@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
+using Bake.ValueObjects;
 
 namespace Bake.Commands.Run
 {
@@ -26,7 +27,8 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken)
         {
             var content = new Context(
-                SemVer.With(0, 1),
+                new Metadata()
+                    .Set(SemVer.With(0, 1)),
                 Directory.GetCurrentDirectory());
 
             var book = await _editor.ComposeAsync(

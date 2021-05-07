@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Composers;
-using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
+using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -20,7 +20,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             // Act
             var recipes = await Sut.ComposeAsync(
-                new Context(SemVer.Random, WorkingDirectory), 
+                new Context(new Metadata(), WorkingDirectory), 
                 CancellationToken.None);
         }
 

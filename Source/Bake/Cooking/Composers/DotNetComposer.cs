@@ -41,8 +41,10 @@ namespace Bake.Cooking.Composers
             var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
+            var version = context.Metadata.Get<SemVer>();
+
             return visualStudioSolutions
-                .SelectMany(s => CreateRecipe(s, context.Version))
+                .SelectMany(s => CreateRecipe(s, version))
                 .ToList();
         }
 
