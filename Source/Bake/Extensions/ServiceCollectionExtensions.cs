@@ -24,9 +24,11 @@ namespace Bake.Extensions
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
                 .AddTransient<ICsProjParser, CsProjParser>()
+                .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
+                .AddTransient<IGather, ReleaseNotesGather>()
 
                 // Cli wrappers
                 .AddTransient<IDotNet, DotNet>()

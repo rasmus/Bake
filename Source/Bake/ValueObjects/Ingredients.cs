@@ -35,10 +35,28 @@ namespace Bake.ValueObjects
             }
         }
 
+        [YamlMember(Alias = "releaseNotes")]
+        public ReleaseNotes ReleaseNotes
+        {
+            get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _releaseNotes .SetResult(value);
+            }
+        }
+
         [YamlIgnore]
         public Task<GitInformation> GitTask => _git.Task;
 
+        [YamlIgnore]
+        public Task<ReleaseNotes> ReleaseNotesTask => _releaseNotes.Task;
+
         private readonly TaskCompletionSource<GitInformation> _git = new TaskCompletionSource<GitInformation>();
+        private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new TaskCompletionSource<ReleaseNotes>();
 
         public Ingredients(
             SemVer version,
