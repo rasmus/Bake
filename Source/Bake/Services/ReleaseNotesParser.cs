@@ -51,8 +51,7 @@ namespace Bake.Services
                 {
                     if (releaseNotes != null)
                     {
-                        yield return new ReleaseNotes(version, string.Join(Environment.NewLine, releaseNotes));
-                        version = null;
+                        yield return Create(version, releaseNotes);
                         releaseNotes = null;
                     }
 
@@ -77,8 +76,22 @@ namespace Bake.Services
 
             if (releaseNotes != null)
             {
-                yield return new ReleaseNotes(version, string.Join(Environment.NewLine, releaseNotes));
+                yield return Create(version, releaseNotes);
             }
+        }
+
+        private ReleaseNotes Create(SemVer version, IReadOnlyCollection<string> lines)
+        {
+            var notes = string.Join(Environment.NewLine, lines);
+
+            _logger.LogTrace(
+                "Creating release notes for version {Version} with {LineCount} lines",
+                version,
+                lines.Count);
+
+            return new ReleaseNotes(
+                version,
+                notes);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Bake.ValueObjects
         [YamlMember(Alias = "version")]
         public SemVer Version { get; }
 
-        [YamlMember(Alias = "credentials")]
+        [YamlIgnore]
         public Credentials Credentials { get; }
 
         [YamlMember(Alias = "workingDirectory")]
