@@ -53,6 +53,10 @@ namespace Bake.Commands
                 }));
 
             app.HelpOption(true);
+            app.VersionOption(
+                "-v|--version",
+                GetVersion,
+                GetVersion);
 
             var commandType = typeof(ICommand);
             var cancellationTokenType = typeof(CancellationToken);
@@ -140,6 +144,11 @@ namespace Bake.Commands
             }
 
             return app;
+        }
+
+        private static string GetVersion()
+        {
+            return typeof(CommandFactory).Assembly.GetName().Version.ToString();
         }
 
         private static object Parse(

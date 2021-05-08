@@ -28,6 +28,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [TestCase("-?")]
         [TestCase("--help")]
         [TestCase("--version")]
+        [TestCase("-v")]
         public async Task BasicArgsTest(params string[] args)
         {
             // Act

@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
-using Bake.Core;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,13 +36,6 @@ namespace Bake.Tests.UnitTests.Commands
             var app = Sut.Create(new[] {typeof(CommandA)});
 
             // Assert
-            /*
-            await app.ExecuteAsync(
-                new[]
-                {
-                    "A", "--help"
-                },
-                CancellationToken.None);*/
             var result = await app.ExecuteAsync(
                 new[]
                 {
