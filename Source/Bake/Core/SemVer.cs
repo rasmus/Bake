@@ -81,6 +81,8 @@ namespace Bake.Core
         public string Meta { get; }
         public Version LegacyVersion { get; }
 
+        private readonly Lazy<string> _lazyString;
+
         private SemVer(
             int major,
             int minor,
@@ -92,13 +94,15 @@ namespace Bake.Core
             Patch = patch;
             Meta = (meta ?? string.Empty).Trim('-');
             LegacyVersion = new Version(major, minor, patch);
+
+            _lazyString = new Lazy<string>(() => string.IsNullOrEmpty(Meta)
+                ? $"{Major}.{Minor}.{Patch}"
+                : $"{Major}.{Minor}.{Patch}-{Meta}");
         }
 
         public override string ToString()
         {
-            return string.IsNullOrEmpty(Meta)
-                ? $"{Major}.{Minor}.{Patch}"
-                : $"{Major}.{Minor}.{Patch}-{Meta}";
+            return _lazyString.Value;
         }
 
         public int CompareTo(object? obj)
@@ -116,14 +120,19 @@ namespace Bake.Core
             if (minorComparison != 0) return minorComparison;
             var patchComparison = Patch.CompareTo(other.Patch);
             if (patchComparison != 0) return patchComparison;
-            return string.Compare(Meta, other.Meta, StringComparison.Ordinal);
+            return string.Compare(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
         }
 
         public bool Equals(SemVer other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Meta == other.Meta;
+
+            return
+                Major == other.Major &&
+                Minor == other.Minor &&
+                Patch == other.Patch &&
+                string.Equals(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
