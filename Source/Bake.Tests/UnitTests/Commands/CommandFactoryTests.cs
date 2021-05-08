@@ -1,6 +1,4 @@
-﻿using System.CommandLine;
-using System.CommandLine.Parsing;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Core;
@@ -37,10 +35,10 @@ namespace Bake.Tests.UnitTests.Commands
         public async Task TestCreation()
         {
             // Act
-            var parser = Sut.Create(new[] {typeof(CommandA)});
+            var app = Sut.Create(new[] {typeof(CommandA)});
 
             // Assert
-            var result = await parser.InvokeAsync(
+            var result = await app.ExecuteAsync(
                 new[]
                 {
                     "A",

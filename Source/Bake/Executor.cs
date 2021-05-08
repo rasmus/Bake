@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Bake.Commands;
 
@@ -18,9 +17,9 @@ namespace Bake
 
         public async Task<int> ExecuteAsync(string[] args, IReadOnlyCollection<Type> commandTypes)
         {
-            var parser = _commandFactory.Create(commandTypes);
+            var app = _commandFactory.Create(commandTypes);
 
-            return await parser.InvokeAsync(args);
+            return await app.ExecuteAsync(args);
         }
     }
 }
