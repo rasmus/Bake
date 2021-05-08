@@ -16,10 +16,9 @@ namespace Bake.Tests.UnitTests.Commands
         public class CommandA : ICommand
         {
             public Task<int> ExecuteAsync(
-                string name,
-                int magicNumber,
-                SemVer version,
-                CancellationToken cancellationToken)
+                string name = "hej",
+                int magicNumber = 42,
+                CancellationToken cancellationToken = default)
             {
                 return Task.FromResult(0);
             }
@@ -38,12 +37,19 @@ namespace Bake.Tests.UnitTests.Commands
             var app = Sut.Create(new[] {typeof(CommandA)});
 
             // Assert
+            /*
+            await app.ExecuteAsync(
+                new[]
+                {
+                    "A", "--help"
+                },
+                CancellationToken.None);*/
             var result = await app.ExecuteAsync(
                 new[]
                 {
                     "A",
-                    "--name", "magic",
-                    "--magic-number", "42"
+                    "--name=magic",
+                    "--magic-number=42"
                 });
 
             // Assert

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
 using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Commands
@@ -31,6 +35,22 @@ namespace Bake.Commands
         public CommandLineApplication Create(IEnumerable<Type> types)
         {
             var app = new CommandLineApplication();
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(SemVer),
+                (argName, value, _) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    if (!SemVer.TryParse(value, out var version))
+                    {
+                        throw new FormatException($"Invalid SemVer value for {argName}");
+                    }
+
+                    return version;
+                }));
 
             app.HelpOption(true);
 
@@ -64,13 +84,14 @@ namespace Bake.Commands
 
                 var methodInfo = methodInfos.Single();
 
-
                 app.Command(verb, cmd =>
                 {
+                    var options = new List<(CommandOption, Type)>();
                     foreach (var parameterInfo in methodInfo.GetParameters())
                     {
                         if (parameterInfo.ParameterType == cancellationTokenType)
                         {
+                            options.Add((null, cancellationTokenType));
                             continue;
                         }
 
@@ -97,18 +118,39 @@ namespace Bake.Commands
                                 ? CommandOptionType.SingleOrNoValue
                                 : CommandOptionType.SingleValue);
                         option.DefaultValue = defaultValue;
+                        
+                        options.Add((option, parameterInfo.ParameterType));
                     }
 
                     cmd.OnExecuteAsync(c =>
                     {
-                        return Task.FromResult(0);
+                        var command = _serviceProvider.GetRequiredService(type);
+
+                        var values = options
+                            .Select(t => t.Item2 == cancellationTokenType
+                                ? c
+                                : Parse(t.Item1, app.ValueParsers.GetParser(t.Item2)))
+                            .ToArray();
+
+                        return (Task<int>) methodInfo.Invoke(
+                            command,
+                            values);
                     });
                 });
-
-
             }
 
             return app;
+        }
+
+        private static object Parse(
+            CommandOption option,
+            IValueParser valueParser)
+        {
+            var stringValue = option.Values.FirstOrDefault() ?? string.Empty;
+            return valueParser.Parse(
+                option.ShortName ?? option.LongName,
+                stringValue,
+                CultureInfo.InvariantCulture);
         }
     }
 }
