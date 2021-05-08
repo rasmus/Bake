@@ -3,10 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace Bake.Core
 {
-    public class SemVer
+    public class SemVer : IComparable<SemVer>, IEquatable<SemVer>, IComparable
     {
         private static readonly Regex VersionParser = new Regex(
-            @"^(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d)){0,1}(\-(?<meta>[a-z0-9\-_]+)){0,1}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            @"^(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d)){0,1}(\-(?<meta>[a-z0-9\-_]+)){0,1}$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private static readonly Random R = new Random();
 
@@ -98,6 +99,44 @@ namespace Bake.Core
             return string.IsNullOrEmpty(Meta)
                 ? $"{Major}.{Minor}.{Patch}"
                 : $"{Major}.{Minor}.{Patch}-{Meta}";
+        }
+
+        public int CompareTo(object? obj)
+        {
+            return CompareTo(obj as SemVer);
+        }
+
+        public int CompareTo(SemVer other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var majorComparison = Major.CompareTo(other.Major);
+            if (majorComparison != 0) return majorComparison;
+            var minorComparison = Minor.CompareTo(other.Minor);
+            if (minorComparison != 0) return minorComparison;
+            var patchComparison = Patch.CompareTo(other.Patch);
+            if (patchComparison != 0) return patchComparison;
+            return string.Compare(Meta, other.Meta, StringComparison.Ordinal);
+        }
+
+        public bool Equals(SemVer other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Major == other.Major && Minor == other.Minor && Patch == other.Patch && Meta == other.Meta;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((SemVer) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Major, Minor, Patch, Meta);
         }
     }
 }

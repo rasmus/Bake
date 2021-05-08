@@ -1,5 +1,5 @@
 
-# Version 1.0-alpha (not released yet)
+# Version 1.2 (not released yet)
 
 - Awesome new features
 - Fixed all the bugs

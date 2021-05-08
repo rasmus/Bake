@@ -21,13 +21,15 @@ namespace Bake.Commands.Run
             _kitchen = kitchen;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public async Task<int> ExecuteAsync(
             SemVer buildVersion,
-            int retry,
             CancellationToken cancellationToken)
         {
             var content = new Context(
-                Ingredients.New(Directory.GetCurrentDirectory()));
+                Ingredients.New(
+                    buildVersion,
+                    Directory.GetCurrentDirectory()));
 
             var book = await _editor.ComposeAsync(
                 content,

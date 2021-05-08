@@ -7,8 +7,9 @@ namespace Bake.ValueObjects
     public class Ingredients
     {
         public static Ingredients New(
+            SemVer version,
             string workingDirectory) => new Ingredients(
-            SemVer.With(0, 1),
+            version,
             new Credentials(),
             workingDirectory);
 

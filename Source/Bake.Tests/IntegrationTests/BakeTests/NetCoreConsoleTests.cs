@@ -17,7 +17,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--retry", "42",
                 "--build-version", "1.2.3");
 
             // Assert

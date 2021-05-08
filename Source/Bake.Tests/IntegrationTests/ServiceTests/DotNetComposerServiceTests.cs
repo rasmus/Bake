@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Composers;
+using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
@@ -21,7 +22,9 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
             // Act
             var recipes = await Sut.ComposeAsync(
                 new Context(
-                    Ingredients.New(WorkingDirectory)), 
+                    Ingredients.New(
+                        SemVer.With(1,2,3),
+                        WorkingDirectory)), 
                 CancellationToken.None);
         }
 

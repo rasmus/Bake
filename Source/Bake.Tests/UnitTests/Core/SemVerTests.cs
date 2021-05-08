@@ -1,4 +1,5 @@
-﻿using Bake.Core;
+﻿using System.Linq;
+using Bake.Core;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -33,6 +34,29 @@ namespace Bake.Tests.UnitTests.Core
             version.Minor.Should().Be(expectedMinor);
             version.Patch.Should().Be(expectedPatch);
             version.Meta.Should().Be(expectedMeta ?? string.Empty);
+        }
+
+        [TestCase(
+            "1.0.0 1.1.0 1.1.1",
+            "1.1.1",
+            "1.0.0",
+            "1.1.0")]
+        [TestCase(
+            "0.0.1 0.1.0 1.0.0",
+            "1.0.0",
+            "0.0.1",
+            "0.1.0")]
+        public void Compare(
+            string expectedSorting,
+            params string[] versions)
+        {
+            // Act
+            var list = versions
+                .Select(SemVer.Parse)
+                .OrderBy(v => v);
+
+            // Assert
+            string.Join(" ", list.Select(v => v.ToString())).Should().Be(expectedSorting);
         }
     }
 }

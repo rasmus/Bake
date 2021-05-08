@@ -14,6 +14,7 @@ namespace Bake.Tests.UnitTests.Commands
         [CommandVerb("A")]
         public class CommandA : ICommand
         {
+            // ReSharper disable once UnusedMember.Global
             public Task<int> ExecuteAsync(
                 string name = "hej",
                 int magicNumber = 42,
