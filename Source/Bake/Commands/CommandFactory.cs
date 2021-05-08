@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
+using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -30,20 +32,41 @@ namespace Bake.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public RootCommand Create(IEnumerable<Type> types)
+        public CommandLineApplication Create(IEnumerable<Type> types)
         {
+            var app = new CommandLineApplication();
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(SemVer),
+                (argName, value, _) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    if (!SemVer.TryParse(value, out var version))
+                    {
+                        throw new FormatException($"Invalid SemVer value for {argName}");
+                    }
+
+                    return version;
+                }));
+
+            app.HelpOption(true);
+            app.VersionOption(
+                "-v|--version",
+                GetVersion,
+                GetVersion);
+
             var commandType = typeof(ICommand);
             var cancellationTokenType = typeof(CancellationToken);
-            var rootCommand = new RootCommand
-                {
-                    TreatUnmatchedTokensAsErrors = true,
-                };
 
             foreach (var type in types)
             {
                 if (!commandType.IsAssignableFrom(type))
                 {
-                    throw new ArgumentException($"Type '{type.PrettyPrint()}' is not of type '{commandType.PrettyPrint()}'");
+                    throw new ArgumentException(
+                        $"Type '{type.PrettyPrint()}' is not of type '{commandType.PrettyPrint()}'");
                 }
 
                 var verb = type.GetCustomAttribute<CommandVerbAttribute>()?.Name;
@@ -59,62 +82,84 @@ namespace Bake.Commands
 
                 if (methodInfos.Count != 1)
                 {
-                    throw new ArgumentException($"Type '{type.PrettyPrint()}' does not have exactly one '{MethodName}' method");
+                    throw new ArgumentException(
+                        $"Type '{type.PrettyPrint()}' does not have exactly one '{MethodName}' method");
                 }
 
                 var methodInfo = methodInfos.Single();
 
-                var command = new Command(verb);
-                foreach (var parameterInfo in methodInfo.GetParameters())
+                app.Command(verb, cmd =>
                 {
-                    if (parameterInfo.ParameterType == cancellationTokenType)
+                    var options = new List<(CommandOption, Type)>();
+                    foreach (var parameterInfo in methodInfo.GetParameters())
                     {
-                        continue;
+                        if (parameterInfo.ParameterType == cancellationTokenType)
+                        {
+                            options.Add((null, cancellationTokenType));
+                            continue;
+                        }
+
+                        var argumentAttribute = parameterInfo.GetCustomAttribute<ArgumentAttribute>();
+                        var argumentName = UpperReplacer.Replace(parameterInfo.Name, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
+
+                        string defaultValue = null;
+                        if (parameterInfo.HasDefaultValue)
+                        {
+                            if (parameterInfo.DefaultValue != null)
+                            {
+                                defaultValue = parameterInfo.DefaultValue?.ToString();
+                            }
+                            else if (parameterInfo.ParameterType == typeof(bool))
+                            {
+                                defaultValue = "false";
+                            }
+                        }
+
+                        var option = cmd.Option(
+                            $"--{argumentName} <{parameterInfo.Name.ToUpperInvariant()}>",
+                            argumentAttribute?.Description ?? string.Empty,
+                            parameterInfo.HasDefaultValue
+                                ? CommandOptionType.SingleOrNoValue
+                                : CommandOptionType.SingleValue);
+                        option.DefaultValue = defaultValue;
+                        
+                        options.Add((option, parameterInfo.ParameterType));
                     }
 
-                    var argumentAttribute = parameterInfo.GetCustomAttribute<ArgumentAttribute>();
-
-                    var argumentName = UpperReplacer.Replace(parameterInfo.Name, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
-                    var argument = new Argument
-                        {
-                            ArgumentType = parameterInfo.ParameterType,
-                            Arity = ArgumentArity.ExactlyOne,
-                            Name = parameterInfo.Name,
-                        };
-
-                    if (parameterInfo.HasDefaultValue)
+                    cmd.OnExecuteAsync(c =>
                     {
-                        if (parameterInfo.DefaultValue != null)
-                        {
-                            argument.SetDefaultValue(parameterInfo.DefaultValue);
-                        }
-                        else if (parameterInfo.ParameterType == typeof(bool))
-                        {
-                            argument.SetDefaultValueFactory(() => false);
-                        }
-                    }
+                        var command = _serviceProvider.GetRequiredService(type);
 
-                    var option = new Option($"--{argumentName}")
-                        {
-                            Argument = argument,
-                            Description = argumentAttribute?.Description,
-                            IsRequired = !parameterInfo.HasDefaultValue,
-                        };
+                        var values = options
+                            .Select(t => t.Item2 == cancellationTokenType
+                                ? c
+                                : Parse(t.Item1, app.ValueParsers.GetParser(t.Item2)))
+                            .ToArray();
 
-                    command.AddOption(option);
-                }
-
-                _logger.LogTrace(
-                    "Adding command {} with arguments {Arguments}",
-                    verb,
-                    command.Options.Select(o => $"{o.Name} (isRequired:{o.IsRequired})"));
-
-                command.Handler = CommandHandler.Create(methodInfo, _serviceProvider.GetRequiredService(type));
-
-                rootCommand.AddCommand(command);
+                        return (Task<int>) methodInfo.Invoke(
+                            command,
+                            values);
+                    });
+                });
             }
 
-            return rootCommand;
+            return app;
+        }
+
+        private static string GetVersion()
+        {
+            return typeof(CommandFactory).Assembly.GetName().Version.ToString();
+        }
+
+        private static object Parse(
+            CommandOption option,
+            IValueParser valueParser)
+        {
+            var stringValue = option.Values.FirstOrDefault() ?? string.Empty;
+            return valueParser.Parse(
+                option.ShortName ?? option.LongName,
+                stringValue,
+                CultureInfo.InvariantCulture);
         }
     }
 }

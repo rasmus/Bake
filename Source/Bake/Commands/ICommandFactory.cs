@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.CommandLine;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace Bake.Commands
 {
     public interface ICommandFactory
     {
-        RootCommand Create(IEnumerable<Type> types);
+        CommandLineApplication Create(IEnumerable<Type> types);
     }
 }

@@ -17,7 +17,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--retry", "42");
+                "--retry", "42",
+                "--build-version", "1.2.3");
 
             // Assert
             returnCode.Should().Be(0);
@@ -27,6 +28,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [TestCase("-?")]
         [TestCase("--help")]
         [TestCase("--version")]
+        [TestCase("-v")]
         public async Task BasicArgsTest(params string[] args)
         {
             // Act
