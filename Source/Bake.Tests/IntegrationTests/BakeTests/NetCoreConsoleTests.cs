@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -21,6 +23,31 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+        }
+
+        [Test]
+        public async Task PlanThenApply()
+        {
+            // Act - plan
+            var planPath = Path.Combine(WorkingDirectory, "plan.bake");
+            var returnCode = await ExecuteAsync(
+                "plan",
+                "--build-version", "1.2.3",
+                "--plan-path", $"\"{planPath}\"");
+
+            // Assert - plan
+            returnCode.Should().Be(0);
+            Console.WriteLine(await File.ReadAllTextAsync(planPath));
+
+            /*
+            // Act - apply
+            returnCode = await ExecuteAsync(
+                "apply",
+                "--plan-path", $"\"{planPath}\"");
+
+            // Assert - apply
+            returnCode.Should().Be(0);
+            */
         }
 
         [TestCase("-h")]

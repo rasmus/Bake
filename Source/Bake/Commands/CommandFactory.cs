@@ -126,7 +126,7 @@ namespace Bake.Commands
                         options.Add((option, parameterInfo.ParameterType));
                     }
 
-                    cmd.OnExecuteAsync(c =>
+                    cmd.OnExecuteAsync(async c =>
                     {
                         var command = _serviceProvider.GetRequiredService(type);
 
@@ -136,9 +136,20 @@ namespace Bake.Commands
                                 : Parse(t.Item1, app.ValueParsers.GetParser(t.Item2)))
                             .ToArray();
 
-                        return (Task<int>) methodInfo.Invoke(
-                            command,
-                            values);
+                        var task = (Task<int>) methodInfo.Invoke(command, values);
+
+                        try
+                        {
+                            return await task;
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogCritical(
+                                e,
+                                "Unexpected exception while executing command {CommandType}",
+                                commandType.PrettyPrint());
+                            return ExitCodes.Core.UnexpectedError;
+                        }
                     });
                 });
             }
@@ -155,7 +166,7 @@ namespace Bake.Commands
             CommandOption option,
             IValueParser valueParser)
         {
-            var stringValue = option.Values.FirstOrDefault() ?? string.Empty;
+            var stringValue = (option.Values.FirstOrDefault() ?? string.Empty).Trim('"');
             return valueParser.Parse(
                 option.ShortName ?? option.LongName,
                 stringValue,

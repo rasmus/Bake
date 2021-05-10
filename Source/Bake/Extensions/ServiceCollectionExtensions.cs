@@ -1,11 +1,13 @@
 ﻿using Bake.Commands;
-using Bake.Commands.Init;
+using Bake.Commands.Apply;
+using Bake.Commands.Plan;
 using Bake.Commands.Run;
 using Bake.Cooking;
 using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Cooking.Ingredients.Gathers;
+using Bake.Core;
 using Bake.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +27,7 @@ namespace Bake.Extensions
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
+                .AddSingleton<IYaml, Yaml>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -45,8 +48,10 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetNuGetPushCook>()
 
                 // Commands
-                .AddTransient<InitCommand>()
-                .AddTransient<RunCommand>();
+                .AddTransient<ApplyCommand>()
+                .AddTransient<PlanCommand>()
+                .AddTransient<RunCommand>()
+                ;
 
             return serviceCollection;
         }

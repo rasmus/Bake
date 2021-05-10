@@ -22,12 +22,10 @@ namespace Bake
                 .Select(d => d.ImplementationType)
                 .ToList();
 
-            int returnCode;
-            using (var serviceProvider = serviceCollection.BuildServiceProvider(true))
-            {
-                var executor = serviceProvider.GetRequiredService<IExecutor>();
-                returnCode = await executor.ExecuteAsync(args, commandTypes);
-            }
+            await using var serviceProvider = serviceCollection.BuildServiceProvider(true);
+
+            var executor = serviceProvider.GetRequiredService<IExecutor>();
+            var returnCode = await executor.ExecuteAsync(args, commandTypes);
 
             return returnCode;
         }

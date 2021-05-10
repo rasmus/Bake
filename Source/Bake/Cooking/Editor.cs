@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
-using Bake.Core;
 using Bake.ValueObjects;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Bake.Cooking
 {
@@ -41,15 +37,6 @@ namespace Bake.Cooking
             var book = new Book(
                 context.Ingredients,
                 recipes);
-
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .WithTypeConverter(new SemVerYamlTypeConverter())
-                .Build();
-
-            var yaml = serializer.Serialize(book);
-
-            Console.WriteLine(yaml);
 
             return book;
         }
