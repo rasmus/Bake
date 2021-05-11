@@ -126,8 +126,21 @@ namespace Bake.Cooking.Composers
             {
                 yield return new DotNetNuGetPushRecipe(
                     Path.Combine(visualStudioProject.Directory, "bin", configuration, $"{visualStudioProject.Name}.{ingredients.Version}.nupkg"),
-                    "1234567890",
-                    "https://api.nuget.org/v3/index.json");
+                    "acd0b30512ac4fa39f62eb7a61fcf56c",
+                    "http://localhost:5555/v3/index.json"
+                    //"https://api.nuget.org/v3/index.json"
+                    );
+            }
+
+            foreach (var visualStudioProject in visualStudioSolution.Projects
+                .Where(p => p.CsProj.PackAsTool))
+            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            {
+                yield return new DotNetPublishRecipe(
+                    visualStudioProject.Path,
+                    true,
+                    true,
+                    runtime);
             }
         }
     }

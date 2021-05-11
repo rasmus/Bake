@@ -1,0 +1,7 @@
+services:
+  baget:
+    image: loicsharma/baget
+    environment:
+    - ApiKey=acd0b30512ac4fa39f62eb7a61fcf56c
+    ports:
+    - 5555:80

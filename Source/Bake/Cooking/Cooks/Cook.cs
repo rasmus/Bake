@@ -9,7 +9,7 @@ namespace Bake.Cooking.Cooks
     public abstract class Cook<T> : ICook
         where T : Recipe
     {
-        public abstract string Name { get; }
+        public abstract string RecipeName { get; }
         public Type CanCook { get; } = typeof(T);
 
         public Task<bool> CookAsync(

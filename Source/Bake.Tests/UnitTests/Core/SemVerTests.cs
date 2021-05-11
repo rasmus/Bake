@@ -19,6 +19,12 @@ namespace Bake.Tests.UnitTests.Core
             2,
             3,
             "meta")]
+        [TestCase(
+            "321.231.132-magic",
+            321,
+            231,
+            132,
+            "magic")]
         public void ValidVersions(
             string str,
             int expectedMajor,

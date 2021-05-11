@@ -6,28 +6,29 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
-    public class DotNetCleanCook : Cook<DotNetCleanSolutionRecipe>
+    public class DotNetPublishCook : Cook<DotNetPublishRecipe>
     {
-        public override string RecipeName => RecipeNames.DotNet.Clean;
-
         private readonly IDotNet _dotNet;
+        public override string RecipeName => RecipeNames.DotNet.Publish;
 
-        public DotNetCleanCook(
+        public DotNetPublishCook(
             IDotNet dotNet)
         {
             _dotNet = dotNet;
         }
 
-        protected override async Task<bool> CookAsync(
+        protected override Task<bool> CookAsync(
             IContext context,
-            DotNetCleanSolutionRecipe recipe,
+            DotNetPublishRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new DotNetCleanArgument(
+            var argument = new DotNetPublishArgument(
                 recipe.Path,
-                recipe.Configuration);
+                recipe.PublishSingleFile,
+                recipe.SelfContained,
+                recipe.Runtime);
 
-            return await _dotNet.CleanAsync(
+            return _dotNet.PublishAsync(
                 argument,
                 cancellationToken);
         }

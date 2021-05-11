@@ -8,7 +8,7 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetPackCook : Cook<DotNetPackProjectRecipe>
     {
-        public override string Name => RecipeNames.DotNet.Pack;
+        public override string RecipeName => RecipeNames.DotNet.Pack;
 
         private readonly IDotNet _dotNet;
 
