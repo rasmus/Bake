@@ -30,22 +30,26 @@ namespace Bake.Tests.Helpers
     {
         public static string GetRoot()
         {
-            var codeBase = new Uri(typeof(ProjectHelper).Assembly.CodeBase).AbsolutePath;
-            var path = Path.GetDirectoryName(codeBase);
+            var uri = new Uri(typeof(LicenseHeader).Assembly.CodeBase);
+            var directory = Path.GetDirectoryName(uri.LocalPath);
 
-            while (!string.IsNullOrEmpty(path))
+            while (true)
             {
-                var hasReadme = Directory.GetFiles(path)
-                    .Any(f => string.Equals(Path.GetFileName(f), "README.md", StringComparison.OrdinalIgnoreCase));
-                if (hasReadme)
+                if (string.IsNullOrEmpty(directory))
                 {
-                    return path;
+                    throw new Exception($"Could not find repository root from '{typeof(LicenseHeader).Assembly.CodeBase}'");
                 }
 
-                path = new DirectoryInfo(path).Parent?.FullName;
-            }
+                var isRepositoryRoot = Directory.GetFiles(directory)
+                    .Select(Path.GetFileName)
+                    .Any(f => string.Equals(f, "README.md"));
+                if (isRepositoryRoot)
+                {
+                    return directory;
+                }
 
-            throw new InvalidOperationException($"Could find project from '{codeBase}'");
+                directory = Path.GetDirectoryName(directory);
+            }
         }
     }
 }

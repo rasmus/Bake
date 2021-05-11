@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,8 +44,11 @@ namespace Bake.Tests
             var currentHeader = await ReadEmbeddedAsync("license.txt");
 
             // Act
+            var files = Directory.GetFiles(
+                ProjectHelper.GetRoot(),
+                "*.cs",
+                SearchOption.AllDirectories);
 
-            var files = GetFiles().ToList();
             await Task.WhenAll(files.Select(f => UpdateHeaderAsync(f, currentHeader, CancellationToken.None)));
         }
 
@@ -74,35 +75,6 @@ namespace Bake.Tests
             }
 
             await File.WriteAllTextAsync(path, content, cancellationToken);
-        }
-
-        private static IEnumerable<string> GetFiles()
-        {
-            var uri = new Uri(typeof(LicenseHeader).Assembly.CodeBase);
-            var directory = Path.GetDirectoryName(uri.LocalPath);
-
-            while (true)
-            {
-                if (string.IsNullOrEmpty(directory))
-                {
-                    throw new Exception("Could not find repository root");
-                }
-
-                var isRepositoryRoot = Directory.GetFiles(directory)
-                    .Select(Path.GetFileName)
-                    .Any(f => string.Equals(f, "README.md"));
-                if (isRepositoryRoot)
-                {
-                    break;
-                }
-
-                directory = Path.GetDirectoryName(directory);
-            }
-
-            return Directory.GetFiles(
-                directory,
-                "*.cs",
-                SearchOption.AllDirectories);
         }
     }
 }
