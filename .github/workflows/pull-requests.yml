@@ -7,6 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
+
+  container-job:
+    runs-on: ubuntu-latest
+    services:
+      baget:
+        image: loicsharma/baget
+        env:
+          ApiKey=acd0b30512ac4fa39f62eb7a61fcf56c
+        ports:
+        - 5555:80
+
   build:
 
     runs-on: ubuntu-latest
