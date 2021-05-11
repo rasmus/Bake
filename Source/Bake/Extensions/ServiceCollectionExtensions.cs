@@ -80,7 +80,3 @@ namespace Bake.Extensions
         }
     }
 }
-
-
-
-

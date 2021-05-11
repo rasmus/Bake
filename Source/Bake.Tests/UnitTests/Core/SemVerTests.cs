@@ -88,7 +88,3 @@ namespace Bake.Tests.UnitTests.Core
         }
     }
 }
-
-
-
-

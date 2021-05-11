@@ -36,6 +36,3 @@ namespace Bake.Tests.Helpers
         }
     }
 }
-
-
-

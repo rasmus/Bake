@@ -106,7 +106,3 @@ namespace Bake.Cooking
         }
     }
 }
-
-
-
-

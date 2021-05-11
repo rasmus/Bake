@@ -86,7 +86,3 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
     }
 }
-
-
-
-

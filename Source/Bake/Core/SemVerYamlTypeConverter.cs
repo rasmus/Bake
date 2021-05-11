@@ -49,7 +49,3 @@ namespace Bake.Core
         }
     }
 }
-
-
-
-

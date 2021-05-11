@@ -68,7 +68,3 @@ namespace Bake.ValueObjects.Recipes.DotNet
         }
     }
 }
-
-
-
-

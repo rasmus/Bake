@@ -35,7 +35,3 @@ namespace Bake
         }
     }
 }
-
-
-
-

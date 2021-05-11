@@ -42,7 +42,3 @@ namespace Bake.ValueObjects
         }
     }
 }
-
-
-
-

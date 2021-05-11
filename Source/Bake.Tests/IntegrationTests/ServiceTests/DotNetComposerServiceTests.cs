@@ -57,7 +57,3 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         }
     }
 }
-
-
-
-

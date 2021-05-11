@@ -31,7 +31,3 @@ namespace Bake.Services.DotNetArgumentBuilders
         }
     }
 }
-
-
-
-

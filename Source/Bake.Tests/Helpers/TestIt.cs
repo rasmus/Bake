@@ -115,7 +115,3 @@ namespace Bake.Tests.Helpers
         }
     }
 }
-
-
-
-

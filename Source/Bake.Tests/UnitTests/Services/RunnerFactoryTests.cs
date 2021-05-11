@@ -77,7 +77,3 @@ namespace Bake.Tests.UnitTests.Services
         }
     }
 }
-
-
-
-

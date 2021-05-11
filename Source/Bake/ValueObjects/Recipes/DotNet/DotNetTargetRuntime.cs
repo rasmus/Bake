@@ -29,7 +29,3 @@ namespace Bake.ValueObjects.Recipes.DotNet
         Windows64
     }
 }
-
-
-
-

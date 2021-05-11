@@ -31,7 +31,3 @@ namespace Bake
         Task<int> ExecuteAsync(string[] args, IReadOnlyCollection<Type> commandTypes);
     }
 }
-
-
-
-

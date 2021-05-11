@@ -72,7 +72,3 @@ namespace Bake.Tests.UnitTests.Commands
         }
     }
 }
-
-
-
-

@@ -62,7 +62,3 @@ namespace Bake.Core
         }
     }
 }
-
-
-
-

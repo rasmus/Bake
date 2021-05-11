@@ -32,7 +32,3 @@ namespace Bake.Cooking.Ingredients.Gathers
             CancellationToken cancellationToken);
     }
 }
-
-
-
-

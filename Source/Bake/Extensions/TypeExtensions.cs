@@ -68,7 +68,3 @@ namespace Bake.Extensions
         }
     }
 }
-
-
-
-

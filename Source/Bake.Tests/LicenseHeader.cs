@@ -57,16 +57,19 @@ namespace Bake.Tests
             CancellationToken cancellationToken)
         {
             var content = await File.ReadAllTextAsync(path, cancellationToken);
+            content = content.Trim();
 
             if (LicenseHeaderFinder.IsMatch(content))
             {
-                content = LicenseHeaderFinder.Replace(content, licenseHeader);
+                content = new StringBuilder()
+                    .AppendLine(LicenseHeaderFinder.Replace(content, licenseHeader))
+                    .ToString();
             }
             else
             {
                 content = new StringBuilder()
                     .Append(licenseHeader)
-                    .AppendLine(content.Trim())
+                    .AppendLine(content)
                     .ToString();
             }
 

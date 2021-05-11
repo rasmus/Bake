@@ -55,7 +55,3 @@ namespace Bake.Cooking.Cooks.DotNet
         }
     }
 }
-
-
-
-

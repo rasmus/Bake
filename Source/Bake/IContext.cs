@@ -29,7 +29,3 @@ namespace Bake
         Ingredients Ingredients { get; }
     }
 }
-
-
-
-

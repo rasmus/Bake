@@ -30,7 +30,3 @@ namespace NetCore.Console
         }
     }
 }
-
-
-
-

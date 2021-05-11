@@ -120,7 +120,3 @@ namespace Bake.Cooking.Ingredients.Gathers
         }
     }
 }
-
-
-
-

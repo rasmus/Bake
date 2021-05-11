@@ -173,7 +173,3 @@ namespace Bake.Core
         }
     }
 }
-
-
-
-

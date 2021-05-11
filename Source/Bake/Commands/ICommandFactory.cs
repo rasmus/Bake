@@ -31,7 +31,3 @@ namespace Bake.Commands
         CommandLineApplication Create(IEnumerable<Type> types);
     }
 }
-
-
-
-

@@ -60,7 +60,3 @@ namespace Bake.Cooking.Cooks
             CancellationToken cancellationToken);
     }
 }
-
-
-
-

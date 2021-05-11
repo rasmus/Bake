@@ -85,7 +85,3 @@ namespace Bake.Commands.Apply
         }
     }
 }
-
-
-
-

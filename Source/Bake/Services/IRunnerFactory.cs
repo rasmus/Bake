@@ -30,7 +30,3 @@ namespace Bake.Services
             params string[] arguments);
     }
 }
-
-
-
-

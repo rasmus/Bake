@@ -34,7 +34,3 @@ namespace Bake.Cooking
             CancellationToken cancellationToken);
     }
 }
-
-
-
-
