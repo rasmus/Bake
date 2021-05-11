@@ -30,7 +30,7 @@ namespace Bake.Core
         {
             return new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console()
+                .WriteTo.Sink(new LogSink())
                 .CreateLogger();
         }
     }

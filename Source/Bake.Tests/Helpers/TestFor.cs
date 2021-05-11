@@ -22,6 +22,7 @@
 
 using System;
 using AutoFixture;
+using Bake.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -43,7 +44,7 @@ namespace Bake.Tests.Helpers
             _lazySut = new Lazy<T>(CreateSut);
             _logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console()
+                .WriteTo.Sink(new LogSink())
                 .CreateLogger();
             _serviceProvider = Configure(new ServiceCollection())
                 .AddLogging(b => b.AddSerilog(_logger))
