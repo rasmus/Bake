@@ -7,7 +7,7 @@ namespace Bake.Cooking.Cooks
 {
     public interface ICook
     {
-        string Name { get; }
+        string RecipeName { get; }
 
         Type CanCook { get; }
 

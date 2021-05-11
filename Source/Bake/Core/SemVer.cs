@@ -12,10 +12,12 @@ namespace Bake.Core
         private static readonly Random R = new Random();
 
         public static SemVer Random => new SemVer(
-            R.Next(10, 100),
-            R.Next(10, 100),
-            R.Next(10, 100),
-            "meta");
+            R.Next(1000, 10000),
+            R.Next(1000, 10000),
+            R.Next(1000, 10000),
+            R.Next(0, 2) == 0
+                ? string.Empty
+                : "meta");
 
         public static SemVer Parse(string str)
         {

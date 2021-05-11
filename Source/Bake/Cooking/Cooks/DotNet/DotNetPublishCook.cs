@@ -9,7 +9,7 @@ namespace Bake.Cooking.Cooks.DotNet
     public class DotNetPublishCook : Cook<DotNetPublishRecipe>
     {
         private readonly IDotNet _dotNet;
-        public override string Name => RecipeNames.DotNet.Publish;
+        public override string RecipeName => RecipeNames.DotNet.Publish;
 
         public DotNetPublishCook(
             IDotNet dotNet)

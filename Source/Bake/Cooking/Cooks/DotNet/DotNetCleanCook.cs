@@ -8,7 +8,7 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetCleanCook : Cook<DotNetCleanSolutionRecipe>
     {
-        public override string Name => RecipeNames.DotNet.Clean;
+        public override string RecipeName => RecipeNames.DotNet.Clean;
 
         private readonly IDotNet _dotNet;
 

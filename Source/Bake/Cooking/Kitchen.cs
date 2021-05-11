@@ -44,7 +44,7 @@ namespace Bake.Cooking
                     throw new Exception($"Don't know how to cook {recipeType.PrettyPrint()}");
                 }
 
-                _logger.LogInformation("Starting cook {CookName}", cook.Name);
+                _logger.LogInformation("Starting cook {CookName}", cook.RecipeName);
 
                 var stopwatch = Stopwatch.StartNew();
                 var success = await cook.CookAsync(
@@ -53,7 +53,7 @@ namespace Bake.Cooking
                     cancellationToken);
 
                 cookResults.Add(new CookResult(
-                    cook.Name,
+                    cook.RecipeName,
                     stopwatch.Elapsed,
                     success));
 

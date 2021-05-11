@@ -10,7 +10,7 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetNuGetPushCook : Cook<DotNetNuGetPushRecipe>
     {
-        public override string Name => RecipeNames.DotNet.NuGetPush;
+        public override string RecipeName => RecipeNames.DotNet.NuGetPush;
 
         private readonly ILogger<DotNetNuGetPushCook> _logger;
         private readonly IDotNet _dotNet;

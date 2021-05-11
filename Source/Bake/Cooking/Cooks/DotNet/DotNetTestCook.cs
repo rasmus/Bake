@@ -8,7 +8,7 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetTestCook : Cook<DotNetTestSolutionRecipe>
     {
-        public override string Name => RecipeNames.DotNet.Test;
+        public override string RecipeName => RecipeNames.DotNet.Test;
 
         private readonly IDotNet _dotNet;
 

@@ -8,7 +8,7 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
     {
-        public override string Name => RecipeNames.DotNet.Restore;
+        public override string RecipeName => RecipeNames.DotNet.Restore;
         
         private readonly IDotNet _dotNet;
 
