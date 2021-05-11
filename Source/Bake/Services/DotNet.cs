@@ -167,7 +167,7 @@ namespace Bake.Services
             return result == 0;
         }
 
-        public Task<bool> NuGetPushAsync(
+        public async Task<bool> NuGetPushAsync(
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken)
         {
@@ -179,11 +179,14 @@ namespace Bake.Services
                     "--source", argument.Source,
                 };
 
-            // TODO: Actually invoke it
+            var buildRunner = _runnerFactory.CreateRunner(
+                "dotnet",
+                argument.WorkingDirectory,
+                arguments);
 
-            Console.WriteLine($"dotnet {string.Join(" ", arguments)}");
+            var result = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return Task.FromResult(true);
+            return result == 0;
         }
 
         private static void AddIf(bool predicate, List<string> arguments, params string[] args)
