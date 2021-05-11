@@ -46,6 +46,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetTestCook>()
                 .AddTransient<ICook, DotNetPackCook>()
                 .AddTransient<ICook, DotNetNuGetPushCook>()
+                .AddTransient<ICook, DotNetPublishCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

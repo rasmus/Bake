@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.Services.DotNetArgumentBuilders;
+using Bake.ValueObjects.Recipes.DotNet;
 
 // ReSharper disable StringLiteralTypo
 
@@ -12,6 +12,12 @@ namespace Bake.Services
 {
     public class DotNet : IDotNet
     {
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, string> RuntimeMap = new Dictionary<DotNetTargetRuntime, string>
+            {
+                [DotNetTargetRuntime.Linux64] = "linux-x64",
+                [DotNetTargetRuntime.Windows64] = "win-x64",
+            };
+
         private readonly IRunnerFactory _runnerFactory;
 
         public DotNet(
@@ -179,6 +185,29 @@ namespace Bake.Services
                     "--source", argument.Source,
                 };
 
+            var buildRunner = _runnerFactory.CreateRunner(
+                "dotnet",
+                argument.WorkingDirectory,
+                arguments);
+
+            var result = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return result == 0;
+        }
+
+        public async Task<bool> PublishAsync(
+            DotNetPublishArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+                {
+                    "publish"
+                };
+
+            AddIf(argument.Runtime != DotNetTargetRuntime.NotConfigured, arguments, "--runtime", RuntimeMap[argument.Runtime]);
+            AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
+            AddIf(argument.SelfContained, arguments, "--self-contained", "true");
+            
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,

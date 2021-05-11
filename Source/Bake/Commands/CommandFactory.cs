@@ -46,7 +46,7 @@ namespace Bake.Commands
 
                     if (!SemVer.TryParse(value, out var version))
                     {
-                        throw new FormatException($"Invalid SemVer value for {argName}");
+                        throw new FormatException($"'{value}' is an invalid SemVer value for argument '{argName}'");
                     }
 
                     return version;

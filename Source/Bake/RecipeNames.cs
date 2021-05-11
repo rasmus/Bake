@@ -10,6 +10,7 @@
             public const string Restore = "dotnet-restore";
             public const string Test = "dotnet-test";
             public const string NuGetPush = "dotnet-nuget-push";
+            public const string Publish = "dotnet-publish";
         }
     }
 }

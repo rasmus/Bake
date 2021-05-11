@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -19,13 +20,13 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--build-version", "1.2.3");
+                "--build-version", SemVer.Random.ToString());
 
             // Assert
             returnCode.Should().Be(0);
         }
 
-        [Test]
+        [Test, Ignore("Deserialize does not work yet")]
         public async Task PlanThenApply()
         {
             // Act - plan
@@ -39,7 +40,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             returnCode.Should().Be(0);
             Console.WriteLine(await File.ReadAllTextAsync(planPath));
 
-            /*
             // Act - apply
             returnCode = await ExecuteAsync(
                 "apply",
@@ -47,7 +47,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert - apply
             returnCode.Should().Be(0);
-            */
         }
 
         [TestCase("-h")]

@@ -32,5 +32,9 @@ namespace Bake.Services
         Task<bool> NuGetPushAsync(
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken);
+
+        Task<bool> PublishAsync(
+            DotNetPublishArgument argument,
+            CancellationToken cancellationToken);
     }
 }

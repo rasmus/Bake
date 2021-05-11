@@ -131,6 +131,17 @@ namespace Bake.Cooking.Composers
                     //"https://api.nuget.org/v3/index.json"
                     );
             }
+
+            foreach (var visualStudioProject in visualStudioSolution.Projects
+                .Where(p => p.CsProj.PackAsTool))
+            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            {
+                yield return new DotNetPublishRecipe(
+                    visualStudioProject.Path,
+                    true,
+                    true,
+                    runtime);
+            }
         }
     }
 }
