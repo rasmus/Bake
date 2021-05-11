@@ -223,9 +223,12 @@ namespace Bake.Services
         {
             var arguments = new List<string>
                 {
-                    "publish"
+                    "publish",
+                    "--configuration", argument.Configuration,
+                    "--nologo"
                 };
 
+            AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.Runtime != DotNetTargetRuntime.NotConfigured, arguments, "--runtime", RuntimeMap[argument.Runtime]);
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");

@@ -162,6 +162,8 @@ namespace Bake.Cooking.Composers
                     visualStudioProject.Path,
                     true,
                     true,
+                    true,
+                    configuration,
                     runtime);
             }
         }

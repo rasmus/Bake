@@ -48,6 +48,8 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Path,
                 recipe.PublishSingleFile,
                 recipe.SelfContained,
+                recipe.Build,
+                recipe.Configuration,
                 recipe.Runtime);
 
             return _dotNet.PublishAsync(

@@ -35,6 +35,12 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember(Alias = "self-contained")]
         public bool SelfContained { get; }
 
+        [YamlMember(Alias = "build")]
+        public bool Build { get; }
+
+        [YamlMember(Alias = "configuration")]
+        public string Configuration { get; }
+
         [YamlMember(Alias = "runtime")]
         public DotNetTargetRuntime Runtime { get; }
 
@@ -42,12 +48,16 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string path,
             bool publishSingleFile,
             bool selfContained,
+            bool build,
+            string configuration,
             DotNetTargetRuntime runtime)
             : base(RecipeNames.DotNet.Publish)
         {
             Path = path;
             PublishSingleFile = publishSingleFile;
             SelfContained = selfContained;
+            Build = build;
+            Configuration = configuration;
             Runtime = runtime;
         }
     }

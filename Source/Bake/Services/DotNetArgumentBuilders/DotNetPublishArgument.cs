@@ -28,17 +28,23 @@ namespace Bake.Services.DotNetArgumentBuilders
     {
         public bool PublishSingleFile { get; }
         public bool SelfContained { get; }
+        public bool Build { get; }
+        public string Configuration { get; }
         public DotNetTargetRuntime Runtime { get; }
 
         public DotNetPublishArgument(
             string filePath,
             bool publishSingleFile,
             bool selfContained,
+            bool build,
+            string configuration,
             DotNetTargetRuntime runtime)
             : base(filePath)
         {
             PublishSingleFile = publishSingleFile;
             SelfContained = selfContained;
+            Build = build;
+            Configuration = configuration;
             Runtime = runtime;
         }
     }

@@ -46,6 +46,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+            AssertFileExists(
+                "bin", "Release", "netcoreapp3.1", "linux-x64", "publish", "NetCore.Console");
+            AssertFileExists(
+                "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
         }
 
         [Test, Ignore("Deserialize does not work yet")]

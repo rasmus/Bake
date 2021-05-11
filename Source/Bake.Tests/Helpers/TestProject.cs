@@ -20,9 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Bake.Tests.Helpers
@@ -66,6 +70,18 @@ namespace Bake.Tests.Helpers
             await _folder.DisposeAsync();
         }
 
+        protected void AssertFileExists(params string[] path)
+        {
+            var filePath = path.Aggregate(
+                WorkingDirectory,
+                Path.Combine);
+
+
+
+            File.Exists(filePath).Should().BeTrue(
+                $"'{Path.GetFileName(filePath)}' should be among: {Environment.NewLine}{PrettyPrintDirectory(Path.GetDirectoryName(filePath))}'");
+        }
+
         private static void DirectoryCopy(string sourceDirName, string destDirName)
         {
             var dir = new DirectoryInfo(sourceDirName);
@@ -91,6 +107,33 @@ namespace Bake.Tests.Helpers
                 var tempPath = Path.Combine(destDirName, subDirectory.Name);
                 DirectoryCopy(subDirectory.FullName, tempPath);
             }
+        }
+
+        private static string PrettyPrintDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                return $"non-existing directory: {path}";
+            }
+
+            var directoriesInDirectory = Directory.GetDirectories(path)
+                .Select(Path.GetFileName)
+                .OrderBy(n => n);
+
+            var filesInDirectory = Directory.GetFiles(Path.GetDirectoryName(path))
+                .Select(f => new
+                    {
+                        name = Path.GetFileName(f),
+                        size = new FileInfo(f).Length.BytesToString()
+                    })
+                .OrderBy(a => a.name)
+                .Select(a => $"{a.size,10} {a.name}");
+
+            var lines = Enumerable.Empty<string>()
+                .Concat(directoriesInDirectory.Select(d => $"D: {d}"))
+                .Concat(filesInDirectory.Select(f => $"F: {f}"));
+
+            return string.Join(Environment.NewLine, lines);
         }
     }
 }
