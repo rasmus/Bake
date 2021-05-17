@@ -35,6 +35,9 @@ namespace Bake.ValueObjects
         [YamlMember(Alias = "recipes")]
         public IReadOnlyCollection<Recipe> Recipes { get; [Obsolete] set; }
 
+        [Obsolete]
+        public Book() { }
+
         public Book(
             Ingredients ingredients,
             IReadOnlyCollection<Recipe> recipes)

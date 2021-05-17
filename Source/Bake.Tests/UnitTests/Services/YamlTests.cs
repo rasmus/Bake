@@ -32,7 +32,7 @@ namespace Bake.Tests.UnitTests.Services
     public class YamlTests : TestFor<Yaml>
     {
         [TestCase("1.2.3")]
-        public async Task ValidSemVer(string str)
+        public async Task SerializeSemVer(string str)
         {
             // Arrange
             var semVer = SemVer.Parse(str);
@@ -42,6 +42,16 @@ namespace Bake.Tests.UnitTests.Services
 
             // Assert
             yaml.Trim().Should().Be($"\"{str}\"");
+        }
+
+        [TestCase("1.2.3")]
+        public async Task DeserializeSemVer(string str)
+        {
+            // Act
+            var semVer = await Sut.DeserializeAsync<SemVer>(str, CancellationToken.None);
+
+            // Assert
+            semVer.ToString().Should().Be(str);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
         }
 
-        [Test, Ignore("Deserialize does not work yet")]
+        [Test, Ignore("Cannot do this yet")]
         public async Task PlanThenApply()
         {
             // Act - plan

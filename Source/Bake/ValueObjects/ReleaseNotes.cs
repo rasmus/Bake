@@ -20,21 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using Bake.Core;
 
 namespace Bake.ValueObjects
 {
     public class ReleaseNotes
     {
-        public SemVer Version { get; }
-        public string Notes { get; }
+        public SemVer Version { get; [Obsolete] set; }
+        public string Notes { get; [Obsolete] set; }
+
+        [Obsolete]
+        public ReleaseNotes() { }
 
         public ReleaseNotes(
             SemVer version,
             string notes)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             Notes = notes;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

@@ -28,17 +28,22 @@ namespace Bake.ValueObjects
     public class GitInformation
     {
         [YamlMember(Alias = "sha")]
-        public string Sha { get; }
+        public string Sha { get; [Obsolete] set; }
 
         [YamlMember(typeof(string), Alias = "originUrl")]
-        public Uri OriginUrl { get; }
+        public Uri OriginUrl { get; [Obsolete] set; }
+
+        [Obsolete]
+        public GitInformation() { }
 
         public GitInformation(
             string sha,
             Uri originUrl)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Sha = sha;
             OriginUrl = originUrl;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

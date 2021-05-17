@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using Bake.Core;
 using YamlDotNet.Serialization;
@@ -36,13 +37,13 @@ namespace Bake.ValueObjects
             workingDirectory);
 
         [YamlMember(Alias = "version")]
-        public SemVer Version { get; }
+        public SemVer Version { get; [Obsolete] set; }
 
         [YamlIgnore]
-        public Credentials Credentials { get; }
+        public Credentials Credentials { get; [Obsolete] set; }
 
         [YamlMember(Alias = "workingDirectory")]
-        public string WorkingDirectory { get; }
+        public string WorkingDirectory { get; [Obsolete] set; }
 
         [YamlMember(Alias = "git")]
         public GitInformation Git
@@ -81,14 +82,19 @@ namespace Bake.ValueObjects
         private readonly TaskCompletionSource<GitInformation> _git = new TaskCompletionSource<GitInformation>();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new TaskCompletionSource<ReleaseNotes>();
 
+        [Obsolete]
+        public Ingredients() { }
+
         public Ingredients(
             SemVer version,
             Credentials credentials,
             string workingDirectory)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             Credentials = credentials;
             WorkingDirectory = workingDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

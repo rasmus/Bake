@@ -28,7 +28,6 @@ using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.ValueObjects.Recipes;
 using YamlDotNet.Core;
-using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.EventEmitters;
 using YamlDotNet.Serialization.NamingConventions;
@@ -129,15 +128,11 @@ namespace Bake.Core
 
             public object? ReadYaml(IParser parser, Type type)
             {
-                parser.Consume<MappingStart>();
-
                 var value = (string) ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer);
                 if (!SemVer.TryParse(value, out var semVer))
                 {
                     throw new FormatException($"'{value}' is not a valid SemVer");
                 }
-
-                parser.Consume<MappingEnd>();
 
                 return semVer;
             }
