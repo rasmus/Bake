@@ -20,32 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Core;
-using YamlDotNet.Core.Events;
-using YamlDotNet.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Core
+namespace Bake.Tests.UnitTests.Services
 {
-    public class SemVerYamlTypeConverter : IYamlTypeConverter
+    public class YamlTests : TestFor<Yaml>
     {
-        private static readonly Type SemVerType = typeof(SemVer);
-
-        public bool Accepts(Type type)
+        [TestCase("1.2.3")]
+        public async Task ValidSemVer(string str)
         {
-            return type == SemVerType;
-        }
+            // Arrange
+            var semVer = SemVer.Parse(str);
 
-        public object? ReadYaml(IParser parser, Type type)
-        {
-            var str = parser.Consume<Scalar>().Value;
-            return SemVer.Parse(str);
-        }
+            // Act
+            var yaml = await Sut.SerializeAsync(semVer, CancellationToken.None);
 
-        public void WriteYaml(IEmitter emitter, object? value, Type type)
-        {
-            var semVer = (SemVer) value;
-            emitter.Emit(new Scalar(null, null, semVer.ToString(), ScalarStyle.DoubleQuoted, true, false));
+            // Assert
+            yaml.Trim().Should().Be($"\"{str}\"");
         }
     }
 }

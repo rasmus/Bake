@@ -25,6 +25,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
+    [Recipe(RecipeNames.DotNet.Build)]
     public class DotNetBuildSolutionRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
@@ -52,7 +53,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool incremental,
             string description,
             SemVer version)
-            :base(RecipeNames.DotNet.Build)
         {
             Path = path;
             Configuration = configuration;

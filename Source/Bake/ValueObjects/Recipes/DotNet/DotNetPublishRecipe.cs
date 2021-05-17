@@ -24,6 +24,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
+    [Recipe(RecipeNames.DotNet.Publish)]
     public class DotNetPublishRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
@@ -51,7 +52,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool build,
             string configuration,
             DotNetTargetRuntime runtime)
-            : base(RecipeNames.DotNet.Publish)
         {
             Path = path;
             PublishSingleFile = publishSingleFile;

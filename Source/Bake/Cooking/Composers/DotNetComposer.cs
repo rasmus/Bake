@@ -26,6 +26,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -133,6 +134,13 @@ namespace Bake.Cooking.Composers
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePacked))
             {
+                var artifacts = new Artifact[]
+                    {
+                        new FileArtifact(
+                            new ArtifactKey("nuget", visualStudioProject.Name),
+                            CalculateNuGetPath(ingredients, visualStudioProject, configuration))
+                    };
+
                 yield return new DotNetPackProjectRecipe(
                     visualStudioProject.Path,
                     false,
@@ -140,14 +148,15 @@ namespace Bake.Cooking.Composers
                     true,
                     true,
                     configuration,
-                    ingredients.Version);
+                    ingredients.Version,
+                    artifacts);
             }
 
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePushed))
             {
                 yield return new DotNetNuGetPushRecipe(
-                    Path.Combine(visualStudioProject.Directory, "bin", configuration, $"{visualStudioProject.Name}.{ingredients.Version}.nupkg"),
+                    CalculateNuGetPath(ingredients, visualStudioProject, configuration),
                     "acd0b30512ac4fa39f62eb7a61fcf56c",
                     "http://localhost:5555/v3/index.json"
                     //"https://api.nuget.org/v3/index.json"
@@ -166,6 +175,18 @@ namespace Bake.Cooking.Composers
                     configuration,
                     runtime);
             }
+        }
+
+        private static string CalculateNuGetPath(
+            ValueObjects.Ingredients ingredients,
+            VisualStudioProject visualStudioProject,
+            string configuration)
+        {
+            return Path.Combine(
+                visualStudioProject.Directory,
+                "bin",
+                configuration,
+                $"{visualStudioProject.Name}.{ingredients.Version}.nupkg");
         }
     }
 }

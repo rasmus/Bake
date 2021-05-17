@@ -20,18 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes
 {
     public abstract class Recipe
     {
-        [YamlMember(Alias = "name", Order = -1)]
-        public string Name { get; }
+        [YamlMember(Alias = "artifacts")]
+        public IReadOnlyCollection<Artifact> Artifacts { get; }
 
-        protected Recipe(string name)
+        protected Recipe(
+            IReadOnlyCollection<Artifact> artifacts = null)
         {
-            Name = name;
+            Artifacts = artifacts;
         }
     }
 }

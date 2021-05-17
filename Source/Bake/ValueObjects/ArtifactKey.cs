@@ -20,25 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using YamlDotNet.Serialization;
+using System.Text.RegularExpressions;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects
 {
-    [Recipe(RecipeNames.DotNet.Restore)]
-    public class DotNetRestoreSolutionRecipe : Recipe
+    public class ArtifactKey : ValueObject
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        public string Type { get; }
+        public string Name { get; }
 
-        [YamlMember(Alias = "clear-local-http-cache")]
-        public bool ClearLocalHttpCache { get; }
+        private static readonly Regex Parser = new Regex(
+            @"^(?<type>[a-z\-0-9]{1,}:(?<name>[a-z0-9\.\-])}{1,})$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-        public DotNetRestoreSolutionRecipe(
-            string path,
-            bool clearLocalHttpCache)
+        public ArtifactKey(
+            string type,
+            string name)
         {
-            Path = path;
-            ClearLocalHttpCache = clearLocalHttpCache;
+            Type = type;
+            Name = name;
         }
     }
 }

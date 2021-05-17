@@ -24,6 +24,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
+    [Recipe(RecipeNames.DotNet.Test)]
     public class DotNetTestSolutionRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
@@ -43,7 +44,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool build,
             bool restore,
             string configuration)
-            : base(RecipeNames.DotNet.Test)
         {
             Path = path;
             Build = build;

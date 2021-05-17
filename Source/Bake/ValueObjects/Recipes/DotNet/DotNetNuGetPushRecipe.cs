@@ -22,6 +22,7 @@
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
+    [Recipe(RecipeNames.DotNet.NuGetPush)]
     public class DotNetNuGetPushRecipe : Recipe
     {
         public string FilePath { get; }
@@ -32,7 +33,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string filePath,
             string apiKey,
             string source = null)
-            : base(RecipeNames.DotNet.NuGetPush)
         {
             FilePath = filePath;
             ApiKey = apiKey;

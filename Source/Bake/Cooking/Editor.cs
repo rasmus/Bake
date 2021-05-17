@@ -25,19 +25,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
+using Bake.Core;
 using Bake.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking
 {
     public class Editor : IEditor
     {
+        private readonly ILogger<Editor> _logger;
+        private readonly IYaml _yaml;
         private readonly IReadOnlyCollection<IGather> _gathers;
         private readonly IReadOnlyCollection<IComposer> _composers;
 
         public Editor(
+            ILogger<Editor> logger,
+            IYaml yaml,
             IEnumerable<IGather> gathers,
             IEnumerable<IComposer> composers)
         {
+            _logger = logger;
+            _yaml = yaml;
             _gathers = gathers.ToList();
             _composers = composers.ToList();
         }
@@ -59,6 +67,12 @@ namespace Bake.Cooking
             var book = new Book(
                 context.Ingredients,
                 recipes);
+
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                var yaml = await _yaml.SerializeAsync(book, cancellationToken);
+                _logger.LogTrace("Create the following YAML {Book}", yaml);
+            }
 
             return book;
         }

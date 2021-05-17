@@ -20,11 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using Bake.Core;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
+    [Recipe(RecipeNames.DotNet.Pack)]
     public class DotNetPackProjectRecipe : Recipe
     {
         [YamlMember(Alias = "path")]
@@ -55,8 +57,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSymbols,
             bool includeSource,
             string configuration,
-            SemVer version)
-            : base(RecipeNames.DotNet.Pack)
+            SemVer version,
+            IReadOnlyCollection<Artifact> artifacts)
+            : base(artifacts)
         {
             Path = path;
             Restore = restore;

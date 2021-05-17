@@ -22,23 +22,17 @@
 
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects
 {
-    [Recipe(RecipeNames.DotNet.Restore)]
-    public class DotNetRestoreSolutionRecipe : Recipe
+    public abstract class Artifact : ValueObject
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember(Alias = "key")]
+        public ArtifactKey Key { get; }
 
-        [YamlMember(Alias = "clear-local-http-cache")]
-        public bool ClearLocalHttpCache { get; }
-
-        public DotNetRestoreSolutionRecipe(
-            string path,
-            bool clearLocalHttpCache)
+        protected Artifact(
+            ArtifactKey key)
         {
-            Path = path;
-            ClearLocalHttpCache = clearLocalHttpCache;
+            Key = key;
         }
     }
 }

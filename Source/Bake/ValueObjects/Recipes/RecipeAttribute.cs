@@ -20,25 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using YamlDotNet.Serialization;
+using System;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects.Recipes
 {
-    [Recipe(RecipeNames.DotNet.Restore)]
-    public class DotNetRestoreSolutionRecipe : Recipe
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class RecipeAttribute : Attribute
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        public string Name { get; }
 
-        [YamlMember(Alias = "clear-local-http-cache")]
-        public bool ClearLocalHttpCache { get; }
-
-        public DotNetRestoreSolutionRecipe(
-            string path,
-            bool clearLocalHttpCache)
+        public RecipeAttribute(
+            string name)
         {
-            Path = path;
-            ClearLocalHttpCache = clearLocalHttpCache;
+            Name = name;
         }
     }
 }
