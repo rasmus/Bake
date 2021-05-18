@@ -28,15 +28,18 @@ using Bake.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
+// ReSharper disable AccessToDisposedClosure
+
 namespace Bake
 {
     public class Program
     {
         public static async Task<int> Main(string[] args)
         {
+            var logCollector = new LogCollector();
             var serviceCollection = new ServiceCollection()
-                .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger()))
-                .AddBake();
+                .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
+                .AddBake(logCollector);
 
             var commandType = typeof(ICommand);
             var commandTypes = serviceCollection

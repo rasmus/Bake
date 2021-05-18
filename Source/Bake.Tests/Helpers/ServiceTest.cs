@@ -58,7 +58,7 @@ namespace Bake.Tests.Helpers
         protected virtual T CreateSut()
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging(l => l.AddSerilog(LoggerBuilder.CreateLogger()));
+                .AddLogging(l => l.AddSerilog(LoggerBuilder.CreateLogger(A<ILogCollector>())));
 
             Configure(serviceCollection);
 

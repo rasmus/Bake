@@ -20,20 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Serilog;
+using Serilog.Events;
 
 namespace Bake.Core
 {
-    public static class LoggerBuilder
+    public class LogCollector : ILogCollector
     {
-        public static ILogger CreateLogger(
-            ILogCollector logCollector)
+        public void Log(LogEvent logEvent)
         {
-            return new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .Enrich.FromLogContext()
-                .WriteTo.Sink(new LogSink(logCollector))
-                .CreateLogger();
         }
     }
 }

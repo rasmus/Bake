@@ -30,8 +30,6 @@ namespace Bake.Core
 {
     public class LogSink : ILogEventSink
     {
-        private readonly object _syncRoot = new object();
-
         private static readonly IReadOnlyDictionary<LogEventLevel, string> LevelMap = new ConcurrentDictionary<LogEventLevel, string>
             {
                 [LogEventLevel.Verbose]     = "VRB",
@@ -41,6 +39,15 @@ namespace Bake.Core
                 [LogEventLevel.Error]       = "ERR",
                 [LogEventLevel.Fatal]       = "FTL",
             };
+
+        private readonly object _syncRoot = new object();
+        private readonly ILogCollector _logCollector;
+
+        public LogSink(
+            ILogCollector logCollector)
+        {
+            _logCollector = logCollector;
+        }
 
         public void Emit(LogEvent logEvent)
         {
@@ -52,6 +59,8 @@ namespace Bake.Core
                     ? $"[{DateTimeOffset.Now:HH:mm:ss} {LevelMap[logEvent.Level]}] {message}"
                     : $"[{DateTimeOffset.Now:HH:mm:ss} {LevelMap[logEvent.Level]}] {message}{Environment.NewLine}{logEvent.Exception.ToString().PadLeft(3)}");
             }
+
+            _logCollector.Log(logEvent);
         }
     }
 }

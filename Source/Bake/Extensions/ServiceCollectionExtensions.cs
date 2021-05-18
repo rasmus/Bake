@@ -38,7 +38,8 @@ namespace Bake.Extensions
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddBake(
-            this IServiceCollection serviceCollection)
+            this IServiceCollection serviceCollection,
+            ILogCollector logCollector)
         {
             serviceCollection
                 // Core
@@ -50,6 +51,7 @@ namespace Bake.Extensions
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
                 .AddSingleton<IYaml, Yaml>()
+                .AddSingleton(logCollector)
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -73,8 +75,7 @@ namespace Bake.Extensions
                 // Commands
                 .AddTransient<ApplyCommand>()
                 .AddTransient<PlanCommand>()
-                .AddTransient<RunCommand>()
-                ;
+                .AddTransient<RunCommand>();
 
             return serviceCollection;
         }

@@ -44,7 +44,7 @@ namespace Bake.Tests.Helpers
             _lazySut = new Lazy<T>(CreateSut);
             _logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Sink(new LogSink())
+                .WriteTo.Sink(new LogSink(A<ILogCollector>()))
                 .CreateLogger();
             _serviceProvider = Configure(new ServiceCollection())
                 .AddLogging(b => b.AddSerilog(_logger))
