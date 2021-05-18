@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
+using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.DotNet;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -52,6 +55,38 @@ namespace Bake.Tests.UnitTests.Services
 
             // Assert
             semVer.ToString().Should().Be(str);
+        }
+
+        [Test]
+        public async Task Recipes()
+        {
+            // Arrange
+            var yaml = Lines(
+                "- !dotnet-restore",
+                "  path: /tmp",
+                "  clearLocalHttpCache: true");
+
+            // Act
+            var recipes = await Sut.DeserializeAsync<Recipe[]>(yaml, CancellationToken.None);
+        }
+
+        [Test]
+        public async Task Recipe()
+        {
+            // Arrange
+            var yaml = Lines(
+                "!dotnet-restore",
+                "path: /tmp",
+                "clearLocalHttpCache: true");
+
+            // Act
+            var recipe = await Sut.DeserializeAsync<Recipe>(yaml, CancellationToken.None);
+
+            // Assert
+            var dotNetRestore = recipe as DotNetRestoreSolutionRecipe;
+            dotNetRestore.Should().NotBeNull();
+            dotNetRestore.Path.Should().Be("/tmp");
+            dotNetRestore.ClearLocalHttpCache.Should().BeTrue();
         }
     }
 }

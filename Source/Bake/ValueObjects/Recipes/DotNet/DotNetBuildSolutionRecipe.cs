@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using Bake.Core;
 using YamlDotNet.Serialization;
 
@@ -28,23 +29,26 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Build)]
     public class DotNetBuildSolutionRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "configuration")]
-        public string Configuration { get; }
+        [YamlMember]
+        public string Configuration { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "restore")]
-        public bool Restore { get; }
+        [YamlMember]
+        public bool Restore { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "incremental")]
-        public bool Incremental { get; }
+        [YamlMember]
+        public bool Incremental { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "version")]
-        public SemVer Version { get; }
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "description")]
-        public string Description { get; }
+        [YamlMember]
+        public string Description { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetBuildSolutionRecipe() { }
 
         public DotNetBuildSolutionRecipe(
             string path,
@@ -54,12 +58,14 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string description,
             SemVer version)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             Configuration = configuration;
             Restore = restore;
             Incremental = incremental;
             Description = description;
             Version = version;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public override string ToString()

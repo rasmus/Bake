@@ -104,6 +104,12 @@ namespace Bake.Tests.Helpers
             return await streamReader.ReadToEndAsync();
         }
 
+        protected string Lines(
+            params string[] lines)
+        {
+            return string.Join(Environment.NewLine, lines);
+        }
+
         protected async Task<string> WriteEmbeddedAsync(
             string fileEnding)
         {

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -27,18 +28,23 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Restore)]
     public class DotNetRestoreSolutionRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "clear-local-http-cache")]
-        public bool ClearLocalHttpCache { get; }
+        [YamlMember]
+        public bool ClearLocalHttpCache { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetRestoreSolutionRecipe() { }
 
         public DotNetRestoreSolutionRecipe(
             string path,
             bool clearLocalHttpCache)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             ClearLocalHttpCache = clearLocalHttpCache;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

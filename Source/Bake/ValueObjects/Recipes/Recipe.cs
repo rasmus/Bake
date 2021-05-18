@@ -20,20 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes
 {
     public abstract class Recipe
     {
-        [YamlMember(Alias = "artifacts")]
-        public IReadOnlyCollection<Artifact> Artifacts { get; }
+        [YamlMember]
+        public Artifact[] Artifacts { get; [Obsolete] set; }
 
         protected Recipe(
-            IReadOnlyCollection<Artifact> artifacts = null)
+            Artifact[] artifacts = null)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Artifacts = artifacts;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

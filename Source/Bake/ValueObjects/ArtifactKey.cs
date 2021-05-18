@@ -20,25 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Text.RegularExpressions;
 
 namespace Bake.ValueObjects
 {
     public class ArtifactKey : ValueObject
     {
-        public string Type { get; }
-        public string Name { get; }
+        public string Type { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; }
 
         private static readonly Regex Parser = new Regex(
             @"^(?<type>[a-z\-0-9]{1,}:(?<name>[a-z0-9\.\-])}{1,})$",
             RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
+        [Obsolete]
+        public ArtifactKey() { }
+
         public ArtifactKey(
             string type,
             string name)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Type = type;
             Name = name;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

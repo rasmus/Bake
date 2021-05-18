@@ -62,7 +62,7 @@ namespace Bake.Cooking
 
             var recipes = (await Task.WhenAll(tasks))
                 .SelectMany(c => c)
-                .ToList();
+                .ToArray();
 
             var book = new Book(
                 context.Ingredients,

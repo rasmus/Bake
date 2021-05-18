@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -27,23 +28,26 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Publish)]
     public class DotNetPublishRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "publish-single-file")]
-        public bool PublishSingleFile { get; }
+        [YamlMember]
+        public bool PublishSingleFile { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "self-contained")]
-        public bool SelfContained { get; }
+        [YamlMember]
+        public bool SelfContained { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "build")]
-        public bool Build { get; }
+        [YamlMember]
+        public bool Build { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "configuration")]
-        public string Configuration { get; }
+        [YamlMember]
+        public string Configuration { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "runtime")]
-        public DotNetTargetRuntime Runtime { get; }
+        [YamlMember]
+        public DotNetTargetRuntime Runtime { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetPublishRecipe() { }
 
         public DotNetPublishRecipe(
             string path,
@@ -53,12 +57,14 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string configuration,
             DotNetTargetRuntime runtime)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             PublishSingleFile = publishSingleFile;
             SelfContained = selfContained;
             Build = build;
             Configuration = configuration;
             Runtime = runtime;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

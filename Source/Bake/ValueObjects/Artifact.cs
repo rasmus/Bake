@@ -20,14 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
 {
     public abstract class Artifact : ValueObject
     {
-        [YamlMember(Alias = "key")]
-        public ArtifactKey Key { get; }
+        [YamlMember]
+        public ArtifactKey Key { get; [Obsolete] set; }
+
+        [Obsolete]
+        protected Artifact() { }
 
         protected Artifact(
             ArtifactKey key)

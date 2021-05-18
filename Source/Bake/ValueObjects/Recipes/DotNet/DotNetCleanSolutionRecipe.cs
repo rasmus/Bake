@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -27,18 +28,23 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Clean)]
     public class DotNetCleanSolutionRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "configuration")]
-        public string Configuration { get; }
+        [YamlMember]
+        public string Configuration { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetCleanSolutionRecipe() { }
 
         public DotNetCleanSolutionRecipe(
             string path,
             string configuration)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             Configuration = configuration;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public override string ToString()

@@ -20,23 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using YamlDotNet.Serialization;
+
 namespace Bake.ValueObjects.Recipes.DotNet
 {
     [Recipe(RecipeNames.DotNet.NuGetPush)]
     public class DotNetNuGetPushRecipe : Recipe
     {
-        public string FilePath { get; }
-        public string ApiKey { get; }
-        public string Source { get; }
+        [YamlMember]
+        public string FilePath { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string ApiKey { get; [Obsolete] set; }
+        
+        [YamlMember]
+        public string Source { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetNuGetPushRecipe() { }
 
         public DotNetNuGetPushRecipe(
             string filePath,
             string apiKey,
             string source = null)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             FilePath = filePath;
             ApiKey = apiKey;
             Source = source;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -52,19 +51,18 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
         }
 
-        [Test, Ignore("Cannot do this yet")]
+        [Test]
         public async Task PlanThenApply()
         {
             // Act - plan
             var planPath = Path.Combine(WorkingDirectory, "plan.bake");
             var returnCode = await ExecuteAsync(
                 "plan",
-                "--build-version", "1.2.3",
+                "--build-version", SemVer.Random.ToString(),
                 "--plan-path", $"\"{planPath}\"");
 
             // Assert - plan
             returnCode.Should().Be(0);
-            Console.WriteLine(await File.ReadAllTextAsync(planPath));
 
             // Act - apply
             returnCode = await ExecuteAsync(

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Bake.Core;
 using YamlDotNet.Serialization;
@@ -29,26 +30,29 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Pack)]
     public class DotNetPackProjectRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "restore")]
-        public bool Restore { get; }
+        [YamlMember]
+        public bool Restore { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "build")]
-        public bool Build { get; }
+        [YamlMember]
+        public bool Build { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "include-symbols")]
-        public bool IncludeSymbols { get; }
+        [YamlMember]
+        public bool IncludeSymbols { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "include-source")]
-        public bool IncludeSource { get; }
+        [YamlMember]
+        public bool IncludeSource { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "configuration")]
-        public string Configuration { get; }
+        [YamlMember]
+        public string Configuration { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "version")]
-        public SemVer Version { get; }
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetPackProjectRecipe() { }
 
         public DotNetPackProjectRecipe(
             string path,
@@ -58,9 +62,10 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSource,
             string configuration,
             SemVer version,
-            IReadOnlyCollection<Artifact> artifacts)
+            Artifact[] artifacts)
             : base(artifacts)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             Restore = restore;
             Build = build;
@@ -68,6 +73,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             IncludeSource = includeSource;
             Configuration = configuration;
             Version = version;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public override string ToString()

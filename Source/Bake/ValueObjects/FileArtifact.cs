@@ -20,11 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace Bake.ValueObjects
 {
     public class FileArtifact : Artifact
     {
-        public string Path { get; }
+        public string Path { get; [Obsolete] set; }
+
+        [Obsolete]
+        public FileArtifact() { }
 
         public FileArtifact(
             ArtifactKey key,

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -27,17 +28,20 @@ namespace Bake.ValueObjects.Recipes.DotNet
     [Recipe(RecipeNames.DotNet.Test)]
     public class DotNetTestSolutionRecipe : Recipe
     {
-        [YamlMember(Alias = "path")]
-        public string Path { get; }
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "build")]
-        public bool Build { get; }
+        [YamlMember]
+        public bool Build { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "restore")]
-        public bool Restore { get; }
+        [YamlMember]
+        public bool Restore { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "configuration")]
-        public string Configuration { get; }
+        [YamlMember]
+        public string Configuration { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetTestSolutionRecipe() { }
 
         public DotNetTestSolutionRecipe(
             string path,
@@ -45,10 +49,12 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool restore,
             string configuration)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             Build = build;
             Restore = restore;
             Configuration = configuration;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

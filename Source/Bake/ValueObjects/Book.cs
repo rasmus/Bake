@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Bake.ValueObjects.Recipes;
 using YamlDotNet.Serialization;
 
@@ -29,18 +28,18 @@ namespace Bake.ValueObjects
 {
     public class Book
     {
-        [YamlMember(Alias = "metadata")]
+        [YamlMember]
         public Ingredients Ingredients { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "recipes")]
-        public IReadOnlyCollection<Recipe> Recipes { get; [Obsolete] set; }
+        [YamlMember]
+        public Recipe[] Recipes { get; [Obsolete] set; }
 
         [Obsolete]
         public Book() { }
 
         public Book(
             Ingredients ingredients,
-            IReadOnlyCollection<Recipe> recipes)
+            Recipe[] recipes)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Ingredients = ingredients;
