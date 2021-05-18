@@ -33,25 +33,24 @@ namespace Bake.Core
         private readonly object _syncRoot = new object();
 
         private static readonly IReadOnlyDictionary<LogEventLevel, string> LevelMap = new ConcurrentDictionary<LogEventLevel, string>
-        {
-            [LogEventLevel.Verbose]     = "VRB",
-            [LogEventLevel.Debug]       = "DBG",
-            [LogEventLevel.Information] = "INF",
-            [LogEventLevel.Warning]     = "WRN",
-            [LogEventLevel.Error]       = "ERR",
-            [LogEventLevel.Fatal]       = "FTL",
-        };
+            {
+                [LogEventLevel.Verbose]     = "VRB",
+                [LogEventLevel.Debug]       = "DBG",
+                [LogEventLevel.Information] = "INF",
+                [LogEventLevel.Warning]     = "WRN",
+                [LogEventLevel.Error]       = "ERR",
+                [LogEventLevel.Fatal]       = "FTL",
+            };
 
         public void Emit(LogEvent logEvent)
         {
             var message = logEvent.RenderMessage();
-
             
             lock (_syncRoot)
             {
                 Console.WriteLine(logEvent.Exception == null
-                    ? $"[{DateTimeOffset.Now:HH:mm:ss:ttt}] [{LevelMap[logEvent.Level]}] {message}"
-                    : $"[{DateTimeOffset.Now:HH:mm:ss:ttt}] [{LevelMap[logEvent.Level]}] {message}{Environment.NewLine}{logEvent.Exception.ToString().PadLeft(3)}");
+                    ? $"[{DateTimeOffset.Now:HH:mm:ss} {LevelMap[logEvent.Level]}] {message}"
+                    : $"[{DateTimeOffset.Now:HH:mm:ss} {LevelMap[logEvent.Level]}] {message}{Environment.NewLine}{logEvent.Exception.ToString().PadLeft(3)}");
             }
         }
     }

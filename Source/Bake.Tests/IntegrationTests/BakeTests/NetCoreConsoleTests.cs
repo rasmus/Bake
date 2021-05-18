@@ -45,10 +45,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
-            AssertFileExists(
-                "bin", "Release", "netcoreapp3.1", "linux-x64", "publish", "NetCore.Console");
-            AssertFileExists(
-                "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
+            AssertSuccessfulArtifacts();
         }
 
         [Test]
@@ -71,6 +68,15 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert - apply
             returnCode.Should().Be(0);
+            AssertSuccessfulArtifacts();
+        }
+
+        private void AssertSuccessfulArtifacts()
+        {
+            AssertFileExists(
+                "bin", "Release", "netcoreapp3.1", "linux-x64", "publish", "NetCore.Console");
+            AssertFileExists(
+                "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
         }
 
         [TestCase("-h")]
