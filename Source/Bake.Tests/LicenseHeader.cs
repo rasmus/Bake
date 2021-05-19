@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -50,6 +51,8 @@ namespace Bake.Tests
                 SearchOption.AllDirectories);
 
             await Task.WhenAll(files.Select(f => UpdateHeaderAsync(f, currentHeader, CancellationToken.None)));
+
+            Console.WriteLine($"Updated {files.Length} files");
         }
 
         private static async Task UpdateHeaderAsync(

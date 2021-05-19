@@ -27,19 +27,26 @@ namespace Bake.Extensions
 {
     public static class LongExtensions
     {
+        private static readonly string[] SizeSuffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+
         public static string BytesToString(this long byteCount)
         {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
             if (byteCount == 0)
             {
-                return "0" + suf[0];
+                return "0" + SizeSuffix[0];
             }
 
             var bytes = Math.Abs(byteCount);
             var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
             var num = Math.Round(bytes / Math.Pow(1024, place), 1);
             
-            return (Math.Sign(byteCount) * num).ToString(CultureInfo.InvariantCulture) + suf[place];
+            return (Math.Sign(byteCount) * num).ToString(CultureInfo.InvariantCulture) + SizeSuffix[place];
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public static long MB(this long mb)
+        {
+            return mb * 1024 * 1024;
         }
     }
 }

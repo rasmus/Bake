@@ -20,29 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.Threading;
-using YamlDotNet.Serialization;
+using System.Threading.Tasks;
 
-namespace Bake.ValueObjects
+namespace Bake.Extensions
 {
-    public abstract class Artifact : ValueObject
+    public static class EnumerableExtensions
     {
-        [YamlMember]
-        public ArtifactKey Key { get; [Obsolete] set; }
-
-        [Obsolete]
-        protected Artifact() { }
-
-        protected Artifact(
-            ArtifactKey key)
+        public static async Task<IReadOnlyCollection<T>> SelectManyAsync<T>(
+            this IEnumerable<IAsyncEnumerable<T>> enumerable)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Key = key;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+            var list = new List<T>();
+            foreach (var asyncEnumerable in enumerable)
+            {
+                await foreach (var t in asyncEnumerable)
+                {
+                    list.Add(t);
+                }
+            }
 
-        public abstract IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken);
+            return list;
+        }
     }
 }

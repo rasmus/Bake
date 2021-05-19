@@ -23,6 +23,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -74,8 +75,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         private void AssertSuccessfulArtifacts()
         {
             AssertFileExists(
+                50L.MB(),
                 "bin", "Release", "netcoreapp3.1", "linux-x64", "publish", "NetCore.Console");
             AssertFileExists(
+                50L.MB(),
                 "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
         }
 

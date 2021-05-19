@@ -170,7 +170,7 @@ namespace Bake.Cooking.Composers
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
-                    true,
+                    false,
                     true,
                     configuration,
                     runtime);

@@ -21,6 +21,9 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 
 namespace Bake.ValueObjects
 {
@@ -36,7 +39,18 @@ namespace Bake.ValueObjects
             string path)
             : base(key)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            CancellationToken _)
+        {
+            if (!File.Exists(Path))
+            {
+                yield return $"File {Path} does not exist";
+            }
         }
     }
 }

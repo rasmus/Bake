@@ -66,13 +66,29 @@ namespace Bake.Cooking
                     throw new Exception($"Don't know how to cook {recipeType.PrettyPrint()}");
                 }
 
-                _logger.LogInformation("Starting cook {CookName}", cook.RecipeName);
+                _logger.LogInformation("Starting cook {RecipeName}", cook.RecipeName);
 
                 var stopwatch = Stopwatch.StartNew();
                 var success = await cook.CookAsync(
                     context,
                     recipe,
                     cancellationToken);
+
+                if (recipe.Artifacts != null && recipe.Artifacts.Any())
+                {
+                    _logger.LogDebug("Checking artifacts for {RecipeName}", cook.RecipeName);
+                    var errors = await recipe.Artifacts
+                        .Select(a => a.ValidateAsync(cancellationToken))
+                        .SelectManyAsync();
+
+                    if (errors.Any())
+                    {
+                        _logger.LogError(
+                            "Recipe {RecipeName} failed with artifact validation errors: {ArtifactValidationErrors}",
+                            errors);
+                        success = false;
+                    }
+                }
 
                 cookResults.Add(new CookResult(
                     cook.RecipeName,

@@ -70,16 +70,30 @@ namespace Bake.Tests.Helpers
             await _folder.DisposeAsync();
         }
 
-        protected void AssertFileExists(params string[] path)
+        protected string AssertFileExists(long minimumSize, params string[] path)
+        {
+            var filePath = AssertFileExists(path);
+            var fileInfo = new FileInfo(filePath);
+
+            fileInfo.Length.Should().BeGreaterThan(minimumSize, $"File {fileInfo} should be at least {minimumSize.BytesToString()}, but is only {fileInfo.Length.BytesToString()}");
+            
+            Console.WriteLine($"File {filePath} of size {fileInfo.Length.BytesToString()} is a minimum of {minimumSize.BytesToString()}");
+
+            return filePath;
+        }
+
+        protected string AssertFileExists(params string[] path)
         {
             var filePath = path.Aggregate(
                 WorkingDirectory,
                 Path.Combine);
 
-
-
             File.Exists(filePath).Should().BeTrue(
                 $"'{Path.GetFileName(filePath)}' should be among: {Environment.NewLine}{PrettyPrintDirectory(Path.GetDirectoryName(filePath))}'");
+
+            Console.WriteLine($"File {filePath} exists");
+
+            return filePath;
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName)
@@ -120,7 +134,7 @@ namespace Bake.Tests.Helpers
                 .Select(Path.GetFileName)
                 .OrderBy(n => n);
 
-            var filesInDirectory = Directory.GetFiles(Path.GetDirectoryName(path))
+            var filesInDirectory = Directory.GetFiles(path)
                 .Select(f => new
                     {
                         name = Path.GetFileName(f),
