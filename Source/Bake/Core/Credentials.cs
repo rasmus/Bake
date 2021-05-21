@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
-
-namespace Bake.ValueObjects
+namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
