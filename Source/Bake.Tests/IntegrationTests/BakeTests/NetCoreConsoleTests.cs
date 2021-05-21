@@ -42,6 +42,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
+                "--convention:Release",
                 "--build-version", SemVer.Random.ToString());
 
             // Assert
@@ -87,6 +88,9 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [TestCase("--help")]
         [TestCase("--version")]
         [TestCase("-v")]
+        [TestCase("run", "--help")]
+        [TestCase("apply", "--help")]
+        [TestCase("plan", "--help")]
         public async Task BasicArgsTest(params string[] args)
         {
             // Act

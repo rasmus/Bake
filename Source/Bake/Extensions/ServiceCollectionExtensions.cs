@@ -51,6 +51,7 @@ namespace Bake.Extensions
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
                 .AddSingleton<IYaml, Yaml>()
+                .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
 
                 // Gathers

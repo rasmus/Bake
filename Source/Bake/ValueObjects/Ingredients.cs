@@ -31,17 +31,22 @@ namespace Bake.ValueObjects
     {
         public static Ingredients New(
             SemVer version,
-            string workingDirectory) => new Ingredients(
-            version,
-            workingDirectory);
+            string workingDirectory,
+            Convention convention = Convention.Default) => new Ingredients(
+                version,
+                workingDirectory,
+                convention);
 
-        [YamlMember(Alias = "version")]
+        [YamlMember]
         public SemVer Version { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "workingDirectory")]
+        [YamlMember]
         public string WorkingDirectory { get; [Obsolete] set; }
 
-        [YamlMember(Alias = "git")]
+        [YamlMember]
+        public Convention Convention { get; [Obsolete] set; }
+
+        [YamlMember]
         public GitInformation Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
@@ -55,7 +60,7 @@ namespace Bake.ValueObjects
             }
         }
 
-        [YamlMember(Alias = "releaseNotes")]
+        [YamlMember]
         public ReleaseNotes ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
@@ -83,11 +88,13 @@ namespace Bake.ValueObjects
 
         public Ingredients(
             SemVer version,
-            string workingDirectory)
+            string workingDirectory,
+            Convention convention)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             WorkingDirectory = workingDirectory;
+            Convention = convention;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

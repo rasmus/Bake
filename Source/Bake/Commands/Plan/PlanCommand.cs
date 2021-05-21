@@ -53,7 +53,8 @@ namespace Bake.Commands.Plan
             SemVer buildVersion,
             string planPath,
             CancellationToken cancellationToken,
-            bool force = false)
+            bool force = false,
+            Convention convention = Convention.Default)
         {
             planPath = Path.GetFullPath(planPath);
             _logger.LogInformation(
@@ -91,7 +92,8 @@ namespace Bake.Commands.Plan
                 new Credentials(),
                 Ingredients.New(
                     buildVersion,
-                    Directory.GetCurrentDirectory()));
+                    Directory.GetCurrentDirectory(),
+                    convention));
 
             var book = await _editor.ComposeAsync(
                 content,

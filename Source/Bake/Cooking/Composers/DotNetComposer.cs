@@ -38,11 +38,14 @@ namespace Bake.Cooking.Composers
     public class DotNetComposer : IComposer
     {
         private readonly ICsProjParser _csProjParser;
+        private readonly IConventionInterpreter _conventionInterpreter;
 
         public DotNetComposer(
-            ICsProjParser csProjParser)
+            ICsProjParser csProjParser,
+            IConventionInterpreter conventionInterpreter)
         {
             _csProjParser = csProjParser;
+            _conventionInterpreter = conventionInterpreter;
         }
 
         public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -66,7 +69,7 @@ namespace Bake.Cooking.Composers
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
             return visualStudioSolutions
-                .SelectMany(s => CreateRecipe(s, context.Ingredients))
+                .SelectMany(s => CreateRecipe(context, s))
                 .ToList();
         }
 
@@ -102,12 +105,13 @@ namespace Bake.Cooking.Composers
                 csProj);
         }
 
-        private static IEnumerable<Recipe> CreateRecipe(
-            VisualStudioSolution visualStudioSolution,
-            ValueObjects.Ingredients ingredients)
+        private IEnumerable<Recipe> CreateRecipe(
+            IContext context,
+            VisualStudioSolution visualStudioSolution)
         {
             const string configuration = "Release";
 
+            var ingredients = context.Ingredients;
             var description = ingredients.Git != null
                 ? $"SHA:{ingredients.Git.Sha}"
                 : visualStudioSolution.Name;
@@ -152,15 +156,18 @@ namespace Bake.Cooking.Composers
                     artifacts);
             }
 
-            foreach (var visualStudioProject in visualStudioSolution.Projects
-                .Where(p => p.ShouldBePushed))
+            if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
             {
-                yield return new DotNetNuGetPushRecipe(
-                    CalculateNuGetPath(ingredients, visualStudioProject, configuration),
-                    "acd0b30512ac4fa39f62eb7a61fcf56c",
-                    "http://localhost:5555/v3/index.json"
-                    //"https://api.nuget.org/v3/index.json"
+                foreach (var visualStudioProject in visualStudioSolution.Projects
+                    .Where(p => p.ShouldBePushed))
+                {
+                    yield return new DotNetNuGetPushRecipe(
+                        CalculateNuGetPath(ingredients, visualStudioProject, configuration),
+                        "acd0b30512ac4fa39f62eb7a61fcf56c",
+                        "http://localhost:5555/v3/index.json"
+                        //"https://api.nuget.org/v3/index.json"
                     );
+                }
             }
 
             foreach (var visualStudioProject in visualStudioSolution.Projects

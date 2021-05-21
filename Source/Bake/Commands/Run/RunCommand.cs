@@ -46,13 +46,15 @@ namespace Bake.Commands.Run
         // ReSharper disable once UnusedMember.Global
         public async Task<int> ExecuteAsync(
             SemVer buildVersion,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            Convention convention = Convention.Default)
         {
             var content = new Context(
                 new Credentials(),
                 Ingredients.New(
                     buildVersion,
-                    Directory.GetCurrentDirectory()));
+                    Directory.GetCurrentDirectory(),
+                    convention));
 
             var book = await _editor.ComposeAsync(
                 content,
