@@ -33,14 +33,10 @@ namespace Bake.ValueObjects
             SemVer version,
             string workingDirectory) => new Ingredients(
             version,
-            new Credentials(),
             workingDirectory);
 
         [YamlMember(Alias = "version")]
         public SemVer Version { get; [Obsolete] set; }
-
-        [YamlIgnore]
-        public Credentials Credentials { get; [Obsolete] set; }
 
         [YamlMember(Alias = "workingDirectory")]
         public string WorkingDirectory { get; [Obsolete] set; }
@@ -87,12 +83,10 @@ namespace Bake.ValueObjects
 
         public Ingredients(
             SemVer version,
-            Credentials credentials,
             string workingDirectory)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
-            Credentials = credentials;
             WorkingDirectory = workingDirectory;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

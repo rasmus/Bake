@@ -75,6 +75,7 @@ namespace Bake.Commands.Apply
 
             var success = await _kitchen.CookAsync(
                 new Context(
+                    new Credentials(),
                     Ingredients.New(
                         book.Ingredients.Version,
                         book.Ingredients.WorkingDirectory)),

@@ -44,6 +44,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
             // Act
             var recipes = await Sut.ComposeAsync(
                 new Context(
+                    new Credentials(),
                     Ingredients.New(
                         SemVer.With(1,2,3),
                         WorkingDirectory)), 

@@ -88,6 +88,7 @@ namespace Bake.Commands.Plan
             }
 
             var content = new Context(
+                new Credentials(),
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory()));

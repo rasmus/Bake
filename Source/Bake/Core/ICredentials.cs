@@ -20,22 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
-using Bake.ValueObjects;
-
-namespace Bake
+namespace Bake.Core
 {
-    public class Context : IContext
+    public interface ICredentials
     {
-        public ICredentials Credentials { get; }
-        public Ingredients Ingredients { get; }
-
-        public Context(
-            ICredentials credentials,
-            Ingredients ingredients)
-        {
-            Credentials = credentials;
-            Ingredients = ingredients;
-        }
     }
 }

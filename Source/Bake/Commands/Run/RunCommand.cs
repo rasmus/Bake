@@ -49,6 +49,7 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken)
         {
             var content = new Context(
+                new Credentials(),
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory()));
