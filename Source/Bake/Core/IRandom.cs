@@ -20,17 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-
-namespace Bake.Services
+namespace Bake.Core
 {
-    public interface IReleaseNotesParser
+    public interface IRandom
     {
-        Task<IReadOnlyCollection<ReleaseNotes>> ParseAsync(
-            string path,
-            CancellationToken cancellationToken);
+        int NextInt(
+            int minValue,
+            int maxValue);
+
+        int NextInt(
+            int maxValue);
     }
 }

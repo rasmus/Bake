@@ -53,6 +53,7 @@ namespace Bake.Extensions
                 .AddSingleton<IYaml, Yaml>()
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
+                .AddSingleton<IRandom, RandomWrapper>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()

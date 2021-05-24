@@ -20,10 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
@@ -32,13 +37,16 @@ namespace Bake.Cooking.Ingredients.Gathers
     {
         private readonly ILogger<ReleaseNotesGather> _logger;
         private readonly IReleaseNotesParser _releaseNotesParser;
+        private readonly IRandom _random;
 
         public ReleaseNotesGather(
             ILogger<ReleaseNotesGather> logger,
-            IReleaseNotesParser releaseNotesParser)
+            IReleaseNotesParser releaseNotesParser,
+            IRandom random)
         {
             _logger = logger;
             _releaseNotesParser = releaseNotesParser;
+            _random = random;
         }
 
         public async Task GatherAsync(
@@ -61,7 +69,85 @@ namespace Bake.Cooking.Ingredients.Gathers
                 releaseNotesPath,
                 cancellationToken);
 
-            ingredients.ReleaseNotes = releaseNotes;
+            _logger.LogInformation(() =>
+            {
+                var versions = releaseNotes
+                    .Select(n => n.Version)
+                    .OrderByDescending(v => v)
+                    .Select(v => v.ToString())
+                    .ToList();
+
+                return (
+                    "Found {ReleaseNoteCount} release notes with versions {ReleaseNoteVersions}",
+                    new object[] {versions.Count, versions}
+                    );
+            });
+
+            ingredients.ReleaseNotes = PickReleaseNotes( 
+                ingredients.Version,
+                releaseNotes);
+        }
+
+        private ReleaseNotes PickReleaseNotes(
+            SemVer version,
+            IReadOnlyCollection<ReleaseNotes> releaseNotes)
+        {
+            if (!releaseNotes.Any())
+            {
+                return null;
+            }
+
+            if (version.Patch.HasValue)
+            {
+                var withExactVersion = releaseNotes
+                    .Where(n => version.Equals(n.Version))
+                    .ToList();
+
+                if (withExactVersion.Count == 1)
+                {
+                    return withExactVersion.Single();
+                }
+
+                if (withExactVersion.Count > 1)
+                {
+                    _logger.LogWarning(
+                        "Found {Count} release notes with version {Version}, just picking one at random",
+                        withExactVersion.Count,
+                        version.ToString());
+
+                    // Instead of having system rely on the ordering of some implementation
+                    // we might as well pick one randomly... or should we fail the build?
+                    return withExactVersion[_random.NextInt(withExactVersion.Count)];
+                }
+            }
+            else
+            {
+                var withSubset = releaseNotes
+                    .Where(n => version.IsSubset(n.Version))
+                    .OrderByDescending(n => n.Version)
+                    .ToList();
+
+                if (withSubset.Any())
+                {
+                    _logger.LogInformation(
+                        "Found {Count} release notes that matches {Version}, picking the most recent",
+                        withSubset.Count,
+                        version.ToString());
+
+                    return withSubset.First();
+                }
+            }
+
+            var orderedReleaseNotes = releaseNotes
+                .OrderByDescending(n => n.Version)
+                .ToList();
+
+            _logger.LogWarning(
+                "Found {Count} releases, none matches the version {Version}, picking the most recent",
+                orderedReleaseNotes.Count,
+                version.ToString());
+
+            return orderedReleaseNotes.First();
         }
     }
 }

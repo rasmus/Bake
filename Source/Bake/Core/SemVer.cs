@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Bake.Core
@@ -77,7 +78,7 @@ namespace Bake.Core
             var minor = int.Parse(match.Groups["minor"].Value);
             var patch = match.Groups["patch"].Success
                 ? int.Parse(match.Groups["patch"].Value)
-                : 0;
+                : null as int?;
             var meta = match.Groups["meta"].Success
                 ? match.Groups["meta"].Value
                 : string.Empty;
@@ -101,7 +102,7 @@ namespace Bake.Core
 
         public int Major { get; }
         public int Minor { get; }
-        public int Patch { get; }
+        public int? Patch { get; }
         public string Meta { get; }
         public Version LegacyVersion { get; }
 
@@ -110,18 +111,23 @@ namespace Bake.Core
         private SemVer(
             int major,
             int minor,
-            int patch ,
+            int? patch ,
             string meta)
         {
             Major = major;
             Minor = minor;
             Patch = patch;
             Meta = (meta ?? string.Empty).Trim('-');
-            LegacyVersion = new Version(major, minor, patch);
+            LegacyVersion = patch.HasValue
+                ? new Version(major, minor, patch.Value)
+                : new Version(major, minor);
 
-            _lazyString = new Lazy<string>(() => string.IsNullOrEmpty(Meta)
-                ? $"{Major}.{Minor}.{Patch}"
-                : $"{Major}.{Minor}.{Patch}-{Meta}");
+            _lazyString = new Lazy<string>(() =>
+                new StringBuilder()
+                    .Append($"{Major}.{Minor}")
+                    .Append(Patch.HasValue ? $".{Patch}" : string.Empty)
+                    .Append(!string.IsNullOrEmpty(Meta) ? $"-{Meta}" : string.Empty)
+                    .ToString());
         }
 
         public override string ToString()
@@ -134,6 +140,20 @@ namespace Bake.Core
             return CompareTo(obj as SemVer);
         }
 
+        public bool IsSubset(SemVer other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return Patch.HasValue
+                ? Equals(other)
+                : Major == other.Major &&
+                  Minor == other.Minor &&
+                  string.Equals(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
+        }
+
         public int CompareTo(SemVer other)
         {
             if (ReferenceEquals(this, other)) return 0;
@@ -142,7 +162,7 @@ namespace Bake.Core
             if (majorComparison != 0) return majorComparison;
             var minorComparison = Minor.CompareTo(other.Minor);
             if (minorComparison != 0) return minorComparison;
-            var patchComparison = Patch.CompareTo(other.Patch);
+            var patchComparison = Patch.GetValueOrDefault().CompareTo(other.Patch.GetValueOrDefault());
             if (patchComparison != 0) return patchComparison;
             return string.Compare(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
         }
@@ -169,7 +189,11 @@ namespace Bake.Core
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Major, Minor, Patch, Meta);
+            return HashCode.Combine(
+                Major,
+                Minor,
+                Patch.GetValueOrDefault(),
+                Meta);
         }
     }
 }

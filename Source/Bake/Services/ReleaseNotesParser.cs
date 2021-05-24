@@ -42,7 +42,7 @@ namespace Bake.Services
             _logger = logger;
         }
 
-        public async Task<ReleaseNotes> ParseAsync(
+        public async Task<IReadOnlyCollection<ReleaseNotes>> ParseAsync(
             string path,
             CancellationToken cancellationToken)
         {
@@ -52,9 +52,7 @@ namespace Bake.Services
 
             var lines = markdown.Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
-            var releaseNotes = ParseLines(lines).ToList();
-
-            return releaseNotes.FirstOrDefault();
+            return ParseLines(lines).ToList();
         }
 
         private IEnumerable<ReleaseNotes> ParseLines(IEnumerable<string> lines)

@@ -33,7 +33,7 @@ namespace Bake.Tests.UnitTests.Core
             "1.2",
             1,
             2,
-            0,
+            null,
             null)]
         [TestCase(
             "1.2.3-meta",
@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Core
             string str,
             int expectedMajor,
             int expectedMinor,
-            int expectedPatch,
+            int? expectedPatch,
             string expectedMeta)
         {
             // Act
@@ -62,6 +62,27 @@ namespace Bake.Tests.UnitTests.Core
             version.Minor.Should().Be(expectedMinor);
             version.Patch.Should().Be(expectedPatch);
             version.Meta.Should().Be(expectedMeta ?? string.Empty);
+        }
+
+        [TestCase("1.2"  , "1.2.0", true)]
+        [TestCase("1.2"  , "1.2.5", true)]
+        [TestCase("1.2.0", "1.2.0", true)]
+        [TestCase("1.2.1", "1.2.0", false)]
+        [TestCase("2.1.1", "1.2.1", false)]
+        public void IsSubset(
+            string versionStr,
+            string otherStr,
+            bool expectedResult)
+        {
+            // Arrange
+            var version = SemVer.Parse(versionStr);
+            var other = SemVer.Parse(otherStr);
+
+            // Act
+            var result = version.IsSubset(other);
+
+            // Assert
+            result.Should().Be(expectedResult);
         }
 
         [TestCase(

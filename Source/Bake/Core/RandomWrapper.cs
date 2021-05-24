@@ -20,17 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
 
-namespace Bake.Services
+namespace Bake.Core
 {
-    public interface IReleaseNotesParser
+    public class RandomWrapper : IRandom
     {
-        Task<IReadOnlyCollection<ReleaseNotes>> ParseAsync(
-            string path,
-            CancellationToken cancellationToken);
+        private readonly Random _random = new Random();
+
+        public int NextInt(
+            int maxValue)
+        {
+            return _random.Next(maxValue);
+        }
+
+        public int NextInt(
+            int minValue,
+            int maxValue)
+        {
+            return _random.Next(minValue, maxValue);
+        }
     }
 }

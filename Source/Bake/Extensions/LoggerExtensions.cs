@@ -20,17 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using Microsoft.Extensions.Logging;
 
-namespace Bake.Services
+namespace Bake.Extensions
 {
-    public interface IReleaseNotesParser
+    public static class LoggerExtensions
     {
-        Task<IReadOnlyCollection<ReleaseNotes>> ParseAsync(
-            string path,
-            CancellationToken cancellationToken);
+        public static bool LogInformation<T>(
+            this ILogger<T> logger,
+            Func<(string, object[])> factory)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return false;
+            }
+
+            var (message, args) = factory();
+            logger.LogInformation(message, args);
+
+            return true;
+        }
     }
 }
