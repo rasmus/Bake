@@ -54,7 +54,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
         {
             return base.Configure(serviceCollection)
-                .AddTransient<ICsProjParser, CsProjParser>();
+                .AddTransient<ICsProjParser, CsProjParser>()
+                .AddTransient<IConventionInterpreter, ConventionInterpreter>();
         }
     }
 }
