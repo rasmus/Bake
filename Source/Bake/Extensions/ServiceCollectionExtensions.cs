@@ -64,6 +64,7 @@ namespace Bake.Extensions
 
                 // Composers
                 .AddTransient<IComposer, DotNetComposer>()
+                .AddTransient<IComposer, DockerComposer>()
 
                 // Cooks
                 .AddTransient<ICook, DotNetCleanCook>()
