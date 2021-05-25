@@ -20,18 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArgumentBuilders
-{
-    public class DotNetCleanArgument : DotNetArgument
-    {
-        public string Configuration { get; }
+using Bake.ValueObjects.Recipes.DotNet;
 
-        public DotNetCleanArgument(
+namespace Bake.Services.DotNetArguments
+{
+    public class DotNetPublishArgument : DotNetArgument
+    {
+        public bool PublishSingleFile { get; }
+        public bool SelfContained { get; }
+        public bool Build { get; }
+        public string Configuration { get; }
+        public DotNetTargetRuntime Runtime { get; }
+
+        public DotNetPublishArgument(
             string filePath,
-            string configuration)
+            bool publishSingleFile,
+            bool selfContained,
+            bool build,
+            string configuration,
+            DotNetTargetRuntime runtime)
             : base(filePath)
         {
+            PublishSingleFile = publishSingleFile;
+            SelfContained = selfContained;
+            Build = build;
             Configuration = configuration;
+            Runtime = runtime;
         }
     }
 }

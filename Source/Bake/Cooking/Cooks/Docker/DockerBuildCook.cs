@@ -20,9 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Core
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services;
+using Bake.Services.DockerArguments;
+using Bake.ValueObjects.Recipes.Docker;
+
+namespace Bake.Cooking.Cooks.Docker
 {
-    public abstract class ArgumentBuilder
+    public class DockerBuildCook : Cook<DockerBuildRecipe>
     {
+        private readonly IDocker _docker;
+
+        public DockerBuildCook(
+            IDocker docker)
+        {
+            _docker = docker;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            DockerBuildRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new DockerBuildArgument(
+                recipe.Path);
+
+            var exitCode = await _docker.DockerBuildAsync(
+                argument,
+                cancellationToken);
+
+            return exitCode == 0;
+        }
     }
 }

@@ -20,50 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
-using Microsoft.Extensions.Logging;
+using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.Docker;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Cooking.Composers
 {
-    public class DotNetNuGetPushCook : Cook<DotNetNuGetPushRecipe>
+    public class DockerComposer : IComposer
     {
-        private readonly ILogger<DotNetNuGetPushCook> _logger;
-        private readonly IDotNet _dotNet;
-
-        public DotNetNuGetPushCook(
-            ILogger<DotNetNuGetPushCook> logger,
-            IDotNet dotNet)
-        {
-            _logger = logger;
-            _dotNet = dotNet;
-        }
-
-        protected override async Task<bool> CookAsync(
+        public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
-            DotNetNuGetPushRecipe recipe,
             CancellationToken cancellationToken)
         {
-            if (!File.Exists(recipe.FilePath))
+            var dockerFilePaths = await FindDockerFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                cancellationToken);
+
+            var recipes = new List<Recipe>();
+
+            foreach (var dockerFilePath in dockerFilePaths)
             {
-                _logger.LogCritical(
-                    "NuGet package not found at {NuGetPackagePath}",
-                    recipe.FilePath);
-                return false;
+                recipes.AddRange(CreateRecipes(dockerFilePath));
             }
 
-            var argument = new DotNetNuGetPushArgument(
-                recipe.ApiKey,
-                recipe.Source,
-                recipe.FilePath);
+            return recipes;
+        }
 
-            return await _dotNet.NuGetPushAsync(
-                argument,
-                cancellationToken);
+        private static IEnumerable<Recipe> CreateRecipes(
+            string path)
+        {
+            yield return new DockerBuildRecipe(
+                path);
+        }
+
+        private static async Task<IReadOnlyCollection<string>> FindDockerFilesAsync(
+            string directoryPath,
+            CancellationToken cancellationToken)
+        {
+            var dockerFilePaths = await Task.Factory.StartNew(
+                () => Directory.GetFiles(directoryPath, "Dockerfile", SearchOption.AllDirectories),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            return dockerFilePaths;
         }
     }
 }

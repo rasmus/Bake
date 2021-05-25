@@ -23,15 +23,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
-using Bake.Services.DotNetArgumentBuilders;
+using Bake.Services.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetBuildCook : Cook<DotNetBuildSolutionRecipe>
     {
-        public override string RecipeName => RecipeNames.DotNet.Build;
-        
         private readonly IDotNet _dotNet;
 
         public DotNetBuildCook(

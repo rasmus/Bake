@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +28,8 @@ namespace Bake.Services
 {
     public class RunnerFactory : IRunnerFactory
     {
+        private static readonly IReadOnlyDictionary<string, string> Empty = new Dictionary<string, string>();
+
         private readonly ILogger<RunnerFactory> _logger;
 
         public RunnerFactory(
@@ -40,6 +43,20 @@ namespace Bake.Services
             string workingDirectory,
             params string[] arguments)
         {
+            return new Runner(
+                _logger,
+                command,
+                workingDirectory,
+                arguments,
+                Empty);
+        }
+
+        public IRunner CreateRunner(
+                string command,
+                string workingDirectory,
+                IReadOnlyDictionary<string, string> environmentVariables,
+                params string[] arguments)
+        {
             if (string.IsNullOrEmpty(workingDirectory))
             {
                 workingDirectory = Directory.GetCurrentDirectory();
@@ -49,7 +66,8 @@ namespace Bake.Services
                 _logger,
                 command,
                 workingDirectory,
-                arguments);
+                arguments,
+                environmentVariables);
         }
     }
 }

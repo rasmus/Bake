@@ -20,43 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
-
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Services.DotNetArguments
 {
-    public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
+    public class DotNetNuGetPushArgument : DotNetArgument
     {
-        private readonly IDotNet _dotNet;
+        public string ApiKey { get; }
+        public string Source { get; }
 
-        public DotNetRestoreCook(
-            IDotNet dotNet)
+        public DotNetNuGetPushArgument(
+            string apiKey,
+            string source,
+            string filePath)
+            : base(filePath)
         {
-            _dotNet = dotNet;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetRestoreSolutionRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            if (recipe.ClearLocalHttpCache)
-            {
-                var success = await _dotNet.ClearNuGetLocalsAsync(
-                    cancellationToken);
-                if (!success)
-                {
-                    return false;
-                }
-            }
-
-            return await _dotNet.RestoreAsync(
-                new DotNetRestoreArgument(
-                    recipe.Path),
-                cancellationToken);
+            ApiKey = apiKey;
+            Source = source;
         }
     }
 }

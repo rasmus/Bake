@@ -20,20 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using Bake.Core;
-
-namespace Bake.Services.DotNetArgumentBuilders
+namespace Bake.Services.DotNetArguments
 {
-    public abstract class DotNetArgument : ArgumentBuilder
+    public class DotNetTestArgument : DotNetArgument
     {
-        public string FilePath { get; set; }
-        public string WorkingDirectory { get; }
+        public bool Build { get; }
+        public bool Restore { get; }
+        public string Configuration { get; }
 
-        protected DotNetArgument(string filePath)
+        public DotNetTestArgument(
+            string filePath,
+            bool build,
+            bool restore,
+            string configuration)
+            : base(filePath)
         {
-            FilePath = Path.GetFullPath(filePath);
-            WorkingDirectory = Path.GetDirectoryName(filePath);
+            Build = build;
+            Restore = restore;
+            Configuration = configuration;
         }
     }
 }

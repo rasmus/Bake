@@ -27,6 +27,7 @@ using Bake.Commands.Run;
 using Bake.Cooking;
 using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
+using Bake.Cooking.Cooks.Docker;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
@@ -51,6 +52,7 @@ namespace Bake.Extensions
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
                 .AddSingleton<IYaml, Yaml>()
+                .AddTransient<IDocker, Docker>()
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
                 .AddSingleton<IRandom, RandomWrapper>()
@@ -64,8 +66,9 @@ namespace Bake.Extensions
 
                 // Composers
                 .AddTransient<IComposer, DotNetComposer>()
+                .AddTransient<IComposer, DockerComposer>()
 
-                // Cooks
+                // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
                 .AddTransient<ICook, DotNetBuildCook>()
                 .AddTransient<ICook, DotNetRestoreCook>()
@@ -73,6 +76,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetPackCook>()
                 .AddTransient<ICook, DotNetNuGetPushCook>()
                 .AddTransient<ICook, DotNetPublishCook>()
+                // Cooks - Docker
+                .AddTransient<ICook, DockerBuildCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

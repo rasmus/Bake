@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking;
@@ -60,12 +61,19 @@ namespace Bake.Commands.Run
                 content,
                 cancellationToken);
 
+            if (!book.Recipes.Any())
+            {
+                return ExitCodes.Core.NoRecipes;
+            }
+
             var success = await _kitchen.CookAsync(
                 content,
                 book,
                 cancellationToken);
 
-            return success ? 0 : -1;
+            return success
+                ? 0
+                : ExitCodes.Core.CookingFailed;
         }
     }
 }

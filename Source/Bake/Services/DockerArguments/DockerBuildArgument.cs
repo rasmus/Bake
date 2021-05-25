@@ -20,32 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.Core;
 
-namespace Bake.Services.DotNetArgumentBuilders
+namespace Bake.Services.DockerArguments
 {
-    public class DotNetPublishArgument : DotNetArgument
+    public class DockerBuildArgument : Argument
     {
-        public bool PublishSingleFile { get; }
-        public bool SelfContained { get; }
-        public bool Build { get; }
-        public string Configuration { get; }
-        public DotNetTargetRuntime Runtime { get; }
+        public string Path { get; }
 
-        public DotNetPublishArgument(
-            string filePath,
-            bool publishSingleFile,
-            bool selfContained,
-            bool build,
-            string configuration,
-            DotNetTargetRuntime runtime)
-            : base(filePath)
+        public DockerBuildArgument(
+            string path)
         {
-            PublishSingleFile = publishSingleFile;
-            SelfContained = selfContained;
-            Build = build;
-            Configuration = configuration;
-            Runtime = runtime;
+            Path = path;
         }
     }
 }
