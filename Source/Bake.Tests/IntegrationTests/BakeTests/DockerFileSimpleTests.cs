@@ -20,14 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArgumentBuilders
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class DotNetRestoreArgument : DotNetArgument
+    public class DockerFileSimpleTests : BakeTest
     {
-        public DotNetRestoreArgument(
-            string filePath)
-            : base(filePath)
+        public DockerFileSimpleTests() : base("Dockerfile.Simple")
         {
+        }
+
+        [Test]
+        public async Task Run()
+        {
+            // Act
+            var returnCode = await ExecuteAsync(
+                "run",
+                "--build-version", SemVer.Random.ToString());
+
+            // Assert
+            returnCode.Should().Be(0);
         }
     }
 }

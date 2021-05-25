@@ -24,7 +24,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
-using Bake.Services.DotNetArgumentBuilders;
+using Bake.Services.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.Logging;
 
@@ -32,8 +32,6 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetNuGetPushCook : Cook<DotNetNuGetPushRecipe>
     {
-        public override string RecipeName => RecipeNames.DotNet.NuGetPush;
-
         private readonly ILogger<DotNetNuGetPushCook> _logger;
         private readonly IDotNet _dotNet;
 

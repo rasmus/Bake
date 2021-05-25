@@ -23,7 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
-using Bake.Services.DotNetArgumentBuilders;
+using Bake.Services.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
@@ -31,7 +31,6 @@ namespace Bake.Cooking.Cooks.DotNet
     public class DotNetPublishCook : Cook<DotNetPublishRecipe>
     {
         private readonly IDotNet _dotNet;
-        public override string RecipeName => RecipeNames.DotNet.Publish;
 
         public DotNetPublishCook(
             IDotNet dotNet)

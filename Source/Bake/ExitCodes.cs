@@ -24,9 +24,16 @@ namespace Bake
 {
     public static class ExitCodes
     {
+        public static class Run
+        {
+        }
+
         public static class Core
         {
             public const int UnexpectedError = -256;
+
+            public const int NoRecipes = -3;
+            public const int CookingFailed = -3;
         }
 
         public static class Plan

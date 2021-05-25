@@ -22,41 +22,14 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.Services.DockerArguments;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Services
 {
-    public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
+    public interface IDocker
     {
-        private readonly IDotNet _dotNet;
-
-        public DotNetRestoreCook(
-            IDotNet dotNet)
-        {
-            _dotNet = dotNet;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetRestoreSolutionRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            if (recipe.ClearLocalHttpCache)
-            {
-                var success = await _dotNet.ClearNuGetLocalsAsync(
-                    cancellationToken);
-                if (!success)
-                {
-                    return false;
-                }
-            }
-
-            return await _dotNet.RestoreAsync(
-                new DotNetRestoreArgument(
-                    recipe.Path),
-                cancellationToken);
-        }
+        Task<int> DockerBuildAsync(
+            DockerBuildArgument argument,
+            CancellationToken cancellationToken);
     }
 }

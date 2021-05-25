@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace Bake.Services
 {
     public interface IRunnerFactory
@@ -27,6 +29,12 @@ namespace Bake.Services
         IRunner CreateRunner(
             string command,
             string workingDirectory,
+            params string[] arguments);
+
+        IRunner CreateRunner(
+            string command,
+            string workingDirectory,
+            IReadOnlyDictionary<string, string> environmentVariables,
             params string[] arguments);
     }
 }

@@ -20,43 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.ValueObjects.Recipes.Docker
 {
-    public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
+    [Recipe(RecipeNames.Docker.Build)]
+    public class DockerBuildRecipe : Recipe
     {
-        private readonly IDotNet _dotNet;
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
 
-        public DotNetRestoreCook(
-            IDotNet dotNet)
+        [Obsolete]
+        public DockerBuildRecipe() { }
+
+        public DockerBuildRecipe(
+            string path)
         {
-            _dotNet = dotNet;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetRestoreSolutionRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            if (recipe.ClearLocalHttpCache)
-            {
-                var success = await _dotNet.ClearNuGetLocalsAsync(
-                    cancellationToken);
-                if (!success)
-                {
-                    return false;
-                }
-            }
-
-            return await _dotNet.RestoreAsync(
-                new DotNetRestoreArgument(
-                    recipe.Path),
-                cancellationToken);
+#pragma warning disable CS0612 // Type or member is obsolete
+            Path = path;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

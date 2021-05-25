@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Extensions;
@@ -31,7 +32,9 @@ namespace Bake.Cooking.Cooks
     public abstract class Cook<T> : ICook
         where T : Recipe
     {
-        public abstract string RecipeName { get; }
+        private static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))).Name;
+
+        public string RecipeName => Name;
         public Type CanCook { get; } = typeof(T);
 
         public Task<bool> CookAsync(

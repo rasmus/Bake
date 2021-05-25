@@ -24,6 +24,11 @@ namespace Bake
 {
     public static class RecipeNames
     {
+        public static class Docker
+        {
+            public const string Build = "docker-build";
+        }
+
         public static class DotNet
         {
             public const string Build = "dotnet-build";

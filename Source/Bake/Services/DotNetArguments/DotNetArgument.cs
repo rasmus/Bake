@@ -20,21 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArgumentBuilders
-{
-    public class DotNetNuGetPushArgument : DotNetArgument
-    {
-        public string ApiKey { get; }
-        public string Source { get; }
+using System.IO;
+using Bake.Core;
 
-        public DotNetNuGetPushArgument(
-            string apiKey,
-            string source,
-            string filePath)
-            : base(filePath)
+namespace Bake.Services.DotNetArguments
+{
+    public abstract class DotNetArgument : Argument
+    {
+        public string FilePath { get; set; }
+        public string WorkingDirectory { get; }
+
+        protected DotNetArgument(string filePath)
         {
-            ApiKey = apiKey;
-            Source = source;
+            FilePath = Path.GetFullPath(filePath);
+            WorkingDirectory = Path.GetDirectoryName(filePath);
         }
     }
 }

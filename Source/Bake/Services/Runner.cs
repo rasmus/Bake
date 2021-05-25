@@ -51,7 +51,8 @@ namespace Bake.Services
             ILogger logger,
             string command,
             string workingDirectory,
-            IReadOnlyCollection<string> arguments)
+            IReadOnlyCollection<string> arguments,
+            IReadOnlyDictionary<string, string> environmentVariables)
         {
             _logger = logger;
             _command = command;
@@ -60,7 +61,8 @@ namespace Bake.Services
             _process = CreateProcess(
                 command,
                 workingDirectory,
-                arguments);
+                arguments,
+                environmentVariables);
             _process.OutputDataReceived += OnStdOut;
             _process.ErrorDataReceived += OnStdErr;
         }
@@ -127,10 +129,11 @@ namespace Bake.Services
         private static Process CreateProcess(
             string command,
             string workingDirectory,
-            IEnumerable<string> arguments)
+            IEnumerable<string> arguments,
+            IReadOnlyDictionary<string, string> environmentVariables)
         {
             var argumentsString = string.Join(" ", arguments);
-            return new Process
+            var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                         {
@@ -144,6 +147,13 @@ namespace Bake.Services
                             WorkingDirectory = workingDirectory,
                         },
                 };
+
+            foreach (var (key, value) in environmentVariables)
+            {
+                process.StartInfo.EnvironmentVariables[key] = value;
+            }
+
+            return process;
         }
     }
 }

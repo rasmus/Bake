@@ -20,43 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.Services.DockerArguments;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Services
 {
-    public class DotNetRestoreCook : Cook<DotNetRestoreSolutionRecipe>
+    public class Docker : IDocker
     {
-        private readonly IDotNet _dotNet;
+        private readonly IRunnerFactory _runnerFactory;
 
-        public DotNetRestoreCook(
-            IDotNet dotNet)
+        public Docker(
+            IRunnerFactory runnerFactory)
         {
-            _dotNet = dotNet;
+            _runnerFactory = runnerFactory;
         }
 
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetRestoreSolutionRecipe recipe,
+        public Task<int> DockerBuildAsync(
+            DockerBuildArgument argument,
             CancellationToken cancellationToken)
         {
-            if (recipe.ClearLocalHttpCache)
-            {
-                var success = await _dotNet.ClearNuGetLocalsAsync(
-                    cancellationToken);
-                if (!success)
+            var arguments = new []
                 {
-                    return false;
-                }
-            }
+                    "build",
+                    "--pull",
+                    "--no-cache",
+                    "--progress", "plain",
+                    "."
+                };
+            var workingDirectory = Path.GetDirectoryName(argument.Path);
 
-            return await _dotNet.RestoreAsync(
-                new DotNetRestoreArgument(
-                    recipe.Path),
-                cancellationToken);
+
+            var runner = _runnerFactory.CreateRunner(
+                "docker",
+                workingDirectory,
+                arguments);
+
+            return runner.ExecuteAsync(cancellationToken);
         }
     }
 }

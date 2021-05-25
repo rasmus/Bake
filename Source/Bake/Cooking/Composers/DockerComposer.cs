@@ -25,6 +25,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.Docker;
 
 namespace Bake.Cooking.Composers
 {
@@ -38,10 +39,24 @@ namespace Bake.Cooking.Composers
                 context.Ingredients.WorkingDirectory,
                 cancellationToken);
 
-            return new List<Recipe>();
+            var recipes = new List<Recipe>();
+
+            foreach (var dockerFilePath in dockerFilePaths)
+            {
+                recipes.AddRange(CreateRecipes(dockerFilePath));
+            }
+
+            return recipes;
         }
 
-        private async Task<IReadOnlyCollection<string>> FindDockerFilesAsync(
+        private static IEnumerable<Recipe> CreateRecipes(
+            string path)
+        {
+            yield return new DockerBuildRecipe(
+                path);
+        }
+
+        private static async Task<IReadOnlyCollection<string>> FindDockerFilesAsync(
             string directoryPath,
             CancellationToken cancellationToken)
         {
