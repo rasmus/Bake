@@ -85,6 +85,7 @@ namespace Bake.Cooking
                     {
                         _logger.LogError(
                             "Recipe {RecipeName} failed with artifact validation errors: {ArtifactValidationErrors}",
+                            cook.RecipeName,
                             errors);
                         success = false;
                     }

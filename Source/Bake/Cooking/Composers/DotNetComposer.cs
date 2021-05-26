@@ -177,9 +177,9 @@ namespace Bake.Cooking.Composers
                 var path = Path.Combine("bin", configuration, "publish", "AnyCpu");
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
-                    true,
                     false,
-                    true,
+                    false,
+                    false,
                     configuration,
                     DotNetTargetRuntime.NotConfigured,
                     path,
@@ -187,7 +187,16 @@ namespace Bake.Cooking.Composers
                     {
                         new DirectoryArtifact(
                             new ArtifactKey("dotnet-publish", visualStudioProject.Name),
-                            Path.GetFullPath(Path.Combine(visualStudioProject.Path, path)))
+                            Path.Combine(visualStudioProject.Directory, path))
+                    });
+
+                yield return new DotNetDockerFileRecipe(
+                    visualStudioProject.Path,
+                    new Artifact[]
+                    {
+                        new FileArtifact(
+                            new ArtifactKey("dockerfile", visualStudioProject.Name),
+                            Path.Combine(visualStudioProject.Directory, "Dockerfile"))
                     });
             }
 
@@ -208,7 +217,7 @@ namespace Bake.Cooking.Composers
                     {
                         new DirectoryArtifact(
                             new ArtifactKey($"dotnet-tool-{runtime.ToName()}", visualStudioProject.Name),
-                            Path.GetFullPath(Path.Combine(visualStudioProject.Directory, path)))
+                            Path.Combine(visualStudioProject.Directory, path))
                     });
             }
         }

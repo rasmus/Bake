@@ -223,8 +223,12 @@ namespace Bake.Services
                     "--output", argument.Output
                 };
 
+            if (argument.Runtime != DotNetTargetRuntime.NotConfigured)
+            {
+                arguments.AddRange(new []{"--runtime", argument.Runtime.ToName()});
+            }
+
             AddIf(!argument.Build, arguments, "--no-build");
-            AddIf(argument.Runtime != DotNetTargetRuntime.NotConfigured, arguments, "--runtime", argument.Runtime.ToName());
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");
             

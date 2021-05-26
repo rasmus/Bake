@@ -76,6 +76,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetPackCook>()
                 .AddTransient<ICook, DotNetNuGetPushCook>()
                 .AddTransient<ICook, DotNetPublishCook>()
+                .AddTransient<ICook, DotNetDockerFileCook>()
                 // Cooks - Docker
                 .AddTransient<ICook, DockerBuildCook>()
 
