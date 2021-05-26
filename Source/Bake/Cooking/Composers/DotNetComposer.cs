@@ -25,8 +25,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -170,17 +172,44 @@ namespace Bake.Cooking.Composers
                 }
             }
 
-            foreach (var visualStudioProject in visualStudioSolution.Projects
-                .Where(p => p.CsProj.PackAsTool))
-            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.IsPublishable))
             {
+                var path = Path.Combine("bin", configuration, "publish", "AnyCpu");
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
                     false,
                     true,
                     configuration,
-                    runtime);
+                    DotNetTargetRuntime.NotConfigured,
+                    path,
+                    new Artifact[]
+                    {
+                        new DirectoryArtifact(
+                            new ArtifactKey("dotnet-publish", visualStudioProject.Name),
+                            Path.GetFullPath(Path.Combine(visualStudioProject.Path, path)))
+                    });
+            }
+
+            foreach (var visualStudioProject in visualStudioSolution.Projects
+                .Where(p => p.CsProj.PackAsTool))
+            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            {
+                var path = Path.Combine("bin", configuration, "publish", runtime.ToName());
+                yield return new DotNetPublishRecipe(
+                    visualStudioProject.Path,
+                    true,
+                    false,
+                    true,
+                    configuration,
+                    runtime,
+                    path,
+                    new Artifact[]
+                    {
+                        new DirectoryArtifact(
+                            new ArtifactKey($"dotnet-tool-{runtime.ToName()}", visualStudioProject.Name),
+                            Path.GetFullPath(Path.Combine(visualStudioProject.Directory, path)))
+                    });
             }
         }
 

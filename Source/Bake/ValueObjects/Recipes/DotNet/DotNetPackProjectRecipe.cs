@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Bake.Core;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet

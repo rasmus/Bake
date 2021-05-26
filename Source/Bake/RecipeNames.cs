@@ -38,6 +38,7 @@ namespace Bake
             public const string Test = "dotnet-test";
             public const string NuGetPush = "dotnet-nuget-push";
             public const string Publish = "dotnet-publish";
+            public const string DockerFile = "dotnet-dockerfile";
         }
     }
 }

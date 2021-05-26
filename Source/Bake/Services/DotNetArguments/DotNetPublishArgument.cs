@@ -31,6 +31,7 @@ namespace Bake.Services.DotNetArguments
         public bool Build { get; }
         public string Configuration { get; }
         public DotNetTargetRuntime Runtime { get; }
+        public string Output { get; }
 
         public DotNetPublishArgument(
             string filePath,
@@ -38,7 +39,8 @@ namespace Bake.Services.DotNetArguments
             bool selfContained,
             bool build,
             string configuration,
-            DotNetTargetRuntime runtime)
+            DotNetTargetRuntime runtime,
+            string output)
             : base(filePath)
         {
             PublishSingleFile = publishSingleFile;
@@ -46,6 +48,7 @@ namespace Bake.Services.DotNetArguments
             Build = build;
             Configuration = configuration;
             Runtime = runtime;
+            Output = output;
         }
     }
 }

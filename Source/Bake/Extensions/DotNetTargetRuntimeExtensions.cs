@@ -22,27 +22,28 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using YamlDotNet.Serialization;
+using Bake.ValueObjects.Recipes.DotNet;
 
-namespace Bake.ValueObjects
+namespace Bake.Extensions
 {
-    public abstract class Artifact : ValueObject
+    public static class DotNetTargetRuntimeExtensions
     {
-        [YamlMember]
-        public ArtifactKey Key { get; [Obsolete] set; }
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, string> RuntimeMap = new Dictionary<DotNetTargetRuntime, string>
+            {
+                [DotNetTargetRuntime.Linux64] = "linux-x64",
+                [DotNetTargetRuntime.Windows64] = "win-x64",
+            };
 
-        [Obsolete]
-        protected Artifact() { }
-
-        protected Artifact(
-            ArtifactKey key)
+        public static string ToName(this DotNetTargetRuntime runtime)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Key = key;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+            if (!RuntimeMap.TryGetValue(runtime, out var name))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(runtime),
+                    $"Value {runtime} ({(int) runtime}) is unknown");
+            }
 
-        public abstract IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken);
+            return name;
+        }
     }
 }

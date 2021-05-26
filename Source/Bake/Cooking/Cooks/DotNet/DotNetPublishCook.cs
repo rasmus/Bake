@@ -49,7 +49,8 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.SelfContained,
                 recipe.Build,
                 recipe.Configuration,
-                recipe.Runtime);
+                recipe.Runtime,
+                recipe.Output);
 
             return _dotNet.PublishAsync(
                 argument,

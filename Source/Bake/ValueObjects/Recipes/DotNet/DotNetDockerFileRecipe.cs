@@ -21,29 +21,25 @@
 // SOFTWARE.
 
 using System;
-using System.Text.RegularExpressions;
+using Bake.ValueObjects.Artifacts;
 
-namespace Bake.ValueObjects
+namespace Bake.ValueObjects.Recipes.DotNet
 {
-    public class ArtifactKey : ValueObject
+    [Recipe(RecipeNames.DotNet.DockerFile)]
+    public class DotNetDockerFileRecipe : Recipe
     {
-        public string Type { get; [Obsolete] set; }
-        public string Name { get; [Obsolete] set; }
-
-        private static readonly Regex Parser = new Regex(
-            @"^(?<type>[a-z\-0-9]{1,}:(?<name>[a-z0-9\.\-])}{1,})$",
-            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        public string ProjectPath { get; [Obsolete] set; }
 
         [Obsolete]
-        public ArtifactKey() { }
+        public DotNetDockerFileRecipe() { }
 
-        public ArtifactKey(
-            string type,
-            string name)
+        public DotNetDockerFileRecipe(
+            string projectPath,
+            Artifact[] artifacts)
+            : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Type = type;
-            Name = name;
+            ProjectPath = projectPath;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }
