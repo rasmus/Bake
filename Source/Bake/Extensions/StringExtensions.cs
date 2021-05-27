@@ -20,42 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
+using System;
 using System.Text;
-using System.Threading.Tasks;
-using Bake.Commands;
-using Bake.Core;
-using Bake.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using System.Text.RegularExpressions;
 
-// ReSharper disable AccessToDisposedClosure
-
-namespace Bake
+namespace Bake.Extensions
 {
-    public class Program
+    public static class StringExtensions
     {
-        public static async Task<int> Main(string[] args)
+        static StringExtensions()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
 
-            var logCollector = new LogCollector();
-            var serviceCollection = new ServiceCollection()
-                .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
-                .AddBake(logCollector);
+        private static readonly Regex SlugInvalidCharacters = new Regex(
+            @"[^a-z0-9-]+",
+            RegexOptions.Compiled);
 
-            var commandType = typeof(ICommand);
-            var commandTypes = serviceCollection
-                .Where(d => commandType.IsAssignableFrom(d.ImplementationType))
-                .Select(d => d.ImplementationType)
-                .ToList();
+        private static readonly Regex SlugMultipleDash = new Regex(
+            @"\-{2,}",
+            RegexOptions.Compiled);
 
-            await using var serviceProvider = serviceCollection.BuildServiceProvider(true);
+        public static string ToSlug(this string text)
+        {
+            var str = text.RemoveAccent();
+            str = str.ToLowerInvariant();
+            str = SlugInvalidCharacters.Replace(str, "-");
+            str = str.Trim('-');
+            str = SlugMultipleDash.Replace(str, "-");
 
-            var executor = serviceProvider.GetRequiredService<IExecutor>();
-            var returnCode = await executor.ExecuteAsync(args, commandTypes);
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new ArgumentException($"'{text}' cannot be converted to a slug");
+            }
 
-            return returnCode;
+            return str;
+        }
+
+        public static string RemoveAccent(this string text) 
+        {
+            var bytes = Encoding.GetEncoding("Cyrillic").GetBytes(text); 
+            return Encoding.ASCII.GetString(bytes); 
         }
     }
 }

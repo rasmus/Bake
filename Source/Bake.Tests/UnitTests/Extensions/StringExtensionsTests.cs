@@ -20,42 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bake.Commands;
-using Bake.Core;
 using Bake.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-// ReSharper disable AccessToDisposedClosure
+// ReSharper disable StringLiteralTypo
 
-namespace Bake
+namespace Bake.Tests.UnitTests.Extensions
 {
-    public class Program
+    public class StringExtensionsTests : TestIt
     {
-        public static async Task<int> Main(string[] args)
+        [TestCase("æøå", "aoa")]
+        [TestCase("abc", "abc")]
+        [TestCase("kjcasd )=(/=)(/& cadsÆØÅÆhcadjskchj/(/7856", "kjcasd-cadsaoaahcadjskchj-7856")]
+        public void ToSlug(string input, string expectedOutput)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            // Act
+            var result = input.ToSlug();
 
-            var logCollector = new LogCollector();
-            var serviceCollection = new ServiceCollection()
-                .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
-                .AddBake(logCollector);
-
-            var commandType = typeof(ICommand);
-            var commandTypes = serviceCollection
-                .Where(d => commandType.IsAssignableFrom(d.ImplementationType))
-                .Select(d => d.ImplementationType)
-                .ToList();
-
-            await using var serviceProvider = serviceCollection.BuildServiceProvider(true);
-
-            var executor = serviceProvider.GetRequiredService<IExecutor>();
-            var returnCode = await executor.ExecuteAsync(args, commandTypes);
-
-            return returnCode;
+            // Assert
+            result.Should().Be(expectedOutput);
         }
     }
 }

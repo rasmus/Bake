@@ -31,14 +31,18 @@ namespace Bake.ValueObjects.Recipes.Docker
         [YamlMember]
         public string Path { get; [Obsolete] set; }
 
+        public string Name { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerBuildRecipe() { }
 
         public DockerBuildRecipe(
-            string path)
+            string path,
+            string name)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
+            Name = name;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

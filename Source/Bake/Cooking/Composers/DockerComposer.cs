@@ -21,9 +21,11 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
 
@@ -61,8 +63,11 @@ namespace Bake.Cooking.Composers
         private static IEnumerable<Recipe> CreateRecipes(
             string path)
         {
+            var directoryName = Path.GetFileName(Path.GetDirectoryName(path));
+
             yield return new DockerBuildRecipe(
-                path);
+                path,
+                directoryName.ToSlug());
         }
     }
 }
