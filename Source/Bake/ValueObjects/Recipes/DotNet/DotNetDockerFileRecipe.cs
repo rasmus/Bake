@@ -35,7 +35,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
 
         public DotNetDockerFileRecipe(
             string projectPath,
-            Artifact[] artifacts)
+            params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
