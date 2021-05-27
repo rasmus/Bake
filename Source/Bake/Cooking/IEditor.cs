@@ -28,8 +28,7 @@ namespace Bake.Cooking
 {
     public interface IEditor
     {
-        Task<Book> ComposeAsync(
-            IContext context,
+        Task<Book> ComposeAsync(Context context,
             CancellationToken cancellationToken);
     }
 }

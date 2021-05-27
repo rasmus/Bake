@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Recipes;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking
@@ -51,22 +53,28 @@ namespace Bake.Cooking
         }
 
         public async Task<Book> ComposeAsync(
-            IContext context,
+            Context context,
             CancellationToken cancellationToken)
         {
             await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, cancellationToken)));
 
-            var tasks = _composers
-                .Select(c => c.ComposeAsync(context, cancellationToken))
-                .ToList();
+            var recipes = new List<Recipe>();
 
-            var recipes = (await Task.WhenAll(tasks))
-                .SelectMany(c => c)
-                .ToArray();
+            // TODO: Really need to have a proper ordering in place that is more dynamic
+            foreach (var composer in _composers.OrderBy(c => c.Consumes.Count))
+            {
+                var createdRecipes = await composer.ComposeAsync(context, cancellationToken);
+                var createdArtifacts = createdRecipes
+                    .SelectMany(r => r.Artifacts ?? Artifact.Empty)
+                    .ToList();
+
+                recipes.AddRange(createdRecipes);
+                context.AddArtifacts(createdArtifacts);
+            }
 
             var book = new Book(
                 context.Ingredients,
-                recipes);
+                recipes.ToArray());
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {

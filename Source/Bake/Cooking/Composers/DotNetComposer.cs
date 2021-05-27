@@ -37,12 +37,21 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Composers
 {
-    public class DotNetComposer : IComposer
+    public class DotNetComposer : Composer
     {
         private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
             {
                 [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
                 [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
+            };
+
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
+            {
+                ArtifactType.WindowsTool,
+                ArtifactType.LinuxTool,
+                ArtifactType.Dockerfile,
+                ArtifactType.NuGet,
+                ArtifactType.DotNetPublishedDirectory,
             };
 
         private readonly IFileSystem _fileSystem;
@@ -59,7 +68,7 @@ namespace Bake.Cooking.Composers
             _conventionInterpreter = conventionInterpreter;
         }
 
-        public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {

@@ -39,7 +39,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
             await File.WriteAllTextAsync(
                 dockerFilePath,
-                string.Empty,
+                "FROM alpine:3",
                 cancellationToken);
 
             return true;

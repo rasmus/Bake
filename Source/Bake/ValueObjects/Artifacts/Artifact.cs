@@ -29,6 +29,8 @@ namespace Bake.ValueObjects.Artifacts
 {
     public abstract class Artifact : ValueObject
     {
+        public static IReadOnlyCollection<Artifact> Empty { get; } = new Artifact[] { };
+
         [YamlMember]
         public ArtifactKey Key { get; [Obsolete] set; }
 

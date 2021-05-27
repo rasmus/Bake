@@ -22,17 +22,28 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
 
 namespace Bake.Cooking.Composers
 {
-    public class DockerComposer : IComposer
+    public class DockerComposer : Composer
     {
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
+            {
+                ArtifactType.DockerContainer,
+            };
+        public override IReadOnlyCollection<ArtifactType> Consumes { get; } = new[]
+            {
+                ArtifactType.Dockerfile,
+            };
+
         private readonly IFileSystem _fileSystem;
 
         public DockerComposer(
@@ -41,7 +52,7 @@ namespace Bake.Cooking.Composers
             _fileSystem = fileSystem;
         }
 
-        public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
@@ -55,6 +66,13 @@ namespace Bake.Cooking.Composers
             foreach (var dockerFilePath in dockerFilePaths)
             {
                 recipes.AddRange(CreateRecipes(dockerFilePath));
+            }
+
+            foreach (var fileArtifact in context
+                .GetArtifacts<FileArtifact>()
+                .Where(a => a.Key.Type == ArtifactType.Dockerfile))
+            {
+                recipes.AddRange(CreateRecipes(fileArtifact.Path));
             }
 
             return recipes;
