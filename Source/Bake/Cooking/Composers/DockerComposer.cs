@@ -21,9 +21,9 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
 
@@ -31,12 +31,21 @@ namespace Bake.Cooking.Composers
 {
     public class DockerComposer : IComposer
     {
+        private readonly IFileSystem _fileSystem;
+
+        public DockerComposer(
+            IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
         public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
-            var dockerFilePaths = await FindDockerFilesAsync(
+            var dockerFilePaths = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
+                "Dockerfile",
                 cancellationToken);
 
             var recipes = new List<Recipe>();
@@ -54,19 +63,6 @@ namespace Bake.Cooking.Composers
         {
             yield return new DockerBuildRecipe(
                 path);
-        }
-
-        private static async Task<IReadOnlyCollection<string>> FindDockerFilesAsync(
-            string directoryPath,
-            CancellationToken cancellationToken)
-        {
-            var dockerFilePaths = await Task.Factory.StartNew(
-                () => Directory.GetFiles(directoryPath, "Dockerfile", SearchOption.AllDirectories),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-            return dockerFilePaths;
         }
     }
 }

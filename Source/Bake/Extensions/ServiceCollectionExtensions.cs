@@ -56,6 +56,7 @@ namespace Bake.Extensions
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
                 .AddSingleton<IRandom, RandomWrapper>()
+                .AddSingleton<IFileSystem, FileSystem>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()

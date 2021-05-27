@@ -20,43 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Composers;
-using Bake.Core;
-using Bake.Services;
-using Bake.Tests.Helpers;
-using Bake.ValueObjects;
-using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
 
-namespace Bake.Tests.IntegrationTests.ServiceTests
+namespace Bake.Core
 {
-    public class DotNetComposerServiceTests : ServiceTest<DotNetComposer>
+    public class FileSystem : IFileSystem
     {
-        public DotNetComposerServiceTests() : base("NetCore.Console")
+        public Task<IReadOnlyCollection<string>> FindFilesAsync(
+            string directoryPath,
+            string searchPattern,
+            CancellationToken cancellationToken)
         {
-        }
-
-        [Test]
-        public async Task T()
-        {
-            // Act
-            var recipes = await Sut.ComposeAsync(
-                new Context(
-                    new Credentials(),
-                    Ingredients.New(
-                        SemVer.With(1,2,3),
-                        WorkingDirectory)), 
-                CancellationToken.None);
-        }
-
-        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
-        {
-            return base.Configure(serviceCollection)
-                .AddTransient<ICsProjParser, CsProjParser>()
-                .AddTransient<IFileSystem, FileSystem>()
-                .AddTransient<IConventionInterpreter, ConventionInterpreter>();
+            return Task.Factory.StartNew(
+                () => (IReadOnlyCollection<string>) Directory.GetFiles(directoryPath, searchPattern, SearchOption.AllDirectories),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
     }
 }

@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
@@ -43,13 +44,17 @@ namespace Bake.Cooking.Composers
                 [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
                 [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
             };
+
+        private readonly IFileSystem _fileSystem;
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
         
         public DotNetComposer(
+            IFileSystem fileSystem,
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter)
         {
+            _fileSystem = fileSystem;
             _csProjParser = csProjParser;
             _conventionInterpreter = conventionInterpreter;
         }
@@ -58,16 +63,14 @@ namespace Bake.Cooking.Composers
             IContext context,
             CancellationToken cancellationToken)
         {
-            var solutionFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.sln", SearchOption.AllDirectories),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-            var projectFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.csproj", SearchOption.AllDirectories),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            var solutionFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.sln",
+                cancellationToken);
+            var projectFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.csproj",
+                cancellationToken);
 
             await Task.WhenAll(solutionFilesTask, projectFilesTask);
 
