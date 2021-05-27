@@ -27,7 +27,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.Services;
-using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
@@ -39,9 +38,14 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : IComposer
     {
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
+            {
+                [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
+                [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
+            };
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
-
+        
         public DotNetComposer(
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter)
@@ -140,13 +144,6 @@ namespace Bake.Cooking.Composers
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePacked))
             {
-                var artifacts = new Artifact[]
-                    {
-                        new FileArtifact(
-                            new ArtifactKey("nuget", visualStudioProject.Name),
-                            CalculateNuGetPath(ingredients, visualStudioProject, configuration))
-                    };
-
                 yield return new DotNetPackProjectRecipe(
                     visualStudioProject.Path,
                     false,
@@ -155,7 +152,9 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
-                    artifacts);
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
+                        CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
@@ -183,19 +182,16 @@ namespace Bake.Cooking.Composers
                     configuration,
                     DotNetTargetRuntime.NotConfigured,
                     path,
-                    new Artifact[]
-                    {
-                        new DirectoryArtifact(
-                            new ArtifactKey("dotnet-publish", visualStudioProject.Name),
-                            Path.Combine(visualStudioProject.Directory, path))
-                    });
+                    new DirectoryArtifact(
+                        new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
+                        Path.Combine(visualStudioProject.Directory, path)));
 
                 yield return new DotNetDockerFileRecipe(
                     visualStudioProject.Path,
                     new Artifact[]
                     {
                         new FileArtifact(
-                            new ArtifactKey("dockerfile", visualStudioProject.Name),
+                            new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                             Path.Combine(visualStudioProject.Directory, "Dockerfile"))
                     });
             }
@@ -213,12 +209,9 @@ namespace Bake.Cooking.Composers
                     configuration,
                     runtime,
                     path,
-                    new Artifact[]
-                    {
-                        new DirectoryArtifact(
-                            new ArtifactKey($"dotnet-tool-{runtime.ToName()}", visualStudioProject.Name),
-                            Path.Combine(visualStudioProject.Directory, path))
-                    });
+                    new DirectoryArtifact(
+                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
+                        Path.Combine(visualStudioProject.Directory, path)));
             }
         }
 

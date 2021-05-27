@@ -62,7 +62,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSource,
             string configuration,
             SemVer version,
-            Artifact[] artifacts)
+            params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete

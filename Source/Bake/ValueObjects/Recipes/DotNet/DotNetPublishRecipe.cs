@@ -61,7 +61,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string configuration,
             DotNetTargetRuntime runtime,
             string output,
-            Artifact[] artifacts)
+            params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete

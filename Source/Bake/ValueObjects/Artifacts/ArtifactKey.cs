@@ -21,24 +21,19 @@
 // SOFTWARE.
 
 using System;
-using System.Text.RegularExpressions;
 
 namespace Bake.ValueObjects.Artifacts
 {
     public class ArtifactKey : ValueObject
     {
-        public string Type { get; [Obsolete] set; }
+        public ArtifactType Type { get; [Obsolete] set; }
         public string Name { get; [Obsolete] set; }
-
-        private static readonly Regex Parser = new Regex(
-            @"^(?<type>[a-z\-0-9]{1,}:(?<name>[a-z0-9\.\-])}{1,})$",
-            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
         [Obsolete]
         public ArtifactKey() { }
 
         public ArtifactKey(
-            string type,
+            ArtifactType type,
             string name)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
