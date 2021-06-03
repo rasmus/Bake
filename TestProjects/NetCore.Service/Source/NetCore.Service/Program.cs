@@ -20,25 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
+namespace NetCore.Service
 {
-    public static class RecipeNames
+    public class Program
     {
-        public static class Docker
+        public static void Main(string[] args)
         {
-            public const string Build = "docker-build";
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static class DotNet
-        {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
-        }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

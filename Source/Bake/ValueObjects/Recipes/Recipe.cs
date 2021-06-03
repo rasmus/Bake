@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes

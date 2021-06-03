@@ -20,25 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
-{
-    public static class RecipeNames
-    {
-        public static class Docker
-        {
-            public const string Build = "docker-build";
-        }
+using System;
+using Bake.ValueObjects.Artifacts;
 
-        public static class DotNet
+namespace Bake.ValueObjects.Recipes.DotNet
+{
+    [Recipe(RecipeNames.DotNet.DockerFile)]
+    public class DotNetDockerFileRecipe : Recipe
+    {
+        public string ProjectPath { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DotNetDockerFileRecipe() { }
+
+        public DotNetDockerFileRecipe(
+            string projectPath,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+#pragma warning disable CS0612 // Type or member is obsolete
+            ProjectPath = projectPath;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

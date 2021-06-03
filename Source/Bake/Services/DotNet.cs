@@ -34,12 +34,6 @@ namespace Bake.Services
 {
     public class DotNet : IDotNet
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, string> RuntimeMap = new Dictionary<DotNetTargetRuntime, string>
-            {
-                [DotNetTargetRuntime.Linux64] = "linux-x64",
-                [DotNetTargetRuntime.Windows64] = "win-x64",
-            };
-
         private readonly IRunnerFactory _runnerFactory;
 
         public DotNet(
@@ -225,11 +219,16 @@ namespace Bake.Services
                 {
                     "publish",
                     "--configuration", argument.Configuration,
-                    "--nologo"
+                    "--nologo",
+                    "--output", argument.Output
                 };
 
+            if (argument.Runtime != DotNetTargetRuntime.NotConfigured)
+            {
+                arguments.AddRange(new []{"--runtime", argument.Runtime.ToName()});
+            }
+
             AddIf(!argument.Build, arguments, "--no-build");
-            AddIf(argument.Runtime != DotNetTargetRuntime.NotConfigured, arguments, "--runtime", RuntimeMap[argument.Runtime]);
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");
             

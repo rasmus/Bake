@@ -21,8 +21,8 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Bake.Core;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -62,7 +62,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSource,
             string configuration,
             SemVer version,
-            Artifact[] artifacts)
+            params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete

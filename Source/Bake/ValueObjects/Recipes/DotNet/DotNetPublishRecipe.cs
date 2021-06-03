@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -46,6 +47,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public DotNetTargetRuntime Runtime { get; [Obsolete] set; }
 
+        [YamlMember]
+        public string Output { get; [Obsolete] set; }
+
         [Obsolete]
         public DotNetPublishRecipe() { }
 
@@ -55,7 +59,10 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool selfContained,
             bool build,
             string configuration,
-            DotNetTargetRuntime runtime)
+            DotNetTargetRuntime runtime,
+            string output,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
@@ -64,6 +71,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Build = build;
             Configuration = configuration;
             Runtime = runtime;
+            Output = output;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

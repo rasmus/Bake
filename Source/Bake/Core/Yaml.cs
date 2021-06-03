@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
@@ -67,6 +68,7 @@ namespace Bake.Core
                 new DeserializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithTagMapping("!file-artifact", typeof(FileArtifact))
+                .WithTagMapping("!directory-artifact", typeof(DirectoryArtifact))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .Build();
@@ -74,8 +76,10 @@ namespace Bake.Core
                 new SerializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithTagMapping("!file-artifact", typeof(FileArtifact))
+                .WithTagMapping("!directory-artifact", typeof(DirectoryArtifact))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
+                .DisableAliases()
                 .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
                 .Build();
         }

@@ -20,37 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Recipes;
 
-namespace Bake.ValueObjects
+namespace Bake.Cooking
 {
-    public class FileArtifact : Artifact
+    public abstract class Composer : IComposer
     {
-        public string Path { get; [Obsolete] set; }
+        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
 
-        [Obsolete]
-        public FileArtifact() { }
+        public virtual IReadOnlyCollection<ArtifactType> Produces { get; } = EmptyArtifactTypes;
+        public virtual IReadOnlyCollection<ArtifactType> Consumes { get; } = EmptyArtifactTypes;
 
-        public FileArtifact(
-            ArtifactKey key,
-            string path)
-            : base(key)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            CancellationToken _)
-        {
-            if (!File.Exists(Path))
-            {
-                yield return $"File {Path} does not exist";
-            }
-        }
+        public abstract Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+            IContext context,
+            CancellationToken cancellationToken);
     }
 }

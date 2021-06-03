@@ -20,25 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public static class RecipeNames
+    public class NetCoreServiceTests : BakeTest
     {
-        public static class Docker
+        public NetCoreServiceTests()
+            : base("NetCore.Service")
         {
-            public const string Build = "docker-build";
         }
 
-        public static class DotNet
+        [Test]
+        public async Task Run()
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            // Act
+            var returnCode = await ExecuteAsync(
+                "run",
+                "--build-version", SemVer.Random.ToString());
+
+            // Assert
+            returnCode.Should().Be(0);
         }
     }
 }

@@ -25,8 +25,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Extensions;
 using Bake.Services;
-using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -35,33 +37,49 @@ using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Composers
 {
-    public class DotNetComposer : IComposer
+    public class DotNetComposer : Composer
     {
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
+            {
+                [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
+                [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
+            };
+
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
+            {
+                ArtifactType.WindowsTool,
+                ArtifactType.LinuxTool,
+                ArtifactType.Dockerfile,
+                ArtifactType.NuGet,
+                ArtifactType.DotNetPublishedDirectory,
+            };
+
+        private readonly IFileSystem _fileSystem;
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
-
+        
         public DotNetComposer(
+            IFileSystem fileSystem,
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter)
         {
+            _fileSystem = fileSystem;
             _csProjParser = csProjParser;
             _conventionInterpreter = conventionInterpreter;
         }
 
-        public async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
-            var solutionFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.sln", SearchOption.AllDirectories),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-            var projectFilesTask = Task.Factory.StartNew(
-                () => Directory.GetFiles(context.Ingredients.WorkingDirectory, "*.csproj", SearchOption.AllDirectories),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            var solutionFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.sln",
+                cancellationToken);
+            var projectFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.csproj",
+                cancellationToken);
 
             await Task.WhenAll(solutionFilesTask, projectFilesTask);
 
@@ -138,13 +156,6 @@ namespace Bake.Cooking.Composers
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.ShouldBePacked))
             {
-                var artifacts = new Artifact[]
-                    {
-                        new FileArtifact(
-                            new ArtifactKey("nuget", visualStudioProject.Name),
-                            CalculateNuGetPath(ingredients, visualStudioProject, configuration))
-                    };
-
                 yield return new DotNetPackProjectRecipe(
                     visualStudioProject.Path,
                     false,
@@ -153,7 +164,9 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
-                    artifacts);
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
+                        CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
@@ -170,17 +183,44 @@ namespace Bake.Cooking.Composers
                 }
             }
 
+            foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.IsPublishable))
+            {
+                var path = Path.Combine("bin", configuration, "publish", "AnyCpu");
+                yield return new DotNetPublishRecipe(
+                    visualStudioProject.Path,
+                    false,
+                    false,
+                    false,
+                    configuration,
+                    DotNetTargetRuntime.NotConfigured,
+                    path,
+                    new DirectoryArtifact(
+                        new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
+                        Path.Combine(visualStudioProject.Directory, path)));
+
+                yield return new DotNetDockerFileRecipe(
+                    visualStudioProject.Path,
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
+                        Path.Combine(visualStudioProject.Directory, "Dockerfile")));
+            }
+
             foreach (var visualStudioProject in visualStudioSolution.Projects
                 .Where(p => p.CsProj.PackAsTool))
             foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
             {
+                var path = Path.Combine("bin", configuration, "publish", runtime.ToName());
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
                     false,
                     true,
                     configuration,
-                    runtime);
+                    runtime,
+                    path,
+                    new DirectoryArtifact(
+                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
+                        Path.Combine(visualStudioProject.Directory, path)));
             }
         }
 

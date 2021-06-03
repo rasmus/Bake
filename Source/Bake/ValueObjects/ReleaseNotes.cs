@@ -22,12 +22,16 @@
 
 using System;
 using Bake.Core;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
 {
     public class ReleaseNotes
     {
+        [YamlMember]
         public SemVer Version { get; [Obsolete] set; }
+
+        [YamlMember]
         public string Notes { get; [Obsolete] set; }
 
         [Obsolete]

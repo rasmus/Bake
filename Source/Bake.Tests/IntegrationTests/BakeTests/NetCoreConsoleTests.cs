@@ -77,10 +77,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "netcoreapp3.1", "linux-x64", "publish", "NetCore.Console");
+                "bin", "Release", "publish", "linux-x64", "NetCore.Console");
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "netcoreapp3.1", "win-x64", "publish", "NetCore.Console.exe");
+                "bin", "Release", "publish", "win-x64", "NetCore.Console.exe");
         }
 
         [TestCase("-h")]

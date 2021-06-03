@@ -55,6 +55,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             return base.Configure(serviceCollection)
                 .AddTransient<ICsProjParser, CsProjParser>()
+                .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>();
         }
     }

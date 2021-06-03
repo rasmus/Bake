@@ -20,25 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace NetCore.Service
 {
-    public static class RecipeNames
+    public class Startup
     {
-        public static class Docker
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
         {
-            public const string Build = "docker-build";
         }
 
-        public static class DotNet
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello World!");
+                });
+            });
         }
     }
 }

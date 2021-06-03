@@ -20,25 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
+
+namespace Bake.ValueObjects.Artifacts
 {
-    public static class RecipeNames
+    public class DirectoryArtifact : Artifact
     {
-        public static class Docker
+        public string Path { get; [Obsolete] set; }
+
+        public DirectoryArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key)
         {
-            public const string Build = "docker-build";
+#pragma warning disable CS0612 // Type or member is obsolete
+            Path = path;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        public static class DotNet
+        [Obsolete]
+        public DirectoryArtifact() { }
+
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            [EnumeratorCancellation] CancellationToken _)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            if (!Directory.Exists(Path))
+            {
+                yield return $"Directory {Path} does not exist";
+            }
         }
     }
 }

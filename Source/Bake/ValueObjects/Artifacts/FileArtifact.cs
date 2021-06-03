@@ -22,27 +22,36 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects
+namespace Bake.ValueObjects.Artifacts
 {
-    public abstract class Artifact : ValueObject
+    public class FileArtifact : Artifact
     {
-        [YamlMember]
-        public ArtifactKey Key { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; }
 
         [Obsolete]
-        protected Artifact() { }
+        public FileArtifact() { }
 
-        protected Artifact(
-            ArtifactKey key)
+        public FileArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Key = key;
+            Path = path;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        public abstract IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken);
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            [EnumeratorCancellation] CancellationToken _)
+        {
+            if (!File.Exists(Path))
+            {
+                yield return $"File {Path} does not exist";
+            }
+        }
     }
 }

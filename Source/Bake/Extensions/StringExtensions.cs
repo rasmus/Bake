@@ -20,25 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Bake.Extensions
 {
-    public static class RecipeNames
+    public static class StringExtensions
     {
-        public static class Docker
+        static StringExtensions()
         {
-            public const string Build = "docker-build";
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
-        public static class DotNet
+        private static readonly Regex SlugInvalidCharacters = new Regex(
+            @"[^a-z0-9-]+",
+            RegexOptions.Compiled);
+
+        private static readonly Regex SlugMultipleDash = new Regex(
+            @"\-{2,}",
+            RegexOptions.Compiled);
+
+        public static string ToSlug(this string text)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            var str = text.RemoveAccent();
+            str = str.ToLowerInvariant();
+            str = SlugInvalidCharacters.Replace(str, "-");
+            str = str.Trim('-');
+            str = SlugMultipleDash.Replace(str, "-");
+
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new ArgumentException($"'{text}' cannot be converted to a slug");
+            }
+
+            return str;
+        }
+
+        public static string RemoveAccent(this string text) 
+        {
+            var bytes = Encoding.GetEncoding("Cyrillic").GetBytes(text); 
+            return Encoding.ASCII.GetString(bytes); 
         }
     }
 }

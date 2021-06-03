@@ -20,12 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 
 namespace Bake
 {
     public interface IContext
     {
         Ingredients Ingredients { get; }
+
+        IEnumerable<T> GetArtifacts<T>()
+            where T : Artifact;
     }
 }

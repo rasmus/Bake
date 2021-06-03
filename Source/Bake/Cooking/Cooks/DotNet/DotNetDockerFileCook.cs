@@ -20,31 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Text.RegularExpressions;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects.Recipes.DotNet;
 
-namespace Bake.ValueObjects
+namespace Bake.Cooking.Cooks.DotNet
 {
-    public class ArtifactKey : ValueObject
+    public class DotNetDockerFileCook : Cook<DotNetDockerFileRecipe>
     {
-        public string Type { get; [Obsolete] set; }
-        public string Name { get; [Obsolete] set; }
-
-        private static readonly Regex Parser = new Regex(
-            @"^(?<type>[a-z\-0-9]{1,}:(?<name>[a-z0-9\.\-])}{1,})$",
-            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-
-        [Obsolete]
-        public ArtifactKey() { }
-
-        public ArtifactKey(
-            string type,
-            string name)
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            DotNetDockerFileRecipe recipe,
+            CancellationToken cancellationToken)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Type = type;
-            Name = name;
-#pragma warning restore CS0612 // Type or member is obsolete
+            var directoryPath = Path.GetDirectoryName(recipe.ProjectPath);
+            var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
+
+            await File.WriteAllTextAsync(
+                dockerFilePath,
+                "FROM alpine:3",
+                cancellationToken);
+
+            return true;
         }
     }
 }

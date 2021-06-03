@@ -20,25 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
-{
-    public static class RecipeNames
-    {
-        public static class Docker
-        {
-            public const string Build = "docker-build";
-        }
+using Bake.Extensions;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-        public static class DotNet
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.UnitTests.Extensions
+{
+    public class StringExtensionsTests : TestIt
+    {
+        [TestCase("\u00E6\u00F8\u00E5", "aoa")]
+        [TestCase("abc", "abc")]
+        [TestCase("kjcasd )=(/=)(/& cads\u00C6\u00D8\u00C5\u00C6hcadjskchj/(/7856", "kjcasd-cadsaoaahcadjskchj-7856")]
+        public void ToSlug(string input, string expectedOutput)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            // Act
+            var result = input.ToSlug();
+
+            // Assert
+            result.Should().Be(expectedOutput);
         }
     }
 }

@@ -27,10 +27,10 @@ namespace Bake.ValueObjects
 {
     public class GitInformation
     {
-        [YamlMember(Alias = "sha")]
+        [YamlMember]
         public string Sha { get; [Obsolete] set; }
 
-        [YamlMember(typeof(string), Alias = "originUrl")]
+        [YamlMember(typeof(string))]
         public Uri OriginUrl { get; [Obsolete] set; }
 
         [Obsolete]

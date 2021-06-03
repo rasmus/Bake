@@ -20,8 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 using Bake.Core;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 
 namespace Bake
 {
@@ -30,12 +33,26 @@ namespace Bake
         public ICredentials Credentials { get; }
         public Ingredients Ingredients { get; }
 
+        private readonly List<Artifact> _artifacts = new List<Artifact>();
+
         public Context(
             ICredentials credentials,
             Ingredients ingredients)
         {
             Credentials = credentials;
             Ingredients = ingredients;
+        }
+
+        public void AddArtifacts(IEnumerable<Artifact> artifacts)
+        {
+            _artifacts.AddRange(artifacts);
+        }
+
+        public IEnumerable<T> GetArtifacts<T>() where T : Artifact
+        {
+            return _artifacts
+                .Select(a => a as T)
+                .Where(a => a != null);
         }
     }
 }

@@ -56,6 +56,7 @@ namespace Bake.Extensions
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
                 .AddSingleton<IRandom, RandomWrapper>()
+                .AddSingleton<IFileSystem, FileSystem>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -76,6 +77,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetPackCook>()
                 .AddTransient<ICook, DotNetNuGetPushCook>()
                 .AddTransient<ICook, DotNetPublishCook>()
+                .AddTransient<ICook, DotNetDockerFileCook>()
                 // Cooks - Docker
                 .AddTransient<ICook, DockerBuildCook>()
 

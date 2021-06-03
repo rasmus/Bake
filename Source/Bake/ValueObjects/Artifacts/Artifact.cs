@@ -20,25 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using YamlDotNet.Serialization;
+
+namespace Bake.ValueObjects.Artifacts
 {
-    public static class RecipeNames
+    public abstract class Artifact : ValueObject
     {
-        public static class Docker
+        public static IReadOnlyCollection<Artifact> Empty { get; } = new Artifact[] { };
+
+        [YamlMember]
+        public ArtifactKey Key { get; [Obsolete] set; }
+
+        [Obsolete]
+        protected Artifact() { }
+
+        protected Artifact(
+            ArtifactKey key)
         {
-            public const string Build = "docker-build";
+#pragma warning disable CS0612 // Type or member is obsolete
+            Key = key;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        public static class DotNet
-        {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
-        }
+        public abstract IAsyncEnumerable<string> ValidateAsync(
+            CancellationToken cancellationToken);
     }
 }
