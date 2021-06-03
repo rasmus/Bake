@@ -45,6 +45,7 @@ namespace Bake.ValueObjects.Artifacts
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        public abstract IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken);
+        public abstract IAsyncEnumerable<string> ValidateAsync(
+            CancellationToken cancellationToken);
     }
 }

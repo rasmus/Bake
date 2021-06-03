@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
@@ -45,7 +46,7 @@ namespace Bake.ValueObjects.Artifacts
         }
 
         public override async IAsyncEnumerable<string> ValidateAsync(
-            CancellationToken _)
+            [EnumeratorCancellation] CancellationToken _)
         {
             if (!File.Exists(Path))
             {
