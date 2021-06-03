@@ -21,8 +21,10 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.ValueObjects.Destinations;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -45,6 +47,9 @@ namespace Bake.ValueObjects
 
         [YamlMember]
         public Convention Convention { get; [Obsolete] set; }
+
+        [YamlMember]
+        public List<Destination> Destinations { get; [Obsolete] set; } = new List<Destination>();
 
         [YamlMember]
         public GitInformation Git
