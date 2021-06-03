@@ -31,9 +31,9 @@ namespace Bake.Tests.UnitTests.Extensions
 {
     public class StringExtensionsTests : TestIt
     {
-        [TestCase("Ê¯Â", "aoa")]
+        [TestCase("\u00E6\u00F8\u00E5", "aoa")]
         [TestCase("abc", "abc")]
-        [TestCase("kjcasd )=(/=)(/& cads∆ÿ≈∆hcadjskchj/(/7856", "kjcasd-cadsaoaahcadjskchj-7856")]
+        [TestCase("kjcasd )=(/=)(/& cads\u00C6\u00D8\u00C5\u00C6hcadjskchj/(/7856", "kjcasd-cadsaoaahcadjskchj-7856")]
         public void ToSlug(string input, string expectedOutput)
         {
             // Act
