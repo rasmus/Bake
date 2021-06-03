@@ -20,25 +20,96 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Core
 {
     public class FileSystem : IFileSystem
     {
-        public Task<IReadOnlyCollection<string>> FindFilesAsync(
+        private static readonly ConcurrentDictionary<string, bool> ShouldSkipCache = new ConcurrentDictionary<string, bool>();
+
+        private readonly ILogger<FileSystem> _logger;
+
+        public FileSystem(
+            ILogger<FileSystem> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task<IReadOnlyCollection<string>> FindFilesAsync(
             string directoryPath,
             string searchPattern,
             CancellationToken cancellationToken)
         {
-            return Task.Factory.StartNew(
+            _logger.LogDebug(
+                "Scanning {Directory} for pattern {SearchPattern}",
+                directoryPath,
+                searchPattern);
+
+            var filePaths = await Task.Factory.StartNew(
                 () => (IReadOnlyCollection<string>) Directory.GetFiles(directoryPath, searchPattern, SearchOption.AllDirectories),
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            var validPaths = new List<string>();
+            var skippedPaths = new List<string>();
+
+            foreach (var filePath in filePaths)
+            {
+                if (ShouldBeSkipped(Path.GetDirectoryName(filePath)))
+                {
+                    skippedPaths.Add(filePath);
+                }
+                else
+                {
+                    validPaths.Add(filePath);
+                }
+            }
+
+            _logger.LogDebug(
+                "Found these files {ValidFiles}, but skipped these {SkippedFiles}",
+                validPaths,
+                skippedPaths);
+
+            return validPaths;
+        }
+
+        private static bool ShouldBeSkipped(string directoryPath)
+        {
+            while (true)
+            {
+                if (ShouldSkipCache.TryGetValue(directoryPath, out var shouldBeSkipped))
+                {
+                    return shouldBeSkipped;
+                }
+
+                var hasSkipFile = Directory
+                    .GetFiles(directoryPath)
+                    .Any(f => string.Equals(".bake-ignore", Path.GetFileName(f), StringComparison.OrdinalIgnoreCase));
+
+                if (hasSkipFile)
+                {
+                    ShouldSkipCache[directoryPath] = true;
+                    return true;
+                }
+
+                var parentDirectory = new DirectoryInfo(directoryPath).Parent?.FullName;
+                if (string.IsNullOrEmpty(parentDirectory))
+                {
+                    ShouldSkipCache[directoryPath] = false;
+                    return false;
+                }
+
+                directoryPath = parentDirectory;
+            }
         }
     }
 }
