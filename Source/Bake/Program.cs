@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Core;
@@ -37,8 +36,6 @@ namespace Bake
     {
         public static async Task<int> Main(string[] args)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
             var logCollector = new LogCollector();
             var serviceCollection = new ServiceCollection()
                 .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
