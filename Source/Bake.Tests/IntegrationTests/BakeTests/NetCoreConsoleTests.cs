@@ -45,8 +45,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--convention", "Release",
-                "--destinations", "nuget|http://localhost:5555/v3/index.json",
+                "--convention=Release",
+                "--destination=nuget>http://localhost:5555/v3/index.json",
                 "--build-version", SemVer.Random.ToString());
 
             // Assert
