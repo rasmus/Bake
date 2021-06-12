@@ -22,7 +22,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Bake.Core;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 
@@ -30,16 +29,15 @@ namespace Bake
 {
     public class Context : IContext
     {
-        public ICredentials Credentials { get; }
+        public static Context New(Ingredients ingredients) => new Context(ingredients);
+
         public Ingredients Ingredients { get; }
 
         private readonly List<Artifact> _artifacts = new List<Artifact>();
 
-        public Context(
-            ICredentials credentials,
+        private Context(
             Ingredients ingredients)
         {
-            Credentials = credentials;
             Ingredients = ingredients;
         }
 

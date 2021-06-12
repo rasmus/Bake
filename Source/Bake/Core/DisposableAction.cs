@@ -21,38 +21,25 @@
 // SOFTWARE.
 
 using System;
+using System.Threading;
 
-namespace Bake.ValueObjects.Destinations
+namespace Bake.Core
 {
-    public abstract class Destination
+    public sealed class DisposableAction : IDisposable
     {
-        private const char Separator = '>';
+        public static readonly DisposableAction Empty = new DisposableAction(null);
 
-        public static bool TryParse(string str, out Destination destination)
+        private Action _disposeAction;
+
+        public DisposableAction(Action disposeAction)
         {
-            destination = null;
+            _disposeAction = disposeAction;
+        }
 
-            var parts = str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-            switch (parts[0])
-            {
-                case DestinationNames.NuGet:
-                    if (parts.Length == 1)
-                    {
-                        destination = new NuGetRegistryDestination(
-                            new Uri("https://api.nuget.org/v3/index.json", UriKind.Absolute));
-                        return true;
-                    }
-
-                    if (!Uri.TryCreate(parts[1], UriKind.Absolute, out var url))
-                    {
-                        return false;
-                    }
-                    destination = new NuGetRegistryDestination(url);
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(str));
-            }
+        public void Dispose()
+        {
+            var continuation = Interlocked.Exchange(ref _disposeAction, null);
+            continuation?.Invoke();
         }
     }
 }

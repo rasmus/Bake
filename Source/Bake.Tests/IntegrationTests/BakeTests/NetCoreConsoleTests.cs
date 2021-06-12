@@ -39,10 +39,14 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [Test]
         public async Task Run()
         {
+            // Arrange
+            using var _ = SetEnvironmentVariable("bake_credentials_nuget_localhost_apikey", "acd0b30512ac4fa39f62eb7a61fcf56c");
+
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--convention:Release",
+                "--convention", "Release",
+                "--destinations", "nuget|http://localhost:5555/v3/index.json",
                 "--build-version", SemVer.Random.ToString());
 
             // Assert

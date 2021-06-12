@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.ValueObjects.Destinations;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +73,39 @@ namespace Bake.Commands
                     }
 
                     return version;
+                }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Destination),
+                (argName, value, _) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    if (!Destination.TryParse(value, out var destination))
+                    {
+                        throw new FormatException($"'{value}' is an invalid Destination value for argument '{argName}'");
+                    }
+
+                    return destination;
+                }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Destination[]),
+                (argName, value, _) =>
+                {
+                    return value?.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v =>
+                        {
+                            if (!Destination.TryParse(v, out var destination))
+                            {
+                                throw new FormatException(
+                                    $"'{value}' is an invalid Destination value for argument '{argName}'");
+                            }
+
+                            return destination;
+                        })
+                        .ToArray();
                 }));
 
             app.HelpOption(true);
@@ -155,7 +189,7 @@ namespace Bake.Commands
                         var values = options
                             .Select(t => t.Item2 == cancellationTokenType
                                 ? c
-                                : Parse(t.Item1, app.ValueParsers.GetParser(t.Item2)))
+                                : Parse(t.Item1, GetParser(app.ValueParsers, t.Item2)))
                             .ToArray();
 
                         var task = (Task<int>) methodInfo.Invoke(command, values);
@@ -182,6 +216,20 @@ namespace Bake.Commands
         private static string GetVersion()
         {
             return typeof(CommandFactory).Assembly.GetName().Version.ToString();
+        }
+
+        private static IValueParser GetParser(
+            ValueParserProvider valueParserProvider,
+            Type type)
+        {
+            var valueParser = valueParserProvider.GetParser(type);
+            if (valueParser == null)
+            {
+                throw new ArgumentException(
+                    $"Do not know how to parse {type.PrettyPrint()}");
+            }
+
+            return valueParser;
         }
 
         private static object Parse(

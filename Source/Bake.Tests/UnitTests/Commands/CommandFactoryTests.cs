@@ -20,10 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Tests.Helpers;
+using Bake.ValueObjects.Destinations;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -40,7 +42,8 @@ namespace Bake.Tests.UnitTests.Commands
             public Task<int> ExecuteAsync(
                 string name = "hej",
                 int magicNumber = 42,
-                CancellationToken cancellationToken = default)
+                CancellationToken cancellationToken = default,
+                Destination[] destination = null)
             {
                 return Task.FromResult(0);
             }
@@ -64,7 +67,8 @@ namespace Bake.Tests.UnitTests.Commands
                 {
                     "A",
                     "--name=magic",
-                    "--magic-number=42"
+                    "--magic-number=42",
+                    "--destination=nuget,nuget>http://localhost:5555/v3/index.json",
                 });
 
             // Assert

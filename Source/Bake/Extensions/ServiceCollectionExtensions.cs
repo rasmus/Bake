@@ -57,6 +57,7 @@ namespace Bake.Extensions
                 .AddSingleton(logCollector)
                 .AddSingleton<IRandom, RandomWrapper>()
                 .AddSingleton<IFileSystem, FileSystem>()
+                .AddSingleton<ICredentials, Credentials>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()

@@ -43,8 +43,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             // Act
             var recipes = await Sut.ComposeAsync(
-                new Context(
-                    new Credentials(),
+                Context.New(
                     Ingredients.New(
                         SemVer.With(1,2,3),
                         WorkingDirectory)), 
@@ -56,6 +55,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
             return base.Configure(serviceCollection)
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IFileSystem, FileSystem>()
+                .AddTransient<ICredentials, Credentials>()
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>();
         }
     }

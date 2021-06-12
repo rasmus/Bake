@@ -20,9 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace Bake.ValueObjects.Destinations
 {
     public class NuGetRegistryDestination : Destination
     {
+        public Uri Url { get; [Obsolete] set; }
+
+        [Obsolete]
+        public NuGetRegistryDestination() { }
+
+        public NuGetRegistryDestination(
+            Uri url)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{DestinationNames.NuGet}|{Url}";
+        }
     }
 }

@@ -32,22 +32,17 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public string FilePath { get; [Obsolete] set; }
 
         [YamlMember]
-        public string ApiKey { get; [Obsolete] set; }
-        
-        [YamlMember]
-        public string Source { get; [Obsolete] set; }
+        public Uri Source { get; [Obsolete] set; }
 
         [Obsolete]
         public DotNetNuGetPushRecipe() { }
 
         public DotNetNuGetPushRecipe(
             string filePath,
-            string apiKey,
-            string source = null)
+            Uri source = null)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             FilePath = filePath;
-            ApiKey = apiKey;
             Source = source;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

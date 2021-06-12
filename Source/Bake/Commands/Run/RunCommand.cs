@@ -50,8 +50,7 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken,
             Convention convention = Convention.Default)
         {
-            var content = new Context(
-                new Credentials(),
+            var content = Context.New(
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory(),

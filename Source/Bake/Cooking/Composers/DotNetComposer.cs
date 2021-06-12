@@ -29,9 +29,11 @@ using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -54,15 +56,18 @@ namespace Bake.Cooking.Composers
                 ArtifactType.DotNetPublishedDirectory,
             };
 
+        private readonly ILogger<DotNetComposer> _logger;
         private readonly IFileSystem _fileSystem;
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
         
         public DotNetComposer(
+            ILogger<DotNetComposer> logger,
             IFileSystem fileSystem,
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter)
         {
+            _logger = logger;
             _fileSystem = fileSystem;
             _csProjParser = csProjParser;
             _conventionInterpreter = conventionInterpreter;
@@ -171,15 +176,26 @@ namespace Bake.Cooking.Composers
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
             {
-                foreach (var visualStudioProject in visualStudioSolution.Projects
-                    .Where(p => p.ShouldBePushed))
+                var nuGetRegistryDestinations = ingredients.Destinations
+                    .OfType<NuGetRegistryDestination>()
+                    .ToList();
+
+                if (!nuGetRegistryDestinations.Any())
                 {
-                    yield return new DotNetNuGetPushRecipe(
-                        CalculateNuGetPath(ingredients, visualStudioProject, configuration),
-                        "acd0b30512ac4fa39f62eb7a61fcf56c",
-                        "http://localhost:5555/v3/index.json"
-                        //"https://api.nuget.org/v3/index.json"
-                    );
+                    _logger.LogWarning(
+                        "Convention {Convention} dictates that artifacts should be published, but {DestinationName} is specificed",
+                        ingredients.Convention,
+                        DestinationNames.NuGet);
+                }
+                else
+                {
+                    foreach (var nuGetRegistryDestination in nuGetRegistryDestinations)
+                    foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.ShouldBePushed))
+                    {
+                        yield return new DotNetNuGetPushRecipe(
+                            CalculateNuGetPath(ingredients, visualStudioProject, configuration),
+                            nuGetRegistryDestination.Url);
+                    }
                 }
             }
 
