@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
 using Bake.Services.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -35,11 +36,14 @@ namespace Bake.Services
     public class DotNet : IDotNet
     {
         private readonly IRunnerFactory _runnerFactory;
+        private readonly ICredentials _credentials;
 
         public DotNet(
-            IRunnerFactory runnerFactory)
+            IRunnerFactory runnerFactory,
+            ICredentials credentials)
         {
             _runnerFactory = runnerFactory;
+            _credentials = credentials;
         }
 
         public async Task<bool> ClearNuGetLocalsAsync(
@@ -193,12 +197,16 @@ namespace Bake.Services
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken)
         {
+            var apiKey = await _credentials.GetNuGetApiKeyAsync(
+                argument.Source,
+                cancellationToken);
+
             var arguments = new List<string>
                 {
                     "nuget", "push",
                     argument.FilePath,
-                    "--api-key", argument.ApiKey,
-                    "--source", argument.Source,
+                    "--api-key", apiKey,
+                    "--source", argument.Source.AbsoluteUri,
                 };
 
             var buildRunner = _runnerFactory.CreateRunner(

@@ -73,12 +73,13 @@ namespace Bake.Commands.Apply
                 yaml,
                 cancellationToken);
 
+            var context = Context.New(
+                Ingredients.New(
+                    book.Ingredients.Version,
+                    book.Ingredients.WorkingDirectory));
+
             var success = await _kitchen.CookAsync(
-                new Context(
-                    new Credentials(),
-                    Ingredients.New(
-                        book.Ingredients.Version,
-                        book.Ingredients.WorkingDirectory)),
+                context,
                 book,
                 cancellationToken);
 

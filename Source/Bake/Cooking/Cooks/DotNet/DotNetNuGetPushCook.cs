@@ -57,7 +57,6 @@ namespace Bake.Cooking.Cooks.DotNet
             }
 
             var argument = new DotNetNuGetPushArgument(
-                recipe.ApiKey,
                 recipe.Source,
                 recipe.FilePath);
 

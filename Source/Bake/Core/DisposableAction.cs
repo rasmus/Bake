@@ -21,19 +21,25 @@
 // SOFTWARE.
 
 using System;
+using System.Threading;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Core
 {
-    public class DotNetNuGetPushArgument : DotNetArgument
+    public sealed class DisposableAction : IDisposable
     {
-        public Uri Source { get; }
+        public static readonly DisposableAction Empty = new DisposableAction(null);
 
-        public DotNetNuGetPushArgument(
-            Uri source,
-            string filePath)
-            : base(filePath)
+        private Action _disposeAction;
+
+        public DisposableAction(Action disposeAction)
         {
-            Source = source;
+            _disposeAction = disposeAction;
+        }
+
+        public void Dispose()
+        {
+            var continuation = Interlocked.Exchange(ref _disposeAction, null);
+            continuation?.Invoke();
         }
     }
 }

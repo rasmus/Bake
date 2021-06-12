@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Destinations;
 
 namespace Bake.Commands.Run
 {
@@ -48,14 +49,16 @@ namespace Bake.Commands.Run
         public async Task<int> ExecuteAsync(
             SemVer buildVersion,
             CancellationToken cancellationToken,
-            Convention convention = Convention.Default)
+            Convention convention = Convention.Default,
+            Destination[] destination = null)
         {
-            var content = new Context(
-                new Credentials(),
+            var content = Context.New(
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory(),
                     convention));
+
+            content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 
             var book = await _editor.ComposeAsync(
                 content,

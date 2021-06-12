@@ -22,18 +22,26 @@
 
 using System;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.ValueObjects.Destinations
 {
-    public class DotNetNuGetPushArgument : DotNetArgument
+    public class NuGetRegistryDestination : Destination
     {
-        public Uri Source { get; }
+        public Uri Url { get; [Obsolete] set; }
 
-        public DotNetNuGetPushArgument(
-            Uri source,
-            string filePath)
-            : base(filePath)
+        [Obsolete]
+        public NuGetRegistryDestination() { }
+
+        public NuGetRegistryDestination(
+            Uri url)
         {
-            Source = source;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{DestinationNames.NuGet}|{Url}";
         }
     }
 }

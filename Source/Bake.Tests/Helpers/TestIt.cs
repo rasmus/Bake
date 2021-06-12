@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using Bake.Core;
 using Moq;
 using NUnit.Framework;
 
@@ -118,6 +119,35 @@ namespace Bake.Tests.Helpers
             await File.WriteAllTextAsync(path, content);
             _filesToDelete.Add(path);
             return path;
+        }
+
+        protected IDisposable SetEnvironmentVariable(
+            string key, string value)
+        {
+            return SetEnvironmentVariables(new Dictionary<string, string>
+            {
+                [key] = value,
+            });
+        }
+
+        protected IDisposable SetEnvironmentVariables(
+            IReadOnlyDictionary<string, string> environmentVariables)
+        {
+            var originalEnvironmentVariables = environmentVariables
+                .ToDictionary(kv => kv.Key, kv => Environment.GetEnvironmentVariable(kv.Key));
+
+            foreach (var (key, value) in environmentVariables)
+            {
+                Environment.SetEnvironmentVariable(key, value);
+            }
+
+            return new DisposableAction(() =>
+            {
+                foreach (var (key, value) in originalEnvironmentVariables)
+                {
+                    Environment.SetEnvironmentVariable(key, value);
+                }
+            });
         }
     }
 }

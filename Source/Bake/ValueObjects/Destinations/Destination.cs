@@ -22,18 +22,37 @@
 
 using System;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.ValueObjects.Destinations
 {
-    public class DotNetNuGetPushArgument : DotNetArgument
+    public abstract class Destination
     {
-        public Uri Source { get; }
+        private const char Separator = '>';
 
-        public DotNetNuGetPushArgument(
-            Uri source,
-            string filePath)
-            : base(filePath)
+        public static bool TryParse(string str, out Destination destination)
         {
-            Source = source;
+            destination = null;
+
+            var parts = str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
+            switch (parts[0])
+            {
+                case DestinationNames.NuGet:
+                    if (parts.Length == 1)
+                    {
+                        destination = new NuGetRegistryDestination(
+                            new Uri("https://api.nuget.org/v3/index.json", UriKind.Absolute));
+                        return true;
+                    }
+
+                    if (!Uri.TryCreate(parts[1], UriKind.Absolute, out var url))
+                    {
+                        return false;
+                    }
+                    destination = new NuGetRegistryDestination(url);
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(str));
+            }
         }
     }
 }

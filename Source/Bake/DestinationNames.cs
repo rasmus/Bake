@@ -20,20 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
-namespace Bake.Services.DotNetArguments
+namespace Bake
 {
-    public class DotNetNuGetPushArgument : DotNetArgument
+    public static class DestinationNames
     {
-        public Uri Source { get; }
-
-        public DotNetNuGetPushArgument(
-            Uri source,
-            string filePath)
-            : base(filePath)
-        {
-            Source = source;
-        }
+        public const string NuGet = "nuget";
     }
 }
