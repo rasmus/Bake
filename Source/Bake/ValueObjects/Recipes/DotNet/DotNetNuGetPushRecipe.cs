@@ -31,7 +31,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string FilePath { get; [Obsolete] set; }
 
-        [YamlMember]
+        [YamlMember(typeof(string))]
         public Uri Source { get; [Obsolete] set; }
 
         [Obsolete]

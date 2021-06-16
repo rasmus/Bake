@@ -21,12 +21,14 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
 {
     [Destination(Names.Destinations.NuGetRegistry)]
     public class NuGetRegistryDestination : Destination
     {
+        [YamlMember(typeof(string))]
         public Uri Url { get; [Obsolete] set; }
 
         [Obsolete]
