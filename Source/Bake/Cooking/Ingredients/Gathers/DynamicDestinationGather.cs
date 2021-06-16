@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 
 namespace Bake.Cooking.Ingredients.Gathers
@@ -44,15 +46,39 @@ namespace Bake.Cooking.Ingredients.Gathers
 
             foreach (var dynamicDestination in dynamicDestinations)
             {
-                switch (dynamicDestination.Destination)
+                if (!Names.ArtifactTypes.TryGetType(dynamicDestination.ArtifactType, out var artifactType))
                 {
-                    case Names.DynamicDestinations.GitHub:
-                        var git = await ingredients.GitTask;
-                        ingredients.Destinations.Add(new NuGetRegistryDestination(
-                            git.OriginUrl)); // TODO: Add real one
-                        ingredients.Destinations.Remove(dynamicDestination);
-                        break;
+                    throw new ArgumentOutOfRangeException(
+                        $"Unknown artifact type {dynamicDestination.ArtifactType}");
                 }
+
+                switch (artifactType)
+                {
+                    case ArtifactType.NuGet:
+                        await ExtractNuGetDestinationAsync(ingredients, dynamicDestination);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private static async Task ExtractNuGetDestinationAsync(
+            ValueObjects.Ingredients ingredients,
+            DynamicDestination dynamicDestination)
+        {
+            switch (dynamicDestination.Destination)
+            {
+                case Names.DynamicDestinations.GitHub:
+                    var gitHubInformation = await ingredients.GitHubTask;
+                    ingredients.Destinations.Add(new NuGetRegistryDestination(
+                        new Uri($"https://nuget.pkg.github.com/{gitHubInformation.Owner}/index.json")));
+                    ingredients.Destinations.Remove(dynamicDestination);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

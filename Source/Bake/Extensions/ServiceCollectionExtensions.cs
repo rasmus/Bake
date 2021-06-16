@@ -58,9 +58,11 @@ namespace Bake.Extensions
                 .AddSingleton<IRandom, RandomWrapper>()
                 .AddSingleton<IFileSystem, FileSystem>()
                 .AddSingleton<ICredentials, Credentials>()
+                .AddSingleton<IDefaults, Defaults>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
+                .AddTransient<IGather, GitHubGather>()
                 .AddTransient<IGather, ReleaseNotesGather>()
                 .AddTransient<IGather, DynamicDestinationGather>()
 

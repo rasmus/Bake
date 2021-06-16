@@ -66,6 +66,20 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
+        public GitHubInformation GitHub
+        {
+            get => _gitHub.Task.IsCompletedSuccessfully ? _gitHub.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _gitHub.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public ReleaseNotes ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
@@ -85,8 +99,12 @@ namespace Bake.ValueObjects
         [YamlIgnore]
         public Task<ReleaseNotes> ReleaseNotesTask => _releaseNotes.Task;
 
+        [YamlIgnore]
+        public Task<GitHubInformation> GitHubTask => _gitHub.Task;
+
         private readonly TaskCompletionSource<GitInformation> _git = new TaskCompletionSource<GitInformation>();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new TaskCompletionSource<ReleaseNotes>();
+        private readonly TaskCompletionSource<GitHubInformation> _gitHub = new TaskCompletionSource<GitHubInformation>();
 
         [Obsolete]
         public Ingredients() { }
@@ -102,5 +120,8 @@ namespace Bake.ValueObjects
             Convention = convention;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
+
+        public void FailGit() => _git.SetCanceled();
+        public void FailGitHub() => _gitHub.SetCanceled();
     }
 }
