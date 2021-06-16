@@ -35,7 +35,7 @@ namespace Bake.ValueObjects.Destinations
             var parts = str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
             switch (parts[0])
             {
-                case DestinationNames.NuGet:
+                case DestinationNames.NuGetRegistry:
                     if (parts.Length == 1)
                     {
                         destination = new NuGetRegistryDestination(

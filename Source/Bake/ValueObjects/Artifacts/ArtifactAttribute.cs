@@ -21,38 +21,16 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    [Artifact(ArtifactNames.DirectoryArtifact)]
-    public class DirectoryArtifact : Artifact
+    public class ArtifactAttribute : Attribute, IYamlTag
     {
-        public string Path { get; [Obsolete] set; }
+        public string Name { get; }
 
-        public DirectoryArtifact(
-            ArtifactKey key,
-            string path)
-            : base(key)
+        public ArtifactAttribute(string name)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        [Obsolete]
-        public DirectoryArtifact() { }
-
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
-        {
-            if (!Directory.Exists(Path))
-            {
-                yield return $"Directory {Path} does not exist";
-            }
+            Name = name;
         }
     }
 }

@@ -24,6 +24,6 @@ namespace Bake
 {
     public static class DestinationNames
     {
-        public const string NuGet = "nuget";
+        public const string NuGetRegistry = "nuget-registry";
     }
 }
