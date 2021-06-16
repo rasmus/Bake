@@ -32,7 +32,7 @@ namespace Bake.Cooking.Ingredients.Gathers
     public class GitHubGather : IGather
     {
         private static readonly Regex GitHubUrlExtractor = new Regex(
-            @"http(s){0,1}://(?<hostname>.*?)/(?<org>.*?)/(?<repo>.*?)\.git|[a-z0-9]+\@(?<hostname>.*?):(?<owner>.*?)/(?<repo>.*?)\.git",
+            @"http(s){0,1}://(?<hostname>.*?)/(?<owner>.*?)/(?<repo>.*?)\.git|[a-z0-9]+\@(?<hostname>.*?):(?<owner>.*?)/(?<repo>.*?)\.git",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly IDefaults _defaults;
@@ -71,9 +71,11 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
+            var url = new Uri($"https://{match.Groups["hostname"].Value}/{match.Groups["owner"].Value}/{match.Groups["repo"].Value}");
             ingredients.GitHub = new GitHubInformation(
-                match.Groups["org"].Value,
-                match.Groups["repo"].Value);
+                match.Groups["owner"].Value,
+                match.Groups["repo"].Value,
+                url);
         }
     }
 }
