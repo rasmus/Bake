@@ -24,7 +24,7 @@ using System;
 
 namespace Bake.ValueObjects.Destinations
 {
-    [Destination(DestinationNames.NuGetRegistry)]
+    [Destination(Names.Destinations.NuGetRegistry)]
     public class NuGetRegistryDestination : Destination
     {
         public Uri Url { get; [Obsolete] set; }
@@ -42,7 +42,7 @@ namespace Bake.ValueObjects.Destinations
 
         public override string ToString()
         {
-            return $"{DestinationNames.NuGetRegistry}|{Url}";
+            return $"{Names.Destinations.NuGetRegistry}|{Url}";
         }
     }
 }

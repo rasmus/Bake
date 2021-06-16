@@ -20,30 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects.Destinations;
 
-namespace Bake.ValueObjects.Recipes.Docker
+namespace Bake.Cooking.Ingredients.Gathers
 {
-    [Recipe(Names.Recipes.Docker.Build)]
-    public class DockerBuildRecipe : Recipe
+    public class DynamicDestinationGather : IGather
     {
-        [YamlMember]
-        public string Path { get; [Obsolete] set; }
-
-        public string Name { get; [Obsolete] set; }
-
-        [Obsolete]
-        public DockerBuildRecipe() { }
-
-        public DockerBuildRecipe(
-            string path,
-            string name)
+        public async Task GatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-            Name = name;
-#pragma warning restore CS0612 // Type or member is obsolete
+            var dynamicDestinations = ingredients.Destinations
+                .OfType<DynamicDestination>()
+                .ToList();
+
+            if (!dynamicDestinations.Any())
+            {
+                return;
+            }
+
+            foreach (var dynamicDestination in dynamicDestinations)
+            {
+                switch (dynamicDestination.Destination)
+                {
+                    case Names.DynamicDestinations.GitHub:
+                        var git = await ingredients.GitTask;
+                        ingredients.Destinations.Add(new NuGetRegistryDestination(
+                            git.OriginUrl)); // TODO: Add real one
+                        ingredients.Destinations.Remove(dynamicDestination);
+                        break;
+                }
+            }
         }
     }
 }

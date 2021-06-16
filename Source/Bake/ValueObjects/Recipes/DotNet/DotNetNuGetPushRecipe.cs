@@ -25,7 +25,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    [Recipe(RecipeNames.DotNet.NuGetPush)]
+    [Recipe(Names.Recipes.DotNet.NuGetPush)]
     public class DotNetNuGetPushRecipe : Recipe
     {
         [YamlMember]

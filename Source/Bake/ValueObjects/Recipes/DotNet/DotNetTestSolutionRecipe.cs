@@ -25,7 +25,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    [Recipe(RecipeNames.DotNet.Test)]
+    [Recipe(Names.Recipes.DotNet.Test)]
     public class DotNetTestSolutionRecipe : Recipe
     {
         [YamlMember]

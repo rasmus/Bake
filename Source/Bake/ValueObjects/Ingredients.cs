@@ -75,7 +75,7 @@ namespace Bake.ValueObjects
                 {
                     return;
                 }
-                _releaseNotes .SetResult(value);
+                _releaseNotes.SetResult(value);
             }
         }
 

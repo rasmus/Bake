@@ -20,25 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
-{
-    public static class RecipeNames
-    {
-        public static class Docker
-        {
-            public const string Build = "docker-build";
-        }
+using Bake.ValueObjects.Destinations;
+using FluentAssertions;
+using NUnit.Framework;
 
-        public static class DotNet
+namespace Bake.Tests.UnitTests.ValueObjects
+{
+    public class DestinationsTests
+    {
+        [TestCase(
+            "nuget",
+            "https://api.nuget.org/v3/index.json")]
+        [TestCase(
+            "nuget>http://localhost:5555/v3/index.json",
+            "http://localhost:5555/v3/index.json")]
+        public void NuGetRegistry(
+            string input,
+            string expectedRegistryUrl)
         {
-            public const string Build = "dotnet-build";
-            public const string Clean = "dotnet-clean";
-            public const string Pack = "dotnet-pack";
-            public const string Restore = "dotnet-restore";
-            public const string Test = "dotnet-test";
-            public const string NuGetPush = "dotnet-nuget-push";
-            public const string Publish = "dotnet-publish";
-            public const string DockerFile = "dotnet-dockerfile";
+            // Act
+            Destination.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
         }
     }
 }

@@ -20,10 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+
+namespace Bake.ValueObjects.Destinations
 {
-    public static class DestinationNames
+    [Destination(Names.Destinations.Dynamic)]
+    public class DynamicDestination : Destination
     {
-        public const string NuGetRegistry = "nuget-registry";
+        public string ArtifactType { get; }
+        public string Destination { get; }
+
+        public DynamicDestination(
+            string artifactType,
+            string destination)
+        {
+            if (!Names.ArtifactTypes.TryGetType(artifactType, out _))
+            {
+                throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
+            }
+
+            ArtifactType = artifactType;
+            Destination = destination;
+        }
+
+        public override string ToString()
+        {
+            return $"dynamic:{ArtifactType} -> {Destination}";
+        }
     }
 }

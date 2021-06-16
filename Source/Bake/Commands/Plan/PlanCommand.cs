@@ -21,12 +21,14 @@
 // SOFTWARE.
 
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Destinations;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Commands.Plan
@@ -54,7 +56,8 @@ namespace Bake.Commands.Plan
             string planPath,
             CancellationToken cancellationToken,
             bool force = false,
-            Convention convention = Convention.Default)
+            Convention convention = Convention.Default,
+            Destination[] destination = null)
         {
             planPath = Path.GetFullPath(planPath);
             _logger.LogInformation(
@@ -93,6 +96,7 @@ namespace Bake.Commands.Plan
                     buildVersion,
                     Directory.GetCurrentDirectory(),
                     convention));
+            content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 
             var book = await _editor.ComposeAsync(
                 content,

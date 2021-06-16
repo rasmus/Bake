@@ -25,7 +25,7 @@ using Bake.ValueObjects.Artifacts;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    [Recipe(RecipeNames.DotNet.DockerFile)]
+    [Recipe(Names.Recipes.DotNet.DockerFile)]
     public class DotNetDockerFileRecipe : Recipe
     {
         public string ProjectPath { get; [Obsolete] set; }

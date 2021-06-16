@@ -185,7 +185,7 @@ namespace Bake.Cooking.Composers
                     _logger.LogWarning(
                         "Convention {Convention} dictates that artifacts should be published, but {DestinationName} is specificed",
                         ingredients.Convention,
-                        DestinationNames.NuGetRegistry);
+                        Names.Destinations.NuGetRegistry);
                 }
                 else
                 {
