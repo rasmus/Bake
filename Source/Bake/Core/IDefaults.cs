@@ -27,5 +27,6 @@ namespace Bake.Core
     public interface IDefaults
     {
         Uri GitHubUrl { get; }
+        string GitHubNuGetRegistry { get; }
     }
 }
