@@ -25,7 +25,7 @@ using System;
 namespace Bake.ValueObjects.Recipes
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class RecipeAttribute : Attribute
+    public class RecipeAttribute : Attribute, IYamlTag
     {
         public string Name { get; }
 

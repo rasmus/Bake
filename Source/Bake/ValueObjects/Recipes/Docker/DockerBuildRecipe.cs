@@ -25,7 +25,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Docker
 {
-    [Recipe(RecipeNames.Docker.Build)]
+    [Recipe(Names.Recipes.Docker.Build)]
     public class DockerBuildRecipe : Recipe
     {
         [YamlMember]

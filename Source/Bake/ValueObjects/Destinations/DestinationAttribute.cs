@@ -21,30 +21,17 @@
 // SOFTWARE.
 
 using System;
-using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
 {
-    [Destination(Names.Destinations.NuGetRegistry)]
-    public class NuGetRegistryDestination : Destination
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class DestinationAttribute : Attribute, IYamlTag
     {
-        [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public string Name { get; }
 
-        [Obsolete]
-        public NuGetRegistryDestination() { }
-
-        public NuGetRegistryDestination(
-            Uri url)
+        public DestinationAttribute(string name)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override string ToString()
-        {
-            return $"{Names.Destinations.NuGetRegistry}|{Url}";
+            Name = name;
         }
     }
 }

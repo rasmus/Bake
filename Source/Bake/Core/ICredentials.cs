@@ -28,8 +28,7 @@ namespace Bake.Core
 {
     public interface ICredentials
     {
-        Task<string> GetNuGetApiKeyAsync(
-            Uri uri,
+        Task<string> GetNuGetApiKeyAsync(Uri url,
             CancellationToken cancellationToken);
     }
 }

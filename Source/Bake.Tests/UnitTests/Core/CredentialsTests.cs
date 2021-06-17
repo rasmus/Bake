@@ -20,10 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace Bake.Tests.UnitTests.Core
 {
-    public static class DestinationNames
+    public class CredentialsTests : TestFor<Credentials>
     {
-        public const string NuGet = "nuget";
+        [TestCase(
+            "http://localhost:5555/v3/index.json",
+            "bake_credentials_nuget_localhost_apikey", "acd0b30512ac4fa39f62eb7a61fcf56c")]
+        public async Task GetNuGetApiKeyAsync(
+            string url,
+            string environmentKey,
+            string expectedCredentials)
+        {
+            // Arrange
+            using var _ = SetEnvironmentVariable(environmentKey, expectedCredentials);
+
+            // Act
+            var credentials = await Sut.GetNuGetApiKeyAsync(
+                new Uri(url),
+                CancellationToken.None);
+
+            // Assert
+            credentials.Should().Be(expectedCredentials);
+        }
     }
 }

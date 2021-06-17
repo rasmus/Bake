@@ -25,13 +25,13 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    [Recipe(RecipeNames.DotNet.NuGetPush)]
+    [Recipe(Names.Recipes.DotNet.NuGetPush)]
     public class DotNetNuGetPushRecipe : Recipe
     {
         [YamlMember]
         public string FilePath { get; [Obsolete] set; }
 
-        [YamlMember]
+        [YamlMember(typeof(string))]
         public Uri Source { get; [Obsolete] set; }
 
         [Obsolete]

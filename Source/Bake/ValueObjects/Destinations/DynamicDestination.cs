@@ -21,30 +21,31 @@
 // SOFTWARE.
 
 using System;
-using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
 {
-    [Destination(Names.Destinations.NuGetRegistry)]
-    public class NuGetRegistryDestination : Destination
+    [Destination(Names.Destinations.Dynamic)]
+    public class DynamicDestination : Destination
     {
-        [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public string ArtifactType { get; }
+        public string Destination { get; }
 
-        [Obsolete]
-        public NuGetRegistryDestination() { }
-
-        public NuGetRegistryDestination(
-            Uri url)
+        public DynamicDestination(
+            string artifactType,
+            string destination)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-#pragma warning restore CS0612 // Type or member is obsolete
+            if (!Names.ArtifactTypes.TryGetType(artifactType, out _))
+            {
+                throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
+            }
+
+            ArtifactType = artifactType;
+            Destination = destination;
         }
 
         public override string ToString()
         {
-            return $"{Names.Destinations.NuGetRegistry}|{Url}";
+            return $"dynamic:{ArtifactType} -> {Destination}";
         }
     }
 }

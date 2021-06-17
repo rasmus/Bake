@@ -35,11 +35,11 @@ namespace Bake.Core
             LazyThreadSafetyMode.ExecutionAndPublication);
 
         public async Task<string> GetNuGetApiKeyAsync(
-            Uri uri,
+            Uri url,
             CancellationToken cancellationToken)
         {
             // TODO: Handling of other characters
-            var hostname = uri.Host;
+            var hostname = url.Host;
 
             var key = $"bake_credentials_nuget_{hostname}_apikey";
             var environmentVariables = await _environmentVariables.Value;

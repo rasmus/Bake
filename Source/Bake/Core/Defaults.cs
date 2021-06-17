@@ -21,30 +21,11 @@
 // SOFTWARE.
 
 using System;
-using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Destinations
+namespace Bake.Core
 {
-    [Destination(Names.Destinations.NuGetRegistry)]
-    public class NuGetRegistryDestination : Destination
+    public class Defaults : IDefaults
     {
-        [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
-
-        [Obsolete]
-        public NuGetRegistryDestination() { }
-
-        public NuGetRegistryDestination(
-            Uri url)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override string ToString()
-        {
-            return $"{Names.Destinations.NuGetRegistry}|{Url}";
-        }
+        public Uri GitHubUrl { get; } = new Uri("https://github.com/", UriKind.Absolute);
     }
 }

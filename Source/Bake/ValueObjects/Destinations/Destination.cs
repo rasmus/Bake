@@ -35,11 +35,19 @@ namespace Bake.ValueObjects.Destinations
             var parts = str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
             switch (parts[0])
             {
-                case DestinationNames.NuGet:
+                case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
                     {
                         destination = new NuGetRegistryDestination(
                             new Uri("https://api.nuget.org/v3/index.json", UriKind.Absolute));
+                        return true;
+                    }
+
+                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub))
+                    {
+                        destination = new DynamicDestination(
+                            Names.ArtifactTypes.NuGet,
+                            Names.DynamicDestinations.GitHub);
                         return true;
                     }
 

@@ -28,6 +28,7 @@ using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
+    [Artifact(Names.Artifacts.FileArtifact)]
     public class FileArtifact : Artifact
     {
         public string Path { get; [Obsolete] set; }

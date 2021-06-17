@@ -25,7 +25,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
-    [Recipe(RecipeNames.DotNet.Clean)]
+    [Recipe(Names.Recipes.DotNet.Clean)]
     public class DotNetCleanSolutionRecipe : Recipe
     {
         [YamlMember]

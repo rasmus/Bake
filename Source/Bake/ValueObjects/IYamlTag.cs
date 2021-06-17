@@ -20,31 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Destinations
+namespace Bake.ValueObjects
 {
-    [Destination(Names.Destinations.NuGetRegistry)]
-    public class NuGetRegistryDestination : Destination
+    public interface IYamlTag
     {
-        [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
-
-        [Obsolete]
-        public NuGetRegistryDestination() { }
-
-        public NuGetRegistryDestination(
-            Uri url)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override string ToString()
-        {
-            return $"{Names.Destinations.NuGetRegistry}|{Url}";
-        }
+        public string Name { get; }
     }
 }

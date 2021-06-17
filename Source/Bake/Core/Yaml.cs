@@ -21,11 +21,12 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Extensions;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
@@ -39,26 +40,27 @@ namespace Bake.Core
 {
     public class Yaml : IYaml
     {
-        private static readonly ISerializer Serializer;
+        private static readonly HashSet<Type> TypesWithTags = new HashSet<Type>
+            {
+                typeof(Artifact),
+                typeof(Destination),
+                typeof(Recipe),
+            };
 
+        private static readonly ISerializer Serializer;
         private static readonly IDeserializer Deserializer;
 
         static Yaml()
         {
-            var recipeType = typeof(Recipe);
             var recipeTypes = typeof(Yaml).Assembly
                 .GetTypes()
-                .Where(t => recipeType.IsAssignableFrom(t) && t != recipeType)
+                .Where(t => t.BaseType != null && TypesWithTags.Contains(t.BaseType))
                 .Select(t =>
                 {
-                    if (!(t.GetCustomAttribute(typeof(RecipeAttribute)) is RecipeAttribute attribute))
-                    {
-                        throw new ArgumentException($"'{t.PrettyPrint()}' does not have the {typeof(RecipeAttribute).PrettyPrint()} attribute");
-                    }
-
+                    var yamlTag = t.GetCustomAttributes().OfType<IYamlTag>().Single();
                     return new
                     {
-                        tag = $"!{attribute.Name}",
+                        tag = $"!{yamlTag.Name}",
                         type = t
                     };
                 })
@@ -67,18 +69,12 @@ namespace Bake.Core
             Deserializer = recipeTypes.Aggregate(
                 new DeserializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
-                .WithTagMapping("!file-artifact", typeof(FileArtifact))
-                .WithTagMapping("!directory-artifact", typeof(DirectoryArtifact))
-                .WithTagMapping("!nuget-registry", typeof(NuGetRegistryDestination))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .Build();
             Serializer = recipeTypes.Aggregate(
                 new SerializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
-                .WithTagMapping("!file-artifact", typeof(FileArtifact))
-                .WithTagMapping("!directory-artifact", typeof(DirectoryArtifact))
-                .WithTagMapping("!nuget-registry", typeof(NuGetRegistryDestination))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .DisableAliases()

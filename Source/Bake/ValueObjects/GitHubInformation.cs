@@ -23,28 +23,32 @@
 using System;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Destinations
+namespace Bake.ValueObjects
 {
-    [Destination(Names.Destinations.NuGetRegistry)]
-    public class NuGetRegistryDestination : Destination
+    public class GitHubInformation
     {
+        [YamlMember]
+        public string Owner { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string Repository { get; [Obsolete] set; }
+
         [YamlMember(typeof(string))]
         public Uri Url { get; [Obsolete] set; }
 
         [Obsolete]
-        public NuGetRegistryDestination() { }
+        public GitHubInformation() { }
 
-        public NuGetRegistryDestination(
+        public GitHubInformation(
+            string owner,
+            string repository,
             Uri url)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
+            Owner = owner;
+            Repository = repository;
             Url = url;
 #pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override string ToString()
-        {
-            return $"{Names.Destinations.NuGetRegistry}|{Url}";
         }
     }
 }
