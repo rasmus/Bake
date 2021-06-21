@@ -62,9 +62,9 @@ namespace Bake.Services
                 Directory.GetCurrentDirectory(),
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> CleanAsync(
@@ -84,9 +84,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> RestoreAsync(
@@ -104,9 +104,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> BuildAsync(
@@ -133,9 +133,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> TestAsync(
@@ -158,9 +158,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> PackAsync(
@@ -188,9 +188,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> NuGetPushAsync(
@@ -214,9 +214,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         public async Task<bool> PublishAsync(
@@ -245,9 +245,9 @@ namespace Bake.Services
                 argument.WorkingDirectory,
                 arguments);
 
-            var result = await buildRunner.ExecuteAsync(cancellationToken);
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return result == 0;
+            return runnerResult.WasSuccessful;
         }
 
         private static void AddIf(bool predicate, List<string> arguments, params string[] args)

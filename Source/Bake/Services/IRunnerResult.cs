@@ -20,46 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.DockerArguments;
-
 namespace Bake.Services
 {
-    public class Docker : IDocker
+    public interface IRunnerResult
     {
-        private readonly IRunnerFactory _runnerFactory;
-
-        public Docker(
-            IRunnerFactory runnerFactory)
-        {
-            _runnerFactory = runnerFactory;
-        }
-
-        public async Task<int> DockerBuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken)
-        {
-            var arguments = new []
-                {
-                    "build",
-                    "--pull",
-                    "--no-cache",
-                    "--progress", "plain",
-                    "."
-                };
-            var workingDirectory = Path.GetDirectoryName(argument.Path);
-
-
-            var runner = _runnerFactory.CreateRunner(
-                "docker",
-                workingDirectory,
-                arguments);
-
-            var result = await runner.ExecuteAsync(cancellationToken);
-
-            return result.ReturnCode;
-        }
+        bool WasSuccessful { get; }
+        int ReturnCode { get; }
     }
 }

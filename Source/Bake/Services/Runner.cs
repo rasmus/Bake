@@ -67,7 +67,7 @@ namespace Bake.Services
             _process.ErrorDataReceived += OnStdErr;
         }
 
-        public Task<int> ExecuteAsync(CancellationToken cancellationToken)
+        public Task<IRunnerResult> ExecuteAsync(CancellationToken cancellationToken)
         {
             return Task.Run(Execute, cancellationToken);
         }
@@ -77,7 +77,7 @@ namespace Bake.Services
             return $"{_command} {string.Join(" ", _arguments)}";
         }
 
-        private int Execute()
+        private IRunnerResult Execute()
         {
             _logger.LogDebug(
                 "Executing '{Program} {Arguments}' in {Directory}",
@@ -89,7 +89,9 @@ namespace Bake.Services
             _process.BeginErrorReadLine();
             _process.BeginOutputReadLine();
             _process.WaitForExit();
-            return _process.ExitCode;
+
+            return new RunnerResult(
+                _process.ExitCode);
         }
 
         public ValueTask DisposeAsync()

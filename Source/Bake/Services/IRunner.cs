@@ -29,7 +29,7 @@ namespace Bake.Services
 {
     public interface IRunner : IAsyncDisposable
     {
-        Task<int> ExecuteAsync(CancellationToken cancellationToken);
+        Task<IRunnerResult> ExecuteAsync(CancellationToken cancellationToken);
         IObservable<string> StdOut { get; }
         IObservable<string> StdErr { get; }
         IReadOnlyCollection<string> Out { get; }
