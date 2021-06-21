@@ -20,14 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArguments
+using Bake.Core;
+
+namespace Bake.Services.Tools.DockerArguments
 {
-    public class DotNetRestoreArgument : DotNetArgument
+    public class DockerBuildArgument : Argument
     {
-        public DotNetRestoreArgument(
-            string filePath)
-            : base(filePath)
+        public string Path { get; }
+
+        public DockerBuildArgument(
+            string path)
         {
+            Path = path;
         }
     }
 }

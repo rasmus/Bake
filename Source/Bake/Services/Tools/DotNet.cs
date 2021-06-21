@@ -26,12 +26,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
-using Bake.Services.DotNetArguments;
+using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
 
 // ReSharper disable StringLiteralTypo
 
-namespace Bake.Services
+namespace Bake.Services.Tools
 {
     public class DotNet : IDotNet
     {

@@ -20,23 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArguments
+using Bake.Core;
+
+namespace Bake.Services.Tools.DotNetArguments
 {
-    public class DotNetTestArgument : DotNetArgument
+    public class DotNetPackArgument : DotNetArgument
     {
-        public bool Build { get; }
+        public SemVer Version { get; }
         public bool Restore { get; }
+        public bool Build { get; }
+        public bool IncludeSymbols { get; }
+        public bool IncludeSource { get; }
         public string Configuration { get; }
 
-        public DotNetTestArgument(
+        public DotNetPackArgument(
             string filePath,
-            bool build,
+            SemVer version,
             bool restore,
+            bool build,
+            bool includeSymbols,
+            bool includeSource,
             string configuration)
             : base(filePath)
         {
-            Build = build;
+            Version = version;
             Restore = restore;
+            Build = build;
+            IncludeSymbols = includeSymbols;
+            IncludeSource = includeSource;
             Configuration = configuration;
         }
     }

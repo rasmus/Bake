@@ -22,41 +22,14 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.DotNetArguments;
+using Bake.Services.Tools.DockerArguments;
 
-namespace Bake.Services
+namespace Bake.Services.Tools
 {
-    public interface IDotNet
+    public interface IDocker
     {
-        Task<bool> CleanAsync(
-            DotNetCleanArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> BuildAsync(
-            DotNetBuildArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> RestoreAsync(
-            DotNetRestoreArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> TestAsync(
-            DotNetTestArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> ClearNuGetLocalsAsync(
-            CancellationToken cancellationToken);
-
-        Task<bool> PackAsync(
-            DotNetPackArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> NuGetPushAsync(
-            DotNetNuGetPushArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> PublishAsync(
-            DotNetPublishArgument argument,
+        Task<int> DockerBuildAsync(
+            DockerBuildArgument argument,
             CancellationToken cancellationToken);
     }
 }

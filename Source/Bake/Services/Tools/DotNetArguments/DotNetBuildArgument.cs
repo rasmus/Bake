@@ -22,33 +22,30 @@
 
 using Bake.Core;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Services.Tools.DotNetArguments
 {
-    public class DotNetPackArgument : DotNetArgument
+    public class DotNetBuildArgument : DotNetArgument
     {
-        public SemVer Version { get; }
-        public bool Restore { get; }
-        public bool Build { get; }
-        public bool IncludeSymbols { get; }
-        public bool IncludeSource { get; }
         public string Configuration { get; }
+        public bool Incremental { get; }
+        public bool Restore { get; }
+        public string Description { get; }
+        public SemVer Version { get; }
 
-        public DotNetPackArgument(
+        public DotNetBuildArgument(
             string filePath,
-            SemVer version,
+            string configuration,
+            bool incremental,
             bool restore,
-            bool build,
-            bool includeSymbols,
-            bool includeSource,
-            string configuration)
+            string description,
+            SemVer version)
             : base(filePath)
         {
-            Version = version;
-            Restore = restore;
-            Build = build;
-            IncludeSymbols = includeSymbols;
-            IncludeSource = includeSource;
             Configuration = configuration;
+            Incremental = incremental;
+            Restore = restore;
+            Description = description;
+            Version = version;
         }
     }
 }

@@ -23,7 +23,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
-using Bake.Services.DockerArguments;
+using Bake.Services.Tools;
+using Bake.Services.Tools.DockerArguments;
 using Bake.ValueObjects.Recipes.Docker;
 
 namespace Bake.Cooking.Cooks.Docker
