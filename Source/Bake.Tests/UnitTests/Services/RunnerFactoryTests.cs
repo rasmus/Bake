@@ -21,11 +21,12 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Extensions;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using FluentAssertions;
@@ -41,14 +42,18 @@ namespace Bake.Tests.UnitTests.Services
             // Arrange
             var command = CreateShellCommand(
                 "echo", "black", "magic");
+            var output = new List<string>();
+            IRunnerResult runnerResult;
 
-            // Act
-            var exitCode = await command.ExecuteAsync(CancellationToken.None);
+            using (command.StdOut.Where(s => !string.IsNullOrEmpty(s)).Subscribe(s => output.Add(s)))
+            {
+                // Act
+                runnerResult = await command.ExecuteAsync(CancellationToken.None);
+            }
 
             // Assert
-            exitCode.Should().Be(0);
-            var output = command.NonEmptyOut().ToList();
-            output.Should().HaveCount(1);
+            runnerResult.ReturnCode.Should().Be(0);
+            output.Should().HaveCount(1, string.Join(Environment.NewLine, output));
             output.Single().Should().Be("black magic");
         }
 

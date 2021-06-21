@@ -39,13 +39,9 @@ namespace Bake.Services
         private readonly Process _process;
         private readonly Subject<string> _stdOut = new Subject<string>();
         private readonly Subject<string> _stdErr = new Subject<string>();
-        private readonly List<string> _out = new List<string>();
-        private readonly List<string> _err = new List<string>();
 
         public IObservable<string> StdOut => _stdOut;
         public IObservable<string> StdErr => _stdErr;
-        public IReadOnlyCollection<string> Out => _out;
-        public IReadOnlyCollection<string> Err => _err;
 
         public Runner(
             ILogger logger,
@@ -109,7 +105,6 @@ namespace Bake.Services
         private void OnStdOut(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
-            _out.Add(output);
             _stdOut.OnNext(output);
             Console.WriteLine(output);
         }
@@ -117,7 +112,6 @@ namespace Bake.Services
         private void OnStdErr(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
-            _err.Add(output);
             _stdErr.OnNext(output);
             Console.Error.WriteLine(output);
         }
