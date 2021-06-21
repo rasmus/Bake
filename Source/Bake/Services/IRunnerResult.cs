@@ -20,11 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using Bake.Core;
+
 namespace Bake.Services
 {
-    public interface IRunnerResult
+    public interface IRunnerResult : IDisposable
     {
         bool WasSuccessful { get; }
         int ReturnCode { get; }
+        IFile Log { get; }
     }
 }

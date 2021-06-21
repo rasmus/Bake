@@ -101,7 +101,7 @@ namespace Bake.Cooking.Composers
             IEnumerable<string> projectFiles,
             CancellationToken cancellationToken)
         {
-            var solutionFileContent = await File.ReadAllTextAsync(solutionPath, cancellationToken);
+            var solutionFileContent = await System.IO.File.ReadAllTextAsync(solutionPath, cancellationToken);
 
             var tasks = projectFiles
                 .Where(f => solutionFileContent.Contains(Path.GetFileName(f)))

@@ -57,7 +57,7 @@ namespace Bake.Commands.Apply
                 "Applying plan found at {PlanPath}",
                 planPath);
 
-            if (!File.Exists(planPath))
+            if (!System.IO.File.Exists(planPath))
             {
                 _logger.LogCritical(
                     "No Bake plan file found at {PlanPath}",
@@ -65,7 +65,7 @@ namespace Bake.Commands.Apply
                 return ExitCodes.Apply.PlanFileNotFound;
             }
 
-            var yaml = await File.ReadAllTextAsync(
+            var yaml = await System.IO.File.ReadAllTextAsync(
                 planPath,
                 cancellationToken);
 

@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Bake.Core;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Services
@@ -31,11 +32,14 @@ namespace Bake.Services
         private static readonly IReadOnlyDictionary<string, string> Empty = new Dictionary<string, string>();
 
         private readonly ILogger<RunnerFactory> _logger;
+        private readonly IFileSystem _fileSystem;
 
         public RunnerFactory(
-            ILogger<RunnerFactory> logger)
+            ILogger<RunnerFactory> logger,
+            IFileSystem fileSystem)
         {
             _logger = logger;
+            _fileSystem = fileSystem;
         }
 
         public IRunner CreateRunner(
@@ -48,7 +52,8 @@ namespace Bake.Services
                 command,
                 workingDirectory,
                 arguments,
-                Empty);
+                Empty,
+                _fileSystem);
         }
 
         public IRunner CreateRunner(
@@ -67,7 +72,8 @@ namespace Bake.Services
                 command,
                 workingDirectory,
                 arguments,
-                environmentVariables);
+                environmentVariables,
+                _fileSystem);
         }
     }
 }

@@ -20,17 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
+
 namespace Bake.Services
 {
     public class RunnerResult : IRunnerResult
     {
         public bool WasSuccessful => ReturnCode == 0;
         public int ReturnCode { get; }
+        public IFile Log { get; }
 
         public RunnerResult(
-            int returnCode)
+            int returnCode,
+            IFile log)
         {
             ReturnCode = returnCode;
+            Log = log;
+        }
+
+        public void Dispose()
+        {
+            Log.Dispose();
         }
     }
 }

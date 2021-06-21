@@ -74,14 +74,14 @@ namespace Bake.Commands.Plan
                 Directory.CreateDirectory(directoryPath);
             }
 
-            if (File.Exists(planPath))
+            if (System.IO.File.Exists(planPath))
             {
                 if (force)
                 {
                     _logger.LogWarning(
                         "File already exists at {PlanPath}, but asked to force the operation so deleting it",
                         planPath);
-                    File.Delete(planPath);
+                    System.IO.File.Delete(planPath);
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace Bake.Commands.Plan
             _logger.LogInformation(
                 "Writing plan to {PlanPath}",
                 planPath);
-            await File.WriteAllTextAsync(
+            await System.IO.File.WriteAllTextAsync(
                 planPath,
                 yaml,
                 Encoding.UTF8,
