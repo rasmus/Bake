@@ -46,7 +46,7 @@ namespace Bake.Services.Tools
             _credentials = credentials;
         }
 
-        public async Task<bool> ClearNuGetLocalsAsync(
+        public async Task<IToolResult> ClearNuGetLocalsAsync(
             CancellationToken cancellationToken)
         {
             var arguments = new List<string>
@@ -64,10 +64,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> CleanAsync(
+        public async Task<IToolResult> CleanAsync(
             DotNetCleanArgument argument,
             CancellationToken cancellationToken)
         {
@@ -86,10 +86,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> RestoreAsync(
+        public async Task<IToolResult> RestoreAsync(
             DotNetRestoreArgument argument,
             CancellationToken cancellationToken)
         {
@@ -106,10 +106,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> BuildAsync(
+        public async Task<IToolResult> BuildAsync(
             DotNetBuildArgument argument,
             CancellationToken cancellationToken)
         {
@@ -135,10 +135,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> TestAsync(
+        public async Task<IToolResult> TestAsync(
             DotNetTestArgument argument,
             CancellationToken cancellationToken)
         {
@@ -160,10 +160,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> PackAsync(
+        public async Task<IToolResult> PackAsync(
             DotNetPackArgument argument,
             CancellationToken cancellationToken)
         {
@@ -190,10 +190,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> NuGetPushAsync(
+        public async Task<IToolResult> NuGetPushAsync(
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken)
         {
@@ -216,10 +216,10 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
-        public async Task<bool> PublishAsync(
+        public async Task<IToolResult> PublishAsync(
             DotNetPublishArgument argument,
             CancellationToken cancellationToken)
         {
@@ -247,7 +247,7 @@ namespace Bake.Services.Tools
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
-            return runnerResult.WasSuccessful;
+            return new ToolResult(runnerResult);
         }
 
         private static void AddIf(bool predicate, List<string> arguments, params string[] args)

@@ -28,7 +28,7 @@ namespace Bake.Services.Tools
 {
     public interface IDocker
     {
-        Task<int> DockerBuildAsync(
+        Task<IToolResult> DockerBuildAsync(
             DockerBuildArgument argument,
             CancellationToken cancellationToken);
     }

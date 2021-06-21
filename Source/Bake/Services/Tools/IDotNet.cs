@@ -28,34 +28,34 @@ namespace Bake.Services.Tools
 {
     public interface IDotNet
     {
-        Task<bool> CleanAsync(
+        Task<IToolResult> CleanAsync(
             DotNetCleanArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> BuildAsync(
+        Task<IToolResult> BuildAsync(
             DotNetBuildArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> RestoreAsync(
+        Task<IToolResult> RestoreAsync(
             DotNetRestoreArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> TestAsync(
+        Task<IToolResult> TestAsync(
             DotNetTestArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> ClearNuGetLocalsAsync(
+        Task<IToolResult> ClearNuGetLocalsAsync(
             CancellationToken cancellationToken);
 
-        Task<bool> PackAsync(
+        Task<IToolResult> PackAsync(
             DotNetPackArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> NuGetPushAsync(
+        Task<IToolResult> NuGetPushAsync(
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken);
 
-        Task<bool> PublishAsync(
+        Task<IToolResult> PublishAsync(
             DotNetPublishArgument argument,
             CancellationToken cancellationToken);
     }

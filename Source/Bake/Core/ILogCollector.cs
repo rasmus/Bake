@@ -27,5 +27,6 @@ namespace Bake.Core
     public interface ILogCollector
     {
         void Log(LogEvent logEvent);
+        LogEventLevel LogLevel { get; set; }
     }
 }

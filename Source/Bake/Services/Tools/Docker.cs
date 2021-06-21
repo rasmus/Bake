@@ -37,7 +37,7 @@ namespace Bake.Services.Tools
             _runnerFactory = runnerFactory;
         }
 
-        public async Task<int> DockerBuildAsync(
+        public async Task<IToolResult> DockerBuildAsync(
             DockerBuildArgument argument,
             CancellationToken cancellationToken)
         {
@@ -59,7 +59,7 @@ namespace Bake.Services.Tools
 
             var result = await runner.ExecuteAsync(cancellationToken);
 
-            return result.ReturnCode;
+            return new ToolResult(result);
         }
     }
 }

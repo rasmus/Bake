@@ -23,7 +23,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -61,9 +60,11 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Source,
                 recipe.FilePath);
 
-            return await _dotNet.NuGetPushAsync(
+            var toolResult = await _dotNet.NuGetPushAsync(
                 argument,
                 cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

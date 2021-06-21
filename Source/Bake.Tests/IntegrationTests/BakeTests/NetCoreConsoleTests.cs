@@ -27,6 +27,7 @@ using Bake.Extensions;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
+using Serilog.Events;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
@@ -54,14 +55,20 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             AssertSuccessfulArtifacts();
         }
 
-        [Test]
-        public async Task PlanThenApply()
+        [TestCase(LogEventLevel.Verbose)]
+        [TestCase(LogEventLevel.Debug)]
+        [TestCase(LogEventLevel.Information)]
+        [TestCase(LogEventLevel.Warning)]
+        [TestCase(LogEventLevel.Error)]
+        [TestCase(LogEventLevel.Fatal)]
+        public async Task PlanThenApply(LogEventLevel logLevel)
         {
             // Act - plan
             var planPath = Path.Combine(WorkingDirectory, "plan.bake");
             var returnCode = await ExecuteAsync(
                 "plan",
                 "--destination=nuget>github",
+                $"--log-level:{logLevel}",
                 "--build-version", SemVer.Random.ToString(),
                 "--plan-path", $"\"{planPath}\"");
 

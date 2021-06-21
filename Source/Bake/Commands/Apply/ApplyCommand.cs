@@ -27,6 +27,7 @@ using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 
 namespace Bake.Commands.Apply
 {
@@ -36,22 +37,28 @@ namespace Bake.Commands.Apply
         private readonly ILogger<ApplyCommand> _logger;
         private readonly IYaml _yaml;
         private readonly IKitchen _kitchen;
+        private readonly ILogCollector _logCollector;
 
         public ApplyCommand(
             ILogger<ApplyCommand> logger,
             IYaml yaml,
-            IKitchen kitchen)
+            IKitchen kitchen,
+            ILogCollector logCollector)
         {
             _logger = logger;
             _yaml = yaml;
             _kitchen = kitchen;
+            _logCollector = logCollector;
         }
 
         // ReSharper disable once UnusedMember.Global
         public async Task<int> ExecuteAsync(
             string planPath,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            LogEventLevel logLevel = LogEventLevel.Warning)
         {
+            _logCollector.LogLevel = logLevel;
+
             planPath = Path.GetFullPath(planPath);
             _logger.LogInformation(
                 "Applying plan found at {PlanPath}",
