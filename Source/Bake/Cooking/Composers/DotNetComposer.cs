@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,7 @@ using Bake.ValueObjects.DotNet;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 // ReSharper disable StringLiteralTypo
 
@@ -149,9 +151,6 @@ namespace Bake.Cooking.Composers
             const string configuration = "Release";
 
             var ingredients = context.Ingredients;
-            var description = ingredients.Git != null
-                ? $"SHA:{ingredients.Git.Sha}"
-                : visualStudioSolution.Name;
 
             yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
@@ -170,7 +169,7 @@ namespace Bake.Cooking.Composers
             properties["Version"] = legacyVersion;
             properties["AssemblyVersion"] = legacyVersion;
             properties["AssemblyFileVersion"] = legacyVersion;
-            properties["Description"] = description;
+            properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
 
             yield return new DotNetBuildSolutionRecipe(
                 visualStudioSolution.Path,
@@ -264,6 +263,31 @@ namespace Bake.Cooking.Composers
                         new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, path)));
             }
+        }
+
+        private static string BuildDescription(
+            VisualStudioSolution visualStudioSolution,
+            ValueObjects.Ingredients ingredients)
+        {
+            var elements = new Dictionary<string, string>
+                {
+                    ["SolutionName"] = visualStudioSolution.Name,
+                    ["BuildTime"] = DateTimeOffset.Now.ToString("O"),
+                };
+
+            if (ingredients.Git != null)
+            {
+                elements["GitSha"] = ingredients.Git.Sha;
+            }
+
+            if (ingredients.GitHub != null)
+            {
+                elements["GitHubRepositoryUrl"] = ingredients.GitHub.Url.AbsoluteUri;
+            }
+
+            return JsonConvert.SerializeObject(
+                elements,
+                Formatting.Indented);
         }
 
         private static string CalculateNuGetPath(
