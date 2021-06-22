@@ -273,7 +273,14 @@ namespace Bake.Cooking.Composers
                 {
                     ["SolutionName"] = visualStudioSolution.Name,
                     ["BuildTime"] = DateTimeOffset.Now.ToString("O"),
+                    ["Version"] = ingredients.Version.ToString(), // SemVer version, not legacy!
+                    ["BakeVersion"] = Constants.Version,
                 };
+
+            if (ingredients.ReleaseNotes != null)
+            {
+                elements["ReleaseNotes"] = ingredients.ReleaseNotes.Notes;
+            }
 
             if (ingredients.Git != null)
             {
@@ -283,6 +290,8 @@ namespace Bake.Cooking.Composers
             if (ingredients.GitHub != null)
             {
                 elements["GitHubRepositoryUrl"] = ingredients.GitHub.Url.AbsoluteUri;
+                elements["GitHubOwner"] = ingredients.GitHub.Owner;
+                elements["GitHubRepository"] = ingredients.GitHub.Repository;
             }
 
             return JsonConvert.SerializeObject(
