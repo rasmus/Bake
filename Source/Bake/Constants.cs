@@ -20,29 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-
-namespace Bake.Services.Tools.DotNetArguments
+namespace Bake
 {
-    public class DotNetBuildArgument : DotNetArgument
+    public static class Constants
     {
-        public string Configuration { get; }
-        public bool Incremental { get; }
-        public bool Restore { get; }
-        public IReadOnlyDictionary<string, string> Properties { get; }
-
-        public DotNetBuildArgument(
-            string filePath,
-            string configuration,
-            bool incremental,
-            bool restore,
-            IReadOnlyDictionary<string, string> properties)
-            : base(filePath)
-        {
-            Configuration = configuration;
-            Incremental = incremental;
-            Restore = restore;
-            Properties = properties;
-        }
+        public static readonly string Version = typeof(Constants).Assembly.GetName().Version?.ToString();
     }
 }

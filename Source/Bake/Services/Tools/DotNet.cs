@@ -119,11 +119,12 @@ namespace Bake.Services.Tools
                      argument.FilePath,
                      "--nologo",
                      "--configuration", argument.Configuration,
-                    $"-p:Version={argument.Version.LegacyVersion}",
-                    $"-p:AssemblyVersion={argument.Version.LegacyVersion}",
-                    $"-p:AssemblyFileVersion={argument.Version.LegacyVersion}",
-                    $"-p:Description=\"{argument.Description.Replace("\"", string.Empty)}\""
                 };
+
+            foreach (var (property, value) in argument.Properties)
+            {
+                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
+            }
 
             AddIf(!argument.Incremental, arguments, "--no-incremental");
             AddIf(!argument.Restore, arguments, "--no-restore");
