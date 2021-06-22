@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 
@@ -31,6 +32,14 @@ namespace Bake.Cooking.Ingredients.Gathers
 {
     public class DynamicDestinationGather : IGather
     {
+        private readonly IDefaults _defaults;
+
+        public DynamicDestinationGather(
+            IDefaults defaults)
+        {
+            _defaults = defaults;
+        }
+
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
@@ -64,7 +73,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
         }
 
-        private static async Task ExtractNuGetDestinationAsync(
+        private async Task ExtractNuGetDestinationAsync(
             ValueObjects.Ingredients ingredients,
             DynamicDestination dynamicDestination)
         {
@@ -72,9 +81,11 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 case Names.DynamicDestinations.GitHub:
                     var gitHubInformation = await ingredients.GitHubTask;
-                    ingredients.Destinations.Add(new NuGetRegistryDestination(
-                        new Uri($"https://nuget.pkg.github.com/{gitHubInformation.Owner}/index.json")));
+                    var url = new Uri(_defaults.GitHubNuGetRegistry.Replace("OWNER", gitHubInformation.Owner), UriKind.Absolute);
+
+                    ingredients.Destinations.Add(new NuGetRegistryDestination(url));
                     ingredients.Destinations.Remove(dynamicDestination);
+
                     break;
 
                 default:

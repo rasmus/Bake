@@ -27,5 +27,6 @@ namespace Bake.Core
     public class Defaults : IDefaults
     {
         public Uri GitHubUrl { get; } = new Uri("https://github.com/", UriKind.Absolute);
+        public string GitHubNuGetRegistry { get; } = "https://nuget.pkg.github.com/OWNER/index.json";
     }
 }
