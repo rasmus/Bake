@@ -20,29 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using Bake.Core;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Services
 {
-    public class DotNetBuildArgument : DotNetArgument
+    public class RunnerResult : IRunnerResult
     {
-        public string Configuration { get; }
-        public bool Incremental { get; }
-        public bool Restore { get; }
-        public IReadOnlyDictionary<string, string> Properties { get; }
+        public bool WasSuccessful => ReturnCode == 0;
+        public int ReturnCode { get; }
+        public IFile Log { get; }
 
-        public DotNetBuildArgument(
-            string filePath,
-            string configuration,
-            bool incremental,
-            bool restore,
-            IReadOnlyDictionary<string, string> properties)
-            : base(filePath)
+        public RunnerResult(
+            int returnCode,
+            IFile log)
         {
-            Configuration = configuration;
-            Incremental = incremental;
-            Restore = restore;
-            Properties = properties;
+            ReturnCode = returnCode;
+            Log = log;
+        }
+
+        public void Dispose()
+        {
+            Log.Dispose();
         }
     }
 }

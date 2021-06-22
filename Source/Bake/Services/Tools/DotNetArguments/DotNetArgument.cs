@@ -20,18 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.IO;
 using Bake.Core;
 
-namespace Bake.Services.DockerArguments
+namespace Bake.Services.Tools.DotNetArguments
 {
-    public class DockerBuildArgument : Argument
+    public abstract class DotNetArgument : Argument
     {
-        public string Path { get; }
+        public string FilePath { get; set; }
+        public string WorkingDirectory { get; }
 
-        public DockerBuildArgument(
-            string path)
+        protected DotNetArgument(string filePath)
         {
-            Path = path;
+            FilePath = Path.GetFullPath(filePath);
+            WorkingDirectory = Path.GetDirectoryName(filePath);
         }
     }
 }

@@ -20,24 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArguments
-{
-    public class DotNetTestArgument : DotNetArgument
-    {
-        public bool Build { get; }
-        public bool Restore { get; }
-        public string Configuration { get; }
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.DockerArguments;
 
-        public DotNetTestArgument(
-            string filePath,
-            bool build,
-            bool restore,
-            string configuration)
-            : base(filePath)
+namespace Bake.Services.Tools
+{
+    public class Docker : IDocker
+    {
+        private readonly IRunnerFactory _runnerFactory;
+
+        public Docker(
+            IRunnerFactory runnerFactory)
         {
-            Build = build;
-            Restore = restore;
-            Configuration = configuration;
+            _runnerFactory = runnerFactory;
+        }
+
+        public async Task<IToolResult> DockerBuildAsync(
+            DockerBuildArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new []
+                {
+                    "build",
+                    "--pull",
+                    "--no-cache",
+                    "--progress", "plain",
+                    "."
+                };
+            var workingDirectory = Path.GetDirectoryName(argument.Path);
+
+
+            var runner = _runnerFactory.CreateRunner(
+                "docker",
+                workingDirectory,
+                arguments);
+
+            var result = await runner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(result);
         }
     }
 }

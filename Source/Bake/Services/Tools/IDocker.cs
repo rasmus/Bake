@@ -20,14 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArguments
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.DockerArguments;
+
+namespace Bake.Services.Tools
 {
-    public class DotNetRestoreArgument : DotNetArgument
+    public interface IDocker
     {
-        public DotNetRestoreArgument(
-            string filePath)
-            : base(filePath)
-        {
-        }
+        Task<IToolResult> DockerBuildAsync(
+            DockerBuildArgument argument,
+            CancellationToken cancellationToken);
     }
 }

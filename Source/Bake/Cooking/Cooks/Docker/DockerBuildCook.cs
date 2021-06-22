@@ -22,8 +22,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DockerArguments;
+using Bake.Services.Tools;
+using Bake.Services.Tools.DockerArguments;
 using Bake.ValueObjects.Recipes.Docker;
 
 namespace Bake.Cooking.Cooks.Docker
@@ -46,11 +46,11 @@ namespace Bake.Cooking.Cooks.Docker
             var argument = new DockerBuildArgument(
                 recipe.Path);
 
-            var exitCode = await _docker.DockerBuildAsync(
+            var toolResult = await _docker.DockerBuildAsync(
                 argument,
                 cancellationToken);
 
-            return exitCode == 0;
+            return toolResult.WasSuccessful;
         }
     }
 }

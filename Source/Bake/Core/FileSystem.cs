@@ -82,6 +82,12 @@ namespace Bake.Core
             return validPaths;
         }
 
+        public IFile OpenTempFile()
+        {
+            return new File(
+                Path.GetTempFileName());
+        }
+
         private static bool ShouldBeSkipped(string directoryPath)
         {
             while (true)

@@ -23,9 +23,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Services
@@ -39,20 +41,19 @@ namespace Bake.Services
         private readonly Process _process;
         private readonly Subject<string> _stdOut = new Subject<string>();
         private readonly Subject<string> _stdErr = new Subject<string>();
-        private readonly List<string> _out = new List<string>();
-        private readonly List<string> _err = new List<string>();
+        private readonly IFile _log;
+        private Stream _stream;
 
         public IObservable<string> StdOut => _stdOut;
         public IObservable<string> StdErr => _stdErr;
-        public IReadOnlyCollection<string> Out => _out;
-        public IReadOnlyCollection<string> Err => _err;
 
         public Runner(
             ILogger logger,
             string command,
             string workingDirectory,
             IReadOnlyCollection<string> arguments,
-            IReadOnlyDictionary<string, string> environmentVariables)
+            IReadOnlyDictionary<string, string> environmentVariables,
+            IFileSystem fileSystem)
         {
             _logger = logger;
             _command = command;
@@ -65,20 +66,19 @@ namespace Bake.Services
                 environmentVariables);
             _process.OutputDataReceived += OnStdOut;
             _process.ErrorDataReceived += OnStdErr;
+
+            _log = fileSystem.OpenTempFile();
         }
 
-        public Task<int> ExecuteAsync(CancellationToken cancellationToken)
+        public Task<IRunnerResult> ExecuteAsync(CancellationToken cancellationToken)
         {
-            return Task.Run(Execute, cancellationToken);
+            return Task.Run(() => InternalExecuteAsync(cancellationToken), cancellationToken);
         }
 
-        public override string ToString()
+        private async Task<IRunnerResult> InternalExecuteAsync(CancellationToken cancellationToken)
         {
-            return $"{_command} {string.Join(" ", _arguments)}";
-        }
+            _stream = await _log.OpenWriteAsync(cancellationToken);
 
-        private int Execute()
-        {
             _logger.LogDebug(
                 "Executing '{Program} {Arguments}' in {Directory}",
                 _command,
@@ -89,7 +89,19 @@ namespace Bake.Services
             _process.BeginErrorReadLine();
             _process.BeginOutputReadLine();
             _process.WaitForExit();
-            return _process.ExitCode;
+
+            await _stream.FlushAsync(cancellationToken);
+            await _stream.DisposeAsync();
+            _stream = null;
+
+            return new RunnerResult(
+                _process.ExitCode,
+                _log);
+        }
+
+        public override string ToString()
+        {
+            return $"{_command} {string.Join(" ", _arguments)}";
         }
 
         public ValueTask DisposeAsync()
@@ -107,17 +119,13 @@ namespace Bake.Services
         private void OnStdOut(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
-            _out.Add(output);
             _stdOut.OnNext(output);
-            Console.WriteLine(output);
         }
 
         private void OnStdErr(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
-            _err.Add(output);
             _stdErr.OnNext(output);
-            Console.Error.WriteLine(output);
         }
 
         private static string CleanupOutput(string str)

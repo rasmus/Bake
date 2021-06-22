@@ -20,20 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
+using System;
 using Bake.Core;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Services
 {
-    public abstract class DotNetArgument : Argument
+    public interface IRunnerResult : IDisposable
     {
-        public string FilePath { get; set; }
-        public string WorkingDirectory { get; }
-
-        protected DotNetArgument(string filePath)
-        {
-            FilePath = Path.GetFullPath(filePath);
-            WorkingDirectory = Path.GetDirectoryName(filePath);
-        }
+        bool WasSuccessful { get; }
+        int ReturnCode { get; }
+        IFile Log { get; }
     }
 }

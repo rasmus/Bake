@@ -21,35 +21,56 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Extensions;
+using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
 {
     public class RunnerFactoryTests : TestFor<RunnerFactory>
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Inject<IFileSystem>(new FileSystem(A<ILogger<FileSystem>>()));
+        }
+
         [Test]
         public async Task ReadStdOut()
         {
             // Arrange
             var command = CreateShellCommand(
                 "echo", "black", "magic");
+            var output = new List<string>();
+            IRunnerResult runnerResult = null;
 
-            // Act
-            var exitCode = await command.ExecuteAsync(CancellationToken.None);
+            try
+            {
 
-            // Assert
-            exitCode.Should().Be(0);
-            var output = command.NonEmptyOut().ToList();
-            output.Should().HaveCount(1);
-            output.Single().Should().Be("black magic");
+                using (command.StdOut.Where(s => !string.IsNullOrEmpty(s)).Subscribe(s => output.Add(s)))
+                {
+                    // Act
+                    runnerResult = await command.ExecuteAsync(CancellationToken.None);
+                }
+
+                // Assert
+                runnerResult.ReturnCode.Should().Be(0);
+                output.Should().HaveCount(1, string.Join(Environment.NewLine, output));
+                output.Single().Should().Be("black magic");
+            }
+            finally
+            {
+                runnerResult?.Dispose();
+            }
         }
 
         private IRunner CreateShellCommand(

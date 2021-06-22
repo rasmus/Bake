@@ -20,43 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.DotNetArguments;
+using System.Collections.Generic;
 
-namespace Bake.Services
+namespace Bake.Services.Tools.DotNetArguments
 {
-    public interface IDotNet
+    public class DotNetBuildArgument : DotNetArgument
     {
-        Task<bool> CleanAsync(
-            DotNetCleanArgument argument,
-            CancellationToken cancellationToken);
+        public string Configuration { get; }
+        public bool Incremental { get; }
+        public bool Restore { get; }
+        public IReadOnlyDictionary<string, string> Properties { get; }
 
-        Task<bool> BuildAsync(
-            DotNetBuildArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> RestoreAsync(
-            DotNetRestoreArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> TestAsync(
-            DotNetTestArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> ClearNuGetLocalsAsync(
-            CancellationToken cancellationToken);
-
-        Task<bool> PackAsync(
-            DotNetPackArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> NuGetPushAsync(
-            DotNetNuGetPushArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<bool> PublishAsync(
-            DotNetPublishArgument argument,
-            CancellationToken cancellationToken);
+        public DotNetBuildArgument(
+            string filePath,
+            string configuration,
+            bool incremental,
+            bool restore,
+            IReadOnlyDictionary<string, string> properties)
+            : base(filePath)
+        {
+            Configuration = configuration;
+            Incremental = incremental;
+            Restore = restore;
+            Properties = properties;
+        }
     }
 }

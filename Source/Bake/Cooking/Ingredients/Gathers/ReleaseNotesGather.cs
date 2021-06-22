@@ -57,7 +57,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 ingredients.WorkingDirectory,
                 "RELEASE_NOTES.md");
 
-            if (!File.Exists(releaseNotesPath))
+            if (!System.IO.File.Exists(releaseNotesPath))
             {
                 _logger.LogInformation(
                     "No release notes found at {ReleaseNotesPath}",
