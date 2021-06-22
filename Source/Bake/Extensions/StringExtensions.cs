@@ -21,6 +21,9 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -61,6 +64,25 @@ namespace Bake.Extensions
         {
             var bytes = Encoding.GetEncoding("Cyrillic").GetBytes(text); 
             return Encoding.ASCII.GetString(bytes); 
+        }
+
+        private static readonly IReadOnlyDictionary<char, string> MsBuildEscapeMap = new Dictionary<char, string>
+            {
+                ['\r'] = "%0D",
+                ['\n'] = "%0A",
+                [';' ] =  "%3B",
+                [',' ] = "%2C",
+                [' ' ] = "%20",
+                ['"' ] = "\\\"",
+            };
+        public static string ToMsBuildEscaped(this string str)
+        {
+            return str.Aggregate(
+                    new StringBuilder(),
+                    (b, c) => MsBuildEscapeMap.TryGetValue(c, out var replacement)
+                        ? b.Append(replacement)
+                        : b.Append(c))
+                .ToString();
         }
     }
 }

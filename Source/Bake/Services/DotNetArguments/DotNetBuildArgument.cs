@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
+using System.Collections.Generic;
 
 namespace Bake.Services.DotNetArguments
 {
@@ -29,23 +29,20 @@ namespace Bake.Services.DotNetArguments
         public string Configuration { get; }
         public bool Incremental { get; }
         public bool Restore { get; }
-        public string Description { get; }
-        public SemVer Version { get; }
+        public IReadOnlyDictionary<string, string> Properties { get; }
 
         public DotNetBuildArgument(
             string filePath,
             string configuration,
             bool incremental,
             bool restore,
-            string description,
-            SemVer version)
+            IReadOnlyDictionary<string, string> properties)
             : base(filePath)
         {
             Configuration = configuration;
             Incremental = incremental;
             Restore = restore;
-            Description = description;
-            Version = version;
+            Properties = properties;
         }
     }
 }

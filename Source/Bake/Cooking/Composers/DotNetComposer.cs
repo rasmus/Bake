@@ -47,6 +47,20 @@ namespace Bake.Cooking.Composers
                 [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
             };
 
+        private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
+            {
+                // We really don't want builds to fail due to old versions
+                ["CheckEolTargetFramework"] = "false",
+
+                // Make the NuGet package easier for everyone to debug
+                ["EmbedUntrackedSources"] = "true",
+                ["EmbedUntrackedSources"] = "true",
+                ["IncludeSymbols"] = "true",
+                ["DebugType"] = "portable",
+                ["SymbolPackageFormat"] = "snupkg",
+                ["AllowedOutputExtensionsInPackageBuildOutputFolder"] = "$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb",
+            };
+
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
                 ArtifactType.WindowsTool,
@@ -145,13 +159,25 @@ namespace Bake.Cooking.Composers
             yield return new DotNetRestoreSolutionRecipe(
                 visualStudioSolution.Path,
                 true);
+
+            var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
+            if (ingredients.ReleaseNotes != null)
+            {
+                properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
+            }
+
+            var legacyVersion = ingredients.Version.LegacyVersion.ToString();
+            properties["Version"] = legacyVersion;
+            properties["AssemblyVersion"] = legacyVersion;
+            properties["AssemblyFileVersion"] = legacyVersion;
+            properties["Description"] = description;
+
             yield return new DotNetBuildSolutionRecipe(
                 visualStudioSolution.Path,
                 configuration,
                 false,
                 false,
-                description,
-                ingredients.Version);
+                properties);
             yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
                 false,

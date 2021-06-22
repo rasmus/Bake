@@ -48,8 +48,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Configuration,
                 recipe.Incremental,
                 recipe.Restore,
-                recipe.Description,
-                recipe.Version);
+                recipe.Properties);
 
             return await _dotNet.BuildAsync(
                 argument,
