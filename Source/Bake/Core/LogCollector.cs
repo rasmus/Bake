@@ -26,6 +26,8 @@ namespace Bake.Core
 {
     public class LogCollector : ILogCollector
     {
+        public LogEventLevel LogLevel { get; set; } = LogEventLevel.Verbose;
+
         public void Log(LogEvent logEvent)
         {
         }

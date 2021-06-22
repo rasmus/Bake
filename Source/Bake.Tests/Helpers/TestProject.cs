@@ -88,7 +88,7 @@ namespace Bake.Tests.Helpers
                 WorkingDirectory,
                 Path.Combine);
 
-            File.Exists(filePath).Should().BeTrue(
+            System.IO.File.Exists(filePath).Should().BeTrue(
                 $"'{Path.GetFileName(filePath)}' should be among: {Environment.NewLine}{PrettyPrintDirectory(Path.GetDirectoryName(filePath))}'");
 
             Console.WriteLine($"File {filePath} exists");

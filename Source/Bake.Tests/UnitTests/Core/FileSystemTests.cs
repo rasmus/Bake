@@ -69,7 +69,7 @@ namespace Bake.Tests.UnitTests.Core
                     {
                         Directory.CreateDirectory(directoryPath);
                     }
-                    await File.WriteAllTextAsync(filePath, string.Empty);
+                    await System.IO.File.WriteAllTextAsync(filePath, string.Empty);
                 }
             }
             catch (Exception)

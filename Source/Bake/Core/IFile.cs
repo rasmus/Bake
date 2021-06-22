@@ -20,35 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Core
 {
-    public class DotNetPackArgument : DotNetArgument
+    public interface IFile : IDisposable
     {
-        public SemVer Version { get; }
-        public bool Restore { get; }
-        public bool Build { get; }
-        public bool IncludeSymbols { get; }
-        public bool IncludeSource { get; }
-        public string Configuration { get; }
+        string Path { get; }
 
-        public DotNetPackArgument(
-            string filePath,
-            SemVer version,
-            bool restore,
-            bool build,
-            bool includeSymbols,
-            bool includeSource,
-            string configuration)
-            : base(filePath)
-        {
-            Version = version;
-            Restore = restore;
-            Build = build;
-            IncludeSymbols = includeSymbols;
-            IncludeSource = includeSource;
-            Configuration = configuration;
-        }
+        Task<Stream> OpenWriteAsync(
+            CancellationToken cancellationToken);
     }
 }

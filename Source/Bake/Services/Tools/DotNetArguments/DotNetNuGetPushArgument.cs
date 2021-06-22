@@ -22,7 +22,7 @@
 
 using System;
 
-namespace Bake.Services.DotNetArguments
+namespace Bake.Services.Tools.DotNetArguments
 {
     public class DotNetNuGetPushArgument : DotNetArgument
     {

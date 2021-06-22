@@ -30,6 +30,7 @@ using Bake.Core;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 
 namespace Bake.Commands.Plan
 {
@@ -39,15 +40,18 @@ namespace Bake.Commands.Plan
         private readonly ILogger<PlanCommand> _logger;
         private readonly IEditor _editor;
         private readonly IYaml _yaml;
+        private readonly ILogCollector _logCollector;
 
         public PlanCommand(
             ILogger<PlanCommand> logger,
             IEditor editor,
-            IYaml yaml)
+            IYaml yaml,
+            ILogCollector logCollector)
         {
             _logger = logger;
             _editor = editor;
             _yaml = yaml;
+            _logCollector = logCollector;
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -57,8 +61,11 @@ namespace Bake.Commands.Plan
             CancellationToken cancellationToken,
             bool force = false,
             Convention convention = Convention.Default,
-            Destination[] destination = null)
+            Destination[] destination = null,
+            LogEventLevel logLevel = LogEventLevel.Warning)
         {
+            _logCollector.LogLevel = logLevel;
+
             planPath = Path.GetFullPath(planPath);
             _logger.LogInformation(
                 "Saving Bake plan to {PlanPath} with version {Version}",
@@ -74,14 +81,14 @@ namespace Bake.Commands.Plan
                 Directory.CreateDirectory(directoryPath);
             }
 
-            if (File.Exists(planPath))
+            if (System.IO.File.Exists(planPath))
             {
                 if (force)
                 {
                     _logger.LogWarning(
                         "File already exists at {PlanPath}, but asked to force the operation so deleting it",
                         planPath);
-                    File.Delete(planPath);
+                    System.IO.File.Delete(planPath);
                 }
                 else
                 {
@@ -109,7 +116,7 @@ namespace Bake.Commands.Plan
             _logger.LogInformation(
                 "Writing plan to {PlanPath}",
                 planPath);
-            await File.WriteAllTextAsync(
+            await System.IO.File.WriteAllTextAsync(
                 planPath,
                 yaml,
                 Encoding.UTF8,

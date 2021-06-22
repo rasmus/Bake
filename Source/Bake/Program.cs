@@ -37,6 +37,7 @@ namespace Bake
         public static async Task<int> Main(string[] args)
         {
             var logCollector = new LogCollector();
+
             var serviceCollection = new ServiceCollection()
                 .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
                 .AddBake(logCollector);

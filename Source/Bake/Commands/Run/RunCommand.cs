@@ -28,6 +28,7 @@ using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
+using Serilog.Events;
 
 namespace Bake.Commands.Run
 {
@@ -36,13 +37,16 @@ namespace Bake.Commands.Run
     {
         private readonly IEditor _editor;
         private readonly IKitchen _kitchen;
+        private readonly ILogCollector _logCollector;
 
         public RunCommand(
             IEditor editor,
-            IKitchen kitchen)
+            IKitchen kitchen,
+            ILogCollector logCollector)
         {
             _editor = editor;
             _kitchen = kitchen;
+            _logCollector = logCollector;
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -50,8 +54,11 @@ namespace Bake.Commands.Run
             SemVer buildVersion,
             CancellationToken cancellationToken,
             Convention convention = Convention.Default,
-            Destination[] destination = null)
+            Destination[] destination = null,
+            LogEventLevel logLevel = LogEventLevel.Warning)
         {
+            _logCollector.LogLevel = logLevel;
+
             var content = Context.New(
                 Ingredients.New(
                     buildVersion,

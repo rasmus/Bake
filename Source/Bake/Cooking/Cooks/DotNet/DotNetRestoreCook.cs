@@ -22,8 +22,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services;
-using Bake.Services.DotNetArguments;
+using Bake.Services.Tools;
+using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
@@ -43,20 +43,24 @@ namespace Bake.Cooking.Cooks.DotNet
             DotNetRestoreSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
+            IToolResult toolResult;
+
             if (recipe.ClearLocalHttpCache)
             {
-                var success = await _dotNet.ClearNuGetLocalsAsync(
+                toolResult = await _dotNet.ClearNuGetLocalsAsync(
                     cancellationToken);
-                if (!success)
+                if (!toolResult.WasSuccessful)
                 {
                     return false;
                 }
             }
 
-            return await _dotNet.RestoreAsync(
+            toolResult = await _dotNet.RestoreAsync(
                 new DotNetRestoreArgument(
                     recipe.Path),
                 cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

@@ -51,6 +51,11 @@ namespace Bake.Core
 
         public void Emit(LogEvent logEvent)
         {
+            if (_logCollector.LogLevel > logEvent.Level)
+            {
+                return;
+            }
+
             var message = logEvent.RenderMessage();
             
             lock (_syncRoot)

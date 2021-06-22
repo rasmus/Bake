@@ -32,5 +32,7 @@ namespace Bake.Core
             string directoryPath,
             string searchPattern,
             CancellationToken cancellationToken);
+
+        IFile OpenTempFile();
     }
 }

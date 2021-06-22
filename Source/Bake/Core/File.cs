@@ -20,18 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.DotNetArguments
-{
-    public class DotNetCleanArgument : DotNetArgument
-    {
-        public string Configuration { get; }
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
-        public DotNetCleanArgument(
-            string filePath,
-            string configuration)
-            : base(filePath)
+namespace Bake.Core
+{
+    public class File : IFile
+    {
+        public string Path { get; }
+
+        public File(string path)
         {
-            Configuration = configuration;
+            Path = path;
+        }
+
+        public Task<Stream> OpenWriteAsync(
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult<Stream>(System.IO.File.Open(
+                Path,
+                FileMode.OpenOrCreate,
+                FileAccess.Write,
+                FileShare.None));
+        }
+
+        public void Dispose()
+        {
+            System.IO.File.Delete(Path);
         }
     }
 }

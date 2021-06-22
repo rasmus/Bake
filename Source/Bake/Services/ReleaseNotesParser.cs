@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace Bake.Services
             string path,
             CancellationToken cancellationToken)
         {
-            var markdown = await File.ReadAllTextAsync(
+            var markdown = await System.IO.File.ReadAllTextAsync(
                 path,
                 cancellationToken);
 

@@ -54,9 +54,9 @@ namespace Bake.Tests.Helpers
         {
             foreach (var file in _filesToDelete)
             {
-                if (File.Exists(file))
+                if (System.IO.File.Exists(file))
                 {
-                    File.Delete(file);
+                    System.IO.File.Delete(file);
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace Bake.Tests.Helpers
         {
             var content = await ReadEmbeddedAsync(fileEnding);
             var path = Path.GetTempFileName();
-            await File.WriteAllTextAsync(path, content);
+            await System.IO.File.WriteAllTextAsync(path, content);
             _filesToDelete.Add(path);
             return path;
         }

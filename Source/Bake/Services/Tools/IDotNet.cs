@@ -22,41 +22,41 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.Tools;
 using Bake.Services.Tools.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Services.Tools
 {
-    public class DotNetPublishCook : Cook<DotNetPublishRecipe>
+    public interface IDotNet
     {
-        private readonly IDotNet _dotNet;
+        Task<IToolResult> CleanAsync(
+            DotNetCleanArgument argument,
+            CancellationToken cancellationToken);
 
-        public DotNetPublishCook(
-            IDotNet dotNet)
-        {
-            _dotNet = dotNet;
-        }
+        Task<IToolResult> BuildAsync(
+            DotNetBuildArgument argument,
+            CancellationToken cancellationToken);
 
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetPublishRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new DotNetPublishArgument(
-                recipe.Path,
-                recipe.PublishSingleFile,
-                recipe.SelfContained,
-                recipe.Build,
-                recipe.Configuration,
-                recipe.Runtime,
-                recipe.Output);
+        Task<IToolResult> RestoreAsync(
+            DotNetRestoreArgument argument,
+            CancellationToken cancellationToken);
 
-            var toolResult = await _dotNet.PublishAsync(
-                argument,
-                cancellationToken);
+        Task<IToolResult> TestAsync(
+            DotNetTestArgument argument,
+            CancellationToken cancellationToken);
 
-            return toolResult.WasSuccessful;
-        }
+        Task<IToolResult> ClearNuGetLocalsAsync(
+            CancellationToken cancellationToken);
+
+        Task<IToolResult> PackAsync(
+            DotNetPackArgument argument,
+            CancellationToken cancellationToken);
+
+        Task<IToolResult> NuGetPushAsync(
+            DotNetNuGetPushArgument argument,
+            CancellationToken cancellationToken);
+
+        Task<IToolResult> PublishAsync(
+            DotNetPublishArgument argument,
+            CancellationToken cancellationToken);
     }
 }

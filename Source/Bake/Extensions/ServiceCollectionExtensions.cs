@@ -32,6 +32,7 @@ using Bake.Cooking.Cooks.DotNet;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
+using Bake.Services.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bake.Extensions

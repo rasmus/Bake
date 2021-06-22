@@ -20,18 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using Bake.Services;
+using Bake.ValueObjects.Recipes.DotNet;
 
-namespace Bake.Extensions
+namespace Bake.Services.Tools.DotNetArguments
 {
-    public static class CommandExtensions
+    public class DotNetPublishArgument : DotNetArgument
     {
-        public static IEnumerable<string> NonEmptyOut(this IRunner runner)
+        public bool PublishSingleFile { get; }
+        public bool SelfContained { get; }
+        public bool Build { get; }
+        public string Configuration { get; }
+        public DotNetTargetRuntime Runtime { get; }
+        public string Output { get; }
+
+        public DotNetPublishArgument(
+            string filePath,
+            bool publishSingleFile,
+            bool selfContained,
+            bool build,
+            string configuration,
+            DotNetTargetRuntime runtime,
+            string output)
+            : base(filePath)
         {
-            return runner.Out
-                .Where(l => !string.IsNullOrWhiteSpace(l));
+            PublishSingleFile = publishSingleFile;
+            SelfContained = selfContained;
+            Build = build;
+            Configuration = configuration;
+            Runtime = runtime;
+            Output = output;
         }
     }
 }
