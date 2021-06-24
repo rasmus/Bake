@@ -79,7 +79,7 @@ namespace Bake.Services
         {
             _stream = await _log.OpenWriteAsync(cancellationToken);
 
-            _logger.LogDebug(
+            _logger.LogTrace(
                 "Executing '{Program} {Arguments}' in {Directory}",
                 _command,
                 string.Join(" ", _arguments),
