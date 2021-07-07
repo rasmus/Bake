@@ -62,7 +62,7 @@ namespace Bake.Commands.Plan
             bool force = false,
             Convention convention = Convention.Default,
             Destination[] destination = null,
-            LogEventLevel logLevel = LogEventLevel.Warning)
+            LogEventLevel logLevel = LogEventLevel.Information)
         {
             _logCollector.LogLevel = logLevel;
 
