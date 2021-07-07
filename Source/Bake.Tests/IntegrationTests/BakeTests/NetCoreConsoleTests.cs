@@ -41,7 +41,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         public async Task Run()
         {
             // Arrange
-            TestState.New(
+            var testState = TestState.New(
                 "run",
                 "--convention=Release",
                 "--destination=nuget>http://localhost:5555/v3/index.json",
@@ -49,7 +49,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 .WithEnvironmentVariable("bake_credentials_nuget_localhost_apikey", "acd0b30512ac4fa39f62eb7a61fcf56c");
 
             // Act
-            var returnCode = await ExecuteAsync();
+            var returnCode = await ExecuteAsync(testState);
 
             // Assert
             returnCode.Should().Be(0);
