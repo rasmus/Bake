@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
 
@@ -37,11 +38,14 @@ namespace Bake
             _commandFactory = commandFactory;
         }
 
-        public async Task<int> ExecuteAsync(string[] args, IReadOnlyCollection<Type> commandTypes)
+        public async Task<int> ExecuteAsync(
+            string[] args,
+            IReadOnlyCollection<Type> commandTypes,
+            CancellationToken cancellationToken)
         {
             var app = _commandFactory.Create(commandTypes);
 
-            return await app.ExecuteAsync(args);
+            return await app.ExecuteAsync(args, cancellationToken);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken,
             Convention convention = Convention.Default,
             Destination[] destination = null,
-            LogEventLevel logLevel = LogEventLevel.Warning)
+            LogEventLevel logLevel = LogEventLevel.Information)
         {
             _logCollector.LogLevel = logLevel;
 

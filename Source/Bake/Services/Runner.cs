@@ -119,12 +119,20 @@ namespace Bake.Services
         private void OnStdOut(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
+            if (!string.IsNullOrWhiteSpace(output))
+            {
+                _logger.LogInformation(output);
+            }
             _stdOut.OnNext(output);
         }
 
         private void OnStdErr(object sender, DataReceivedEventArgs e)
         {
             var output = CleanupOutput(e.Data);
+            if (!string.IsNullOrWhiteSpace(output))
+            {
+                _logger.LogError(output);
+            }
             _stdErr.OnNext(output);
         }
 

@@ -20,18 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 
-namespace Bake
+namespace Bake.Tests.Helpers
 {
-    public interface IExecutor
+    public class TestEnvVars : IEnvVars
     {
-        Task<int> ExecuteAsync(
-            string[] args,
-            IReadOnlyCollection<Type> commandTypes,
-            CancellationToken cancellationToken);
+        private readonly IReadOnlyDictionary<string, string> _environmentVariables;
+
+        public TestEnvVars(
+            IReadOnlyDictionary<string, string> environmentVariables)
+        {
+            _environmentVariables = environmentVariables;
+        }
+
+        public Task<IReadOnlyDictionary<string, string>> GetAsync(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_environmentVariables);
+        }
     }
 }

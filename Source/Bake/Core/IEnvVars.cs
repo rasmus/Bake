@@ -20,18 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bake
+namespace Bake.Core
 {
-    public interface IExecutor
+    public interface IEnvVars
     {
-        Task<int> ExecuteAsync(
-            string[] args,
-            IReadOnlyCollection<Type> commandTypes,
+        Task<IReadOnlyDictionary<string, string>> GetAsync(
             CancellationToken cancellationToken);
     }
 }

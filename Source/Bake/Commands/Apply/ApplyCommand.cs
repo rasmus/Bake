@@ -55,7 +55,7 @@ namespace Bake.Commands.Apply
         public async Task<int> ExecuteAsync(
             string planPath,
             CancellationToken cancellationToken,
-            LogEventLevel logLevel = LogEventLevel.Warning)
+            LogEventLevel logLevel = LogEventLevel.Information)
         {
             _logCollector.LogLevel = logLevel;
 
