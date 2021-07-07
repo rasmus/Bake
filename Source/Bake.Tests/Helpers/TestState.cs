@@ -29,7 +29,7 @@ namespace Bake.Tests.Helpers
 {
     public class TestState
     {
-        public static TestState New(string[] args) => new TestState(
+        public static TestState New(params string[] args) => new TestState(
             args,
             null,
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
@@ -59,6 +59,16 @@ namespace Bake.Tests.Helpers
                 Arguments,
                 overrides,
                 EnvironmentVariables);
+        }
+
+        public TestState WithEnvironmentVariable(
+            string key,
+            string value)
+        {
+            return WithEnvironmentVariables(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [key] = value
+                });
         }
 
         public TestState WithEnvironmentVariables(

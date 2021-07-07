@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -41,7 +42,10 @@ namespace Bake.Tests.UnitTests.Core
             string expectedCredentials)
         {
             // Arrange
-            using var _ = SetEnvironmentVariable(environmentKey, expectedCredentials);
+            Inject<IEnvVars>(new TestEnvVars(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [environmentKey] = expectedCredentials
+                }));
 
             // Act
             var credentials = await Sut.GetNuGetApiKeyAsync(

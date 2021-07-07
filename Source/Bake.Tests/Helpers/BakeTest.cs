@@ -21,8 +21,12 @@
 // SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Bake.Tests.Helpers
@@ -57,10 +61,43 @@ namespace Bake.Tests.Helpers
         protected Task<int> ExecuteAsync(
             TestState testState)
         {
+            void Override(IServiceCollection s)
+            {
+                var dummyTestEnvVars = new TestEnvVars(testState.EnvironmentVariables);
+                ReplaceService<IEnvVars>(s, dummyTestEnvVars);
+                testState.Overrides?.Invoke(s);
+            }
+
             return Program.EntryAsync(
                 testState.Arguments,
-                testState.Overrides,
+                Override,
                 CancellationToken.None);
+        }
+
+        private static void ReplaceService<T>(IServiceCollection serviceCollection, T instance)
+            where T : class
+        {
+            var serviceType = typeof(T);
+            if (!serviceType.IsInterface)
+            {
+                throw new ArgumentException($"'{serviceType.PrettyPrint()}' is not an interface");
+            }
+
+            var serviceDescriptors = serviceCollection
+                .Where(s => s.ServiceType == serviceType)
+                .ToList();
+
+            if (!serviceDescriptors.Any())
+            {
+                throw new ArgumentException($"There are no services of type '{serviceType.PrettyPrint()}'");
+            }
+
+            foreach (var serviceDescriptor in serviceDescriptors)
+            {
+                serviceCollection.Remove(serviceDescriptor);
+            }
+
+            serviceCollection.AddSingleton(instance);
         }
     }
 }
