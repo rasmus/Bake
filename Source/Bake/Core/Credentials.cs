@@ -21,8 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,9 +28,13 @@ namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
-        private readonly Lazy<Task<IReadOnlyDictionary<string, string>>> _environmentVariables = new Lazy<Task<IReadOnlyDictionary<string, string>>>(
-            GetEnvironmentVariablesAsync,
-            LazyThreadSafetyMode.ExecutionAndPublication);
+        private readonly IEnvVars _envVars;
+
+        public Credentials(
+            IEnvVars envVars)
+        {
+            _envVars = envVars;
+        }
 
         public async Task<string> GetNuGetApiKeyAsync(
             Uri url,
@@ -42,7 +44,7 @@ namespace Bake.Core
             var hostname = url.Host;
 
             var key = $"bake_credentials_nuget_{hostname}_apikey";
-            var environmentVariables = await _environmentVariables.Value;
+            var environmentVariables = await _envVars.GetAsync(cancellationToken);
 
             if (!environmentVariables.TryGetValue(key, out var value))
             {
@@ -51,30 +53,6 @@ namespace Bake.Core
             }
 
             return value;
-        }
-
-        private static Task<IReadOnlyDictionary<string, string>> GetEnvironmentVariablesAsync()
-        {
-            return Task.Factory.StartNew(
-                () =>
-                {
-                    var environmentVariables = Environment.GetEnvironmentVariables();
-                    var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (DictionaryEntry dictionaryEntry in environmentVariables)
-                    {
-                        var key = dictionaryEntry.Key as string;
-                        var value = dictionaryEntry.Value as string;
-                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
-                        {
-                            dictionary[key] = value;
-                        }
-                    }
-
-                    return (IReadOnlyDictionary<string, string>) dictionary;
-                },
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
         }
     }
 }

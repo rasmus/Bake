@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Core;
@@ -34,13 +36,30 @@ namespace Bake
 {
     public class Program
     {
-        public static async Task<int> Main(string[] args)
+        public static Task<int> Main(string[] args)
         {
+            return EntryAsync(
+                args,
+                null,
+                CancellationToken.None);
+        }
+
+        public static async Task<int> EntryAsync(
+            string[] args,
+            Action<IServiceCollection> overrides,
+            CancellationToken cancellationToken)
+        {
+            using var exit = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            Console.CancelKeyPress += (sender, eventArgs) => exit.Cancel();
+
             var logCollector = new LogCollector();
 
             var serviceCollection = new ServiceCollection()
                 .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
                 .AddBake(logCollector);
+
+            overrides?.Invoke(serviceCollection);
 
             var commandType = typeof(ICommand);
             var commandTypes = serviceCollection
@@ -51,7 +70,10 @@ namespace Bake
             await using var serviceProvider = serviceCollection.BuildServiceProvider(true);
 
             var executor = serviceProvider.GetRequiredService<IExecutor>();
-            var returnCode = await executor.ExecuteAsync(args, commandTypes);
+            var returnCode = await executor.ExecuteAsync(
+                args,
+                commandTypes,
+                cancellationToken);
 
             return returnCode;
         }

@@ -20,47 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
-namespace Bake.Tests.Helpers
+namespace Bake.Core
 {
-    public abstract class BakeTest : TestProject
+    public interface IEnvVars
     {
-        private CancellationTokenSource _timeout;
-
-        protected BakeTest(string projectName) : base(projectName)
-        {
-        }
-
-        [SetUp]
-        public void SetUpBakeTest()
-        {
-            _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-        }
-
-        [TearDown]
-        public void TearDownBakeTest()
-        {
-            _timeout.Dispose();
-            _timeout = null;
-        }
-
-        protected Task<int> ExecuteAsync(
-            params string[] args)
-        {
-            return ExecuteAsync(TestState.New(args));
-        }
-
-        protected Task<int> ExecuteAsync(
-            TestState testState)
-        {
-            return Program.EntryAsync(
-                testState.Arguments,
-                testState.Overrides,
-                CancellationToken.None);
-        }
+        Task<IReadOnlyDictionary<string, string>> GetAsync(
+            CancellationToken cancellationToken);
     }
 }

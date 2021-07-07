@@ -53,13 +53,13 @@ namespace Bake.Extensions
                 .AddTransient<ICsProjParser, CsProjParser>()
                 .AddTransient<IReleaseNotesParser, ReleaseNotesParser>()
                 .AddSingleton<IYaml, Yaml>()
-                .AddTransient<IDocker, Docker>()
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddSingleton(logCollector)
                 .AddSingleton<IRandom, RandomWrapper>()
                 .AddSingleton<IFileSystem, FileSystem>()
                 .AddSingleton<ICredentials, Credentials>()
                 .AddSingleton<IDefaults, Defaults>()
+                .AddSingleton<IEnvVars, EnvVars>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -67,8 +67,9 @@ namespace Bake.Extensions
                 .AddTransient<IGather, ReleaseNotesGather>()
                 .AddTransient<IGather, DynamicDestinationGather>()
 
-                // Cli wrappers
+                // CLI wrappers
                 .AddTransient<IDotNet, DotNet>()
+                .AddTransient<IDocker, Docker>()
 
                 // Composers
                 .AddTransient<IComposer, DotNetComposer>()
