@@ -36,14 +36,14 @@ namespace Bake.Core
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private readonly IDefaults _defaults;
-        private readonly IEnvVars _envVars;
+        private readonly IEnvironmentVariables _environmentVariables;
 
         public Credentials(
             IDefaults defaults,
-            IEnvVars envVars)
+            IEnvironmentVariables environmentVariables)
         {
             _defaults = defaults;
-            _envVars = envVars;
+            _environmentVariables = environmentVariables;
         }
 
         public async Task<string> GetNuGetApiKeyAsync(
@@ -61,7 +61,7 @@ namespace Bake.Core
                 possibilities.Add("github_token");
             }
 
-            var environmentVariables = await _envVars.GetAsync(cancellationToken);
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
             var value = possibilities
                 .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)

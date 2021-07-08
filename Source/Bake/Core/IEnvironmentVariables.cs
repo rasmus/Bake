@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace Bake.Core
 {
-    public interface IEnvVars
+    public interface IEnvironmentVariables
     {
         Task<IReadOnlyDictionary<string, string>> GetAsync(
             CancellationToken cancellationToken);
