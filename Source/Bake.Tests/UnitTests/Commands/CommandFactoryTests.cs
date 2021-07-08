@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
@@ -41,11 +41,14 @@ namespace Bake.Tests.UnitTests.Commands
             // ReSharper disable once UnusedMember.Global
             public Task<int> ExecuteAsync(
                 string name = "hej",
-                int magicNumber = 42,
+                int exitCode = 42,
+                bool throwException = false,
                 CancellationToken cancellationToken = default,
                 Destination[] destination = null)
             {
-                return Task.FromResult(0);
+                if (throwException) throw new Exception();
+
+                return Task.FromResult(exitCode);
             }
         }
 
@@ -67,12 +70,30 @@ namespace Bake.Tests.UnitTests.Commands
                 {
                     "A",
                     "--name=magic",
-                    "--magic-number=42",
+                    "--exit-code=42",
                     "--destination=nuget,nuget>http://localhost:5555/v3/index.json",
                 });
 
             // Assert
-            result.Should().Be(0);
+            result.Should().Be(42);
+        }
+
+        [Test]
+        public async Task ThrowException()
+        {
+            // Act
+            var app = Sut.Create(new[] {typeof(CommandA)});
+
+            // Assert
+            var result = await app.ExecuteAsync(
+                new[]
+                {
+                    "A",
+                    "--throw-exception=true",
+                });
+
+            // Assert
+            result.Should().Be(ExitCodes.Core.UnexpectedError);
         }
     }
 }

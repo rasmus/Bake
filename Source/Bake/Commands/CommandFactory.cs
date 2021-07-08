@@ -192,11 +192,10 @@ namespace Bake.Commands
                                 : Parse(t.Item1, GetParser(app.ValueParsers, t.Item2)))
                             .ToArray();
 
-                        var task = (Task<int>) methodInfo.Invoke(command, values);
 
                         try
                         {
-                            return await task;
+                            return await (Task<int>) methodInfo.Invoke(command, values);
                         }
                         catch (Exception e)
                         {
