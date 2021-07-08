@@ -21,6 +21,9 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,11 +31,18 @@ namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
+        private static readonly Regex InvalidCharacters = new Regex(
+            "[^a-z0-9]+",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private readonly IDefaults _defaults;
         private readonly IEnvVars _envVars;
 
         public Credentials(
+            IDefaults defaults,
             IEnvVars envVars)
         {
+            _defaults = defaults;
             _envVars = envVars;
         }
 
@@ -40,16 +50,28 @@ namespace Bake.Core
             Uri url,
             CancellationToken cancellationToken)
         {
-            // TODO: Handling of other characters
-            var hostname = url.Host;
+            var hostname = InvalidCharacters.Replace(url.Host, "_");
+            var possibilities = new List<string>
+                {
+                    $"bake_credentials_nuget_{hostname}_apikey"
+                };
 
-            var key = $"bake_credentials_nuget_{hostname}_apikey";
+            if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry, StringComparison.OrdinalIgnoreCase))
+            {
+                possibilities.Add("github_token");
+            }
+
             var environmentVariables = await _envVars.GetAsync(cancellationToken);
 
-            if (!environmentVariables.TryGetValue(key, out var value))
+            var value = possibilities
+                .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)
+                .SkipWhile(string.IsNullOrEmpty)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException(
-                    $"No environment variable named {key} (case insensitive) with credentials");
+                    $"No environment variable named any of '{string.Join(", ", possibilities)}' (case insensitive) with credentials");
             }
 
             return value;
