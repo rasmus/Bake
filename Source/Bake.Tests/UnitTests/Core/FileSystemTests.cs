@@ -69,13 +69,13 @@ namespace Bake.Tests.UnitTests.Core
                     {
                         Directory.CreateDirectory(directoryPath);
                     }
+
                     await System.IO.File.WriteAllTextAsync(filePath, string.Empty);
                 }
             }
-            catch (Exception)
+            finally
             {
                 await folder.DisposeAsync();
-                throw;
             }
 
             return folder;
