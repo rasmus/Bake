@@ -56,7 +56,7 @@ namespace Bake.Core
                     $"bake_credentials_nuget_{hostname}_apikey"
                 };
 
-            if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.Add("github_token");
             }
