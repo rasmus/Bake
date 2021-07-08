@@ -42,6 +42,7 @@ namespace Bake.Tests.UnitTests.Core
             string expectedCredentials)
         {
             // Arrange
+            Inject<IDefaults>(A<Defaults>());
             Inject<IEnvironmentVariables>(new TestEnvironmentVariables(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     [environmentKey] = expectedCredentials

@@ -20,13 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Core
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.UnitTests.Core
 {
-    public interface IDefaults
+    public class GitRemoteParserTests : TestIt
     {
-        Uri GitHubUrl { get; }
-        Uri GitHubNuGetRegistry { get; }
+        [TestCase(
+            "git@github.com:rasmus/Bake.git",
+            "git",
+            "github.com",
+            "/rasmus/Bake.git")]
+        [TestCase(
+            "https://github.com/rasmus/Bake.git",
+            "https",
+            "github.com",
+            "/rasmus/Bake.git")]
+        public void TryParse(
+            string input,
+            string expectedScheme,
+            string expectedHost,
+            string expectedPath)
+        {
+            // Act
+            GitRemoteParser.TryParse(input, out var url).Should().BeTrue();
+
+            // Assert
+            url.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
+            url.Host.Should().Be(expectedHost, url.AbsoluteUri);
+            url.PathAndQuery.Should().Be(expectedPath, url.AbsoluteUri);
+        }
     }
 }

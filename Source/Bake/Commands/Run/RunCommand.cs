@@ -20,8 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking;
@@ -38,15 +40,18 @@ namespace Bake.Commands.Run
         private readonly IEditor _editor;
         private readonly IKitchen _kitchen;
         private readonly ILogCollector _logCollector;
+        private readonly IYaml _yaml;
 
         public RunCommand(
             IEditor editor,
             IKitchen kitchen,
-            ILogCollector logCollector)
+            ILogCollector logCollector,
+            IYaml yaml)
         {
             _editor = editor;
             _kitchen = kitchen;
             _logCollector = logCollector;
+            _yaml = yaml;
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -55,7 +60,8 @@ namespace Bake.Commands.Run
             CancellationToken cancellationToken,
             Convention convention = Convention.Default,
             Destination[] destination = null,
-            LogEventLevel logLevel = LogEventLevel.Information)
+            LogEventLevel logLevel = LogEventLevel.Information,
+            bool printPlan = false)
         {
             _logCollector.LogLevel = logLevel;
 
@@ -74,6 +80,16 @@ namespace Bake.Commands.Run
             if (!book.Recipes.Any())
             {
                 return ExitCodes.Core.NoRecipes;
+            }
+
+            if (printPlan)
+            {
+                var plan = new StringBuilder()
+                    .AppendLine(new string('=', 40))
+                    .AppendLine(await _yaml.SerializeAsync(book, cancellationToken))
+                    .AppendLine(new string('=', 40))
+                    .ToString();
+                Console.WriteLine(plan);
             }
 
             var success = await _kitchen.CookAsync(

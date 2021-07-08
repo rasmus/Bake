@@ -21,12 +21,34 @@
 // SOFTWARE.
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace Bake.Core
 {
-    public interface IDefaults
+    public static class GitRemoteParser
     {
-        Uri GitHubUrl { get; }
-        Uri GitHubNuGetRegistry { get; }
+        private static readonly Regex Parser = new Regex(
+            "^(?<scheme>(http|https)://){0,1}[^@]*?(?<hostname>[^:/]+)(:|/)(?<path>.*)$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        public static bool TryParse(string str, out Uri url)
+        {
+            var match = Parser.Match(str);
+            if (!match.Success)
+            {
+                url = null;
+                return false;
+            }
+
+            url = new UriBuilder
+                {
+                    Scheme = match.Groups["scheme"].Success
+                        ? match.Groups["scheme"].Value
+                        : "git",
+                    Host = match.Groups["hostname"].Value,
+                    Path = match.Groups["path"].Value,
+                }.Uri;
+            return true;
+        }
     }
 }

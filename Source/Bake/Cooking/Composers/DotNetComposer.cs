@@ -165,6 +165,13 @@ namespace Bake.Cooking.Composers
                 properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
             }
 
+            if (ingredients.GitHub != null)
+            {
+                var gitHub = ingredients.GitHub;
+                properties["Authors"] = gitHub.Owner;
+                properties["RepositoryUrl"] = gitHub.Repository;
+            }
+
             var legacyVersion = ingredients.Version.LegacyVersion.ToString();
             properties["Version"] = legacyVersion;
             properties["AssemblyVersion"] = legacyVersion;

@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.ValueObjects;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
@@ -107,7 +108,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return null;
             }
 
-            if (!Uri.TryCreate(remote.Url, UriKind.Absolute, out var url))
+            if (!GitRemoteParser.TryParse(remote.Url, out var url))
             {
                 _logger.LogError(
                     "Could not transform URL {RemoteUrl} for remote {RemoteName}",

@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bake", "Source\Bake\Bake.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bake.Tests", "Source\Bake.Tests\Bake.Tests.csproj", "{7B627E59-1653-4AED-BDD1-9B3654818FCF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F1119402-8DEF-401A-9F21-54AB22F0A6EC}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\pull-requests.yml = .github\workflows\pull-requests.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
