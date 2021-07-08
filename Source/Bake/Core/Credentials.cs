@@ -71,7 +71,7 @@ namespace Bake.Core
             if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException(
-                    $"No environment variable named any of '{string.Join(", ", possibilities)}' (case insensitive) with credentials");
+                    $"No environment variable named any of '{string.Join(", ", possibilities)}' (case insensitive) with credentials for {url}");
             }
 
             return value;
