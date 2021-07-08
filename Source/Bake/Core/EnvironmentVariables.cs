@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace Bake.Core
 {
-    public class EnvVars : IEnvVars
+    public class EnvironmentVariables : IEnvironmentVariables
     {
         private readonly Lazy<Task<IReadOnlyDictionary<string, string>>> _environmentVariables = new Lazy<Task<IReadOnlyDictionary<string, string>>>(
             GetEnvironmentVariablesAsync,
@@ -62,6 +62,5 @@ namespace Bake.Core
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
         }
-
     }
 }

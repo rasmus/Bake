@@ -27,11 +27,11 @@ using Bake.Core;
 
 namespace Bake.Tests.Helpers
 {
-    public class TestEnvVars : IEnvVars
+    public class TestEnvironmentVariables : IEnvironmentVariables
     {
         private readonly IReadOnlyDictionary<string, string> _environmentVariables;
 
-        public TestEnvVars(
+        public TestEnvironmentVariables(
             IReadOnlyDictionary<string, string> environmentVariables)
         {
             _environmentVariables = environmentVariables;

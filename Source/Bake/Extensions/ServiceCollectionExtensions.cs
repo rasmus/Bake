@@ -59,7 +59,7 @@ namespace Bake.Extensions
                 .AddSingleton<IFileSystem, FileSystem>()
                 .AddSingleton<ICredentials, Credentials>()
                 .AddSingleton<IDefaults, Defaults>()
-                .AddSingleton<IEnvVars, EnvVars>()
+                .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
