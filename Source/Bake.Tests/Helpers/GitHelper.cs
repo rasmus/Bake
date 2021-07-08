@@ -33,7 +33,7 @@ namespace Bake.Tests.Helpers
             
             using var repository = new Repository(path);
 
-            repository.Network.Remotes.Add("origin", "https://github.com/rasmus/Bake.git");
+            repository.Network.Remotes.Add("origin", "git@github.com:rasmus/Bake.git");
 
             var signature = new Signature("test", "test@example.org", DateTimeOffset.Now);
             repository.Commit(
