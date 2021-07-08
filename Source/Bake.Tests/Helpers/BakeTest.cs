@@ -68,8 +68,8 @@ namespace Bake.Tests.Helpers
         {
             void Override(IServiceCollection s)
             {
-                var dummyTestEnvVars = new TestEnvVars(testState.EnvironmentVariables);
-                ReplaceService<IEnvVars>(s, dummyTestEnvVars);
+                var dummyTestEnvVars = new TestEnvironmentVariables(testState.EnvironmentVariables);
+                ReplaceService<IEnvironmentVariables>(s, dummyTestEnvVars);
                 testState.Overrides?.Invoke(s);
             }
 

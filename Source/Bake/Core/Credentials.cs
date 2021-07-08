@@ -28,12 +28,12 @@ namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
-        private readonly IEnvVars _envVars;
+        private readonly IEnvironmentVariables _environmentVariables;
 
         public Credentials(
-            IEnvVars envVars)
+            IEnvironmentVariables environmentVariables)
         {
-            _envVars = envVars;
+            _environmentVariables = environmentVariables;
         }
 
         public async Task<string> GetNuGetApiKeyAsync(
@@ -44,7 +44,7 @@ namespace Bake.Core
             var hostname = url.Host;
 
             var key = $"bake_credentials_nuget_{hostname}_apikey";
-            var environmentVariables = await _envVars.GetAsync(cancellationToken);
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
             if (!environmentVariables.TryGetValue(key, out var value))
             {
