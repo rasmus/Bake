@@ -73,9 +73,10 @@ namespace Bake.Tests.UnitTests.Core
                     await System.IO.File.WriteAllTextAsync(filePath, string.Empty);
                 }
             }
-            finally
+            catch (Exception)
             {
                 await folder.DisposeAsync();
+                throw;
             }
 
             return folder;
