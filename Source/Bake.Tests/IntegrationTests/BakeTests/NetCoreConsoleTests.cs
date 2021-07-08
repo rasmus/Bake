@@ -57,11 +57,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
 
         [TestCase(LogEventLevel.Verbose)]
-        /*[TestCase(LogEventLevel.Debug)]
+        [TestCase(LogEventLevel.Debug)]
         [TestCase(LogEventLevel.Information)]
         [TestCase(LogEventLevel.Warning)]
         [TestCase(LogEventLevel.Error)]
-        [TestCase(LogEventLevel.Fatal)]*/
+        [TestCase(LogEventLevel.Fatal)]
         public async Task PlanThenApply(LogEventLevel logLevel)
         {
             // Act - plan
