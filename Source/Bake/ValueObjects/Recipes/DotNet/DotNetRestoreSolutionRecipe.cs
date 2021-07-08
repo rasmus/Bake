@@ -34,16 +34,21 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public bool ClearLocalHttpCache { get; [Obsolete] set; }
 
+        [YamlMember]
+        public string[] Sources { get; [Obsolete] set; }
+
         [Obsolete]
         public DotNetRestoreSolutionRecipe() { }
 
         public DotNetRestoreSolutionRecipe(
             string path,
-            bool clearLocalHttpCache)
+            bool clearLocalHttpCache,
+            string[] sources)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             ClearLocalHttpCache = clearLocalHttpCache;
+            Sources = sources;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

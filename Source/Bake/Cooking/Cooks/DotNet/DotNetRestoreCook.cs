@@ -57,7 +57,8 @@ namespace Bake.Cooking.Cooks.DotNet
 
             toolResult = await _dotNet.RestoreAsync(
                 new DotNetRestoreArgument(
-                    recipe.Path),
+                    recipe.Path,
+                    recipe.Sources),
                 cancellationToken);
 
             return toolResult.WasSuccessful;

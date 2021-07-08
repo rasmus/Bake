@@ -24,10 +24,14 @@ namespace Bake.Services.Tools.DotNetArguments
 {
     public class DotNetRestoreArgument : DotNetArgument
     {
+        public string[] Sources { get; }
+
         public DotNetRestoreArgument(
-            string filePath)
+            string filePath,
+            string[] sources)
             : base(filePath)
         {
+            Sources = sources;
         }
     }
 }
