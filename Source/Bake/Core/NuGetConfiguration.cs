@@ -20,8 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Bake.ValueObjects;
 
@@ -29,13 +33,28 @@ namespace Bake.Core
 {
     public class NuGetConfiguration : INuGetConfiguration
     {
-        public string Generate(IReadOnlyCollection<NuGetSource> nuGetSources)
+        private readonly ICredentials _credentials;
+
+        public NuGetConfiguration(
+            ICredentials credentials)
         {
+            _credentials = credentials;
+        }
+
+        public async Task<string> GenerateAsync(
+            IReadOnlyCollection<NuGetSource> nuGetSources,
+            CancellationToken cancellationToken)
+        {
+            var packageSourceCredentials = await GeneratePackageSourceCredentialsAsync(
+                nuGetSources,
+                cancellationToken)
+                .ToListAsync(cancellationToken);
+
             var xDocument = new XDocument(
                 new XDeclaration("1.0", "utf-8", "yes"),
                 new XElement("configuration",
                     new XElement("packageSources", GeneratePackageSources(nuGetSources)),
-                    new XElement("packageSourceCredentials", GeneratePackageSourceCredentials(nuGetSources))));
+                    new XElement("packageSourceCredentials", packageSourceCredentials)));
 
             return xDocument.ToString(SaveOptions.None);
         }
@@ -53,20 +72,29 @@ namespace Bake.Core
             }
         }
 
-        private static IEnumerable<XElement> GeneratePackageSourceCredentials(
-            IReadOnlyCollection<NuGetSource> nuGetSources)
+        private async IAsyncEnumerable<XElement> GeneratePackageSourceCredentialsAsync(
+            IEnumerable<NuGetSource> nuGetSources,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            if (nuGetSources.All(s => string.IsNullOrEmpty(s.ClearTextPassword)))
-            {
-                yield break;
-            }
-
             foreach (var nuGetSource in nuGetSources)
             {
+                var xElements = new List<XElement>
+                    {
+                        new XElement("add", new XAttribute("key", "Username"), new XAttribute("value", "USERNAME")),
+                    };
+
+                var apiKey = Uri.TryCreate(nuGetSource.Path, UriKind.Absolute, out var url)
+                    ? await _credentials.TryGetNuGetApiKeyAsync(url, cancellationToken)
+                    : string.Empty;
+
+                if (!string.IsNullOrEmpty(apiKey))
+                {
+                    xElements.Add(new XElement("add", new XAttribute("key", "ClearTextPassword"), new XAttribute("value", apiKey)));
+                }
+
                 yield return new XElement(
                     nuGetSource.Key,
-                    new XElement("add", new XAttribute("key", "Username"), new XAttribute("value", "USERNAME")),
-                    new XElement("add", new XAttribute("key", "ClearTextPassword"), new XAttribute("value", nuGetSource.ClearTextPassword)));
+                    xElements);
             }
         }
     }

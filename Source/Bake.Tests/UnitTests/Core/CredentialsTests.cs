@@ -49,7 +49,7 @@ namespace Bake.Tests.UnitTests.Core
                 }));
 
             // Act
-            var credentials = await Sut.GetNuGetApiKeyAsync(
+            var credentials = await Sut.TryGetNuGetApiKeyAsync(
                 new Uri(url),
                 CancellationToken.None);
 

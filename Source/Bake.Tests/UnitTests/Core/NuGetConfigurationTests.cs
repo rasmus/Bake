@@ -20,10 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Core
@@ -31,16 +35,20 @@ namespace Bake.Tests.UnitTests.Core
     public class NuGetConfigurationTests : TestFor<NuGetConfiguration>
     {
         [Test]
-        public void T()
+        public async Task GenerateAsync()
         {
             // Arrange
             var nuGetSources = new[]
                 {
-                    new NuGetSource("github", "https://nuget.pkg.github.com/rasmus/index.json", "IllNeverTell")
+                    new NuGetSource("github", "https://nuget.pkg.github.com/rasmus/index.json")
                 };
+            var credentialsMock = InjectMock<ICredentials>();
+            credentialsMock
+                .Setup(m => m.TryGetNuGetApiKeyAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("IllNeverTell");
 
             // Act
-            var xml = Sut.Generate(nuGetSources);
+            var xml = await Sut.GenerateAsync(nuGetSources, CancellationToken.None);
 
             // Assert
             xml.Should().Be(@"

@@ -26,16 +26,13 @@ namespace Bake.ValueObjects
     {
         public string Key { get; }
         public string Path { get; }
-        public string ClearTextPassword { get; }
 
         public NuGetSource(
             string key,
-            string path,
-            string clearTextPassword)
+            string path)
         {
             Key = key;
             Path = path;
-            ClearTextPassword = clearTextPassword;
         }
     }
 }

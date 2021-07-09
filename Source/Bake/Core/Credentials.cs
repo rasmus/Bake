@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Core
 {
@@ -35,18 +36,21 @@ namespace Bake.Core
             "[^a-z0-9]+",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        private readonly ILogger<Credentials> _logger;
         private readonly IDefaults _defaults;
         private readonly IEnvironmentVariables _environmentVariables;
 
         public Credentials(
+            ILogger<Credentials> logger,
             IDefaults defaults,
             IEnvironmentVariables environmentVariables)
         {
+            _logger = logger;
             _defaults = defaults;
             _environmentVariables = environmentVariables;
         }
 
-        public async Task<string> GetNuGetApiKeyAsync(
+        public async Task<string> TryGetNuGetApiKeyAsync(
             Uri url,
             CancellationToken cancellationToken)
         {
@@ -70,8 +74,10 @@ namespace Bake.Core
 
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException(
-                    $"No environment variable named any of '{string.Join(", ", possibilities)}' (case insensitive) with credentials for {url}");
+                _logger.LogInformation(
+                    "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
+                    url.AbsoluteUri,
+                    environmentVariables);
             }
 
             return value;

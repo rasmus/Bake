@@ -21,12 +21,14 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Bake.ValueObjects;
 
 namespace Bake.Core
 {
     public interface INuGetConfiguration
     {
-        string Generate(IReadOnlyCollection<NuGetSource> nuGetSources);
+        Task<string> GenerateAsync(IReadOnlyCollection<NuGetSource> nuGetSources, CancellationToken cancellationToken);
     }
 }
