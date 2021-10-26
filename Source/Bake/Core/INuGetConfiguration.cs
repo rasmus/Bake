@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
 
 namespace Bake.Core
 {
-    public interface ICredentials
+    public interface INuGetConfiguration
     {
-        Task<string> TryGetNuGetApiKeyAsync(Uri url,
-            CancellationToken cancellationToken);
+        Task<string> GenerateAsync(IReadOnlyCollection<NuGetSource> nuGetSources, CancellationToken cancellationToken);
     }
 }

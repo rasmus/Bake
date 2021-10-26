@@ -76,17 +76,20 @@ namespace Bake.Cooking.Composers
         private readonly IFileSystem _fileSystem;
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
-        
+        private readonly IDefaults _defaults;
+
         public DotNetComposer(
             ILogger<DotNetComposer> logger,
             IFileSystem fileSystem,
             ICsProjParser csProjParser,
-            IConventionInterpreter conventionInterpreter)
+            IConventionInterpreter conventionInterpreter,
+            IDefaults defaults)
         {
             _logger = logger;
             _fileSystem = fileSystem;
             _csProjParser = csProjParser;
             _conventionInterpreter = conventionInterpreter;
+            _defaults = defaults;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -155,35 +158,11 @@ namespace Bake.Cooking.Composers
             yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
                 configuration);
-            yield return new DotNetRestoreSolutionRecipe(
-                visualStudioSolution.Path,
-                true);
 
-            var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
-            if (ingredients.ReleaseNotes != null)
-            {
-                properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
-            }
+            yield return CreateRestoreRecipe(visualStudioSolution, ingredients);
 
-            if (ingredients.GitHub != null)
-            {
-                var gitHub = ingredients.GitHub;
-                properties["Authors"] = gitHub.Owner;
-                properties["RepositoryUrl"] = gitHub.Repository;
-            }
+            yield return CreateBuildRecipe(visualStudioSolution, ingredients, configuration);
 
-            var legacyVersion = ingredients.Version.LegacyVersion.ToString();
-            properties["Version"] = legacyVersion;
-            properties["AssemblyVersion"] = legacyVersion;
-            properties["AssemblyFileVersion"] = legacyVersion;
-            properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
-
-            yield return new DotNetBuildSolutionRecipe(
-                visualStudioSolution.Path,
-                configuration,
-                false,
-                false,
-                properties);
             yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
                 false,
@@ -270,6 +249,56 @@ namespace Bake.Cooking.Composers
                         new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, path)));
             }
+        }
+
+        private Recipe CreateRestoreRecipe(
+            VisualStudioSolution visualStudioSolution,
+            ValueObjects.Ingredients ingredients)
+        {
+            var sources = new List<string>();
+
+            var gitHub = ingredients.GitHub;
+            if (gitHub != null)
+            {
+                sources.Add(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", gitHub.Owner));
+            }
+
+            return new DotNetRestoreSolutionRecipe(
+                visualStudioSolution.Path,
+                true,
+                sources.ToArray());
+        }
+
+        private static Recipe CreateBuildRecipe(
+            VisualStudioSolution visualStudioSolution,
+            ValueObjects.Ingredients ingredients,
+            string configuration)
+        {
+            var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
+            if (ingredients.ReleaseNotes != null)
+            {
+                properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
+            }
+
+            if (ingredients.GitHub != null)
+            {
+                var gitHub = ingredients.GitHub;
+                properties["Authors"] = gitHub.Owner;
+                properties["RepositoryUrl"] = gitHub.Repository;
+            }
+
+            var legacyVersion = ingredients.Version.LegacyVersion.ToString();
+            properties["Version"] = legacyVersion;
+            properties["AssemblyVersion"] = legacyVersion;
+            properties["AssemblyFileVersion"] = legacyVersion;
+            properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
+
+            return new DotNetBuildSolutionRecipe(
+                visualStudioSolution.Path,
+                configuration,
+                false,
+                false,
+                properties);
         }
 
         private static string BuildDescription(

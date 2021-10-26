@@ -198,7 +198,7 @@ namespace Bake.Services.Tools
             DotNetNuGetPushArgument argument,
             CancellationToken cancellationToken)
         {
-            var apiKey = await _credentials.GetNuGetApiKeyAsync(
+            var apiKey = await _credentials.TryGetNuGetApiKeyAsync(
                 argument.Source,
                 cancellationToken);
 

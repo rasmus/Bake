@@ -20,44 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Cooking.Composers;
 using Bake.Core;
-using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using Microsoft.Extensions.DependencyInjection;
+using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
-namespace Bake.Tests.IntegrationTests.ServiceTests
+namespace Bake.Tests.UnitTests.Core
 {
-    public class DotNetComposerServiceTests : ServiceTest<DotNetComposer>
+    public class NuGetConfigurationTests : TestFor<NuGetConfiguration>
     {
-        public DotNetComposerServiceTests() : base("NetCore.Console")
-        {
-        }
-
         [Test]
-        public async Task T()
+        public async Task GenerateAsync()
         {
-            // Act
-            var recipes = await Sut.ComposeAsync(
-                Context.New(
-                    Ingredients.New(
-                        SemVer.With(1,2,3),
-                        WorkingDirectory)), 
-                CancellationToken.None);
-        }
+            // Arrange
+            var nuGetSources = new[]
+                {
+                    new NuGetSource("github", "https://nuget.pkg.github.com/rasmus/index.json")
+                };
+            var credentialsMock = InjectMock<ICredentials>();
+            credentialsMock
+                .Setup(m => m.TryGetNuGetApiKeyAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("IllNeverTell");
 
-        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
-        {
-            return base.Configure(serviceCollection)
-                .AddTransient<ICsProjParser, CsProjParser>()
-                .AddTransient<IFileSystem, FileSystem>()
-                .AddTransient<ICredentials, Credentials>()
-                .AddTransient<IDefaults, Defaults>()
-                .AddTransient<IConventionInterpreter, ConventionInterpreter>();
+            // Act
+            var xml = await Sut.GenerateAsync(nuGetSources, CancellationToken.None);
+
+            // Assert
+            xml.Should().Be(@"
+<configuration>
+  <packageSources>
+    <clear />
+    <add key=""github"" value=""https://nuget.pkg.github.com/rasmus/index.json"" />
+  </packageSources>
+  <packageSourceCredentials>
+    <github>
+      <add key=""Username"" value=""USERNAME"" />
+      <add key=""ClearTextPassword"" value=""IllNeverTell"" />
+    </github>
+  </packageSourceCredentials>
+</configuration>".Trim());
         }
     }
 }
