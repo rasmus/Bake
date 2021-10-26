@@ -25,13 +25,18 @@ using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Destinations;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.ValueObjects
 {
     public class DestinationParserTests : TestFor<DestinationParser>
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Inject<IDefaults>(new Defaults());
+        }
+
         [TestCase(
             "nuget",
             "https://api.nuget.org/v3/index.json")]
@@ -47,12 +52,6 @@ namespace Bake.Tests.UnitTests.ValueObjects
 
             // Assert
             ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
-        }
-
-        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
-        {
-            return base.Configure(serviceCollection)
-                .AddTransient<IDefaults, Defaults>();
         }
     }
 }
