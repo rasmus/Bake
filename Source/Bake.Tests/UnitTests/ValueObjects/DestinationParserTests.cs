@@ -20,13 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
+using Bake.Services;
+using Bake.Tests.Helpers;
 using Bake.ValueObjects.Destinations;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.ValueObjects
 {
-    public class DestinationsTests
+    public class DestinationParserTests : TestFor<DestinationParser>
     {
         [TestCase(
             "nuget",
@@ -39,10 +43,16 @@ namespace Bake.Tests.UnitTests.ValueObjects
             string expectedRegistryUrl)
         {
             // Act
-            Destination.TryParse(input, out var destination).Should().BeTrue();
+            Sut.TryParse(input, out var destination).Should().BeTrue();
 
             // Assert
             ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+        }
+
+        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
+        {
+            return base.Configure(serviceCollection)
+                .AddTransient<IDefaults, Defaults>();
         }
     }
 }

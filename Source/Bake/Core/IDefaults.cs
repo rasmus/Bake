@@ -28,5 +28,6 @@ namespace Bake.Core
     {
         Uri GitHubUrl { get; }
         Uri GitHubNuGetRegistry { get; }
+        Uri NuGetRegistry { get; }
     }
 }
