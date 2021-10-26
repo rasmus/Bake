@@ -65,6 +65,11 @@ namespace Bake.Core
                 possibilities.Add("github_token");
             }
 
+            if (string.Equals(url.Host, _defaults.NuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
+            {
+                possibilities.Add("nuget_apikey");
+            }
+
             var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
             var value = possibilities
@@ -77,7 +82,7 @@ namespace Bake.Core
                 _logger.LogInformation(
                     "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
                     url.AbsoluteUri,
-                    environmentVariables);
+                    string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
             }
 
             return value;

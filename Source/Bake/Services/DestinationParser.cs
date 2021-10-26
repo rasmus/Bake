@@ -42,7 +42,9 @@ namespace Bake.Services
                     {
                         return false;
                     }
+
                     destination = new NuGetRegistryDestination(url);
+                    
                     return true;
 
                 default:
