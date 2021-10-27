@@ -21,28 +21,11 @@
 // SOFTWARE.
 
 using Bake.ValueObjects.Destinations;
-using FluentAssertions;
-using NUnit.Framework;
 
-namespace Bake.Tests.UnitTests.ValueObjects
+namespace Bake.Services
 {
-    public class DestinationsTests
+    public interface IDestinationParser
     {
-        [TestCase(
-            "nuget",
-            "https://api.nuget.org/v3/index.json")]
-        [TestCase(
-            "nuget>http://localhost:5555/v3/index.json",
-            "http://localhost:5555/v3/index.json")]
-        public void NuGetRegistry(
-            string input,
-            string expectedRegistryUrl)
-        {
-            // Act
-            Destination.TryParse(input, out var destination).Should().BeTrue();
-
-            // Assert
-            ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
-        }
+        bool TryParse(string str, out Destination destination);
     }
 }

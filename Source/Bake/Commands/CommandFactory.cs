@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.Services;
 using Bake.ValueObjects.Destinations;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Abstractions;
@@ -46,13 +47,16 @@ namespace Bake.Commands
 
         private readonly ILogger<CommandFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDestinationParser _destinationParser;
 
         public CommandFactory(
             ILogger<CommandFactory> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IDestinationParser destinationParser)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _destinationParser = destinationParser;
         }
 
         public CommandLineApplication Create(IEnumerable<Type> types)
@@ -83,7 +87,7 @@ namespace Bake.Commands
                         return null;
                     }
 
-                    if (!Destination.TryParse(value, out var destination))
+                    if (!_destinationParser.TryParse(value, out var destination))
                     {
                         throw new FormatException($"'{value}' is an invalid Destination value for argument '{argName}'");
                     }
@@ -97,7 +101,7 @@ namespace Bake.Commands
                     return value?.Split(",", StringSplitOptions.RemoveEmptyEntries)
                         .Select(v =>
                         {
-                            if (!Destination.TryParse(v, out var destination))
+                            if (!_destinationParser.TryParse(v, out var destination))
                             {
                                 throw new FormatException(
                                     $"'{value}' is an invalid Destination value for argument '{argName}'");

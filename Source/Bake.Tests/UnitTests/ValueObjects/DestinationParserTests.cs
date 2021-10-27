@@ -20,14 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using Bake.Core;
+using Bake.Services;
+using Bake.Tests.Helpers;
+using Bake.ValueObjects.Destinations;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Core
+namespace Bake.Tests.UnitTests.ValueObjects
 {
-    public class Defaults : IDefaults
+    public class DestinationParserTests : TestFor<DestinationParser>
     {
-        public Uri GitHubUrl { get; } = new Uri("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new Uri("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new Uri("https://api.nuget.org/v3/index.json");
+        [SetUp]
+        public void SetUp()
+        {
+            Inject<IDefaults>(new Defaults());
+        }
+
+        [TestCase(
+            "nuget",
+            "https://api.nuget.org/v3/index.json")]
+        [TestCase(
+            "nuget>http://localhost:5555/v3/index.json",
+            "http://localhost:5555/v3/index.json")]
+        public void NuGetRegistry(
+            string input,
+            string expectedRegistryUrl)
+        {
+            // Act
+            Sut.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+        }
     }
 }
