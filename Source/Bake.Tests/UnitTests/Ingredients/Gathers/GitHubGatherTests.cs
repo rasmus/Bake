@@ -42,7 +42,8 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             Inject<IDefaults>(new Defaults());
         }
 
-        [TestCase("https://github.com/rasmus/ElOverblik", "rasmus", "ElOverblik")]
+        [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake")]
+        [TestCase("https://github.com/rasmus/Bake", "rasmus", "Bake")]
         public async Task Verify(string url, string expectedOwner, string expectedRepository)
         {
             // Arrange
