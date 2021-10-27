@@ -32,7 +32,7 @@ namespace Bake.Cooking.Ingredients.Gathers
     public class GitHubGather : IGather
     {
         private static readonly Regex GitHubUrlExtractor = new Regex(
-            @"^/(?<owner>.*?)/(?<repo>.*?)(\.git){0,1}",
+            @"^/(?<owner>.*?)/(?<repo>.*)(\.git){0,1}",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly IDefaults _defaults;
