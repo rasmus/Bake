@@ -24,6 +24,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
+using Bake.Core;
+using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Destinations;
 using FluentAssertions;
@@ -35,6 +37,12 @@ namespace Bake.Tests.UnitTests.Commands
 {
     public class CommandFactoryTests : TestFor<CommandFactory>
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Inject<IDestinationParser>(new DestinationParser(new Defaults()));
+        }
+
         [CommandVerb("A")]
         public class CommandA : ICommand
         {
