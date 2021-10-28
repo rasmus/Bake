@@ -59,18 +59,18 @@ namespace Bake
             public const string Container = "container";
             public const string Dockerfile = "dockerfile";
             public const string DotNetPublishedDirectory = "dotnet-publish-directory";
-            public const string LinuxTool = "tool-linux";
             public const string NuGet = "nuget";
-            public const string WindowsTool = "tool-windows";
+            public const string ToolLinux = "tool-linux";
+            public const string ToolWindows = "tool-windows";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
                     [ArtifactType.DockerContainer] = Container,
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
-                    [ArtifactType.LinuxTool] = LinuxTool,
                     [ArtifactType.NuGet] = NuGet,
-                    [ArtifactType.WindowsTool] = WindowsTool,
+                    [ArtifactType.ToolLinux] = ToolLinux,
+                    [ArtifactType.ToolWindows] = ToolWindows,
                 };
 
             private static readonly IReadOnlyDictionary<string, ArtifactType> NameToType = TypeToName
@@ -83,7 +83,7 @@ namespace Bake
 
             public static string GetName(ArtifactType artifactType)
             {
-                if (!Enum.IsDefined(typeof(ArtifactType), artifactType))
+                if (!Enum.IsDefined(typeof(ArtifactType), artifactType) || artifactType == ArtifactType.Invalid)
                 {
                     throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
                 }

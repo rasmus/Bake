@@ -24,11 +24,13 @@ namespace Bake.ValueObjects.Artifacts
 {
     public enum ArtifactType
     {
+        Invalid = 0,
+
         NuGet,
         Dockerfile,
         DotNetPublishedDirectory,
-        WindowsTool,
-        LinuxTool,
+        ToolWindows,
+        ToolLinux,
         DockerContainer,
     }
 }

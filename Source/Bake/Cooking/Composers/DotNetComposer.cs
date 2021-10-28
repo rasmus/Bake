@@ -45,8 +45,8 @@ namespace Bake.Cooking.Composers
     {
         private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
             {
-                [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
-                [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
+                [DotNetTargetRuntime.Linux64] = ArtifactType.ToolLinux,
+                [DotNetTargetRuntime.Windows64] = ArtifactType.ToolWindows,
             };
 
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
@@ -65,8 +65,8 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.WindowsTool,
-                ArtifactType.LinuxTool,
+                ArtifactType.ToolWindows,
+                ArtifactType.ToolLinux,
                 ArtifactType.Dockerfile,
                 ArtifactType.NuGet,
                 ArtifactType.DotNetPublishedDirectory,
