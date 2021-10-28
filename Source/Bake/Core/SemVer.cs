@@ -130,6 +130,15 @@ namespace Bake.Core
                     .ToString());
         }
 
+        public SemVer WithMeta(string meta)
+        {
+            return new SemVer(
+                Major,
+                Minor,
+                Patch,
+                meta);
+        }
+
         public override string ToString()
         {
             return _lazyString.Value;
