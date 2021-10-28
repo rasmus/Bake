@@ -236,7 +236,15 @@ namespace Bake.Cooking.Composers
                 .Where(p => p.CsProj.PackAsTool))
             foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
             {
-                var path = Path.Combine("bin", configuration, "publish", runtime.ToName());
+                var path = Path.Combine(
+                    "bin",
+                    configuration,
+                    "publish",
+                    runtime.ToName(),
+                    runtime == DotNetTargetRuntime.Windows64
+                        ? $"{visualStudioProject.CsProj.ToolCommandName}.exe"
+                        : visualStudioProject.CsProj.ToolCommandName);
+
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
