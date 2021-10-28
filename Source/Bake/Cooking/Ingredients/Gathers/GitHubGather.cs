@@ -32,7 +32,7 @@ namespace Bake.Cooking.Ingredients.Gathers
     public class GitHubGather : IGather
     {
         private static readonly Regex GitHubUrlExtractor = new Regex(
-            @"^/(?<owner>.*?)/(?<repo>.*)(\.git){0,1}",
+            @"^/(?<owner>[^/]+)/(?<repo>.+)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly IDefaults _defaults;
@@ -71,10 +71,17 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
-            var url = new Uri($"{_defaults.GitHubUrl.Scheme}://{_defaults.GitHubUrl.Host}/{match.Groups["owner"].Value}/{match.Groups["repo"].Value}");
+            var repo = match.Groups["repo"].Value;
+            var lastIndex = repo.LastIndexOf(".git");
+            if (lastIndex > 0)
+            {
+                repo = repo[..lastIndex];
+            }
+
+            var url = new Uri($"{_defaults.GitHubUrl.Scheme}://{_defaults.GitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
             ingredients.GitHub = new GitHubInformation(
                 match.Groups["owner"].Value,
-                match.Groups["repo"].Value,
+                repo,
                 url);
         }
     }
