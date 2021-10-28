@@ -130,6 +130,15 @@ namespace Bake.Core
                     .ToString());
         }
 
+        public SemVer WithMeta(string meta)
+        {
+            return new SemVer(
+                Major,
+                Minor,
+                Patch,
+                meta);
+        }
+
         public override string ToString()
         {
             return _lazyString.Value;
@@ -195,5 +204,13 @@ namespace Bake.Core
                 Patch.GetValueOrDefault(),
                 Meta);
         }
+
+        public static bool operator ==(SemVer lhs, SemVer rhs)
+        {
+            if (lhs is { }) return lhs.Equals(rhs);
+            return rhs is null;
+        }
+
+        public static bool operator !=(SemVer lhs, SemVer rhs) => !(lhs == rhs);
     }
 }

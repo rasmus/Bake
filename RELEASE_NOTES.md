@@ -1,3 +1,3 @@
-# 0.1 alpha version of Bake
+# 0.1-alpha version of Bake
 
 - Basic functionality

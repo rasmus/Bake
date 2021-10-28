@@ -45,8 +45,8 @@ namespace Bake.Cooking.Composers
     {
         private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
             {
-                [DotNetTargetRuntime.Linux64] = ArtifactType.LinuxTool,
-                [DotNetTargetRuntime.Windows64] = ArtifactType.WindowsTool,
+                [DotNetTargetRuntime.Linux64] = ArtifactType.ToolLinux,
+                [DotNetTargetRuntime.Windows64] = ArtifactType.ToolWindows,
             };
 
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
@@ -65,8 +65,8 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.WindowsTool,
-                ArtifactType.LinuxTool,
+                ArtifactType.ToolWindows,
+                ArtifactType.ToolLinux,
                 ArtifactType.Dockerfile,
                 ArtifactType.NuGet,
                 ArtifactType.DotNetPublishedDirectory,
@@ -236,7 +236,12 @@ namespace Bake.Cooking.Composers
                 .Where(p => p.CsProj.PackAsTool))
             foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
             {
-                var path = Path.Combine("bin", configuration, "publish", runtime.ToName());
+                var path = Path.Combine(
+                    "bin",
+                    configuration,
+                    "publish",
+                    runtime.ToName());
+
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
@@ -245,9 +250,14 @@ namespace Bake.Cooking.Composers
                     configuration,
                     runtime,
                     path,
-                    new DirectoryArtifact(
-                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
-                        Path.Combine(visualStudioProject.Directory, path)));
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.CsProj.ToolCommandName),
+                        Path.Combine(
+                            visualStudioProject.Directory,
+                            path,
+                            runtime == DotNetTargetRuntime.Windows64
+                                ? $"{visualStudioProject.Name}.exe"
+                                : visualStudioProject.Name)));
             }
         }
 
@@ -260,7 +270,7 @@ namespace Bake.Cooking.Composers
             var gitHub = ingredients.GitHub;
             if (gitHub != null)
             {
-                sources.Add(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", gitHub.Owner));
+                sources.Add(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", $"/{gitHub.Owner}/"));
             }
 
             return new DotNetRestoreSolutionRecipe(
@@ -309,7 +319,8 @@ namespace Bake.Cooking.Composers
                 {
                     ["SolutionName"] = visualStudioSolution.Name,
                     ["BuildTime"] = DateTimeOffset.Now.ToString("O"),
-                    ["Version"] = ingredients.Version.ToString(), // SemVer version, not legacy!
+                    ["Version"] = ingredients.Version.ToString(),
+                    ["LegacyVersion"] = ingredients.Version.LegacyVersion.ToString(),
                     ["BakeVersion"] = Constants.Version,
                 };
 

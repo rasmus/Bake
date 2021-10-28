@@ -89,6 +89,15 @@ namespace Bake.ValueObjects
                 {
                     return;
                 }
+
+                if (!string.IsNullOrEmpty(value.Version.Meta) &&
+                    string.IsNullOrEmpty(Version.Meta))
+                {
+#pragma warning disable CS0612 // Type or member is obsolete
+                    Version = Version.WithMeta(value.Version.Meta);
+#pragma warning restore CS0612 // Type or member is obsolete
+                }
+
                 _releaseNotes.SetResult(value);
             }
         }

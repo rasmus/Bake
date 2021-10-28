@@ -36,6 +36,11 @@ namespace Bake.ValueObjects.Artifacts
             ArtifactType type,
             string name)
         {
+            if (!Enum.IsDefined(typeof(ArtifactType), type) || type == ArtifactType.Invalid)
+                throw new ArgumentOutOfRangeException(nameof(type));
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
 #pragma warning disable CS0612 // Type or member is obsolete
             Type = type;
             Name = name;
