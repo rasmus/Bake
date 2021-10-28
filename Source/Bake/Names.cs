@@ -56,7 +56,7 @@ namespace Bake
 
         public static class ArtifactTypes
         {
-            public const string DockerContainer = "docker-container";
+            public const string Container = "container";
             public const string Dockerfile = "dockerfile";
             public const string DotNetPublishedDirectory = "dotnet-publish-directory";
             public const string LinuxTool = "tool-linux";
@@ -65,7 +65,7 @@ namespace Bake
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
-                    [ArtifactType.DockerContainer] = DockerContainer,
+                    [ArtifactType.DockerContainer] = Container,
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.LinuxTool] = LinuxTool,
