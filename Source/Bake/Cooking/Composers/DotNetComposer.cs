@@ -317,7 +317,8 @@ namespace Bake.Cooking.Composers
                 {
                     ["SolutionName"] = visualStudioSolution.Name,
                     ["BuildTime"] = DateTimeOffset.Now.ToString("O"),
-                    ["Version"] = ingredients.Version.ToString(), // SemVer version, not legacy!
+                    ["Version"] = ingredients.Version.ToString(),
+                    ["LegacyVersion"] = ingredients.Version.LegacyVersion.ToString(),
                     ["BakeVersion"] = Constants.Version,
                 };
 
