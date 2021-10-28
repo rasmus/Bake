@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
@@ -42,6 +45,8 @@ namespace Bake.Tests.UnitTests.Services
                 CancellationToken.None);
 
             // Assert
+            releaseNotes.SingleOrDefault(n => n.Version == SemVer.Parse("0.9")).Should().NotBeNull();
+            releaseNotes.SingleOrDefault(n => n.Version == SemVer.Parse("1.0-alpha")).Should().NotBeNull();
         }
     }
 }

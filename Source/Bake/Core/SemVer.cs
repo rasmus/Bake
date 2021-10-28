@@ -195,5 +195,13 @@ namespace Bake.Core
                 Patch.GetValueOrDefault(),
                 Meta);
         }
+
+        public static bool operator ==(SemVer lhs, SemVer rhs)
+        {
+            if (lhs is { }) return lhs.Equals(rhs);
+            return rhs is null;
+        }
+
+        public static bool operator !=(SemVer lhs, SemVer rhs) => !(lhs == rhs);
     }
 }

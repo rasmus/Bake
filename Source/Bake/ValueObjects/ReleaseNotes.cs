@@ -46,5 +46,10 @@ namespace Bake.ValueObjects
             Notes = notes;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
+
+        public override string ToString()
+        {
+            return Version.ToString();
+        }
     }
 }
