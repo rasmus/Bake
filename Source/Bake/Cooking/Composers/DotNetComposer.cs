@@ -240,10 +240,7 @@ namespace Bake.Cooking.Composers
                     "bin",
                     configuration,
                     "publish",
-                    runtime.ToName(),
-                    runtime == DotNetTargetRuntime.Windows64
-                        ? $"{visualStudioProject.CsProj.ToolCommandName}.exe"
-                        : visualStudioProject.CsProj.ToolCommandName);
+                    runtime.ToName());
 
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
@@ -255,7 +252,12 @@ namespace Bake.Cooking.Composers
                     path,
                     new FileArtifact(
                         new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.CsProj.ToolCommandName),
-                        Path.Combine(visualStudioProject.Directory, path)));
+                        Path.Combine(
+                            visualStudioProject.Directory,
+                            path,
+                            runtime == DotNetTargetRuntime.Windows64
+                                ? $"{visualStudioProject.Name}.exe"
+                                : visualStudioProject.Name)));
             }
         }
 

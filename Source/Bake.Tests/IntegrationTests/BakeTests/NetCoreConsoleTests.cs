@@ -90,10 +90,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "publish", "linux-x64", "magic-command");
+                "bin", "Release", "publish", "linux-x64", "NetCore.Console");
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "publish", "win-x64", "magic-command.exe");
+                "bin", "Release", "publish", "win-x64", "NetCore.Console.exe");
         }
 
         [TestCase("-h")]
