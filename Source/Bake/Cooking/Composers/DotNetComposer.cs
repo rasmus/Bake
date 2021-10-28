@@ -245,8 +245,8 @@ namespace Bake.Cooking.Composers
                     configuration,
                     runtime,
                     path,
-                    new DirectoryArtifact(
-                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.Name),
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(visualStudioProject.Directory, path)));
             }
         }
