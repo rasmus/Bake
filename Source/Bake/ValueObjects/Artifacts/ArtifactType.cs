@@ -31,6 +31,6 @@ namespace Bake.ValueObjects.Artifacts
         DotNetPublishedDirectory,
         ToolWindows,
         ToolLinux,
-        DockerContainer,
+        Container,
     }
 }

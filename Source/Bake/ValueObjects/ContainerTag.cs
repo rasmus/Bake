@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace Bake.ValueObjects
 {
     public class ContainerTag
@@ -37,8 +39,10 @@ namespace Bake.ValueObjects
             string name,
             string label)
         {
-            HostAndPort = hostAndPort.Trim('/');
-            Path = path.Trim('/');
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+            HostAndPort = (hostAndPort ?? string.Empty).Trim('/');
+            Path = (path ?? string.Empty).Trim('/');
             Name = name;
             Label = string.IsNullOrEmpty(label)
                 ? "latest"

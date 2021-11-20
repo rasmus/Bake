@@ -27,16 +27,20 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
 {
     public class DynamicDestinationGather : IGather
     {
+        private readonly ILogger<DynamicDestinationGather> _logger;
         private readonly IDefaults _defaults;
 
         public DynamicDestinationGather(
+            ILogger<DynamicDestinationGather> logger,
             IDefaults defaults)
         {
+            _logger = logger;
             _defaults = defaults;
         }
 
@@ -61,15 +65,51 @@ namespace Bake.Cooking.Ingredients.Gathers
                         $"Unknown artifact type {dynamicDestination.ArtifactType}");
                 }
 
+                _logger.LogDebug(
+                    "Investigating dynamic destination for {ArtifactType} to {DynamicDestination}",
+                    dynamicDestination.ArtifactType,
+                    dynamicDestination.Destination);
+
                 switch (artifactType)
                 {
                     case ArtifactType.NuGet:
                         await ExtractNuGetDestinationAsync(ingredients, dynamicDestination);
                         break;
 
+                    case ArtifactType.Container:
+                        await ExtractContainerDestinationAsync(ingredients, dynamicDestination);
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+        }
+
+        private async Task ExtractContainerDestinationAsync(
+            ValueObjects.Ingredients ingredients,
+            DynamicDestination dynamicDestination)
+        {
+            switch (dynamicDestination.Destination)
+            {
+                case Names.DynamicDestinations.GitHub:
+                    var gitHubInformation = await ingredients.GitHubTask;
+                    var tag = _defaults.GitHubUserRegistry.Replace("{USER}", gitHubInformation.Owner);
+
+                    var containerRegistryDestination = new ContainerRegistryDestination(tag);
+                    ingredients.Destinations.Add(containerRegistryDestination);
+                    ingredients.Destinations.Remove(dynamicDestination);
+
+                    _logger.LogDebug(
+                        "Updated dynamic destination for {ArtifactType} from {DynamicDestination} to {StaticDestination}",
+                        dynamicDestination.ArtifactType,
+                        dynamicDestination.Destination,
+                        containerRegistryDestination.Url);
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -83,8 +123,15 @@ namespace Bake.Cooking.Ingredients.Gathers
                     var gitHubInformation = await ingredients.GitHubTask;
                     var url = new Uri(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", $"/{gitHubInformation.Owner}/"), UriKind.Absolute);
 
-                    ingredients.Destinations.Add(new NuGetRegistryDestination(url));
+                    var nugetRegistryDestination = new NuGetRegistryDestination(url);
+                    ingredients.Destinations.Add(nugetRegistryDestination);
                     ingredients.Destinations.Remove(dynamicDestination);
+
+                    _logger.LogDebug(
+                        "Updated dynamic destination for {ArtifactType} from {DynamicDestination} to {StaticDestination}",
+                        dynamicDestination.ArtifactType,
+                        dynamicDestination.Destination,
+                        nugetRegistryDestination.Url);
 
                     break;
 

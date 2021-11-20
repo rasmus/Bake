@@ -97,6 +97,17 @@ namespace Bake.Core
             ContainerTag containerTag,
             CancellationToken cancellationToken)
         {
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            if (containerTag.HostAndPort.StartsWith("ghcr.io/") &&
+                environmentVariables.TryGetValue("github_token", out var githubToken))
+            {
+                return new DockerLogin(
+                    containerTag.HostAndPort.Split('/', StringSplitOptions.RemoveEmptyEntries)[1],
+                    githubToken,
+                    "ghcr.io");
+            }
+
             var possibilities = new List<(string, string)>();
 
             if (string.IsNullOrEmpty(containerTag.HostAndPort))
@@ -109,8 +120,6 @@ namespace Bake.Core
                 var cleanedHostname = HostnameInvalidCharacters.Replace(hostname, "_");
                 possibilities.Add(($"bake_credentials_docker_{cleanedHostname}", containerTag.HostAndPort));
             }
-
-            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
             DockerLogin Get((string, string) t)
             {

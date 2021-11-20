@@ -66,7 +66,7 @@ namespace Bake
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
-                    [ArtifactType.DockerContainer] = Container,
+                    [ArtifactType.Container] = Container,
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.NuGet] = NuGet,

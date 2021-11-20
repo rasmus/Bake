@@ -73,6 +73,14 @@ namespace Bake.Services
                     return true;
 
                 case Names.ArtifactTypes.Container:
+                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub))
+                    {
+                        destination = new DynamicDestination(
+                            Names.ArtifactTypes.Container,
+                            Names.DynamicDestinations.GitHub);
+                        return true;
+                    }
+
                     if (DockerHubUsernameValidator.IsMatch(parts[1]))
                     {
                         destination = new ContainerRegistryDestination(

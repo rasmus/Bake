@@ -39,7 +39,7 @@ namespace Bake.Cooking.Composers
     {
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.DockerContainer,
+                ArtifactType.Container,
             };
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } = new[]
             {

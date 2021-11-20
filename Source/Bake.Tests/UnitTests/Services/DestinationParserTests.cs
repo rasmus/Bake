@@ -75,5 +75,27 @@ namespace Bake.Tests.UnitTests.Services
             // Assert
             ((ContainerRegistryDestination)destination).Url.Should().Be(expectedRegistryUrl);
         }
+
+        [TestCase(
+            "container>github",
+            "container",
+            "github")]
+        [TestCase(
+            "nuget>github",
+            "nuget",
+            "github")]
+        public void Dynamics(
+            string input,
+            string expectedArtifactType,
+            string expectedDestination)
+        {
+            // Act
+            Sut.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            var dynamicDestination = (DynamicDestination)destination;
+            dynamicDestination.ArtifactType.Should().Be(expectedArtifactType);
+            dynamicDestination.Destination.Should().Be(expectedDestination);
+        }
     }
 }
