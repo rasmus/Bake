@@ -31,7 +31,7 @@ jobs:
           REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
           REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
         volumes:
-          - ${{ env.PWD }}/Services/Registry:/auth
+          - /home/runner/work/Bake/Bake/Services/Registry:/auth
 
     steps:
     - name: Fix permissions when files are cached on the same runner and used in Docker
