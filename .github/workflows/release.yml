@@ -22,20 +22,10 @@ jobs:
         ports:
         - 5555:80
 
-#      registry:
-#        image: registry:2
-#        ports:
-#        - 5000:5000
-#        env:
-#          REGISTRY_AUTH: htpasswd
-#          REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
-#          REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-#        options: -v ${{ github.workspace }}/Services/Registry:/auth:rw
-
     steps:
     - uses: actions/checkout@v2
 
-    - name: Start Docker registry
+    - name: Start Docker registry (delayed, as we need to mount the htpasswd from the checkout)
       run: |
         docker run \
           -d \
