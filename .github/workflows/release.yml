@@ -12,6 +12,7 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
 
     services:
       baget:
