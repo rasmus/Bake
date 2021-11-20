@@ -31,7 +31,7 @@ jobs:
           REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
           REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
         volumes:
-          - /home/runner/work/Bake/Bake/Services/Registry:/auth
+          - ${{ env.PWD }}/Services/Registry:/auth
 
     steps:
     - uses: actions/checkout@v2
