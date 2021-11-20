@@ -29,7 +29,7 @@ using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
 {
-    public class ContainerImageParserTests : TestFor<ContainerImageParser>
+    public class ContainerTagParserTests : TestFor<ContainerTagParser>
     {
         [TestCase(
             "registry",
@@ -75,7 +75,7 @@ namespace Bake.Tests.UnitTests.Services
             containerImage.HostAndPort.Should().Be(expectedHostAndPort);
             containerImage.Path.Should().Be(expectedPath);
             containerImage.Name.Should().Be(expectedName);
-            containerImage.Tag.Should().Be(expectedTag);
+            containerImage.Label.Should().Be(expectedTag);
         }
     }
 }

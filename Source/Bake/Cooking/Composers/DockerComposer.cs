@@ -47,13 +47,16 @@ namespace Bake.Cooking.Composers
             };
 
         private readonly IFileSystem _fileSystem;
+        private readonly IContainerTagParser _containerTagParser;
         private readonly IConventionInterpreter _conventionInterpreter;
 
         public DockerComposer(
             IFileSystem fileSystem,
+            IContainerTagParser containerTagParser,
             IConventionInterpreter conventionInterpreter)
         {
             _fileSystem = fileSystem;
+            _containerTagParser = containerTagParser;
             _conventionInterpreter = conventionInterpreter;
         }
 
@@ -98,7 +101,7 @@ namespace Bake.Cooking.Composers
             return recipes;
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
+        private IEnumerable<Recipe> CreateRecipes(
             string path,
             SemVer version,
             IEnumerable<string> urls)
@@ -106,7 +109,10 @@ namespace Bake.Cooking.Composers
             var directoryName = Path.GetFileName(Path.GetDirectoryName(path));
             var slug = directoryName.ToSlug();
             var tags = urls
-                .Select(u => $"{u}{slug}:{version}");
+                .Select(u => $"{u}{slug}:{version}")
+                .ToArray();
+
+            _containerTagParser.Validate(tags);
 
             yield return new DockerBuildRecipe(
                 path,

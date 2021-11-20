@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,14 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects;
+using Bake.Core;
+using Bake.ValueObjects.Credentials;
 
-namespace Bake.Services
+namespace Bake.Services.Tools.DockerArguments
 {
-    public interface IContainerImageParser
+    public class DockerLoginArgument : Argument
     {
-        bool TryParse(
-            string image,
-            out ContainerImage containerImage);
+        public DockerLogin Login { get; }
+
+        public DockerLoginArgument(
+            DockerLogin login)
+        {
+            Login = login;
+        }
     }
 }

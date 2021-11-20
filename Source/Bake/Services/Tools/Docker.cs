@@ -72,7 +72,29 @@ namespace Bake.Services.Tools
             var arguments = new[]
                 {
                     "push",
-                    argument.Tag,
+                    argument.Tag.ToString(),
+                };
+
+            var runner = _runnerFactory.CreateRunner(
+                "docker",
+                Directory.GetCurrentDirectory(),
+                arguments);
+
+            var result = await runner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(result);
+        }
+
+        public async Task<IToolResult> DockerLoginAsync(
+            DockerLoginArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+                {
+                    "login",
+                    "--username", argument.Login.Username,
+                    "--password", argument.Login.Password, // TODO: Pass via STDIN
+                    argument.Login.Server
                 };
 
             var runner = _runnerFactory.CreateRunner(

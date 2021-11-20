@@ -35,5 +35,9 @@ namespace Bake.Services.Tools
         Task<IToolResult> DockerPushAsync(
             DockerPushArgument argument,
             CancellationToken cancellationToken);
+
+        Task<IToolResult> DockerLoginAsync(
+            DockerLoginArgument argument,
+            CancellationToken cancellationToken);
     }
 }

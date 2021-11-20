@@ -24,20 +24,23 @@ using System;
 
 namespace Bake.ValueObjects.Credentials
 {
-    public class DockerLogin
+    public class DockerLogin : ValueObject
     {
         public string Username { get; }
         public string Password { get; }
+        public string Server { get; }
 
         public DockerLogin(
             string username,
-            string password)
+            string password,
+            string server)
         {
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             Username = username;
             Password = password;
+            Server = server ?? string.Empty;
         }
     }
 }

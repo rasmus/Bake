@@ -94,33 +94,32 @@ namespace Bake.Core
         }
 
         public async Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerImage containerImage,
+            ContainerTag containerTag,
             CancellationToken cancellationToken)
         {
-            var possibilities = new List<string>
-                {
-                    "bake_credentials_docker"
-                };
-            if (string.IsNullOrEmpty(containerImage.HostAndPort))
+            var server = containerTag.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
+            var possibilities = new List<(string, string)>();
+
+            if (string.IsNullOrEmpty(containerTag.HostAndPort))
             {
-                possibilities.Add("dockerhub");
+                possibilities.Add(("dockerhub", string.Empty));
             }
             else
             {
-                var host = containerImage.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
-                var hostname = HostnameInvalidCharacters.Replace(host, "_");
-                possibilities.Add($"bake_credentials_docker_{hostname}");
+                var hostname = HostnameInvalidCharacters.Replace(server, "_");
+                possibilities.Add(($"bake_credentials_docker_{hostname}", server));
             }
 
             var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
-            DockerLogin Get(string e)
+            DockerLogin Get((string, string) t)
             {
+                var (e, s) = t;
                 var username = environmentVariables.TryGetValue($"{e}_username", out var u) ? u : string.Empty;
                 var password = environmentVariables.TryGetValue($"{e}_password", out var p) ? p : string.Empty;
 
                 return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)
-                    ? new DockerLogin(username, password)
+                    ? new DockerLogin(username, password, s)
                     : null;
             }
 

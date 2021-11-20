@@ -20,44 +20,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Bake.Extensions;
 using Bake.ValueObjects;
 
 namespace Bake.Services
 {
-    public class ContainerImageParser : IContainerImageParser
+    public class ContainerTagParser : IContainerTagParser
     {
         private static readonly Regex ImageParser = new(
             @"^
                 (?<hostAndPort>[a-z\-0-9\.]+(:[0-9]+){0,1}/){0,1}
                 (?<path>[a-z\-0-9]+/){0,1}
                 (?<name>[a-z\-0-9]+)
-                (:(?<tag>[a-z\-0-9]+)){0,1}
+                (:(?<label>[a-z\-0-9]+)){0,1}
             $",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
-        public bool TryParse(
-            string image,
-            out ContainerImage containerImage)
+        public void Validate(IEnumerable<string> images)
         {
-            containerImage = null;
-            if (string.IsNullOrEmpty(image))
+            var invalid = images
+                .Where(i => !TryParse(i, out _))
+                .OrderBy(i => i)
+                .ToArray();
+
+            if (invalid.Any())
+            {
+                throw new Exception($"These images are invalid: {string.Join(", ", invalid)}");
+            }
+        }
+
+        public bool TryParse(string tag,
+            out ContainerTag containerTag)
+        {
+            containerTag = null;
+            if (string.IsNullOrEmpty(tag))
             {
                 return false;
             }
 
-            var match = ImageParser.Match(image);
+            var match = ImageParser.Match(tag);
             if (!match.Success)
             {
                 return false;
             }
 
-            containerImage = new ContainerImage(
+            containerTag = new ContainerTag(
                 match.GetIfThere("hostAndPort"),
                 match.GetIfThere("path"),
                 match.GetIfThere("name"),
-                match.GetIfThere("tag"));
+                match.GetIfThere("label"));
             return true;
         }
     }

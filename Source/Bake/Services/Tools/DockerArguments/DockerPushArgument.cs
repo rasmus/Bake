@@ -21,15 +21,16 @@
 // SOFTWARE.
 
 using Bake.Core;
+using Bake.ValueObjects;
 
 namespace Bake.Services.Tools.DockerArguments
 {
     public class DockerPushArgument : Argument
     {
-        public string Tag { get; }
+        public ContainerTag Tag { get; }
 
         public DockerPushArgument(
-            string tag)
+            ContainerTag tag)
         {
             Tag = tag;
         }

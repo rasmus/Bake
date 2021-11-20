@@ -20,40 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects
+using System.Collections.Generic;
+using Bake.ValueObjects;
+
+namespace Bake.Services
 {
-    public class ContainerImage
+    public interface IContainerTagParser
     {
-        public bool IsDockerHub => string.IsNullOrEmpty(HostAndPort);
+        void Validate(
+            IEnumerable<string> images);
 
-        public string HostAndPort { get; }
-        public string Path { get; }
-        public string Name { get; }
-        public string Tag { get; }
-
-        public ContainerImage(
-            string hostAndPort,
-            string path,
-            string name,
-            string tag)
-        {
-            HostAndPort = hostAndPort.Trim('/');
-            Path = path.Trim('/');
-            Name = name;
-            Tag = string.IsNullOrEmpty(tag)
-                ? "latest"
-                : tag;
-        }
-
-        public override string ToString()
-        {
-            var completePath = string.IsNullOrEmpty(Path)
-                ? Name
-                : $"{Path}/{Name}";
-
-            return IsDockerHub
-                ? $"{completePath}:{Tag}"
-                : $"{HostAndPort}/{completePath}:{Tag}";
-        }
+        bool TryParse(
+            string tag,
+            out ContainerTag containerTag);
     }
 }
