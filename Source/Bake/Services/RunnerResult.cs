@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.Services
@@ -28,19 +29,22 @@ namespace Bake.Services
     {
         public bool WasSuccessful => ReturnCode == 0;
         public int ReturnCode { get; }
-        public IFile Log { get; }
+        public IReadOnlyCollection<IFile> Logs { get; }
 
         public RunnerResult(
             int returnCode,
             IFile log)
         {
             ReturnCode = returnCode;
-            Log = log;
+            Logs = new List<IFile>{log};
         }
 
         public void Dispose()
         {
-            Log.Dispose();
+            foreach (var log in Logs)
+            {
+                log.Dispose();
+            }
         }
     }
 }

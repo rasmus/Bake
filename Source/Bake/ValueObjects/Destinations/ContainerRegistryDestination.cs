@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,37 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.DockerArguments;
-using Bake.ValueObjects.Recipes.Docker;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking.Cooks.Docker
+namespace Bake.ValueObjects.Destinations
 {
-    public class DockerBuildCook : Cook<DockerBuildRecipe>
+    [Destination(Names.Destinations.ContainerRegistry)]
+    public class ContainerRegistryDestination : Destination
     {
-        private readonly IDocker _docker;
+        [YamlMember(typeof(string))]
+        public string Url { get; [Obsolete] set; }
 
-        public DockerBuildCook(
-            IDocker docker)
+        [Obsolete]
+        public ContainerRegistryDestination() { }
+
+        public ContainerRegistryDestination(
+            string url)
         {
-            _docker = docker;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DockerBuildRecipe recipe,
-            CancellationToken cancellationToken)
+        public override string ToString()
         {
-            var argument = new DockerBuildArgument(
-                recipe.Path);
-
-            using var toolResult = await _docker.DockerBuildAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+            return $"{Names.Destinations.ContainerRegistry}|{Url}";
         }
     }
 }

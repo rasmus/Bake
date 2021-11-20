@@ -27,6 +27,8 @@ using Bake.ValueObjects.Destinations;
 using FluentAssertions;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.UnitTests.ValueObjects
 {
     public class DestinationParserTests : TestFor<DestinationParser>
@@ -52,6 +54,26 @@ namespace Bake.Tests.UnitTests.ValueObjects
 
             // Assert
             ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+        }
+
+        [TestCase(
+            "container>rasmus",
+            "registry.hub.docker.com/rasmus/")]
+        [TestCase(
+            "container>localhost:5000",
+            "localhost:5000/")]
+        [TestCase(
+            "container>localhost:5000/",
+            "localhost:5000/")]
+        public void DockerRegistry(
+            string input,
+            string expectedRegistryUrl)
+        {
+            // Act
+            Sut.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            ((ContainerRegistryDestination)destination).Url.Should().Be(expectedRegistryUrl);
         }
     }
 }

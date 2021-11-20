@@ -26,8 +26,9 @@ namespace Bake.Core
 {
     public class Defaults : IDefaults
     {
-        public Uri GitHubUrl { get; } = new Uri("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new Uri("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new Uri("https://api.nuget.org/v3/index.json");
+        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
+        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
+        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
+        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
     }
 }

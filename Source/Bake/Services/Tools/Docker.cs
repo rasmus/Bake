@@ -51,10 +51,29 @@ namespace Bake.Services.Tools
                 };
             var workingDirectory = Path.GetDirectoryName(argument.Path);
 
-
             var runner = _runnerFactory.CreateRunner(
                 "docker",
                 workingDirectory,
+                arguments);
+
+            var result = await runner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(result);
+        }
+
+        public async Task<IToolResult> DockerPushAsync(
+            DockerPushArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+                {
+                    "push",
+                    argument.Tag,
+                };
+
+            var runner = _runnerFactory.CreateRunner(
+                "docker",
+                Directory.GetCurrentDirectory(),
                 arguments);
 
             var result = await runner.ExecuteAsync(cancellationToken);

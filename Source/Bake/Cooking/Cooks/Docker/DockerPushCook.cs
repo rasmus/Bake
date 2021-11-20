@@ -28,11 +28,11 @@ using Bake.ValueObjects.Recipes.Docker;
 
 namespace Bake.Cooking.Cooks.Docker
 {
-    public class DockerBuildCook : Cook<DockerBuildRecipe>
+    public class DockerPushCook : Cook<DockerPushRecipe>
     {
         private readonly IDocker _docker;
 
-        public DockerBuildCook(
+        public DockerPushCook(
             IDocker docker)
         {
             _docker = docker;
@@ -40,17 +40,25 @@ namespace Bake.Cooking.Cooks.Docker
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            DockerBuildRecipe recipe,
+            DockerPushRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new DockerBuildArgument(
-                recipe.Path);
+            foreach (var tag in recipe.Tags)
+            {
+                var argument = new DockerPushArgument(
+                    tag);
 
-            using var toolResult = await _docker.DockerBuildAsync(
-                argument,
-                cancellationToken);
+                using var toolResult = await _docker.DockerPushAsync(
+                    argument,
+                    cancellationToken);
 
-            return toolResult.WasSuccessful;
+                if (!toolResult.WasSuccessful)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

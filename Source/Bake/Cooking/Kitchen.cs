@@ -68,6 +68,8 @@ namespace Bake.Cooking
 
                 _logger.LogInformation("Starting cook {RecipeName}", cook.RecipeName);
 
+                // TODO: Gather logs
+
                 var stopwatch = Stopwatch.StartNew();
                 var success = await cook.CookAsync(
                     context,

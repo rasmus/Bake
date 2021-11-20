@@ -47,7 +47,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Path,
                 recipe.Configuration);
 
-            var toolResult = await _dotNet.CleanAsync(
+            using var toolResult = await _dotNet.CleanAsync(
                 argument,
                 cancellationToken);
 

@@ -40,6 +40,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
+                "--destination=container>localhost:5000",
                 "--build-version", SemVer.Random.ToString());
 
             // Assert

@@ -50,7 +50,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Restore,
                 recipe.Properties);
 
-            var toolResult = await _dotNet.BuildAsync(
+            using var toolResult = await _dotNet.BuildAsync(
                 argument,
                 cancellationToken);
 

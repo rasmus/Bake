@@ -35,6 +35,7 @@ namespace Bake
         /// </summary>
         public static class Destinations
         {
+            public const string ContainerRegistry = "container-registry";
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
         }
@@ -106,6 +107,7 @@ namespace Bake
             public static class Docker
             {
                 public const string Build = "docker-build";
+                public const string Push = "docker-push";
             }
 
             public static class DotNet

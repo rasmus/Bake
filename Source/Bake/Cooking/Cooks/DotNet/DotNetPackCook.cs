@@ -52,7 +52,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.IncludeSource,
                 recipe.Configuration);
 
-            var toolResult = await _dotNet.PackAsync(
+            using var toolResult = await _dotNet.PackAsync(
                 argument,
                 cancellationToken);
 

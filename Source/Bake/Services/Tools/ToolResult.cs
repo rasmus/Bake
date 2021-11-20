@@ -20,14 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 using Bake.Core;
 
 namespace Bake.Services.Tools
 {
     public class ToolResult : IToolResult
     {
+        public static IToolResult Successful(IEnumerable<IFile> logs) => new LogOnlyToolResult(true, logs);
+        public static IToolResult Unsuccessful(IEnumerable<IFile> logs) => new LogOnlyToolResult(false, logs);
+
         public bool WasSuccessful => _runnerResult.WasSuccessful;
-        public IFile Log => _runnerResult.Log;
+        public IReadOnlyCollection<IFile> Logs => _runnerResult.Logs;
 
         private readonly IRunnerResult _runnerResult;
 
@@ -40,6 +45,28 @@ namespace Bake.Services.Tools
         public void Dispose()
         {
             _runnerResult.Dispose();
+        }
+
+        private class LogOnlyToolResult : IToolResult
+        {
+            public bool WasSuccessful { get; }
+            public IReadOnlyCollection<IFile> Logs { get; }
+
+            public LogOnlyToolResult(
+                bool wasSuccessful,
+                IEnumerable<IFile> logs)
+            {
+                WasSuccessful = wasSuccessful;
+                Logs = logs.ToArray();
+            }
+
+            public void Dispose()
+            {
+                foreach (var log in Logs)
+                {
+                    log.Dispose();
+                }
+            }
         }
     }
 }

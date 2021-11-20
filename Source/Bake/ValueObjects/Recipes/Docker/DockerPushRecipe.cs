@@ -20,37 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.DockerArguments;
-using Bake.ValueObjects.Recipes.Docker;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking.Cooks.Docker
+namespace Bake.ValueObjects.Recipes.Docker
 {
-    public class DockerBuildCook : Cook<DockerBuildRecipe>
+    [Recipe(Names.Recipes.Docker.Push)]
+    public class DockerPushRecipe : Recipe
     {
-        private readonly IDocker _docker;
+        [YamlMember]
+        public string[] Tags { get; [Obsolete] set; }
 
-        public DockerBuildCook(
-            IDocker docker)
+        [Obsolete]
+        public DockerPushRecipe() { }
+
+        public DockerPushRecipe(
+            IEnumerable<string> tags)
         {
-            _docker = docker;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DockerBuildRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new DockerBuildArgument(
-                recipe.Path);
-
-            using var toolResult = await _docker.DockerBuildAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Tags = tags.ToArray();
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

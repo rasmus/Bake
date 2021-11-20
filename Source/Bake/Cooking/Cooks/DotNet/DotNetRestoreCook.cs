@@ -43,19 +43,17 @@ namespace Bake.Cooking.Cooks.DotNet
             DotNetRestoreSolutionRecipe recipe,
             CancellationToken cancellationToken)
         {
-            IToolResult toolResult;
-
             if (recipe.ClearLocalHttpCache)
             {
-                toolResult = await _dotNet.ClearNuGetLocalsAsync(
+                using var toolResultClean = await _dotNet.ClearNuGetLocalsAsync(
                     cancellationToken);
-                if (!toolResult.WasSuccessful)
+                if (!toolResultClean.WasSuccessful)
                 {
                     return false;
                 }
             }
 
-            toolResult = await _dotNet.RestoreAsync(
+            using var toolResult = await _dotNet.RestoreAsync(
                 new DotNetRestoreArgument(
                     recipe.Path,
                     recipe.Sources),

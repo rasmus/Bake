@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.Services
@@ -29,6 +30,6 @@ namespace Bake.Services
     {
         bool WasSuccessful { get; }
         int ReturnCode { get; }
-        IFile Log { get; }
+        IReadOnlyCollection<IFile> Logs { get; }
     }
 }

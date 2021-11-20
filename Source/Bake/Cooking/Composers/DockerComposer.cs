@@ -27,7 +27,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
 
@@ -45,47 +47,71 @@ namespace Bake.Cooking.Composers
             };
 
         private readonly IFileSystem _fileSystem;
+        private readonly IConventionInterpreter _conventionInterpreter;
 
         public DockerComposer(
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IConventionInterpreter conventionInterpreter)
         {
             _fileSystem = fileSystem;
+            _conventionInterpreter = conventionInterpreter;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
+            var ingredients = context.Ingredients;
             var dockerFilePaths = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "Dockerfile",
                 cancellationToken);
 
+            var urls = ingredients.Destinations
+                .OfType<ContainerRegistryDestination>()
+                .Select(d => d.Url)
+                .Distinct()
+                .ToArray();
             var recipes = new List<Recipe>();
 
             foreach (var dockerFilePath in dockerFilePaths)
             {
-                recipes.AddRange(CreateRecipes(dockerFilePath));
+                recipes.AddRange(CreateRecipes(dockerFilePath, ingredients.Version, urls));
             }
 
             foreach (var fileArtifact in context
                 .GetArtifacts<FileArtifact>()
                 .Where(a => a.Key.Type == ArtifactType.Dockerfile))
             {
-                recipes.AddRange(CreateRecipes(fileArtifact.Path));
+                recipes.AddRange(CreateRecipes(fileArtifact.Path, ingredients.Version, urls));
+            }
+
+            if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
+            {
+                var tags = recipes
+                    .OfType<DockerBuildRecipe>()
+                    .SelectMany(b => b.Tags)
+                    .Distinct();
+                recipes.Add(new DockerPushRecipe(tags));
             }
 
             return recipes;
         }
 
         private static IEnumerable<Recipe> CreateRecipes(
-            string path)
+            string path,
+            SemVer version,
+            IEnumerable<string> urls)
         {
             var directoryName = Path.GetFileName(Path.GetDirectoryName(path));
+            var slug = directoryName.ToSlug();
+            var tags = urls
+                .Select(u => $"{u}{slug}:{version}");
 
             yield return new DockerBuildRecipe(
                 path,
-                directoryName.ToSlug());
+                slug,
+                tags);
         }
     }
 }

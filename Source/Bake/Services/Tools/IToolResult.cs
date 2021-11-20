@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.Services.Tools
@@ -28,6 +29,6 @@ namespace Bake.Services.Tools
     public interface IToolResult : IDisposable
     {
         bool WasSuccessful { get; }
-        IFile Log { get; }
+        IReadOnlyCollection<IFile> Logs { get; }
     }
 }
