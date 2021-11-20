@@ -34,6 +34,9 @@ jobs:
           - /home/runner/work/Bake/Bake/Services/Registry:/auth
 
     steps:
+    - name: Fix permissions
+      run: sudo chown -R $USER:$USER $PWD
+
     - uses: actions/checkout@v2
       
     - name: Setup .NET Core 3.1.x
