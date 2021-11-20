@@ -34,7 +34,7 @@ jobs:
           - ${{ env.PWD }}/Services/Registry:/auth
 
     steps:
-    - name: Fix permissions
+    - name: Fix permissions when files are cached on the same runner and used in Docker
       run: sudo chown -R $USER:$USER $PWD
 
     - uses: actions/checkout@v2
