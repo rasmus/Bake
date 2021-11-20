@@ -33,6 +33,8 @@ jobs:
 #        options: -v ${{ github.workspace }}/Services/Registry:/auth:rw
 
     steps:
+    - uses: actions/checkout@v2
+      
     - name: Start Docker registry
       run: |
         docker run \
@@ -44,8 +46,6 @@ jobs:
           -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
           registry:2
 
-    - uses: actions/checkout@v2
-      
     - name: Setup .NET Core 3.1.x
       uses: actions/setup-dotnet@v1
       with:
