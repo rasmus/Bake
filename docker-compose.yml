@@ -5,3 +5,8 @@ services:
     - ApiKey=acd0b30512ac4fa39f62eb7a61fcf56c
     ports:
     - 5555:80
+
+  registry:
+    image: registry:2
+    ports:
+      - 5000:5000
