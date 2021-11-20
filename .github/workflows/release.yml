@@ -26,6 +26,12 @@ jobs:
         image: registry:2
         ports:
         - 5000:5000
+        env:
+          REGISTRY_AUTH: "htpasswd"
+          REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
+          REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+        volumes:
+          - ./Services/Registry:/auth
 
     steps:
     - uses: actions/checkout@v2

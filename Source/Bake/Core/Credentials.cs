@@ -97,7 +97,6 @@ namespace Bake.Core
             ContainerTag containerTag,
             CancellationToken cancellationToken)
         {
-            var server = containerTag.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
             var possibilities = new List<(string, string)>();
 
             if (string.IsNullOrEmpty(containerTag.HostAndPort))
@@ -106,8 +105,9 @@ namespace Bake.Core
             }
             else
             {
-                var hostname = HostnameInvalidCharacters.Replace(server, "_");
-                possibilities.Add(($"bake_credentials_docker_{hostname}", server));
+                var hostname = containerTag.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
+                var cleanedHostname = HostnameInvalidCharacters.Replace(hostname, "_");
+                possibilities.Add(($"bake_credentials_docker_{cleanedHostname}", containerTag.HostAndPort));
             }
 
             var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
