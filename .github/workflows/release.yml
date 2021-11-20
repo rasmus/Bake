@@ -52,3 +52,7 @@ jobs:
 
     - name: Run Bake
       run: bake-it/Bake run --convention=Release --print-plan=true --build-version 0.1.$GITHUB_RUN_NUMBER --destination="nuget>github,nuget"
+
+    - name: Get Docker logs from registry
+      if: always()
+      run: docker logs "${{ job.services.registry.id }}"
