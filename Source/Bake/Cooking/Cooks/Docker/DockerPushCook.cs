@@ -72,6 +72,7 @@ namespace Bake.Cooking.Cooks.Docker
 
             var dockerLogins = (await Task.WhenAll(containerTags
                 .Select(t => _credentials.TryGetDockerLoginAsync(t, cancellationToken))))
+                .Where(l => l != null)
                 .Distinct()
                 .ToArray();
 
