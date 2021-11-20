@@ -26,13 +26,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
+using Bake.ValueObjects.Credentials;
 using Microsoft.Extensions.Logging;
+
+// ReSharper disable StringLiteralTypo
 
 namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
-        private static readonly Regex InvalidCharacters = new Regex(
+        private static readonly Regex HostnameInvalidCharacters = new(
             "[^a-z0-9]+",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -54,9 +58,10 @@ namespace Bake.Core
             Uri url,
             CancellationToken cancellationToken)
         {
-            var hostname = InvalidCharacters.Replace(url.Host, "_");
+            var hostname = HostnameInvalidCharacters.Replace(url.Host, "_");
             var possibilities = new List<string>
                 {
+                     "bake_credentials_nuget_apikey",
                     $"bake_credentials_nuget_{hostname}_apikey"
                 };
 
@@ -86,6 +91,44 @@ namespace Bake.Core
             }
 
             return value;
+        }
+
+        public async Task<DockerLogin> TryGetDockerLoginAsync(
+            ContainerImage containerImage,
+            CancellationToken cancellationToken)
+        {
+            var possibilities = new List<string>
+                {
+                    "bake_credentials_docker"
+                };
+            if (string.IsNullOrEmpty(containerImage.HostAndPort))
+            {
+                possibilities.Add("dockerhub");
+            }
+            else
+            {
+                var host = containerImage.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
+                var hostname = HostnameInvalidCharacters.Replace(host, "_");
+                possibilities.Add($"bake_credentials_docker_{hostname}");
+            }
+
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            DockerLogin Get(string e)
+            {
+                var username = environmentVariables.TryGetValue($"{e}_username", out var u) ? u : string.Empty;
+                var password = environmentVariables.TryGetValue($"{e}_password", out var p) ? p : string.Empty;
+
+                return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)
+                    ? new DockerLogin(username, password)
+                    : null;
+            }
+
+            var dockerLogin = possibilities
+                .Select(Get)
+                .FirstOrDefault(l => l != null);
+
+            return dockerLogin;
         }
     }
 }

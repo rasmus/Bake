@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,22 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
 
-namespace Bake.Core
+namespace Bake.Services
 {
-    public interface ICredentials
+    public interface IContainerImageParser
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
-
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerImage containerImage,
-            CancellationToken cancellationToken);
+        bool TryParse(
+            string image,
+            out ContainerImage containerImage);
     }
 }

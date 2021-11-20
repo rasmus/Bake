@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,21 +21,23 @@
 // SOFTWARE.
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
 
-namespace Bake.Core
+namespace Bake.ValueObjects.Credentials
 {
-    public interface ICredentials
+    public class DockerLogin
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public string Username { get; }
+        public string Password { get; }
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerImage containerImage,
-            CancellationToken cancellationToken);
+        public DockerLogin(
+            string username,
+            string password)
+        {
+            if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
+
+            Username = username;
+            Password = password;
+        }
     }
 }

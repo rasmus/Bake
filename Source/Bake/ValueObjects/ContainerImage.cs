@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,22 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
-
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public interface ICredentials
+    public class ContainerImage
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public bool IsDockerHub => string.IsNullOrEmpty(HostAndPort);
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerImage containerImage,
-            CancellationToken cancellationToken);
+        public string HostAndPort { get; }
+        public string Path { get; }
+        public string Name { get; }
+        public string Tag { get; }
+
+        public ContainerImage(
+            string hostAndPort,
+            string path,
+            string name,
+            string tag)
+        {
+            HostAndPort = hostAndPort.Trim('/');
+            Path = path.Trim('/');
+            Name = name;
+            Tag = string.IsNullOrEmpty(tag)
+                ? "latest"
+                : tag;
+        }
+
+        public override string ToString()
+        {
+            var completePath = string.IsNullOrEmpty(Path)
+                ? Name
+                : $"{Path}/{Name}";
+
+            return IsDockerHub
+                ? $"{completePath}:{Tag}"
+                : $"{HostAndPort}/{completePath}:{Tag}";
+        }
     }
 }

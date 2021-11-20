@@ -29,7 +29,7 @@ using NUnit.Framework;
 
 // ReSharper disable StringLiteralTypo
 
-namespace Bake.Tests.UnitTests.ValueObjects
+namespace Bake.Tests.UnitTests.Services
 {
     public class DestinationParserTests : TestFor<DestinationParser>
     {

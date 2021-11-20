@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,22 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+using System.Text.RegularExpressions;
 
-namespace Bake.Core
+namespace Bake.Extensions
 {
-    public interface ICredentials
+    public static class MatchExtensions
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
-
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerImage containerImage,
-            CancellationToken cancellationToken);
+        public static string GetIfThere(
+            this Match match,
+            string group)
+        {
+            var groupCollection = match.Groups[group];
+            return groupCollection.Success
+                ? groupCollection.Value
+                : string.Empty;
+        }
     }
 }

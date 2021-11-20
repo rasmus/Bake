@@ -61,6 +61,7 @@ namespace Bake.Extensions
                 .AddSingleton<IDefaults, Defaults>()
                 .AddSingleton<IDestinationParser, DestinationParser>()
                 .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
+                .AddSingleton<IContainerImageParser, ContainerImageParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
