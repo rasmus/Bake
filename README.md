@@ -26,6 +26,51 @@ Bake is **NOT** the right tool for you if you
 - **Release notes** are parsed and added to all applicable artifacts
 - **Tests** are automatically located and executed
 
+
+## Usage
+
+Here are some examples of typical arguments passed to Bake.
+
+### Basic test build
+
+Here is the simple use case for using Bake on e.g. pull requests
+
+```
+bake run --build-version 1.0
+```
+
+### Basic release build
+
+Here is the simple example of running a release build that sends NuGet packages
+created during the release to the GitHub package store for the owner of the
+current repository.
+
+```
+bake run --convention=Release --build-version 1.0 --destination="nuget>github"
+```
+
+### Examples of common used arguments
+
+Here are some examples of common used argumnets to Bake
+
+* `--destination=`
+  * **NuGet**
+    * `nuget` - An unamed destination will send NuGet packages to the central
+      NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for
+      an API in an environment variabled named `NUGET_APIKEY`
+    * `nuget>github` - Send NuGet packages to the specific need with is owned
+      by the owner of the repositry of the current repository. Bake will
+      automatically setup the API key for the current build using the
+      `GITHUB_TOKEN` (automatically provided in GitHub actions), thus no
+      additional configuration is required
+    * `nuget>http://localhost:5555/v3/index.json` - Send NuGet packages to the feed
+      specified by the URL. Bake will look for the API key in an environment
+      variable named `bake_credentials_nuget_{hostname}_apikey`, in which
+      `{hostname}` is the hostname of the URL with invalid characters removed
+
+
+## License
+
 ---
 
 ```

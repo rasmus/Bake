@@ -39,5 +39,19 @@ namespace Bake.Extensions
                 workingDirectory,
                 arguments.ToArray());
         }
+
+        public static IRunner CreateRunner(
+            this IRunnerFactory runnerFactory,
+            string command,
+            string workingDirectory,
+            IReadOnlyDictionary<string, string> environmentVariables,
+            IEnumerable<string> arguments)
+        {
+            return runnerFactory.CreateRunner(
+                command,
+                workingDirectory,
+                environmentVariables,
+                arguments.ToArray());
+        }
     }
 }

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -35,6 +36,11 @@ namespace Bake.Services.Tools
 {
     public class DotNet : IDotNet
     {
+        private static readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable = new ConcurrentDictionary<string, string>
+            {
+                ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
+                ["DOTNET_NOLOGO"] = "true"
+            };
         private readonly IRunnerFactory _runnerFactory;
         private readonly ICredentials _credentials;
 
@@ -60,6 +66,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 Directory.GetCurrentDirectory(),
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -82,6 +89,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -102,6 +110,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -132,6 +141,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -157,6 +167,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -187,6 +198,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -213,6 +225,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -244,6 +257,7 @@ namespace Bake.Services.Tools
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
+                DotNetEnvironmentVariable,
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
