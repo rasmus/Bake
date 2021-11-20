@@ -44,7 +44,8 @@ namespace Bake.Cooking.Cooks.Docker
             CancellationToken cancellationToken)
         {
             var argument = new DockerBuildArgument(
-                recipe.Path);
+                recipe.Path,
+                recipe.Tags);
 
             using var toolResult = await _docker.DockerBuildAsync(
                 argument,

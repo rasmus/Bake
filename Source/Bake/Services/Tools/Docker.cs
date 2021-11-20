@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.DockerArguments;
@@ -41,20 +43,22 @@ namespace Bake.Services.Tools
             DockerBuildArgument argument,
             CancellationToken cancellationToken)
         {
-            var arguments = new []
+            var arguments = new List<string>
                 {
                     "build",
                     "--pull",
                     "--no-cache",
                     "--progress", "plain",
-                    "."
                 };
+            arguments.AddRange(argument.Tags.SelectMany(t => new []{"-t", t}));
+            arguments.Add(".");
+
             var workingDirectory = Path.GetDirectoryName(argument.Path);
 
             var runner = _runnerFactory.CreateRunner(
                 "docker",
                 workingDirectory,
-                arguments);
+                arguments.ToArray());
 
             var result = await runner.ExecuteAsync(cancellationToken);
 
