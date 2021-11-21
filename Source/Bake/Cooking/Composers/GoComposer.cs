@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,38 +20,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.DockerArguments;
-using Bake.ValueObjects.Recipes.Docker;
+using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.Go;
 
-namespace Bake.Cooking.Cooks.Docker
+namespace Bake.Cooking.Composers
 {
-    public class DockerBuildCook : Cook<DockerBuildRecipe>
+    public class GoComposer : Composer
     {
-        private readonly IDocker _docker;
+        private readonly IFileSystem _fileSystem;
 
-        public DockerBuildCook(
-            IDocker docker)
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
+            {
+                ArtifactType.ToolWindows,
+                ArtifactType.ToolLinux,
+                ArtifactType.Dockerfile,
+            };
+
+        public GoComposer(
+            IFileSystem fileSystem)
         {
-            _docker = docker;
+            _fileSystem = fileSystem;
         }
 
-        protected override async Task<bool> CookAsync(
+        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
-            DockerBuildRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new DockerBuildArgument(
-                recipe.Path,
-                recipe.Tags);
-
-            using var toolResult = await _docker.BuildAsync(
-                argument,
+            var ingredients = context.Ingredients;
+            var goModFilePaths = await _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "go.mod",
                 cancellationToken);
 
-            return toolResult.WasSuccessful;
+            return goModFilePaths
+                .Select(Path.GetDirectoryName)
+                .SelectMany(CreateRecipes)
+                .ToArray();
+        }
+
+        private static IEnumerable<Recipe> CreateRecipes(
+            string directoryPath)
+        {
+            yield return new GoTestRecipe(
+                directoryPath);
         }
     }
 }

@@ -20,24 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.Tools.DockerArguments;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Services.Tools
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public interface IDocker
+    public class GoLangServiceTests : BakeTest
     {
-        Task<IToolResult> BuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken);
+        public GoLangServiceTests() : base("GoLang.Service")
+        {
+        }
 
-        Task<IToolResult> PushAsync(
-            DockerPushArgument argument,
-            CancellationToken cancellationToken);
+        [Test]
+        public async Task Run()
+        {
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                "run",
+                "--build-version", SemVer.Random.ToString()));
 
-        Task<IToolResult> LoginAsync(
-            DockerLoginArgument argument,
-            CancellationToken cancellationToken);
+            // Assert
+            returnCode.Should().Be(0);
+        }
     }
 }

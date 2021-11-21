@@ -20,24 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools.DockerArguments;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services.Tools
+namespace Bake.ValueObjects.Recipes.Go
 {
-    public interface IDocker
+    [Recipe(Names.Recipes.Go.Test)]
+    public class GoTestRecipe : Recipe
     {
-        Task<IToolResult> BuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
 
-        Task<IToolResult> PushAsync(
-            DockerPushArgument argument,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public GoTestRecipe() { }
 
-        Task<IToolResult> LoginAsync(
-            DockerLoginArgument argument,
-            CancellationToken cancellationToken);
+        public GoTestRecipe(
+            string workingDirectory)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            WorkingDirectory = workingDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

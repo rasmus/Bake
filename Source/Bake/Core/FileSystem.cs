@@ -33,7 +33,7 @@ namespace Bake.Core
 {
     public class FileSystem : IFileSystem
     {
-        private static readonly ConcurrentDictionary<string, bool> ShouldSkipCache = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, bool> ShouldSkipCache = new();
 
         private readonly ILogger<FileSystem> _logger;
 

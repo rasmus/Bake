@@ -20,24 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools.DockerArguments;
+using Bake.Core;
 
-namespace Bake.Services.Tools
+namespace Bake.Services.Tools.GoArguments
 {
-    public interface IDocker
+    public class GoTestArgument : Argument
     {
-        Task<IToolResult> BuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken);
+        public string WorkingDirectory { get; }
 
-        Task<IToolResult> PushAsync(
-            DockerPushArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<IToolResult> LoginAsync(
-            DockerLoginArgument argument,
-            CancellationToken cancellationToken);
+        public GoTestArgument(
+            string workingDirectory)
+        {
+            WorkingDirectory = workingDirectory;
+        }
     }
 }

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -22,22 +22,14 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.Tools.DockerArguments;
+using Bake.Services.Tools.GoArguments;
 
 namespace Bake.Services.Tools
 {
-    public interface IDocker
+    public interface IGo
     {
-        Task<IToolResult> BuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<IToolResult> PushAsync(
-            DockerPushArgument argument,
-            CancellationToken cancellationToken);
-
-        Task<IToolResult> LoginAsync(
-            DockerLoginArgument argument,
+        Task<IToolResult> TestAsync(
+            GoTestArgument argument,
             CancellationToken cancellationToken);
     }
 }

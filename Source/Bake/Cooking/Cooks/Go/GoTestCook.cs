@@ -22,22 +22,36 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Services.Tools.DockerArguments;
+using Bake.Services.Tools;
+using Bake.Services.Tools.GoArguments;
+using Bake.ValueObjects.Recipes.Go;
 
-namespace Bake.Services.Tools
+namespace Bake.Cooking.Cooks.Go
 {
-    public interface IDocker
+    public class GoTestCook : Cook<GoTestRecipe>
     {
-        Task<IToolResult> BuildAsync(
-            DockerBuildArgument argument,
-            CancellationToken cancellationToken);
+        private readonly IGo _go;
 
-        Task<IToolResult> PushAsync(
-            DockerPushArgument argument,
-            CancellationToken cancellationToken);
+        public GoTestCook(
+            IGo go)
+        {
+            _go = go;
+        }
 
-        Task<IToolResult> LoginAsync(
-            DockerLoginArgument argument,
-            CancellationToken cancellationToken);
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            GoTestRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new GoTestArgument(
+                recipe.WorkingDirectory);
+
+            using var toolResult = await _go.TestAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
+
+        }
     }
 }
