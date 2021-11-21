@@ -24,6 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Services.Tools
 {
     public class Go : IGo
@@ -34,6 +36,26 @@ namespace Bake.Services.Tools
             IRunnerFactory runnerFactory)
         {
             _runnerFactory = runnerFactory;
+        }
+
+        public async Task<IToolResult> BuildAsync(
+            GoBuildArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+                {
+                    "build",
+                    "-ldflags", "\"-s -w\""
+                };
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "go",
+                argument.WorkingDirectory,
+                arguments);
+
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
         }
 
         public async Task<IToolResult> TestAsync(

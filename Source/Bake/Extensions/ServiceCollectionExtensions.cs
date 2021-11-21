@@ -93,6 +93,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DockerBuildCook>()
                 .AddTransient<ICook, DockerPushCook>()
                 // Cooks - Go
+                .AddTransient<ICook, GoBuildCook>()
                 .AddTransient<ICook, GoTestCook>()
 
                 // Commands

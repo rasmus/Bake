@@ -20,37 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.GoArguments;
-using Bake.ValueObjects.Recipes.Go;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking.Cooks.Go
+namespace Bake.ValueObjects.Recipes.Go
 {
-    public class GoTestCook : Cook<GoTestRecipe>
+    [Recipe(Names.Recipes.Go.Build)]
+    public class GoBuildRecipe : Recipe
     {
-        private readonly IGo _go;
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
 
-        public GoTestCook(
-            IGo go)
+        [Obsolete]
+        public GoBuildRecipe() { }
+
+        public GoBuildRecipe(
+            string workingDirectory)
         {
-            _go = go;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            GoTestRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new GoTestArgument(
-                recipe.WorkingDirectory);
-
-            using var toolResult = await _go.TestAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+#pragma warning disable CS0612 // Type or member is obsolete
+            WorkingDirectory = workingDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

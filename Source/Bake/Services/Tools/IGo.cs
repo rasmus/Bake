@@ -28,6 +28,10 @@ namespace Bake.Services.Tools
 {
     public interface IGo
     {
+        Task<IToolResult> BuildAsync(
+            GoBuildArgument argument,
+            CancellationToken cancellationToken);
+
         Task<IToolResult> TestAsync(
             GoTestArgument argument,
             CancellationToken cancellationToken);

@@ -106,6 +106,7 @@ namespace Bake
         {
             public static class Go
             {
+                public const string Build = "go-build";
                 public const string Test = "go-test";
             }
 

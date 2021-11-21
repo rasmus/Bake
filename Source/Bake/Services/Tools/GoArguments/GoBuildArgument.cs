@@ -20,37 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.GoArguments;
-using Bake.ValueObjects.Recipes.Go;
+using Bake.Core;
 
-namespace Bake.Cooking.Cooks.Go
+namespace Bake.Services.Tools.GoArguments
 {
-    public class GoTestCook : Cook<GoTestRecipe>
+    public class GoBuildArgument : Argument
     {
-        private readonly IGo _go;
+        public string WorkingDirectory { get; }
 
-        public GoTestCook(
-            IGo go)
+        public GoBuildArgument(
+            string workingDirectory)
         {
-            _go = go;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            GoTestRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new GoTestArgument(
-                recipe.WorkingDirectory);
-
-            using var toolResult = await _go.TestAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+            WorkingDirectory = workingDirectory;
         }
     }
 }

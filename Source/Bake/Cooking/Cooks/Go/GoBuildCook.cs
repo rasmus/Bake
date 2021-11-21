@@ -28,11 +28,11 @@ using Bake.ValueObjects.Recipes.Go;
 
 namespace Bake.Cooking.Cooks.Go
 {
-    public class GoTestCook : Cook<GoTestRecipe>
+    public class GoBuildCook : Cook<GoBuildRecipe>
     {
         private readonly IGo _go;
 
-        public GoTestCook(
+        public GoBuildCook(
             IGo go)
         {
             _go = go;
@@ -40,13 +40,13 @@ namespace Bake.Cooking.Cooks.Go
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            GoTestRecipe recipe,
+            GoBuildRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new GoTestArgument(
+            var argument = new GoBuildArgument(
                 recipe.WorkingDirectory);
 
-            using var toolResult = await _go.TestAsync(
+            using var toolResult = await _go.BuildAsync(
                 argument,
                 cancellationToken);
 

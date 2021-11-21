@@ -53,7 +53,6 @@ namespace Bake.Cooking.Composers
             IContext context,
             CancellationToken cancellationToken)
         {
-            var ingredients = context.Ingredients;
             var goModFilePaths = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "go.mod",
@@ -69,6 +68,9 @@ namespace Bake.Cooking.Composers
             string directoryPath)
         {
             yield return new GoTestRecipe(
+                directoryPath);
+
+            yield return new GoBuildRecipe(
                 directoryPath);
         }
     }
