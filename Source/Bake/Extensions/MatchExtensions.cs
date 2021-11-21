@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,38 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
-using Bake.Services;
-using Bake.Tests.Helpers;
-using Bake.ValueObjects.Destinations;
-using FluentAssertions;
-using NUnit.Framework;
+using System.Text.RegularExpressions;
 
-namespace Bake.Tests.UnitTests.ValueObjects
+namespace Bake.Extensions
 {
-    public class DestinationParserTests : TestFor<DestinationParser>
+    public static class MatchExtensions
     {
-        [SetUp]
-        public void SetUp()
+        public static string GetIfThere(
+            this Match match,
+            string group)
         {
-            Inject<IDefaults>(new Defaults());
-        }
-
-        [TestCase(
-            "nuget",
-            "https://api.nuget.org/v3/index.json")]
-        [TestCase(
-            "nuget>http://localhost:5555/v3/index.json",
-            "http://localhost:5555/v3/index.json")]
-        public void NuGetRegistry(
-            string input,
-            string expectedRegistryUrl)
-        {
-            // Act
-            Sut.TryParse(input, out var destination).Should().BeTrue();
-
-            // Assert
-            ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+            var groupCollection = match.Groups[group];
+            return groupCollection.Success
+                ? groupCollection.Value
+                : string.Empty;
         }
     }
 }

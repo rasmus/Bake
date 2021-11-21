@@ -26,13 +26,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
+using Bake.ValueObjects.Credentials;
 using Microsoft.Extensions.Logging;
+
+// ReSharper disable StringLiteralTypo
 
 namespace Bake.Core
 {
     public class Credentials : ICredentials
     {
-        private static readonly Regex InvalidCharacters = new Regex(
+        private static readonly Regex HostnameInvalidCharacters = new(
             "[^a-z0-9]+",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -54,9 +58,10 @@ namespace Bake.Core
             Uri url,
             CancellationToken cancellationToken)
         {
-            var hostname = InvalidCharacters.Replace(url.Host, "_");
+            var hostname = HostnameInvalidCharacters.Replace(url.Host, "_");
             var possibilities = new List<string>
                 {
+                     "bake_credentials_nuget_apikey",
                     $"bake_credentials_nuget_{hostname}_apikey"
                 };
 
@@ -86,6 +91,52 @@ namespace Bake.Core
             }
 
             return value;
+        }
+
+        public async Task<DockerLogin> TryGetDockerLoginAsync(
+            ContainerTag containerTag,
+            CancellationToken cancellationToken)
+        {
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            if (containerTag.HostAndPort.StartsWith("ghcr.io/") &&
+                environmentVariables.TryGetValue("github_token", out var githubToken))
+            {
+                return new DockerLogin(
+                    containerTag.HostAndPort.Split('/', StringSplitOptions.RemoveEmptyEntries)[1],
+                    githubToken,
+                    "ghcr.io");
+            }
+
+            var possibilities = new List<(string, string)>();
+
+            if (string.IsNullOrEmpty(containerTag.HostAndPort))
+            {
+                possibilities.Add(("dockerhub", string.Empty));
+            }
+            else
+            {
+                var hostname = containerTag.HostAndPort.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
+                var cleanedHostname = HostnameInvalidCharacters.Replace(hostname, "_");
+                possibilities.Add(($"bake_credentials_docker_{cleanedHostname}", containerTag.HostAndPort));
+            }
+
+            DockerLogin Get((string, string) t)
+            {
+                var (e, s) = t;
+                var username = environmentVariables.TryGetValue($"{e}_username", out var u) ? u : string.Empty;
+                var password = environmentVariables.TryGetValue($"{e}_password", out var p) ? p : string.Empty;
+
+                return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)
+                    ? new DockerLogin(username, password, s)
+                    : null;
+            }
+
+            var dockerLogin = possibilities
+                .Select(Get)
+                .FirstOrDefault(l => l != null);
+
+            return dockerLogin;
         }
     }
 }

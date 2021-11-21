@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,17 +21,30 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Core
+namespace Bake.ValueObjects.Destinations
 {
-    public class Defaults : IDefaults
+    [Destination(Names.Destinations.ContainerRegistry)]
+    public class ContainerRegistryDestination : Destination
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        [YamlMember(typeof(string))]
+        public string Url { get; [Obsolete] set; }
+
+        [Obsolete]
+        public ContainerRegistryDestination() { }
+
+        public ContainerRegistryDestination(
+            string url)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Names.Destinations.ContainerRegistry}|{Url}";
+        }
     }
 }

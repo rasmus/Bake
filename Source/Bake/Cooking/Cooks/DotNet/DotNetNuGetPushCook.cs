@@ -60,7 +60,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Source,
                 recipe.FilePath);
 
-            var toolResult = await _dotNet.NuGetPushAsync(
+            using var toolResult = await _dotNet.NuGetPushAsync(
                 argument,
                 cancellationToken);
 

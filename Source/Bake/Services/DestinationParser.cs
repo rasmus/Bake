@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Text.RegularExpressions;
 using Bake.Core;
 using Bake.ValueObjects.Destinations;
 
@@ -28,6 +29,9 @@ namespace Bake.Services
 {
     public class DestinationParser : IDestinationParser
     {
+        private static readonly Regex DockerHubUsernameValidator = new(
+            @"^[a-z\-0-9]+$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const char Separator = '>';
 
         private readonly IDefaults _defaults;
@@ -60,13 +64,31 @@ namespace Bake.Services
                         return true;
                     }
 
-                    if (!Uri.TryCreate(parts[1], UriKind.Absolute, out var url))
+                    if (!Uri.TryCreate(parts[1], UriKind.Absolute, out var nugetRegistryUrl))
                     {
                         return false;
                     }
 
-                    destination = new NuGetRegistryDestination(url);
-                    
+                    destination = new NuGetRegistryDestination(nugetRegistryUrl);
+                    return true;
+
+                case Names.ArtifactTypes.Container:
+                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub))
+                    {
+                        destination = new DynamicDestination(
+                            Names.ArtifactTypes.Container,
+                            Names.DynamicDestinations.GitHub);
+                        return true;
+                    }
+
+                    if (DockerHubUsernameValidator.IsMatch(parts[1]))
+                    {
+                        destination = new ContainerRegistryDestination(
+                            _defaults.DockerHubUserRegistry.Replace("{USER}", parts[1]));
+                        return true;
+                    }
+
+                    destination = new ContainerRegistryDestination($"{parts[1].TrimEnd('/')}/");
                     return true;
 
                 default:

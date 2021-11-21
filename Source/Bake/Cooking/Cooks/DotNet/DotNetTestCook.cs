@@ -49,7 +49,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Restore,
                 recipe.Configuration);
 
-            var toolResult = await _dotNet.TestAsync(
+            using var toolResult = await _dotNet.TestAsync(
                 argument,
                 cancellationToken);
 

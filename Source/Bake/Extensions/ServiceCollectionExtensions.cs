@@ -61,6 +61,7 @@ namespace Bake.Extensions
                 .AddSingleton<IDefaults, Defaults>()
                 .AddSingleton<IDestinationParser, DestinationParser>()
                 .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
+                .AddSingleton<IContainerTagParser, ContainerTagParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -87,6 +88,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetDockerFileCook>()
                 // Cooks - Docker
                 .AddTransient<ICook, DockerBuildCook>()
+                .AddTransient<ICook, DockerPushCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

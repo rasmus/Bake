@@ -20,18 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using Bake.Core;
+using Bake.ValueObjects;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Core
+namespace Bake.Services.Tools.DockerArguments
 {
-    public class Defaults : IDefaults
+    public class DockerPushArgument : Argument
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        public ContainerTag Tag { get; }
+
+        public DockerPushArgument(
+            ContainerTag tag)
+        {
+            Tag = tag;
+        }
     }
 }

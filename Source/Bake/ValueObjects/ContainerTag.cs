@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -22,16 +22,42 @@
 
 using System;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public class Defaults : IDefaults
+    public class ContainerTag
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        public bool IsDockerHub => string.IsNullOrEmpty(HostAndPort);
+
+        public string HostAndPort { get; }
+        public string Path { get; }
+        public string Name { get; }
+        public string Label { get; }
+
+        public ContainerTag(
+            string hostAndPort,
+            string path,
+            string name,
+            string label)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+            HostAndPort = (hostAndPort ?? string.Empty).Trim('/');
+            Path = (path ?? string.Empty).Trim('/');
+            Name = name;
+            Label = string.IsNullOrEmpty(label)
+                ? "latest"
+                : label;
+        }
+
+        public override string ToString()
+        {
+            var completePath = string.IsNullOrEmpty(Path)
+                ? Name
+                : $"{Path}/{Name}";
+
+            return IsDockerHub
+                ? $"{completePath}:{Label}"
+                : $"{HostAndPort}/{completePath}:{Label}";
+        }
     }
 }

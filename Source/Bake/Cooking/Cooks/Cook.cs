@@ -54,6 +54,8 @@ namespace Bake.Cooking.Cooks
                     nameof(recipe));
             }
 
+            // TODO: Gather logs
+
             return CookAsync(context, myRecipe, cancellationToken);
         }
 

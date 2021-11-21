@@ -21,17 +21,27 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using YamlDotNet.Serialization;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Core
+namespace Bake.ValueObjects.Recipes.Docker
 {
-    public class Defaults : IDefaults
+    [Recipe(Names.Recipes.Docker.Push)]
+    public class DockerPushRecipe : Recipe
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        [YamlMember]
+        public string[] Tags { get; [Obsolete] set; }
+
+        [Obsolete]
+        public DockerPushRecipe() { }
+
+        public DockerPushRecipe(
+            IEnumerable<string> tags)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Tags = tags.ToArray();
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

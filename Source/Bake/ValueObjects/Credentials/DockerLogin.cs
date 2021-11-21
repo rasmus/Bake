@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -22,16 +22,25 @@
 
 using System;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Core
+namespace Bake.ValueObjects.Credentials
 {
-    public class Defaults : IDefaults
+    public class DockerLogin : ValueObject
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        public string Username { get; }
+        public string Password { get; }
+        public string Server { get; }
+
+        public DockerLogin(
+            string username,
+            string password,
+            string server)
+        {
+            if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
+
+            Username = username;
+            Password = password;
+            Server = server ?? string.Empty;
+        }
     }
 }

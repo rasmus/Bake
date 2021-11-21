@@ -5,3 +5,16 @@ services:
     - ApiKey=acd0b30512ac4fa39f62eb7a61fcf56c
     ports:
     - 5555:80
+
+  # Username: registryuser
+  # Password: registrypassword
+  registry:
+    image: registry:2
+    ports:
+      - 5000:5000
+    environment:
+        REGISTRY_AUTH: "htpasswd"
+        REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
+        REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+    volumes:
+      - ./Services/Registry:/auth

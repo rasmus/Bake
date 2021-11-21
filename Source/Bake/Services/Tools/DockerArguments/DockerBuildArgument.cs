@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.Services.Tools.DockerArguments
@@ -27,11 +28,14 @@ namespace Bake.Services.Tools.DockerArguments
     public class DockerBuildArgument : Argument
     {
         public string Path { get; }
+        public IReadOnlyCollection<string> Tags { get; }
 
         public DockerBuildArgument(
-            string path)
+            string path,
+            IReadOnlyCollection<string> tags)
         {
             Path = path;
+            Tags = tags;
         }
     }
 }
