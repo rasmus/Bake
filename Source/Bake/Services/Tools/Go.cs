@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
@@ -45,7 +46,10 @@ namespace Bake.Services.Tools
             var arguments = new[]
                 {
                     "build",
-                    "-ldflags", "\"-s -w\""
+                    "-ldflags", "\"-s -w\"",
+                    "-o", RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                        ? $"{argument.Name}.exe"
+                        : argument.Name
                 };
 
             var buildRunner = _runnerFactory.CreateRunner(

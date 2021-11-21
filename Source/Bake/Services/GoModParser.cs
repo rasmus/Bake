@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,31 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+using System.Text.RegularExpressions;
+using Bake.Extensions;
+using Bake.ValueObjects;
 
-namespace Bake.ValueObjects.Recipes.Go
+namespace Bake.Services
 {
-    [Recipe(Names.Recipes.Go.Build)]
-    public class GoBuildRecipe : Recipe
+    public class GoModParser : IGoModParser
     {
-        [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        private static readonly Regex ModuleParser = new(
+            @"^\s*module\s+([a-z0-9\-\./]+?/){0,1}?(?<name>[a-z0-9\-_\.]+)(/v(?<version>[0-9\.]+)){0,1}$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 
-        [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
-
-        [Obsolete]
-        public GoBuildRecipe() { }
-
-        public GoBuildRecipe(
-            string name,
-            string workingDirectory)
+        public bool TryParse(string str, out GoModuleName goModuleName)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Name = name;
-            WorkingDirectory = workingDirectory;
-#pragma warning restore CS0612 // Type or member is obsolete
+            goModuleName = null;
+            if (string.IsNullOrEmpty(str))
+            {
+                return false;
+            }
+
+            var match = ModuleParser.Match(str);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            goModuleName = new GoModuleName(
+                match.Groups["name"].Value,
+                match.GetIfThere("version"));
+            return true;
         }
     }
 }

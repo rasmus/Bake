@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,31 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Recipes.Go
+namespace Bake.ValueObjects
 {
-    [Recipe(Names.Recipes.Go.Build)]
-    public class GoBuildRecipe : Recipe
+    public class GoModuleName
     {
-        [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; }
+        public string Version { get; }
 
-        [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
-
-        [Obsolete]
-        public GoBuildRecipe() { }
-
-        public GoBuildRecipe(
+        public GoModuleName(
             string name,
-            string workingDirectory)
+            string version)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
-            WorkingDirectory = workingDirectory;
-#pragma warning restore CS0612 // Type or member is obsolete
+            Version = version;
         }
     }
 }

@@ -63,6 +63,7 @@ namespace Bake.Extensions
                 .AddSingleton<IDestinationParser, DestinationParser>()
                 .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
                 .AddSingleton<IContainerTagParser, ContainerTagParser>()
+                .AddTransient<IGoModParser, GoModParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()

@@ -26,11 +26,14 @@ namespace Bake.Services.Tools.GoArguments
 {
     public class GoBuildArgument : Argument
     {
+        public string Name { get; }
         public string WorkingDirectory { get; }
 
         public GoBuildArgument(
+            string name,
             string workingDirectory)
         {
+            Name = name;
             WorkingDirectory = workingDirectory;
         }
     }

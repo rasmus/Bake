@@ -20,12 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Go;
@@ -35,6 +37,7 @@ namespace Bake.Cooking.Composers
     public class GoComposer : Composer
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IGoModParser _goModParser;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -44,9 +47,11 @@ namespace Bake.Cooking.Composers
             };
 
         public GoComposer(
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IGoModParser goModParser)
         {
             _fileSystem = fileSystem;
+            _goModParser = goModParser;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -58,20 +63,38 @@ namespace Bake.Cooking.Composers
                 "go.mod",
                 cancellationToken);
 
-            return goModFilePaths
-                .Select(Path.GetDirectoryName)
-                .SelectMany(CreateRecipes)
+            return (await Task.WhenAll(
+                    goModFilePaths
+                        .Select(Path.GetDirectoryName)
+                        .Select(p => CreateRecipesAsync(p, cancellationToken))))
+                .SelectMany(l => l)
                 .ToArray();
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
-            string directoryPath)
+        private async Task<IReadOnlyCollection<Recipe>> CreateRecipesAsync(
+            string directoryPath,
+            CancellationToken cancellationToken)
         {
-            yield return new GoTestRecipe(
-                directoryPath);
+            var goModPath = Path.Combine(directoryPath, "go.mod");
+            var goModContent = await _fileSystem.ReadAllTextAsync(
+                goModPath,
+                cancellationToken);
 
-            yield return new GoBuildRecipe(
-                directoryPath);
+            if (!_goModParser.TryParse(goModContent, out var goModuleName))
+            {
+                throw new InvalidOperationException($"Invalid content of '{goModPath}'");
+            }
+
+            var recipes = new Recipe[]
+                {
+                    new GoTestRecipe(
+                        directoryPath),
+                    new GoBuildRecipe(
+                        goModuleName.Name,
+                        directoryPath)
+                };
+
+            return recipes;
         }
     }
 }

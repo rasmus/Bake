@@ -82,6 +82,21 @@ namespace Bake.Core
             return validPaths;
         }
 
+        public async Task<string> ReadAllTextAsync(
+            string filePath,
+            CancellationToken _)
+        {
+            await using var file = System.IO.File.Open(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read);
+
+            using var streamReader = new StreamReader(filePath);
+
+            return await streamReader.ReadToEndAsync();
+        }
+
         public IFile OpenTempFile()
         {
             return new File(

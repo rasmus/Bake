@@ -34,5 +34,9 @@ namespace Bake.Core
             CancellationToken cancellationToken);
 
         IFile OpenTempFile();
+
+        Task<string> ReadAllTextAsync(
+            string filePath,
+            CancellationToken _);
     }
 }

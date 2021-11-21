@@ -44,6 +44,7 @@ namespace Bake.Cooking.Cooks.Go
             CancellationToken cancellationToken)
         {
             var argument = new GoBuildArgument(
+                recipe.Name,
                 recipe.WorkingDirectory);
 
             using var toolResult = await _go.BuildAsync(
