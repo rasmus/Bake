@@ -69,7 +69,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var planPath = Path.Combine(WorkingDirectory, "plan.bake");
             var returnCode = await ExecuteAsync(
                 "plan",
-                "--print-plan=true",
                 "--destination=\"nuget>github\"",
                 $"--log-level:{logLevel}",
                 "--build-version", SemVer.Random.ToString(),
