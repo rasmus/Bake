@@ -79,14 +79,15 @@ namespace Bake.Cooking.Composers
 
             foreach (var dockerFilePath in dockerFilePaths)
             {
-                recipes.AddRange(CreateRecipes(dockerFilePath, ingredients.Version, urls));
+                var directoryName = Path.GetFileName(Path.GetDirectoryName(dockerFilePath));
+                recipes.AddRange(CreateRecipes(dockerFilePath, directoryName, ingredients.Version, urls));
             }
 
             foreach (var fileArtifact in context
                 .GetArtifacts<FileArtifact>()
                 .Where(a => a.Key.Type == ArtifactType.Dockerfile))
             {
-                recipes.AddRange(CreateRecipes(fileArtifact.Path, ingredients.Version, urls));
+                recipes.AddRange(CreateRecipes(fileArtifact.Path, fileArtifact.Key.Name, ingredients.Version, urls));
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
@@ -103,11 +104,11 @@ namespace Bake.Cooking.Composers
 
         private IEnumerable<Recipe> CreateRecipes(
             string path,
+            string name,
             SemVer version,
             IEnumerable<string> urls)
         {
-            var directoryName = Path.GetFileName(Path.GetDirectoryName(path));
-            var slug = directoryName.ToSlug();
+            var slug = name.ToSlug();
             var tags = urls
                 .Select(u => $"{u}{slug}:{version}")
                 .ToArray();
