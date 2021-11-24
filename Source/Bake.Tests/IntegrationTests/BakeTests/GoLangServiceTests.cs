@@ -64,38 +64,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 1L.MB(),
                 "golang-service.exe");
 
-            using var _ = await DockerHelper.RunAsync(
-                expectedImage,
-                new Dictionary<int, int> {[8080] = 8080},
-                CancellationToken.None);
-            using var httpClient = new HttpClient();
-            var start = Stopwatch.StartNew();
-            var success = false;
-            while (start.Elapsed < TimeSpan.FromSeconds(30))
-            {
-                try
-                {
-                    using var response = await httpClient.GetAsync("http://localhost:8080/ping");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine($"Status code {response.StatusCode}");
-                    }
-
-                    var content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Got content: {Environment.NewLine}{content}");
-
-                    success = true;
-                    break;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed with {e.GetType().Name}: {e.Message}");
-                }
-
-                await Task.Delay(TimeSpan.FromSeconds(2));
-            }
-
-            success.Should().BeTrue();
+            await AssertContainerPingsAsync(expectedImage, 8080);
         }
     }
 }

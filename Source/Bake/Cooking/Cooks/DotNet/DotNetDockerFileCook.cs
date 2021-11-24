@@ -29,6 +29,14 @@ namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetDockerFileCook : Cook<DotNetDockerFileRecipe>
     {
+        private const string Dockerfile = @"
+FROM mcr.microsoft.com/dotnet/aspnet:3.1
+WORKDIR /app
+ENV URLS=http://0.0.0.0:5000
+COPY ./{{PATH}} .
+ENTRYPOINT [""dotnet"", ""{{NAME}}""]
+";
+
         protected override async Task<bool> CookAsync(
             IContext context,
             DotNetDockerFileRecipe recipe,
@@ -37,9 +45,13 @@ namespace Bake.Cooking.Cooks.DotNet
             var directoryPath = Path.GetDirectoryName(recipe.ProjectPath);
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
 
+            var dockerfileContent = Dockerfile
+                .Replace("{{PATH}}", recipe.ServicePath)
+                .Replace("{{NAME}}", recipe.EntryPoint);
+
             await File.WriteAllTextAsync(
                 dockerFilePath,
-                "FROM alpine:3",
+                dockerfileContent,
                 cancellationToken);
 
             return true;

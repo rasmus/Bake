@@ -32,16 +32,26 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
+        [YamlMember]
+        public string ServicePath { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string EntryPoint { get; [Obsolete] set; }
+
         [Obsolete]
         public DotNetDockerFileRecipe() { }
 
         public DotNetDockerFileRecipe(
             string projectPath,
+            string servicePath,
+            string entryPoint,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             ProjectPath = projectPath;
+            ServicePath = servicePath;
+            EntryPoint = entryPoint;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

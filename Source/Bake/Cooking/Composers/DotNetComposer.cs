@@ -227,6 +227,8 @@ namespace Bake.Cooking.Composers
 
                 yield return new DotNetDockerFileRecipe(
                     visualStudioProject.Path,
+                    path.Replace("\\", "/"),
+                    $"{visualStudioProject.Name}.dll",
                     new FileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
