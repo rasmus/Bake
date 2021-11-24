@@ -32,8 +32,8 @@ namespace Bake.Cooking
     {
         private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
 
-        public virtual IReadOnlyCollection<ArtifactType> Produces { get; } = EmptyArtifactTypes;
-        public virtual IReadOnlyCollection<ArtifactType> Consumes { get; } = EmptyArtifactTypes;
+        public virtual IReadOnlyCollection<ArtifactType> Produces => EmptyArtifactTypes;
+        public virtual IReadOnlyCollection<ArtifactType> Consumes => EmptyArtifactTypes;
 
         public abstract Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,

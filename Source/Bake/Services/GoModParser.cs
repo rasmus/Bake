@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System.Text.RegularExpressions;
+using Bake.Extensions;
+using Bake.ValueObjects;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Services
 {
-    public class DockerFileSimpleTests : BakeTest
+    public class GoModParser : IGoModParser
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
-        {
-        }
+        private static readonly Regex ModuleParser = new(
+            @"^\s*module\s+([a-z0-9\-\./]+?/){0,1}?(?<name>[a-z0-9\-_\.]+)(/v(?<version>[0-9\.]+)){0,1}$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 
-        [Test]
-        public async Task Run()
+        public bool TryParse(string str, out GoModuleName goModuleName)
         {
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+            goModuleName = null;
+            if (string.IsNullOrEmpty(str))
+            {
+                return false;
+            }
 
-            // Assert
-            returnCode.Should().Be(0);
+            var match = ModuleParser.Match(str);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            goModuleName = new GoModuleName(
+                match.Groups["name"].Value,
+                match.GetIfThere("version"));
+            return true;
         }
     }
 }

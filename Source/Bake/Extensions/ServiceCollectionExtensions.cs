@@ -29,6 +29,7 @@ using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.Docker;
 using Bake.Cooking.Cooks.DotNet;
+using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
@@ -62,6 +63,8 @@ namespace Bake.Extensions
                 .AddSingleton<IDestinationParser, DestinationParser>()
                 .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
                 .AddSingleton<IContainerTagParser, ContainerTagParser>()
+                .AddTransient<IGoModParser, GoModParser>()
+                .AddTransient<IBakeProjectParser, BakeProjectParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -72,10 +75,12 @@ namespace Bake.Extensions
                 // CLI wrappers
                 .AddTransient<IDotNet, DotNet>()
                 .AddTransient<IDocker, Docker>()
+                .AddTransient<IGo, Go>()
 
                 // Composers
                 .AddTransient<IComposer, DotNetComposer>()
                 .AddTransient<IComposer, DockerComposer>()
+                .AddTransient<IComposer, GoComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
@@ -89,6 +94,10 @@ namespace Bake.Extensions
                 // Cooks - Docker
                 .AddTransient<ICook, DockerBuildCook>()
                 .AddTransient<ICook, DockerPushCook>()
+                // Cooks - Go
+                .AddTransient<ICook, GoBuildCook>()
+                .AddTransient<ICook, GoTestCook>()
+                .AddTransient<ICook, GoDockerFileCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

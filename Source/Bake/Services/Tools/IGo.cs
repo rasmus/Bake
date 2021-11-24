@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using Bake.Services.Tools.GoArguments;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Services.Tools
 {
-    public class DockerFileSimpleTests : BakeTest
+    public interface IGo
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
-        {
-        }
+        Task<IToolResult> BuildAsync(
+            GoBuildArgument argument,
+            CancellationToken cancellationToken);
 
-        [Test]
-        public async Task Run()
-        {
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
-
-            // Assert
-            returnCode.Should().Be(0);
-        }
+        Task<IToolResult> TestAsync(
+            GoTestArgument argument,
+            CancellationToken cancellationToken);
     }
 }

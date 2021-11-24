@@ -20,63 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Reflection;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Extensions;
-using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.Go;
+using Microsoft.Extensions.Logging;
 
-namespace Bake.Cooking.Cooks
+namespace Bake.Cooking.Cooks.Go
 {
-    public abstract class Cook<T> : ICook
-        where T : Recipe
+    public class GoDockerFileCook : Cook<GoDockerFileRecipe>
     {
-        protected static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))).Name;
+        private readonly ILogger<GoDockerFileCook> _logger;
+        private const string Dockerfile = @"
+FROM gcr.io/distroless/base-debian10
+WORKDIR /
+COPY {{NAME}} /{{NAME}}
+EXPOSE {{PORT}}
+USER nonroot:nonroot
+ENTRYPOINT [""/{{NAME}}""]
+";
 
-        public Type CanCook { get; } = typeof(T);
-
-        public string GetName(Recipe recipe)
+        public GoDockerFileCook(
+            ILogger<GoDockerFileCook> logger)
         {
-            return GetName(CastRecipe(recipe));
+            _logger = logger;
         }
 
-        protected virtual string GetName(T recipe)
-        {
-            return Name;
-        }
-
-        public Task<bool> CookAsync(
+        protected override async Task<bool> CookAsync(
             IContext context,
-            Recipe recipe,
+            GoDockerFileRecipe recipe,
             CancellationToken cancellationToken)
         {
-            return CookAsync(
-                context,
-                CastRecipe(recipe),
+            var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
+
+            var dockerfileContent = Dockerfile
+                .Replace("{{NAME}}", recipe.Name)
+                .Replace("{{PORT}}", recipe.Port.ToString());
+
+            _logger.LogInformation(
+                "Creating Dockerfile for Go service at {FilePath} with content {DockerfileContent}",
+                dockerFilePath,
+                dockerfileContent);
+
+            await File.WriteAllTextAsync(
+                dockerFilePath,
+                dockerfileContent,
                 cancellationToken);
-        }
 
-        protected abstract Task<bool> CookAsync(
-            IContext context,
-            T recipe,
-            CancellationToken cancellationToken);
-
-        private static T CastRecipe(Recipe recipe)
-        {
-            if (recipe == null)
-            {
-                throw new ArgumentNullException(nameof(recipe));
-            }
-
-            if (recipe is not T myRecipe)
-            {
-                throw new ArgumentException(
-                    $"I don't know how to cook a '{recipe.GetType().PrettyPrint()}'",
-                    nameof(recipe));
-            }
-
-            return myRecipe;
+            return true;
         }
     }
 }

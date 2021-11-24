@@ -33,7 +33,7 @@ namespace Bake.Core
 {
     public class FileSystem : IFileSystem
     {
-        private static readonly ConcurrentDictionary<string, bool> ShouldSkipCache = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, bool> ShouldSkipCache = new();
 
         private readonly ILogger<FileSystem> _logger;
 
@@ -80,6 +80,21 @@ namespace Bake.Core
                 skippedPaths);
 
             return validPaths;
+        }
+
+        public async Task<string> ReadAllTextAsync(
+            string filePath,
+            CancellationToken _)
+        {
+            await using var file = System.IO.File.Open(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read);
+
+            using var streamReader = new StreamReader(filePath);
+
+            return await streamReader.ReadToEndAsync();
         }
 
         public IFile OpenTempFile()

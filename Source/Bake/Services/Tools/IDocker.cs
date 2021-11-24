@@ -28,15 +28,15 @@ namespace Bake.Services.Tools
 {
     public interface IDocker
     {
-        Task<IToolResult> DockerBuildAsync(
+        Task<IToolResult> BuildAsync(
             DockerBuildArgument argument,
             CancellationToken cancellationToken);
 
-        Task<IToolResult> DockerPushAsync(
+        Task<IToolResult> PushAsync(
             DockerPushArgument argument,
             CancellationToken cancellationToken);
 
-        Task<IToolResult> DockerLoginAsync(
+        Task<IToolResult> LoginAsync(
             DockerLoginArgument argument,
             CancellationToken cancellationToken);
     }

@@ -93,7 +93,8 @@ namespace Bake.Commands.Plan
                 else
                 {
                     _logger.LogCritical(
-                        "File already exists at {PlanPath}");
+                        "File already exists at {PlanPath}",
+                        planPath);
                     return ExitCodes.Plan.PlanFileAlreadyExists;
                 }
             }

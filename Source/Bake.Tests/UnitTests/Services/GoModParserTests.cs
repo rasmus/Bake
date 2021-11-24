@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bake.Core;
+using Bake.Services;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
 // ReSharper disable StringLiteralTypo
 
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Tests.UnitTests.Services
 {
-    public class DockerFileSimpleTests : BakeTest
+    public class GoModParserTests : TestFor<GoModParser>
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
-        {
-        }
-
-        [Test]
-        public async Task Run()
+        [TestCase(
+            "module mymodule",
+            "mymodule",
+            "")]
+        [TestCase(
+            "module mymodule/v3",
+            "mymodule",
+            "3")]
+        [TestCase(
+            "module my.module/v3",
+            "my.module",
+            "3")]
+        [TestCase(
+            "module example.com/mymodule",
+            "mymodule",
+            "")]
+        [TestCase(
+            "module example.com/mymodule/v2",
+            "mymodule",
+            "2")]
+        [TestCase(
+            "module example.com/path/mymodule/v2",
+            "mymodule",
+            "2")]
+        [TestCase(
+            "module example.com/path/my.module/v2",
+            "my.module",
+            "2")]
+        public void Success(string str, string expectedName, string expectedVersion)
         {
             // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+            Sut.TryParse(str, out var goModuleName).Should().BeTrue();
 
             // Assert
-            returnCode.Should().Be(0);
+            goModuleName.Name.Should().Be(expectedName);
+            goModuleName.Version.Should().Be(expectedVersion);
         }
     }
 }

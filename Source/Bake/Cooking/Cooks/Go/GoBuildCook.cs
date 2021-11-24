@@ -20,41 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using Bake.Services.Tools;
+using Bake.Services.Tools.GoArguments;
+using Bake.ValueObjects.Recipes.Go;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Cooking.Cooks.Go
 {
-    public class DockerFileSimpleTests : BakeTest
+    public class GoBuildCook : Cook<GoBuildRecipe>
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
+        private readonly IGo _go;
+
+        public GoBuildCook(
+            IGo go)
         {
+            _go = go;
         }
 
-        [Test]
-        public async Task Run()
+        protected override string GetName(GoBuildRecipe recipe)
         {
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+            return $"{base.GetName(recipe)} ({recipe.Os}/{recipe.Arch})";
+        }
 
-            // Assert
-            returnCode.Should().Be(0);
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            GoBuildRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new GoBuildArgument(
+                recipe.Output,
+                recipe.WorkingDirectory,
+                recipe.Os,
+                recipe.Arch);
+
+            using var toolResult = await _go.BuildAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

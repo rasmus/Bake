@@ -104,6 +104,13 @@ namespace Bake
         /// </summary>
         public static class Recipes
         {
+            public static class Go
+            {
+                public const string Build = "go-build";
+                public const string Test = "go-test";
+                public const string DockerFile = "go-dockerfile";
+            }
+
             public static class Docker
             {
                 public const string Build = "docker-build";

@@ -22,12 +22,14 @@
 
 using System;
 using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
 {
     [Recipe(Names.Recipes.DotNet.DockerFile)]
     public class DotNetDockerFileRecipe : Recipe
     {
+        [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
         [Obsolete]
