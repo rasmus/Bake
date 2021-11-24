@@ -29,8 +29,10 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.BakeProjects;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Go;
+using File = Bake.Core.File;
 
 namespace Bake.Cooking.Composers
 {
@@ -38,6 +40,7 @@ namespace Bake.Cooking.Composers
     {
         private readonly IFileSystem _fileSystem;
         private readonly IGoModParser _goModParser;
+        private readonly IBakeProjectParser _bakeProjectParser;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -48,10 +51,12 @@ namespace Bake.Cooking.Composers
 
         public GoComposer(
             IFileSystem fileSystem,
-            IGoModParser goModParser)
+            IGoModParser goModParser,
+            IBakeProjectParser bakeProjectParser)
         {
             _fileSystem = fileSystem;
             _goModParser = goModParser;
+            _bakeProjectParser = bakeProjectParser;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -79,6 +84,24 @@ namespace Bake.Cooking.Composers
             var goModContent = await _fileSystem.ReadAllTextAsync(
                 goModPath,
                 cancellationToken);
+            var projectType = BakeProjectType.Tool;
+            var servicePort = -1;
+
+            var bakeProjectPath = Path.Combine(directoryPath, "bake.yaml");
+            if (System.IO.File.Exists(bakeProjectPath))
+            {
+                var bakeProjectContent = await _fileSystem.ReadAllTextAsync(
+                    bakeProjectPath,
+                    cancellationToken);
+                var bakeProject = await _bakeProjectParser.ParseAsync(
+                    bakeProjectContent,
+                    cancellationToken);
+                if (bakeProject.Type == BakeProjectType.Service)
+                {
+                    projectType = BakeProjectType.Service;
+                    servicePort = bakeProject.Service.Port;
+                }
+            }
 
             if (!_goModParser.TryParse(goModContent, out var goModuleName))
             {
@@ -87,10 +110,11 @@ namespace Bake.Cooking.Composers
 
             var windowsOutput = $"{goModuleName.Name}.exe";
 
-            var recipes = new Recipe[]
+            var recipes = new List<Recipe>
                 {
                     new GoTestRecipe(
                         directoryPath),
+
                     new GoBuildRecipe(
                         windowsOutput,
                         directoryPath,
@@ -99,6 +123,7 @@ namespace Bake.Cooking.Composers
                         new FileArtifact(
                             new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
                             Path.Combine(directoryPath, windowsOutput))),
+
                     new GoBuildRecipe(
                         goModuleName.Name,
                         directoryPath,
@@ -108,6 +133,16 @@ namespace Bake.Cooking.Composers
                             new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
                             Path.Combine(directoryPath, goModuleName.Name)))
                 };
+
+            if (projectType == BakeProjectType.Service)
+            {
+                recipes.Add(new GoDockerFileRecipe(
+                    goModuleName.Name,
+                    directoryPath,
+                    new FileArtifact(
+                        new ArtifactKey(ArtifactType.Dockerfile, "Dockerfile"),
+                        Path.Combine(directoryPath, "Dockerfile"))));
+            }
 
             return recipes;
         }

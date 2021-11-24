@@ -64,6 +64,7 @@ namespace Bake.Extensions
                 .AddSingleton<IEnvironmentVariables, EnvironmentVariables>()
                 .AddSingleton<IContainerTagParser, ContainerTagParser>()
                 .AddTransient<IGoModParser, GoModParser>()
+                .AddTransient<IBakeProjectParser, BakeProjectParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -96,6 +97,7 @@ namespace Bake.Extensions
                 // Cooks - Go
                 .AddTransient<ICook, GoBuildCook>()
                 .AddTransient<ICook, GoTestCook>()
+                .AddTransient<ICook, GoDockerFileCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

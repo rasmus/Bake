@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.ValueObjects.BakeProjects;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.Services
 {
-    [Recipe(Names.Recipes.DotNet.DockerFile)]
-    public class DotNetDockerFileRecipe : Recipe
+    public class BakeProjectParser : IBakeProjectParser
     {
-        [YamlMember]
-        public string ProjectPath { get; [Obsolete] set; }
+        private readonly IYaml _yaml;
 
-        [Obsolete]
-        public DotNetDockerFileRecipe() { }
-
-        public DotNetDockerFileRecipe(
-            string projectPath,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public BakeProjectParser(
+            IYaml yaml)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ProjectPath = projectPath;
-#pragma warning restore CS0612 // Type or member is obsolete
+            _yaml = yaml;
+        }
+
+        public Task<BakeProject> ParseAsync(
+            string yaml,
+            CancellationToken cancellationToken)
+        {
+            return _yaml.DeserializeAsync<BakeProject>(yaml, cancellationToken);
         }
     }
 }

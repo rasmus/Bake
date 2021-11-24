@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Services;
+using Bake.Tests.Helpers;
+using Bake.ValueObjects.BakeProjects;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.Tests.UnitTests.Services
 {
-    [Recipe(Names.Recipes.DotNet.DockerFile)]
-    public class DotNetDockerFileRecipe : Recipe
+    public class BakeProjectParserTests : TestFor<BakeProjectParser>
     {
-        [YamlMember]
-        public string ProjectPath { get; [Obsolete] set; }
-
-        [Obsolete]
-        public DotNetDockerFileRecipe() { }
-
-        public DotNetDockerFileRecipe(
-            string projectPath,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        [SetUp]
+        public void SetUp()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ProjectPath = projectPath;
-#pragma warning restore CS0612 // Type or member is obsolete
+            Inject<IYaml>(new Yaml());
+        }
+
+        [Test]
+        public async Task SimpleCase()
+        {
+            // Arrange
+            const string yaml = @"
+type: service
+service:
+  port: 8080
+";
+
+            // Act
+            var bakeProject = await Sut.ParseAsync(
+                yaml,
+                CancellationToken.None);
+
+            // Assert
+            bakeProject.Type.Should().Be(BakeProjectType.Service);
+            bakeProject.Service.Port.Should().Be(8080);
         }
     }
 }

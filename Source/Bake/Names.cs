@@ -108,6 +108,7 @@ namespace Bake
             {
                 public const string Build = "go-build";
                 public const string Test = "go-test";
+                public const string DockerFile = "go-dockerfile";
             }
 
             public static class Docker

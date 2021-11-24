@@ -34,7 +34,7 @@ namespace Bake.ValueObjects
         public static Ingredients New(
             SemVer version,
             string workingDirectory,
-            Convention convention = Convention.Default) => new Ingredients(
+            Convention convention = Convention.Default) => new(
                 version,
                 workingDirectory,
                 convention);
@@ -49,7 +49,7 @@ namespace Bake.ValueObjects
         public Convention Convention { get; [Obsolete] set; }
 
         [YamlMember]
-        public List<Destination> Destinations { get; [Obsolete] set; } = new List<Destination>();
+        public List<Destination> Destinations { get; [Obsolete] set; } = new();
 
         [YamlMember]
         public GitInformation Git
@@ -111,9 +111,9 @@ namespace Bake.ValueObjects
         [YamlIgnore]
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
-        private readonly TaskCompletionSource<GitInformation> _git = new TaskCompletionSource<GitInformation>();
-        private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new TaskCompletionSource<ReleaseNotes>();
-        private readonly TaskCompletionSource<GitHubInformation> _gitHub = new TaskCompletionSource<GitHubInformation>();
+        private readonly TaskCompletionSource<GitInformation> _git = new();
+        private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
+        private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
 
         [Obsolete]
         public Ingredients() { }

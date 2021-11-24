@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects.BakeProjects
 {
-    [Recipe(Names.Recipes.DotNet.DockerFile)]
-    public class DotNetDockerFileRecipe : Recipe
+    public class BakeProject
     {
         [YamlMember]
-        public string ProjectPath { get; [Obsolete] set; }
+        public BakeProjectType Type { get; set; }
 
-        [Obsolete]
-        public DotNetDockerFileRecipe() { }
-
-        public DotNetDockerFileRecipe(
-            string projectPath,
-            params Artifact[] artifacts)
-            : base(artifacts)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ProjectPath = projectPath;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+        [YamlMember]
+        public BakeProjectService Service { get; set; }
     }
 }

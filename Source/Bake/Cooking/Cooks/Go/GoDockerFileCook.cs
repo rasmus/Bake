@@ -20,29 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects.Recipes.Go;
+using Microsoft.Extensions.Logging;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.Cooking.Cooks.Go
 {
-    [Recipe(Names.Recipes.DotNet.DockerFile)]
-    public class DotNetDockerFileRecipe : Recipe
+    public class GoDockerFileCook : Cook<GoDockerFileRecipe>
     {
-        [YamlMember]
-        public string ProjectPath { get; [Obsolete] set; }
+        private readonly ILogger<GoDockerFileCook> _logger;
 
-        [Obsolete]
-        public DotNetDockerFileRecipe() { }
-
-        public DotNetDockerFileRecipe(
-            string projectPath,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public GoDockerFileCook(
+            ILogger<GoDockerFileCook> logger)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            ProjectPath = projectPath;
-#pragma warning restore CS0612 // Type or member is obsolete
+            _logger = logger;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            GoDockerFileRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
+
+            _logger.LogInformation(
+                "Creating Dockerfile for Go service at {FilePath}",
+                dockerFilePath);
+
+            await File.WriteAllTextAsync(
+                dockerFilePath,
+                "FROM alpine:3",
+                cancellationToken);
+
+            return true;
         }
     }
 }

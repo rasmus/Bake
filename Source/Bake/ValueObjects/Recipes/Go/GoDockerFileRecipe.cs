@@ -24,23 +24,28 @@ using System;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.DotNet
+namespace Bake.ValueObjects.Recipes.Go
 {
-    [Recipe(Names.Recipes.DotNet.DockerFile)]
-    public class DotNetDockerFileRecipe : Recipe
+    [Recipe(Names.Recipes.Go.DockerFile)]
+    public class GoDockerFileRecipe : Recipe
     {
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
+
         [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
         [Obsolete]
-        public DotNetDockerFileRecipe() { }
+        public GoDockerFileRecipe() { }
 
-        public DotNetDockerFileRecipe(
+        public GoDockerFileRecipe(
+            string name,
             string projectPath,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
             ProjectPath = projectPath;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
