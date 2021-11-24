@@ -29,7 +29,7 @@ namespace Bake.Services
     public class GoModParser : IGoModParser
     {
         private static readonly Regex ModuleParser = new(
-            @"^\s*module\s+([a-z0-9\-\./]+?/){0,1}?(?<name>[a-z0-9\-_\.]+)(/v(?<version>[0-9\.]+)){0,1}$",
+            @"^\s*module\s+([a-z0-9\-\./]+?/){0,1}?(?<name>[a-z0-9\-_\.]+)(/v(?<version>[0-9\.]+)){0,1}\s*$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 
         public bool TryParse(string str, out GoModuleName goModuleName)

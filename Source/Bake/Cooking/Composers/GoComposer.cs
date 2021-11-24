@@ -105,7 +105,7 @@ namespace Bake.Cooking.Composers
 
             if (!_goModParser.TryParse(goModContent, out var goModuleName))
             {
-                throw new InvalidOperationException($"Invalid content of '{goModPath}'");
+                throw new InvalidOperationException($"Invalid content of '{goModPath}':{Environment.NewLine}{goModContent}");
             }
 
             var windowsOutput = $"{goModuleName.Name}.exe";
@@ -141,7 +141,7 @@ namespace Bake.Cooking.Composers
                     servicePort,
                     directoryPath,
                     new FileArtifact(
-                        new ArtifactKey(ArtifactType.Dockerfile, "Dockerfile"),
+                        new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
                         Path.Combine(directoryPath, "Dockerfile"))));
             }
 
