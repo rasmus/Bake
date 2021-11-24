@@ -32,36 +32,51 @@ namespace Bake.Cooking.Cooks
     public abstract class Cook<T> : ICook
         where T : Recipe
     {
-        private static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))).Name;
+        protected static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))).Name;
 
-        public string RecipeName => Name;
         public Type CanCook { get; } = typeof(T);
+
+        public string GetName(Recipe recipe)
+        {
+            return GetName(CastRecipe(recipe));
+        }
+
+        protected virtual string GetName(T recipe)
+        {
+            return Name;
+        }
 
         public Task<bool> CookAsync(
             IContext context,
             Recipe recipe,
             CancellationToken cancellationToken)
         {
-            if (recipe == null)
-            {
-                throw new ArgumentNullException(nameof(recipe));
-            }
-
-            if (!(recipe is T myRecipe))
-            {
-                throw new ArgumentException(
-                    $"I don't know how to cook a '{recipe.GetType().PrettyPrint()}'",
-                    nameof(recipe));
-            }
-
-            // TODO: Gather logs
-
-            return CookAsync(context, myRecipe, cancellationToken);
+            return CookAsync(
+                context,
+                CastRecipe(recipe),
+                cancellationToken);
         }
 
         protected abstract Task<bool> CookAsync(
             IContext context,
             T recipe,
             CancellationToken cancellationToken);
+
+        private static T CastRecipe(Recipe recipe)
+        {
+            if (recipe == null)
+            {
+                throw new ArgumentNullException(nameof(recipe));
+            }
+
+            if (recipe is not T myRecipe)
+            {
+                throw new ArgumentException(
+                    $"I don't know how to cook a '{recipe.GetType().PrettyPrint()}'",
+                    nameof(recipe));
+            }
+
+            return myRecipe;
+        }
     }
 }

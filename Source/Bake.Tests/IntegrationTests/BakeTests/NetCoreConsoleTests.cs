@@ -43,6 +43,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Arrange
             var testState = TestState.New(
                 "run",
+                "--print-plan=true",
                 "--convention=Release",
                 "--destination=nuget>http://localhost:5555/v3/index.json",
                 "--build-version", SemVer.Random.ToString())
@@ -68,6 +69,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var planPath = Path.Combine(WorkingDirectory, "plan.bake");
             var returnCode = await ExecuteAsync(
                 "plan",
+                "--print-plan=true",
                 "--destination=\"nuget>github\"",
                 $"--log-level:{logLevel}",
                 "--build-version", SemVer.Random.ToString(),

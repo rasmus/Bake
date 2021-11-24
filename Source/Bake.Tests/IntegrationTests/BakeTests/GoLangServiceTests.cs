@@ -22,6 +22,7 @@
 
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -42,10 +43,17 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
+                "--print-plan=true",
                 "--build-version", SemVer.Random.ToString()));
 
             // Assert
             returnCode.Should().Be(0);
+            AssertFileExists(
+                1L.MB(),
+                "golang-service");
+            AssertFileExists(
+                1L.MB(),
+                "golang-service.exe");
         }
     }
 }

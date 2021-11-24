@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Go
@@ -47,7 +48,9 @@ namespace Bake.ValueObjects.Recipes.Go
             string output,
             string workingDirectory,
             GoOs os,
-            GoArch arch)
+            GoArch arch,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Output = output;

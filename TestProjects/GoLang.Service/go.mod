@@ -1,4 +1,4 @@
-module golang.service
+module golang-service
 
 go 1.17
 

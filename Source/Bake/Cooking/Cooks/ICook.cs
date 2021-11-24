@@ -29,9 +29,9 @@ namespace Bake.Cooking.Cooks
 {
     public interface ICook
     {
-        string RecipeName { get; }
-
         Type CanCook { get; }
+
+        string GetName(Recipe recipe);
 
         Task<bool> CookAsync(
             IContext context,

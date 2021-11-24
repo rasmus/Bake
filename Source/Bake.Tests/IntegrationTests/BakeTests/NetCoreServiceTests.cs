@@ -41,6 +41,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
+                "--print-plan=true",
                 "--build-version", SemVer.Random.ToString());
 
             // Assert

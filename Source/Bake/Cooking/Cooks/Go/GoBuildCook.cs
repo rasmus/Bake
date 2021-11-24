@@ -38,28 +38,27 @@ namespace Bake.Cooking.Cooks.Go
             _go = go;
         }
 
+        protected override string GetName(GoBuildRecipe recipe)
+        {
+            return $"{base.GetName(recipe)} ({recipe.Os}/{recipe.Arch})";
+        }
+
         protected override async Task<bool> CookAsync(
             IContext context,
             GoBuildRecipe recipe,
             CancellationToken cancellationToken)
-        {/*
-            foreach (var configuration in configurations)
-            {
-                var argument = new GoBuildArgument(
-                    recipe.Output,
-                    recipe.WorkingDirectory,);
+        {
+            var argument = new GoBuildArgument(
+                recipe.Output,
+                recipe.WorkingDirectory,
+                recipe.Os,
+                recipe.Arch);
 
-                using var toolResult = await _go.BuildAsync(
-                    argument,
-                    cancellationToken);
+            using var toolResult = await _go.BuildAsync(
+                argument,
+                cancellationToken);
 
-                if (!toolResult.WasSuccessful)
-                {
-                    return false;
-                }
-            }*/
-
-            return true;
+            return toolResult.WasSuccessful;
         }
     }
 }

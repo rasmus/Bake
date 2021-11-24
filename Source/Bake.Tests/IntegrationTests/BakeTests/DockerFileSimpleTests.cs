@@ -43,6 +43,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
+                "--print-plan=true",
                 "--convention=Release",
                 "--destination=container>localhost:5000",
                 "--build-version", SemVer.Random.ToString())

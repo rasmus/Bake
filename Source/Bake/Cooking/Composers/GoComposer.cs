@@ -95,7 +95,18 @@ namespace Bake.Cooking.Composers
                         windowsOutput,
                         directoryPath,
                         GoOs.Windows,
-                        GoArch.AMD64)
+                        GoArch.AMD64,
+                        new FileArtifact(
+                            new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
+                            Path.Combine(directoryPath, windowsOutput))),
+                    new GoBuildRecipe(
+                        goModuleName.Name,
+                        directoryPath,
+                        GoOs.Linux,
+                        GoArch.AMD64,
+                        new FileArtifact(
+                            new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
+                            Path.Combine(directoryPath, goModuleName.Name)))
                 };
 
             return recipes;
