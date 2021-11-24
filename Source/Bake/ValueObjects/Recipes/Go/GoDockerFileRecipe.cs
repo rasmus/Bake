@@ -33,6 +33,9 @@ namespace Bake.ValueObjects.Recipes.Go
         public string Name { get; [Obsolete] set; }
 
         [YamlMember]
+        public int Port { get; [Obsolete] set; }
+
+        [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
         [Obsolete]
@@ -40,12 +43,14 @@ namespace Bake.ValueObjects.Recipes.Go
 
         public GoDockerFileRecipe(
             string name,
+            int port,
             string projectPath,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
+            Port = port;
             ProjectPath = projectPath;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

@@ -138,6 +138,7 @@ namespace Bake.Cooking.Composers
             {
                 recipes.Add(new GoDockerFileRecipe(
                     goModuleName.Name,
+                    servicePort,
                     directoryPath,
                     new FileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, "Dockerfile"),

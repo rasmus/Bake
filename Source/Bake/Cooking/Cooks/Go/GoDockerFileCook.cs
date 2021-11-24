@@ -31,6 +31,14 @@ namespace Bake.Cooking.Cooks.Go
     public class GoDockerFileCook : Cook<GoDockerFileRecipe>
     {
         private readonly ILogger<GoDockerFileCook> _logger;
+        private const string Dockerfile = @"
+FROM gcr.io/distroless/base-debian10
+WORKDIR /
+COPY {{NAME}} /{{NAME}}
+EXPOSE {{PORT}}
+USER nonroot:nonroot
+ENTRYPOINT [""/{{NAME}}""]
+";
 
         public GoDockerFileCook(
             ILogger<GoDockerFileCook> logger)
@@ -45,13 +53,18 @@ namespace Bake.Cooking.Cooks.Go
         {
             var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
 
+            var dockerfileContent = Dockerfile
+                .Replace("{{NAME}}", recipe.Name)
+                .Replace("{{PORT}}", recipe.Port.ToString());
+
             _logger.LogInformation(
-                "Creating Dockerfile for Go service at {FilePath}",
-                dockerFilePath);
+                "Creating Dockerfile for Go service at {FilePath} with content {DockerfileContent}",
+                dockerFilePath,
+                dockerfileContent);
 
             await File.WriteAllTextAsync(
                 dockerFilePath,
-                "FROM alpine:3",
+                dockerfileContent,
                 cancellationToken);
 
             return true;
