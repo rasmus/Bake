@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
+using Bake.ValueObjects.Recipes.Go;
 
 // ReSharper disable StringLiteralTypo
 
@@ -31,6 +34,18 @@ namespace Bake.Services.Tools
 {
     public class Go : IGo
     {
+        private static readonly IReadOnlyDictionary<GoOs, string> OsMap = new ConcurrentDictionary<GoOs, string>
+            {
+                [GoOs.Linux] = "linux",
+                [GoOs.Windows] = "windows",
+            };
+        private static readonly IReadOnlyDictionary<GoArch, string> ArchMap = new ConcurrentDictionary<GoArch, string>
+            {
+                [GoArch.Intel386] = "386",
+                [GoArch.AMD64] = "amd64",
+                [GoArch.ARM] = "arm",
+                [GoArch.ARM64] = "arm64"
+            };
         private readonly IRunnerFactory _runnerFactory;
 
         public Go(
@@ -47,14 +62,12 @@ namespace Bake.Services.Tools
                 {
                     "build",
                     "-ldflags", "\"-s -w\"",
-                    "-o", RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                        ? $"{argument.Name}.exe"
-                        : argument.Name
-                };
+                    "-o", argument.Output                };
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "go",
                 argument.WorkingDirectory,
+                SetupEnvironment(argument.Os, argument.Arch),
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -79,6 +92,17 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
+        }
+
+        private static IReadOnlyDictionary<string, string> SetupEnvironment(
+            GoOs os,
+            GoArch arch)
+        {
+            return new Dictionary<string, string>
+                {
+                    ["GOOS"] = OsMap[os],
+                    ["GOARCH"] = ArchMap[arch],
+                };
         }
     }
 }

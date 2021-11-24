@@ -42,16 +42,24 @@ namespace Bake.Cooking.Cooks.Go
             IContext context,
             GoBuildRecipe recipe,
             CancellationToken cancellationToken)
-        {
-            var argument = new GoBuildArgument(
-                recipe.Name,
-                recipe.WorkingDirectory);
+        {/*
+            foreach (var configuration in configurations)
+            {
+                var argument = new GoBuildArgument(
+                    recipe.Output,
+                    recipe.WorkingDirectory,);
 
-            using var toolResult = await _go.BuildAsync(
-                argument,
-                cancellationToken);
+                using var toolResult = await _go.BuildAsync(
+                    argument,
+                    cancellationToken);
 
-            return toolResult.WasSuccessful;
+                if (!toolResult.WasSuccessful)
+                {
+                    return false;
+                }
+            }*/
+
+            return true;
         }
     }
 }

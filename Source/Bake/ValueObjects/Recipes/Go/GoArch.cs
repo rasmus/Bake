@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+// ReSharper disable InconsistentNaming
 
 namespace Bake.ValueObjects.Recipes.Go
 {
-    [Recipe(Names.Recipes.Go.Build)]
-    public class GoBuildRecipe : Recipe
+    public enum GoArch
     {
-        [YamlMember]
-        public string Output { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
-
-        [YamlMember]
-        public GoOs Os { get; [Obsolete] set; }
-
-        [YamlMember]
-        public GoArch Arch { get; [Obsolete] set; }
-
-        [Obsolete]
-        public GoBuildRecipe() { }
-
-        public GoBuildRecipe(
-            string output,
-            string workingDirectory,
-            GoOs os,
-            GoArch arch)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Output = output;
-            WorkingDirectory = workingDirectory;
-            Os = os;
-            Arch = arch;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+        Undefined = 0,
+        AMD64,
+        Intel386,
+        ARM,
+        ARM64,
     }
 }

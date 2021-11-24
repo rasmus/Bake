@@ -85,13 +85,17 @@ namespace Bake.Cooking.Composers
                 throw new InvalidOperationException($"Invalid content of '{goModPath}'");
             }
 
+            var windowsOutput = $"{goModuleName.Name}.exe";
+
             var recipes = new Recipe[]
                 {
                     new GoTestRecipe(
                         directoryPath),
                     new GoBuildRecipe(
-                        goModuleName.Name,
-                        directoryPath)
+                        windowsOutput,
+                        directoryPath,
+                        GoOs.Windows,
+                        GoArch.AMD64)
                 };
 
             return recipes;
