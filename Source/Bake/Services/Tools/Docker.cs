@@ -39,7 +39,7 @@ namespace Bake.Services.Tools
             _runnerFactory = runnerFactory;
         }
 
-        public async Task<IToolResult> DockerBuildAsync(
+        public async Task<IToolResult> BuildAsync(
             DockerBuildArgument argument,
             CancellationToken cancellationToken)
         {
@@ -65,7 +65,7 @@ namespace Bake.Services.Tools
             return new ToolResult(result);
         }
 
-        public async Task<IToolResult> DockerPushAsync(
+        public async Task<IToolResult> PushAsync(
             DockerPushArgument argument,
             CancellationToken cancellationToken)
         {
@@ -85,7 +85,7 @@ namespace Bake.Services.Tools
             return new ToolResult(result);
         }
 
-        public async Task<IToolResult> DockerLoginAsync(
+        public async Task<IToolResult> LoginAsync(
             DockerLoginArgument argument,
             CancellationToken cancellationToken)
         {

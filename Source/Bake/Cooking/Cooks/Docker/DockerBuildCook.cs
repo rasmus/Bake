@@ -47,7 +47,7 @@ namespace Bake.Cooking.Cooks.Docker
                 recipe.Path,
                 recipe.Tags);
 
-            using var toolResult = await _docker.DockerBuildAsync(
+            using var toolResult = await _docker.BuildAsync(
                 argument,
                 cancellationToken);
 

@@ -20,41 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using Bake.ValueObjects.Recipes.Go;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Services.Tools.GoArguments
 {
-    public class DockerFileSimpleTests : BakeTest
+    public class GoBuildArgument : Argument
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
-        {
-        }
+        public string Output { get; }
+        public string WorkingDirectory { get; }
+        public GoOs Os { get; }
+        public GoArch Arch { get; }
 
-        [Test]
-        public async Task Run()
+        public GoBuildArgument(
+            string output,
+            string workingDirectory,
+            GoOs os,
+            GoArch arch)
         {
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+            if (!Enum.IsDefined(typeof(GoOs), os) || os == GoOs.Undefined)
+            {
+                throw new ArgumentOutOfRangeException(nameof(os));
+            }
+            if (!Enum.IsDefined(typeof(GoArch), arch) || arch == GoArch.Undefined)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arch));
+            }
 
-            // Assert
-            returnCode.Should().Be(0);
+            this.Output = output;
+            WorkingDirectory = workingDirectory;
+            Os = os;
+            Arch = arch;
         }
     }
 }

@@ -66,7 +66,9 @@ namespace Bake.Cooking
                     throw new Exception($"Don't know how to cook {recipeType.PrettyPrint()}");
                 }
 
-                _logger.LogInformation("Starting cook {RecipeName}", cook.RecipeName);
+                var recipeName = cook.GetName(recipe);
+
+                _logger.LogInformation("Starting cook {RecipeName}", recipeName);
 
                 // TODO: Gather logs
 
@@ -78,7 +80,7 @@ namespace Bake.Cooking
 
                 if (recipe.Artifacts != null && recipe.Artifacts.Any())
                 {
-                    _logger.LogDebug("Checking artifacts for {RecipeName}", cook.RecipeName);
+                    _logger.LogDebug("Checking artifacts for {RecipeName}", recipeName);
                     var errors = await recipe.Artifacts
                         .Select(a => a.ValidateAsync(cancellationToken))
                         .SelectManyAsync();
@@ -87,14 +89,14 @@ namespace Bake.Cooking
                     {
                         _logger.LogError(
                             "Recipe {RecipeName} failed with artifact validation errors: {ArtifactValidationErrors}",
-                            cook.RecipeName,
+                            recipeName,
                             errors);
                         success = false;
                     }
                 }
 
                 cookResults.Add(new CookResult(
-                    cook.RecipeName,
+                    recipeName,
                     stopwatch.Elapsed,
                     success));
 
@@ -116,7 +118,7 @@ namespace Bake.Cooking
                     : "failed";
                 var percent = cookResult.Time.TotalSeconds / totalSeconds;
                 var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
-                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-20} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-30} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
             Console.WriteLine();

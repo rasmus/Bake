@@ -20,41 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.ValueObjects.Recipes.Go
 {
-    public class DockerFileSimpleTests : BakeTest
+    [Recipe(Names.Recipes.Go.DockerFile)]
+    public class GoDockerFileRecipe : Recipe
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
-        {
-        }
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
 
-        [Test]
-        public async Task Run()
-        {
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+        [YamlMember]
+        public int Port { get; [Obsolete] set; }
 
-            // Assert
-            returnCode.Should().Be(0);
+        [YamlMember]
+        public string ProjectPath { get; [Obsolete] set; }
+
+        [Obsolete]
+        public GoDockerFileRecipe() { }
+
+        public GoDockerFileRecipe(
+            string name,
+            int port,
+            string projectPath,
+            params Artifact[] artifacts)
+            : base(artifacts)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
+            Port = port;
+            ProjectPath = projectPath;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

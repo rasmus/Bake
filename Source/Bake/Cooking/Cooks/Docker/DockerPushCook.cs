@@ -79,7 +79,7 @@ namespace Bake.Cooking.Cooks.Docker
             foreach (var dockerLogin in dockerLogins)
             {
                 var argument = new DockerLoginArgument(dockerLogin);
-                using var toolResult = await _docker.DockerLoginAsync(
+                using var toolResult = await _docker.LoginAsync(
                     argument,
                     cancellationToken);
 
@@ -93,7 +93,7 @@ namespace Bake.Cooking.Cooks.Docker
             {
                 var argument = new DockerPushArgument(containerTag);
 
-                using var toolResult = await _docker.DockerPushAsync(
+                using var toolResult = await _docker.PushAsync(
                     argument,
                     cancellationToken);
 

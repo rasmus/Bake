@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.Tests.Helpers;
+using Bake.ValueObjects.BakeProjects;
 using FluentAssertions;
 using NUnit.Framework;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Tests.UnitTests.Services
 {
-    public class DockerFileSimpleTests : BakeTest
+    public class BakeProjectParserTests : TestFor<BakeProjectParser>
     {
-        public DockerFileSimpleTests() : base("Dockerfile.Simple")
+        [SetUp]
+        public void SetUp()
         {
+            Inject<IYaml>(new Yaml());
         }
 
         [Test]
-        public async Task Run()
+        public async Task SimpleCase()
         {
+            // Arrange
+            const string yaml = @"
+type: service
+service:
+  port: 8080
+";
+
             // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--convention=Release",
-                "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
-                .WithEnvironmentVariables(new Dictionary<string, string>
-                    {
-                        ["bake_credentials_docker_localhost_username"] = "registryuser",
-                        ["bake_credentials_docker_localhost_password"] = "registrypassword",
-                    }));
+            var bakeProject = await Sut.ParseAsync(
+                yaml,
+                CancellationToken.None);
 
             // Assert
-            returnCode.Should().Be(0);
+            bakeProject.Type.Should().Be(BakeProjectType.Service);
+            bakeProject.Service.Port.Should().Be(8080);
         }
     }
 }
