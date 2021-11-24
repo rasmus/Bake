@@ -111,7 +111,9 @@ namespace Bake.Cooking.Composers
             var slug = name.ToSlug();
             var tags = urls
                 .Select(u => $"{u}{slug}:{version}")
-                .ToArray();
+                .ToList();
+
+            tags.Add($"bake.local/{slug}:{version}");
 
             _containerTagParser.Validate(tags);
 

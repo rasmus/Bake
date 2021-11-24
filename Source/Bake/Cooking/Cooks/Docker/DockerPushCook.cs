@@ -59,7 +59,7 @@ namespace Bake.Cooking.Cooks.Docker
             CancellationToken cancellationToken)
         {
             var containerTags = new List<ContainerTag>();
-            foreach (var tag in recipe.Tags)
+            foreach (var tag in recipe.Tags.Where(t => !t.StartsWith("bake.local/")))
             {
                 if (!_containerTagParser.TryParse(tag, out var containerTag))
                 {

@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
@@ -40,11 +45,15 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [Test]
         public async Task Run()
         {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/golang-service:{version}";
+
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
                 "--print-plan=true",
-                "--build-version", SemVer.Random.ToString()));
+                "--build-version", version));
 
             // Assert
             returnCode.Should().Be(0);
@@ -54,6 +63,39 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             AssertFileExists(
                 1L.MB(),
                 "golang-service.exe");
+
+            using var _ = await DockerHelper.RunAsync(
+                expectedImage,
+                new Dictionary<int, int> {[8080] = 8080},
+                CancellationToken.None);
+            using var httpClient = new HttpClient();
+            var start = Stopwatch.StartNew();
+            var success = false;
+            while (start.Elapsed < TimeSpan.FromSeconds(30))
+            {
+                try
+                {
+                    using var response = await httpClient.GetAsync("http://localhost:8080/ping");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"Status code {response.StatusCode}");
+                    }
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Got content: {Environment.NewLine}{content}");
+
+                    success = true;
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed with {e.GetType().Name}: {e.Message}");
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+
+            success.Should().BeTrue();
         }
     }
 }
