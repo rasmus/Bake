@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,46 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Extensions;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System.Net;
+using System.Net.Sockets;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Tests.Helpers
 {
-    public class GoLangServiceTests : BakeTest
+    public static class SocketHelper
     {
-        public GoLangServiceTests() : base("GoLang.Service")
+        public static int FreeTcpPort()
         {
-        }
-
-        [Test]
-        public async Task Run()
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/golang-service:{version}";
-
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--print-plan=true",
-                "--build-version", version));
-
-            // Assert
-            returnCode.Should().Be(0);
-            AssertFileExists(
-                1L.MB(),
-                "golang-service");
-            AssertFileExists(
-                1L.MB(),
-                "golang-service.exe");
-
-            await AssertContainerPingsAsync(expectedImage, 8080);
+            var port = 0;
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                var ipEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
+                socket.Bind(ipEndPoint);
+                ipEndPoint = (IPEndPoint)socket.LocalEndPoint;
+                port = ipEndPoint.Port;
+            }
+            finally
+            {
+                socket.Close();
+            }
+            return port;
         }
     }
 }

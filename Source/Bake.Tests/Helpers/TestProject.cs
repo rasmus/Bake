@@ -104,10 +104,11 @@ namespace Bake.Tests.Helpers
             string expectedImage,
             int port)
         {
-            var url = $"http://localhost:{port}/ping";
+            var hostPort = SocketHelper.FreeTcpPort();
+            var url = $"http://localhost:{hostPort}/ping";
             using var _ = await DockerHelper.RunAsync(
                 expectedImage,
-                new Dictionary<int, int> { [port] = port },
+                new Dictionary<int, int> { [port] = hostPort },
                 CancellationToken.None);
             using var httpClient = new HttpClient();
             var start = Stopwatch.StartNew();
