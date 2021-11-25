@@ -39,5 +39,10 @@ namespace Bake.ValueObjects.DotNet
             Version = version;
             Framework = framework;
         }
+
+        public override string ToString()
+        {
+            return Moniker;
+        }
     }
 }

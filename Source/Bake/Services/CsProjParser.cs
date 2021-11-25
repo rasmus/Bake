@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -31,6 +33,14 @@ namespace Bake.Services
 {
     public class CsProjParser : ICsProjParser
     {
+        private readonly IDotNetTfmParser _dotNetTfmParser;
+
+        public CsProjParser(
+            IDotNetTfmParser dotNetTfmParser)
+        {
+            _dotNetTfmParser = dotNetTfmParser;
+        }
+
         public async Task<CsProj> ParseAsync(
             string path,
             CancellationToken cancellationToken)
@@ -44,12 +54,18 @@ namespace Bake.Services
             var isPackable = ReadBool(xDocument, "/Project/PropertyGroup/IsPackable");
             var isPublishable = ReadBool(xDocument, "/Project/PropertyGroup/IsPublishable");
             var toolCommandName = ReadString(xDocument ,"/Project/PropertyGroup/ToolCommandName");
+            var targetFrameworkVersions = $"{ReadString(xDocument, "/Project/PropertyGroup/TargetFramework")};{ReadString(xDocument, "/Project/PropertyGroup/TargetFrameworks")}"
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(m => _dotNetTfmParser.TryParse(m, out var v) ? v : null)
+                .Where(v => v != null)
+                .ToArray();
 
             return new CsProj(
                 packAsTool,
                 toolCommandName,
                 isPackable,
-                isPublishable);
+                isPublishable,
+                targetFrameworkVersions);
         }
 
         private static string ReadString(

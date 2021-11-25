@@ -65,6 +65,7 @@ namespace Bake.Extensions
                 .AddSingleton<IContainerTagParser, ContainerTagParser>()
                 .AddTransient<IGoModParser, GoModParser>()
                 .AddTransient<IBakeProjectParser, BakeProjectParser>()
+                .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
