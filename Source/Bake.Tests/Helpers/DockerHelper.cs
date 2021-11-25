@@ -22,7 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -38,6 +40,7 @@ namespace Bake.Tests.Helpers
         public static async Task<IDisposable> RunAsync(
             string image,
             IReadOnlyDictionary<int, int> ports,
+            IReadOnlyDictionary<string, string> environmentVariables,
             CancellationToken cancellationToken)
         {
             var createContainerResponse = await Client.Containers.CreateContainerAsync(
@@ -47,6 +50,10 @@ namespace Bake.Tests.Helpers
                     ExposedPorts = ports.Keys.ToDictionary(
                         p => p.ToString(),
                         _ => default(EmptyStruct)),
+                    Env = environmentVariables
+                        .Select(kv => $"{kv.Key}={kv.Value}")
+                        .ToList(),
+                    AttachStdout = true,
                     HostConfig = new HostConfig
                     {
                         PortBindings = ports.ToDictionary(

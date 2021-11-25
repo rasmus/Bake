@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -50,7 +51,13 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
-            await AssertContainerPingsAsync(expectedImage, 5000);
+            await AssertContainerPingsAsync(
+                expectedImage,
+                5123,
+                new Dictionary<string, string>
+                {
+                    ["URLS"] = "http://0.0.0.0:5123"
+                });
         }
     }
 }

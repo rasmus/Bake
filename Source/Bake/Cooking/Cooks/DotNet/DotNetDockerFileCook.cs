@@ -23,31 +23,45 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Services;
 using Bake.ValueObjects.Recipes.DotNet;
 
 namespace Bake.Cooking.Cooks.DotNet
 {
     public class DotNetDockerFileCook : Cook<DotNetDockerFileRecipe>
     {
+        private readonly IDotNetTfmParser _dotNetTfmParser;
+
         private const string Dockerfile = @"
-FROM mcr.microsoft.com/dotnet/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}
 WORKDIR /app
-ENV URLS=http://0.0.0.0:5000
 COPY ./{{PATH}} .
 ENTRYPOINT [""dotnet"", ""{{NAME}}""]
 ";
+
+        public DotNetDockerFileCook(
+            IDotNetTfmParser dotNetTfmParser)
+        {
+            _dotNetTfmParser = dotNetTfmParser;
+        }
 
         protected override async Task<bool> CookAsync(
             IContext context,
             DotNetDockerFileRecipe recipe,
             CancellationToken cancellationToken)
         {
+            if (!_dotNetTfmParser.TryParse(recipe.Moniker, out var targetFrameworkVersion))
+            {
+                return false;
+            }
+
             var directoryPath = Path.GetDirectoryName(recipe.ProjectPath);
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
-
+            
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
-                .Replace("{{NAME}}", recipe.EntryPoint);
+                .Replace("{{NAME}}", recipe.EntryPoint)
+                .Replace("{{VERSION}}", $"{targetFrameworkVersion.Version.Major}.{targetFrameworkVersion.Version.Minor}");
 
             await File.WriteAllTextAsync(
                 dockerFilePath,

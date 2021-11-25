@@ -225,10 +225,20 @@ namespace Bake.Cooking.Composers
                         new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, path)));
 
+                var moniker = visualStudioProject.CsProj.TargetFrameworkVersions
+                    .Where(v => v.Framework == TargetFramework.Net)
+                    .OrderByDescending(v => v.Version)
+                    .FirstOrDefault()?.Moniker;
+                if (string.IsNullOrEmpty(moniker))
+                {
+                    throw new Exception($"Could not find a moniker for project: {visualStudioProject.Path}");
+                }
+
                 yield return new DotNetDockerFileRecipe(
                     visualStudioProject.Path,
                     path.Replace("\\", "/"),
                     $"{visualStudioProject.Name}.dll",
+                    moniker,
                     new FileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
