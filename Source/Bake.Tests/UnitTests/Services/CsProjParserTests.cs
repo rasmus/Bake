@@ -31,6 +31,12 @@ namespace Bake.Tests.UnitTests.Services
 {
     public class CsProjParserTests : TestFor<CsProjParser>
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Inject<IDotNetTfmParser>(new DotNetTfmParser());
+        }
+
         [Test]
         public async Task IsTool()
         {
