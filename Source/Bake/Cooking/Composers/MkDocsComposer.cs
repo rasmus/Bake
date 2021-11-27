@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Recipes;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        ToolWindows,
-        ToolLinux,
-        Container,
-        DocumentationSite,
+namespace Bake.Cooking.Composers
+{
+    public class MkDocsComposer : Composer
+    {
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
+            {
+                ArtifactType.DocumentationSite,
+            };
+
+        public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+            IContext context,
+            CancellationToken cancellationToken)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
