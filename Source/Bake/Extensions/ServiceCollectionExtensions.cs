@@ -66,6 +66,7 @@ namespace Bake.Extensions
                 .AddTransient<IGoModParser, GoModParser>()
                 .AddTransient<IBakeProjectParser, BakeProjectParser>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
+                .AddTransient<IDockerLabels, DockerLabels>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
