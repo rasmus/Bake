@@ -41,13 +41,19 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         [Test]
         public async Task T()
         {
+            // Arrange
+            var ingredients = Ingredients.New(
+                SemVer.With(1, 2, 3),
+                WorkingDirectory);
+
             // Act
-            var recipes = await Sut.ComposeAsync(
-                Context.New(
-                    Ingredients.New(
-                        SemVer.With(1,2,3),
-                        WorkingDirectory)), 
+            var recipesTask = Sut.ComposeAsync(
+                Context.New(ingredients), 
                 CancellationToken.None);
+            ingredients.FailOutstanding();
+
+            // Arrange
+            var _ = await recipesTask;
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
@@ -57,7 +63,9 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<ICredentials, Credentials>()
                 .AddTransient<IDefaults, Defaults>()
-                .AddTransient<IConventionInterpreter, ConventionInterpreter>();
+                .AddTransient<IConventionInterpreter, ConventionInterpreter>()
+                .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
+                .AddTransient<IDockerLabels, DockerLabels>();
         }
     }
 }
