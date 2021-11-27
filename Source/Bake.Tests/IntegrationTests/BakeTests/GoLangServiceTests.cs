@@ -40,11 +40,15 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [Test]
         public async Task Run()
         {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/golang-service:{version}";
+
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
                 "--print-plan=true",
-                "--build-version", SemVer.Random.ToString()));
+                "--build-version", version));
 
             // Assert
             returnCode.Should().Be(0);
@@ -54,6 +58,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             AssertFileExists(
                 1L.MB(),
                 "golang-service.exe");
+
+            await AssertContainerPingsAsync(expectedImage, 8080);
         }
     }
 }

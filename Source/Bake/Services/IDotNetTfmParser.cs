@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using Bake.ValueObjects.DotNet;
 
-namespace Bake.ValueObjects.DotNet
+namespace Bake.Services
 {
-    public class CsProj
+    public interface IDotNetTfmParser
     {
-        public bool PackAsTool { get; }
-        public string ToolCommandName { get; }
-        public bool IsPackable { get; }
-        public bool IsPublishable { get; }
-        public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
-
-        public CsProj(bool packAsTool,
-            string toolCommandName,
-            bool isPackable,
-            bool isPublishable,
-            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
-        {
-            PackAsTool = packAsTool;
-            ToolCommandName = toolCommandName;
-            IsPackable = isPackable;
-            IsPublishable = isPublishable;
-            TargetFrameworkVersions = targetFrameworkVersions;
-        }
+        bool TryParse(string moniker, out TargetFrameworkVersion targetFrameworkVersion);
     }
 }

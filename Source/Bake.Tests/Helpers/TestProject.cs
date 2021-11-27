@@ -21,8 +21,13 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
@@ -94,6 +99,48 @@ namespace Bake.Tests.Helpers
             Console.WriteLine($"File {filePath} exists");
 
             return filePath;
+        }
+
+        protected static async Task AssertContainerPingsAsync(
+            string expectedImage,
+            int port,
+            IReadOnlyDictionary<string, string> environmentVariables = null)
+        {
+            var hostPort = SocketHelper.FreeTcpPort();
+            var url = $"http://localhost:{hostPort}/ping";
+            using var _ = await DockerHelper.RunAsync(
+                expectedImage,
+                new Dictionary<int, int> { [port] = hostPort },
+                environmentVariables ?? new Dictionary<string, string>(),
+                CancellationToken.None);
+            using var httpClient = new HttpClient();
+            var start = Stopwatch.StartNew();
+            var success = false;
+            while (start.Elapsed < TimeSpan.FromSeconds(15))
+            {
+                try
+                {
+                    using var response = await httpClient.GetAsync(url);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"Status code {response.StatusCode}");
+                    }
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Got content: {Environment.NewLine}{content}");
+
+                    success = true;
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed with {e.GetType().Name}: {e.Message}");
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            success.Should().BeTrue();
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName)

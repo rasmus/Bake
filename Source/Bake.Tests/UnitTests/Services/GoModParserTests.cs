@@ -44,6 +44,10 @@ namespace Bake.Tests.UnitTests.Services
             "my.module",
             "3")]
         [TestCase(
+            "module my-module/v3",
+            "my-module",
+            "3")]
+        [TestCase(
             "module example.com/mymodule",
             "mymodule",
             "")]

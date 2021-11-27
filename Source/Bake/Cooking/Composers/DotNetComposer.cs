@@ -77,19 +77,22 @@ namespace Bake.Cooking.Composers
         private readonly ICsProjParser _csProjParser;
         private readonly IConventionInterpreter _conventionInterpreter;
         private readonly IDefaults _defaults;
+        private readonly IDockerLabels _dockerLabels;
 
         public DotNetComposer(
             ILogger<DotNetComposer> logger,
             IFileSystem fileSystem,
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter,
-            IDefaults defaults)
+            IDefaults defaults,
+            IDockerLabels dockerLabels)
         {
             _logger = logger;
             _fileSystem = fileSystem;
             _csProjParser = csProjParser;
             _conventionInterpreter = conventionInterpreter;
             _defaults = defaults;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -110,8 +113,13 @@ namespace Bake.Cooking.Composers
             var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
+            var labels = (await _dockerLabels.FromIngredientsAsync(
+                context.Ingredients,
+                cancellationToken))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
             return visualStudioSolutions
-                .SelectMany(s => CreateRecipe(context, s))
+                .SelectMany(s => CreateRecipe(context, labels, s))
                 .ToList();
         }
 
@@ -149,6 +157,7 @@ namespace Bake.Cooking.Composers
 
         private IEnumerable<Recipe> CreateRecipe(
             IContext context,
+            Dictionary<string, string> labels,
             VisualStudioSolution visualStudioSolution)
         {
             const string configuration = "Release";
@@ -225,8 +234,21 @@ namespace Bake.Cooking.Composers
                         new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, path)));
 
+                var moniker = visualStudioProject.CsProj.TargetFrameworkVersions
+                    .Where(v => v.Framework == TargetFramework.Net)
+                    .OrderByDescending(v => v.Version)
+                    .FirstOrDefault()?.Moniker;
+                if (string.IsNullOrEmpty(moniker))
+                {
+                    throw new Exception($"Could not find a moniker for project: {visualStudioProject.Path}");
+                }
+
                 yield return new DotNetDockerFileRecipe(
                     visualStudioProject.Path,
+                    path.Replace("\\", "/"),
+                    $"{visualStudioProject.Name}.dll",
+                    moniker,
+                    labels,
                     new FileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));

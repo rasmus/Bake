@@ -54,6 +54,13 @@ bake run --convention=Release --build-version 1.0 --destination="nuget>github"
 Here are some examples of common used argumnets to Bake
 
 * `--destination=`
+  * **Container**
+    * `container>{username}`, e.g. simply `container>rasmus` - Will mark the
+      destination as [Docker Hub](https://hub.docker.com/) with that username
+    * `container>github` - Send condcontainers to the GitHub package repository
+      for at owner/organization of the git repository
+    * `container>localhost:5000` - Send containers to a specific container
+      registry
   * **NuGet**
     * `nuget` - An unamed destination will send NuGet packages to the central
       NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for

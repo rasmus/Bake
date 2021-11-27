@@ -32,7 +32,6 @@ using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.BakeProjects;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Go;
-using File = Bake.Core.File;
 
 namespace Bake.Cooking.Composers
 {
@@ -41,6 +40,7 @@ namespace Bake.Cooking.Composers
         private readonly IFileSystem _fileSystem;
         private readonly IGoModParser _goModParser;
         private readonly IBakeProjectParser _bakeProjectParser;
+        private readonly IDockerLabels _dockerLabels;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -52,11 +52,13 @@ namespace Bake.Cooking.Composers
         public GoComposer(
             IFileSystem fileSystem,
             IGoModParser goModParser,
-            IBakeProjectParser bakeProjectParser)
+            IBakeProjectParser bakeProjectParser,
+            IDockerLabels dockerLabels)
         {
             _fileSystem = fileSystem;
             _goModParser = goModParser;
             _bakeProjectParser = bakeProjectParser;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -67,17 +69,22 @@ namespace Bake.Cooking.Composers
                 context.Ingredients.WorkingDirectory,
                 "go.mod",
                 cancellationToken);
+            var labels = (await _dockerLabels.FromIngredientsAsync(
+                context.Ingredients,
+                cancellationToken))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
 
             return (await Task.WhenAll(
                     goModFilePaths
                         .Select(Path.GetDirectoryName)
-                        .Select(p => CreateRecipesAsync(p, cancellationToken))))
+                        .Select(p => CreateRecipesAsync(p, labels, cancellationToken))))
                 .SelectMany(l => l)
                 .ToArray();
         }
 
         private async Task<IReadOnlyCollection<Recipe>> CreateRecipesAsync(
             string directoryPath,
+            Dictionary<string, string> labels,
             CancellationToken cancellationToken)
         {
             var goModPath = Path.Combine(directoryPath, "go.mod");
@@ -105,7 +112,7 @@ namespace Bake.Cooking.Composers
 
             if (!_goModParser.TryParse(goModContent, out var goModuleName))
             {
-                throw new InvalidOperationException($"Invalid content of '{goModPath}'");
+                throw new InvalidOperationException($"Invalid content of '{goModPath}':{Environment.NewLine}{goModContent}");
             }
 
             var windowsOutput = $"{goModuleName.Name}.exe";
@@ -140,8 +147,9 @@ namespace Bake.Cooking.Composers
                     goModuleName.Name,
                     servicePort,
                     directoryPath,
+                    labels,
                     new FileArtifact(
-                        new ArtifactKey(ArtifactType.Dockerfile, "Dockerfile"),
+                        new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
                         Path.Combine(directoryPath, "Dockerfile"))));
             }
 

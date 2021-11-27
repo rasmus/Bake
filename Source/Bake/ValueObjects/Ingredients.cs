@@ -132,5 +132,18 @@ namespace Bake.ValueObjects
 
         public void FailGit() => _git.SetCanceled();
         public void FailGitHub() => _gitHub.SetCanceled();
+
+        public void FailOutstanding()
+        {
+            if (!_git.Task.IsCompleted)
+            {
+                _git.SetCanceled();
+            }
+
+            if (!_gitHub.Task.IsCompleted)
+            {
+                _gitHub.SetCanceled();
+            }
+        }
     }
 }

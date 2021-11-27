@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,28 +21,18 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects;
 
-namespace Bake.ValueObjects.DotNet
+namespace Bake.Services
 {
-    public class CsProj
+    public interface IDockerLabels
     {
-        public bool PackAsTool { get; }
-        public string ToolCommandName { get; }
-        public bool IsPackable { get; }
-        public bool IsPublishable { get; }
-        public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
+        Task<IReadOnlyDictionary<string, string>> FromIngredientsAsync(
+            Ingredients ingredients,
+            CancellationToken cancellationToken);
 
-        public CsProj(bool packAsTool,
-            string toolCommandName,
-            bool isPackable,
-            bool isPublishable,
-            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
-        {
-            PackAsTool = packAsTool;
-            ToolCommandName = toolCommandName;
-            IsPackable = isPackable;
-            IsPublishable = isPublishable;
-            TargetFrameworkVersions = targetFrameworkVersions;
-        }
+        string Serialize(IReadOnlyDictionary<string, string> labels);
     }
 }

@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -32,16 +33,36 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
+        [YamlMember]
+        public string ServicePath { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string EntryPoint { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string Moniker { get; [Obsolete] set; }
+
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; }
+
         [Obsolete]
         public DotNetDockerFileRecipe() { }
 
         public DotNetDockerFileRecipe(
             string projectPath,
+            string servicePath,
+            string entryPoint,
+            string moniker,
+            Dictionary<string, string> labels,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             ProjectPath = projectPath;
+            ServicePath = servicePath;
+            EntryPoint = entryPoint;
+            Moniker = moniker;
+            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -38,6 +39,9 @@ namespace Bake.ValueObjects.Recipes.Go
         [YamlMember]
         public string ProjectPath { get; [Obsolete] set; }
 
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; }
+
         [Obsolete]
         public GoDockerFileRecipe() { }
 
@@ -45,6 +49,7 @@ namespace Bake.ValueObjects.Recipes.Go
             string name,
             int port,
             string projectPath,
+            Dictionary<string, string> labels,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -52,6 +57,7 @@ namespace Bake.ValueObjects.Recipes.Go
             Name = name;
             Port = port;
             ProjectPath = projectPath;
+            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

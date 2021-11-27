@@ -23,6 +23,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Services;
 using Bake.ValueObjects.Recipes.Go;
 using Microsoft.Extensions.Logging;
 
@@ -31,8 +32,11 @@ namespace Bake.Cooking.Cooks.Go
     public class GoDockerFileCook : Cook<GoDockerFileRecipe>
     {
         private readonly ILogger<GoDockerFileCook> _logger;
+        private readonly IDockerLabels _dockerLabels;
+
         private const string Dockerfile = @"
 FROM gcr.io/distroless/base-debian10
+{{LABELS}}
 WORKDIR /
 COPY {{NAME}} /{{NAME}}
 EXPOSE {{PORT}}
@@ -41,9 +45,11 @@ ENTRYPOINT [""/{{NAME}}""]
 ";
 
         public GoDockerFileCook(
-            ILogger<GoDockerFileCook> logger)
+            ILogger<GoDockerFileCook> logger,
+            IDockerLabels dockerLabels)
         {
             _logger = logger;
+            _dockerLabels = dockerLabels;
         }
 
         protected override async Task<bool> CookAsync(
@@ -52,10 +58,12 @@ ENTRYPOINT [""/{{NAME}}""]
             CancellationToken cancellationToken)
         {
             var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
+            var dockerLabels = _dockerLabels.Serialize(recipe.Labels);
 
             var dockerfileContent = Dockerfile
                 .Replace("{{NAME}}", recipe.Name)
-                .Replace("{{PORT}}", recipe.Port.ToString());
+                .Replace("{{PORT}}", recipe.Port.ToString())
+                .Replace("{{LABELS}}", dockerLabels);
 
             _logger.LogInformation(
                 "Creating Dockerfile for Go service at {FilePath} with content {DockerfileContent}",

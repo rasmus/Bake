@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
-namespace Bake.ValueObjects.DotNet
+namespace Bake.Tests.Helpers
 {
-    public class CsProj
+    public static class SocketHelper
     {
-        public bool PackAsTool { get; }
-        public string ToolCommandName { get; }
-        public bool IsPackable { get; }
-        public bool IsPublishable { get; }
-        public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
-
-        public CsProj(bool packAsTool,
-            string toolCommandName,
-            bool isPackable,
-            bool isPublishable,
-            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
+        public static int FreeTcpPort()
         {
-            PackAsTool = packAsTool;
-            ToolCommandName = toolCommandName;
-            IsPackable = isPackable;
-            IsPublishable = isPublishable;
-            TargetFrameworkVersions = targetFrameworkVersions;
+            var port = 0;
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                var ipEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
+                socket.Bind(ipEndPoint);
+                ipEndPoint = (IPEndPoint)socket.LocalEndPoint;
+                port = ipEndPoint.Port;
+            }
+            finally
+            {
+                socket.Close();
+            }
+            return port;
         }
     }
 }

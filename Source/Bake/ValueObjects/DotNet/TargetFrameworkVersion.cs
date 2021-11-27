@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,29 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using Bake.Core;
 
 namespace Bake.ValueObjects.DotNet
 {
-    public class CsProj
+    public class TargetFrameworkVersion
     {
-        public bool PackAsTool { get; }
-        public string ToolCommandName { get; }
-        public bool IsPackable { get; }
-        public bool IsPublishable { get; }
-        public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
+        public string Moniker { get; }
+        public SemVer Version { get; }
+        public TargetFramework Framework { get; }
 
-        public CsProj(bool packAsTool,
-            string toolCommandName,
-            bool isPackable,
-            bool isPublishable,
-            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
+        public TargetFrameworkVersion(
+            string moniker,
+            SemVer version,
+            TargetFramework framework)
         {
-            PackAsTool = packAsTool;
-            ToolCommandName = toolCommandName;
-            IsPackable = isPackable;
-            IsPublishable = isPublishable;
-            TargetFrameworkVersions = targetFrameworkVersions;
+            Moniker = moniker;
+            Version = version;
+            Framework = framework;
+        }
+
+        public override string ToString()
+        {
+            return Moniker;
         }
     }
 }
