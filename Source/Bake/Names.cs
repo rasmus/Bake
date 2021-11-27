@@ -111,6 +111,11 @@ namespace Bake
                 public const string DockerFile = "go-dockerfile";
             }
 
+            public static class Pip
+            {
+                public const string InstallRequirements = "pip-install-requirements";
+            }
+
             public static class Docker
             {
                 public const string Build = "docker-build";

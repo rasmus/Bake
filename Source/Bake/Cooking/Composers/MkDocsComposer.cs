@@ -21,25 +21,63 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.Pip;
+using File = System.IO.File;
+
+// ReSharper disable StringLiteralTypo
 
 namespace Bake.Cooking.Composers
 {
     public class MkDocsComposer : Composer
     {
+        private readonly IFileSystem _fileSystem;
+
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
                 ArtifactType.DocumentationSite,
             };
 
-        public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        public MkDocsComposer(
+            IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
+        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var mkDocsFilePaths = await _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "mkdocs.yml",
+                cancellationToken);
+
+            return mkDocsFilePaths
+                .SelectMany(CreateRecipes)
+                .ToArray();
+        }
+
+        private static IEnumerable<Recipe> CreateRecipes(
+            string mkDocsFilePath)
+        {
+            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath);
+            var requirementsFilePath = Path.Combine(
+                workingDirectory,
+                "requirements.txt");
+
+            if (File.Exists(requirementsFilePath))
+            {
+                yield return new PipInstallRequirementsRecipe(
+                    requirementsFilePath,
+                    workingDirectory);
+            }
         }
     }
 }
