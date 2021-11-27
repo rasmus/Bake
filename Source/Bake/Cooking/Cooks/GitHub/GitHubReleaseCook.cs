@@ -23,22 +23,40 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Recipes;
+using Bake.Core;
+using Bake.Services;
+using Bake.ValueObjects;
+using Bake.ValueObjects.Recipes.GitHub;
 
-namespace Bake.Cooking
+namespace Bake.Cooking.Cooks.GitHub
 {
-    public abstract class Composer : IComposer
+    public class GitHubReleaseCook : Cook<GitHubReleaseRecipe>
     {
-        protected static readonly IReadOnlyCollection<Recipe> EmptyRecipes = new Recipe[] { };
+        private readonly IGitHub _gitHub;
 
-        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
+        public GitHubReleaseCook(
+            IGitHub gitHub)
+        {
+            _gitHub = gitHub;
+        }
 
-        public virtual IReadOnlyCollection<ArtifactType> Produces => EmptyArtifactTypes;
-        public virtual IReadOnlyCollection<ArtifactType> Consumes => EmptyArtifactTypes;
-
-        public abstract Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        protected override async Task<bool> CookAsync(
             IContext context,
-            CancellationToken cancellationToken);
+            GitHubReleaseRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var release = new Release(
+                recipe.Version,
+                recipe.Sha,
+                new List<IFile>(),
+                recipe.ReleaseNotes);
+
+            await _gitHub.CreateReleaseAsync(
+                release,
+                recipe.GitHubInformation,
+                cancellationToken);
+
+            return true;
+        }
     }
 }

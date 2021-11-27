@@ -45,7 +45,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "run",
                 "--print-plan=true",
                 "--convention=Release",
-                "--destination=nuget>http://localhost:5555/v3/index.json",
+                "--destination=release>github,nuget>http://localhost:5555/v3/index.json",
                 "--build-version", SemVer.Random.ToString())
                 .WithEnvironmentVariable("bake_credentials_nuget_localhost_apikey", "acd0b30512ac4fa39f62eb7a61fcf56c");
 
@@ -55,6 +55,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Assert
             returnCode.Should().Be(0);
             AssertSuccessfulArtifacts();
+            Releases.Should().HaveCount(1);
         }
 
         [TestCase(LogEventLevel.Verbose)]
@@ -69,7 +70,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var planPath = Path.Combine(WorkingDirectory, "plan.bake");
             var returnCode = await ExecuteAsync(
                 "plan",
-                "--destination=\"nuget>github\"",
+                "--destination=release>github,nuget>github",
                 $"--log-level:{logLevel}",
                 "--build-version", SemVer.Random.ToString(),
                 "--plan-path", $"\"{planPath}\"");

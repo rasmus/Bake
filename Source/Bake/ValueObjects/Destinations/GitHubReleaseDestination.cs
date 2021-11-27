@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,25 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Recipes;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking
+namespace Bake.ValueObjects.Destinations
 {
-    public abstract class Composer : IComposer
+    [Destination(Names.Destinations.GitHubReleases)]
+    public class GitHubReleaseDestination : Destination
     {
-        protected static readonly IReadOnlyCollection<Recipe> EmptyRecipes = new Recipe[] { };
+        [YamlMember(typeof(string))]
+        public string Owner { get; [Obsolete] set; }
 
-        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
+        [YamlMember(typeof(string))]
+        public string Repository { get; [Obsolete] set; }
 
-        public virtual IReadOnlyCollection<ArtifactType> Produces => EmptyArtifactTypes;
-        public virtual IReadOnlyCollection<ArtifactType> Consumes => EmptyArtifactTypes;
+        [Obsolete]
+        public GitHubReleaseDestination() { }
 
-        public abstract Task<IReadOnlyCollection<Recipe>> ComposeAsync(
-            IContext context,
-            CancellationToken cancellationToken);
+        public GitHubReleaseDestination(
+            string owner,
+            string repository)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Owner = owner;
+            Repository = repository;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Names.Destinations.GitHubReleases}|{Owner}|{Repository}";
+        }
     }
 }

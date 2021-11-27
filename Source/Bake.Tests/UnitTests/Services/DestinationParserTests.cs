@@ -84,6 +84,10 @@ namespace Bake.Tests.UnitTests.Services
             "nuget>github",
             "nuget",
             "github")]
+        [TestCase(
+            "release>github",
+            "release",
+            "github")]
         public void Dynamics(
             string input,
             string expectedArtifactType,
