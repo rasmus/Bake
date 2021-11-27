@@ -30,8 +30,12 @@ namespace Bake.Core
     public interface IFile : IDisposable
     {
         string Path { get; }
+        string FileName { get; }
 
         Task<Stream> OpenWriteAsync(
+            CancellationToken cancellationToken);
+
+        Task<Stream> OpenReadAsync(
             CancellationToken cancellationToken);
     }
 }

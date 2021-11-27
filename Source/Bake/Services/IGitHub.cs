@@ -20,9 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.ValueObjects;
+
 namespace Bake.Services
 {
     public interface IGitHub
     {
+        Task CreateReleaseAsync(
+            Release release,
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken);
     }
 }

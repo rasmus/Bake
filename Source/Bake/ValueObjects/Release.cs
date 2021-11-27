@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,45 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using Bake.Core;
 
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public class File : IFile
+    public class Release
     {
-        public string Path { get; }
-        public string FileName => System.IO.Path.GetFileName(Path);
+        public SemVer Version { get; }
+        public string Sha { get; }
+        public IReadOnlyCollection<IFile> Files { get; }
+        public ReleaseNotes Notes { get; }
 
-        public File(string path)
+        public Release(
+            SemVer version,
+            string sha,
+            IReadOnlyCollection<IFile> files,
+            ReleaseNotes notes)
         {
-            Path = path;
-        }
-
-        public Task<Stream> OpenWriteAsync(
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult<Stream>(System.IO.File.Open(
-                Path,
-                FileMode.OpenOrCreate,
-                FileAccess.Write,
-                FileShare.None));
-        }
-
-        public Task<Stream> OpenReadAsync(
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult<Stream>(System.IO.File.Open(
-                Path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read));
-        }
-
-        public void Dispose()
-        {
-            System.IO.File.Delete(Path);
+            Version = version;
+            Sha = sha;
+            Files = files;
+            Notes = notes;
         }
     }
 }
