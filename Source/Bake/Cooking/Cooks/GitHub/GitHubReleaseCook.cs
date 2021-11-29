@@ -21,11 +21,14 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
 
 namespace Bake.Cooking.Cooks.GitHub
@@ -33,11 +36,14 @@ namespace Bake.Cooking.Cooks.GitHub
     public class GitHubReleaseCook : Cook<GitHubReleaseRecipe>
     {
         private readonly IGitHub _gitHub;
+        private readonly IFileSystem _fileSystem;
 
         public GitHubReleaseCook(
-            IGitHub gitHub)
+            IGitHub gitHub,
+            IFileSystem fileSystem)
         {
             _gitHub = gitHub;
+            _fileSystem = fileSystem;
         }
 
         protected override async Task<bool> CookAsync(
@@ -45,11 +51,36 @@ namespace Bake.Cooking.Cooks.GitHub
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
+            var stringBuilder = new StringBuilder()
+                .AppendLine(recipe.ReleaseNotes.Notes)
+                .AppendLine();
+
+            var artifacts = await Task.WhenAll(recipe.Artifacts
+                .OfType<FileArtifact>()
+                .Select(async artifact =>
+                {
+                    var file = _fileSystem.Open(artifact.Path);
+                    var sha256 = await file.GetHashAsync(
+                        HashAlgorithm.SHA256,
+                        cancellationToken);
+                    return new
+                        {
+                            sha256,
+                            file,
+                            artifact
+                        };
+                }));
+            foreach (var artifact in artifacts)
+            {
+                stringBuilder.AppendLine($"* `{artifact.artifact.Key.Name}`");
+                stringBuilder.AppendLine($"  * SHA256: `{artifact.sha256}`");
+            }
+
             var release = new Release(
                 recipe.Version,
                 recipe.Sha,
                 new List<IFile>(),
-                recipe.ReleaseNotes);
+                stringBuilder.ToString());
 
             await _gitHub.CreateReleaseAsync(
                 release,

@@ -30,18 +30,18 @@ namespace Bake.ValueObjects
         public SemVer Version { get; }
         public string Sha { get; }
         public IReadOnlyCollection<IFile> Files { get; }
-        public ReleaseNotes Notes { get; }
+        public string Body { get; }
 
         public Release(
             SemVer version,
             string sha,
             IReadOnlyCollection<IFile> files,
-            ReleaseNotes notes)
+            string body)
         {
             Version = version;
             Sha = sha;
             Files = files;
-            Notes = notes;
+            Body = body;
         }
     }
 }

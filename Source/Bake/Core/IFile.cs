@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
 
 namespace Bake.Core
 {
@@ -36,6 +37,10 @@ namespace Bake.Core
             CancellationToken cancellationToken);
 
         Task<Stream> OpenReadAsync(
+            CancellationToken cancellationToken);
+
+        Task<string> GetHashAsync(
+            HashAlgorithm hashAlgorithm,
             CancellationToken cancellationToken);
     }
 }

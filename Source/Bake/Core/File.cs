@@ -20,9 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using HashAlgorithm = Bake.ValueObjects.HashAlgorithm;
 
 namespace Bake.Core
 {
@@ -49,11 +52,30 @@ namespace Bake.Core
         public Task<Stream> OpenReadAsync(
             CancellationToken cancellationToken)
         {
-            return Task.FromResult<Stream>(System.IO.File.Open(
-                Path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read));
+            return Task.FromResult<Stream>(
+                new BufferedStream(
+                    System.IO.File.Open(
+                        Path,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read),
+                    1200000));
+        }
+
+        public async Task<string> GetHashAsync(
+            HashAlgorithm hashAlgorithm,
+            CancellationToken cancellationToken)
+        {
+            if (hashAlgorithm != HashAlgorithm.SHA256)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hashAlgorithm));
+            }
+
+            await using var stream = await OpenReadAsync(cancellationToken);
+
+            using var sha256 = SHA256.Create();
+            var checksum = await sha256.ComputeHashAsync(stream, cancellationToken);
+            return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
 
         public void Dispose()

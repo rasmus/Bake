@@ -35,13 +35,16 @@ namespace Bake.Services
     public class GitHub : IGitHub
     {
         private readonly ILogger<GitHub> _logger;
+        private readonly ICredentials _credentials;
         private readonly IGitHubClientFactory _gitHubClientFactory;
 
         public GitHub(
             ILogger<GitHub> logger,
+            ICredentials credentials,
             IGitHubClientFactory gitHubClientFactory)
         {
             _logger = logger;
+            _credentials = credentials;
             _gitHubClientFactory = gitHubClientFactory;
         }
 
@@ -50,8 +53,12 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
+            var token = await _credentials.TryGetGitHubTokenAsync(
+                gitHubInformation.Url,
+                cancellationToken);
+
             var gitHubClient = await _gitHubClientFactory.CreateAsync(
-                string.Empty,
+                token,
                 cancellationToken);
 
             var tag = $"v{release.Version}";
@@ -63,6 +70,7 @@ namespace Bake.Services
                 {
                     Prerelease = release.Version.IsPrerelease,
                     TargetCommitish = release.Sha,
+                    Body = release.Body,
                     Draft = true,
                     Name = $"v{release.Version}",
                 });
