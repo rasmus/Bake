@@ -97,6 +97,11 @@ namespace Bake.Core
             return await streamReader.ReadToEndAsync();
         }
 
+        public IFile Open(string filePath)
+        {
+            return new File(filePath);
+        }
+
         public IFile OpenTempFile()
         {
             return new File(

@@ -105,6 +105,7 @@ namespace Bake.Core
         public int? Patch { get; }
         public string Meta { get; }
         public Version LegacyVersion { get; }
+        public bool IsPrerelease => !string.IsNullOrEmpty(Meta);
 
         private readonly Lazy<string> _lazyString;
 

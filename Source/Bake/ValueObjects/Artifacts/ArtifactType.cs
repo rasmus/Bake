@@ -32,5 +32,6 @@ namespace Bake.ValueObjects.Artifacts
         ToolWindows,
         ToolLinux,
         Container,
+        Release,
     }
 }

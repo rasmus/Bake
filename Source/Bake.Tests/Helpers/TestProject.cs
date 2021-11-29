@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -55,14 +54,17 @@ namespace Bake.Tests.Helpers
         {
             _folder = Folder.New;
 
-            GitHelper.Create(_folder.Path);
+            if (!string.IsNullOrEmpty(ProjectName))
+            {
+                GitHelper.Create(_folder.Path);
 
-            DirectoryCopy(
-                Path.Combine(
-                    ProjectHelper.GetRoot(),
-                    "TestProjects",
-                    ProjectName),
-                _folder.Path);
+                DirectoryCopy(
+                    Path.Combine(
+                        ProjectHelper.GetRoot(),
+                        "TestProjects",
+                        ProjectName),
+                    _folder.Path);
+            }
 
             _previousCurrentDirectory = Directory.GetCurrentDirectory();
             Directory.SetCurrentDirectory(WorkingDirectory);

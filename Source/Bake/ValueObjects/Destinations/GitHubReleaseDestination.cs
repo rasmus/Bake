@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,25 +21,35 @@
 // SOFTWARE.
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+using YamlDotNet.Serialization;
 
-namespace Bake.Core
+namespace Bake.ValueObjects.Destinations
 {
-    public interface ICredentials
+    [Destination(Names.Destinations.GitHubReleases)]
+    public class GitHubReleaseDestination : Destination
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        [YamlMember(typeof(string))]
+        public string Owner { get; [Obsolete] set; }
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerTag containerTag,
-            CancellationToken cancellationToken);
+        [YamlMember(typeof(string))]
+        public string Repository { get; [Obsolete] set; }
 
-        Task<string> TryGetGitHubTokenAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public GitHubReleaseDestination() { }
+
+        public GitHubReleaseDestination(
+            string owner,
+            string repository)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Owner = owner;
+            Repository = repository;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Names.Destinations.GitHubReleases}|{Owner}|{Repository}";
+        }
     }
 }

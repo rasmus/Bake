@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,26 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+using System.Collections.Generic;
+using Bake.Core;
 
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public interface ICredentials
+    public class Release
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public SemVer Version { get; }
+        public string Sha { get; }
+        public IReadOnlyCollection<IFile> Files { get; }
+        public string Body { get; }
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerTag containerTag,
-            CancellationToken cancellationToken);
-
-        Task<string> TryGetGitHubTokenAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public Release(
+            SemVer version,
+            string sha,
+            IReadOnlyCollection<IFile> files,
+            string body)
+        {
+            Version = version;
+            Sha = sha;
+            Files = files;
+            Body = body;
+        }
     }
 }

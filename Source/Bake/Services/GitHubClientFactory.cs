@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -23,23 +23,30 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+using Octokit;
+using Octokit.Internal;
+using Credentials = Octokit.Credentials;
 
-namespace Bake.Core
+namespace Bake.Services
 {
-    public interface ICredentials
+    public class GitHubClientFactory : IGitHubClientFactory
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        private static readonly Version Version = typeof(GitHubClientFactory).Assembly.GetName().Version;
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerTag containerTag,
-            CancellationToken cancellationToken);
+        public Task<IGitHubClient> CreateAsync(
+            string token,
+            CancellationToken cancellationToken)
+        {
+            var gitHubClient = Create(new InMemoryCredentialStore(new Credentials(token)));
+            return Task.FromResult(gitHubClient);
+        }
 
-        Task<string> TryGetGitHubTokenAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        private static IGitHubClient Create(
+            ICredentialStore credentialStore)
+        {
+            return new GitHubClient(
+                new ProductHeaderValue("bake", Version.ToString()),
+                credentialStore);
+        }
     }
 }

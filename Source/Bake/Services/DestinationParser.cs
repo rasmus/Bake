@@ -49,6 +49,18 @@ namespace Bake.Services
             var parts = str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
             switch (parts[0])
             {
+                case Names.ArtifactTypes.Release:
+                    if (parts.Length == 2 && 
+                        string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))
+                    {
+                        destination = new DynamicDestination(
+                            Names.ArtifactTypes.Release,
+                            Names.DynamicDestinations.GitHub);
+                        return true;
+                    }
+
+                    return false;
+
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
                     {
@@ -56,7 +68,7 @@ namespace Bake.Services
                         return true;
                     }
 
-                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub))
+                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))
                     {
                         destination = new DynamicDestination(
                             Names.ArtifactTypes.NuGet,
@@ -73,7 +85,7 @@ namespace Bake.Services
                     return true;
 
                 case Names.ArtifactTypes.Container:
-                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub))
+                    if (string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))
                     {
                         destination = new DynamicDestination(
                             Names.ArtifactTypes.Container,

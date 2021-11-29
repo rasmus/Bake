@@ -36,6 +36,7 @@ namespace Bake
         public static class Destinations
         {
             public const string ContainerRegistry = "container-registry";
+            public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
         }
@@ -57,6 +58,7 @@ namespace Bake
 
         public static class ArtifactTypes
         {
+            public const string Release = "release";
             public const string Container = "container";
             public const string Dockerfile = "dockerfile";
             public const string DotNetPublishedDirectory = "dotnet-publish-directory";
@@ -70,6 +72,7 @@ namespace Bake
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.NuGet] = NuGet,
+                    [ArtifactType.Release] = Release,
                     [ArtifactType.ToolLinux] = ToolLinux,
                     [ArtifactType.ToolWindows] = ToolWindows,
                 };
@@ -109,6 +112,11 @@ namespace Bake
                 public const string Build = "go-build";
                 public const string Test = "go-test";
                 public const string DockerFile = "go-dockerfile";
+            }
+
+            public static class GitHub
+            {
+                public const string Release = "github-release";
             }
 
             public static class Docker

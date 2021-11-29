@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,26 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+// ReSharper disable InconsistentNaming
 
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public interface ICredentials
+    public enum HashAlgorithm
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
-
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerTag containerTag,
-            CancellationToken cancellationToken);
-
-        Task<string> TryGetGitHubTokenAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        Undefined = 0,
+        SHA256
     }
 }

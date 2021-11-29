@@ -20,25 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using System;
+using Bake.Core;
 using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Recipes;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking
+namespace Bake.ValueObjects.Recipes.GitHub
 {
-    public abstract class Composer : IComposer
+    [Recipe(Names.Recipes.GitHub.Release)]
+    public class GitHubReleaseRecipe : Recipe
     {
-        protected static readonly IReadOnlyCollection<Recipe> EmptyRecipes = new Recipe[] { };
+        [YamlMember]
+        public GitHubInformation GitHubInformation { get; [Obsolete] set; }
 
-        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
 
-        public virtual IReadOnlyCollection<ArtifactType> Produces => EmptyArtifactTypes;
-        public virtual IReadOnlyCollection<ArtifactType> Consumes => EmptyArtifactTypes;
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-        public abstract Task<IReadOnlyCollection<Recipe>> ComposeAsync(
-            IContext context,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public ReleaseNotes ReleaseNotes { get; [Obsolete] set; }
+
+        [Obsolete]
+        public GitHubReleaseRecipe() { }
+
+        public GitHubReleaseRecipe(
+            GitHubInformation gitHubInformation,
+            SemVer version,
+            string sha,
+            ReleaseNotes releaseNotes,
+            Artifact[] artifacts)
+            : base(artifacts)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            GitHubInformation = gitHubInformation;
+            Version = version;
+            Sha = sha;
+            ReleaseNotes = releaseNotes;
+            Artifacts = artifacts;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

@@ -40,6 +40,12 @@ namespace Bake.Core
             "[^a-z0-9]+",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        private static readonly IReadOnlyCollection<string> GitHubTokenPossibilities = new[]
+            {
+                "github_personal_token",
+                "github_token",
+            };
+
         private readonly ILogger<Credentials> _logger;
         private readonly IDefaults _defaults;
         private readonly IEnvironmentVariables _environmentVariables;
@@ -67,7 +73,7 @@ namespace Bake.Core
 
             if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
-                possibilities.Add("github_token");
+                possibilities.AddRange(GitHubTokenPossibilities);
             }
 
             if (string.Equals(url.Host, _defaults.NuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
@@ -78,6 +84,28 @@ namespace Bake.Core
             var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
             var value = possibilities
+                .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)
+                .SkipWhile(string.IsNullOrEmpty)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                _logger.LogInformation(
+                    "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
+                    url.AbsoluteUri,
+                    string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
+            }
+
+            return value;
+        }
+
+        public async Task<string> TryGetGitHubTokenAsync(
+            Uri url,
+            CancellationToken cancellationToken)
+        {
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            var value = GitHubTokenPossibilities
                 .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)
                 .SkipWhile(string.IsNullOrEmpty)
                 .FirstOrDefault();
