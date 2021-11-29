@@ -79,7 +79,7 @@ namespace Bake.Cooking.Cooks.GitHub
             var release = new Release(
                 recipe.Version,
                 recipe.Sha,
-                new List<IFile>(),
+                artifacts.Select(a => a.file).ToArray(),
                 stringBuilder.ToString());
 
             await _gitHub.CreateReleaseAsync(

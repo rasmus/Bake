@@ -105,15 +105,23 @@ namespace Bake.Services
 
             await using var stream = await file.OpenReadAsync(cancellationToken);
 
-            await gitHubClient.Repository.Release.UploadAsset(
-                gitHubRelease,
-                new ReleaseAssetUpload
-                {
-                    ContentType = "application/octet-stream",
-                    FileName = file.FileName,
-                    RawData = stream,
-                },
-                cancellationToken);
+            try
+            {
+                await gitHubClient.Repository.Release.UploadAsset(
+                    gitHubRelease,
+                    new ReleaseAssetUpload
+                    {
+                        ContentType = "application/octet-stream",
+                        FileName = file.FileName,
+                        RawData = stream,
+                    },
+                    cancellationToken);
+            }
+            catch (ApiValidationException e)
+            {
+                _logger.LogCritical(e, "Upload to GitHub failed: {GitHibMessage}", e.Message);
+                throw;
+            }
 
             _logger.LogInformation(
                 "Done uploading file {FileName} to GitHub release {ReleaseUrl} after {TotalSeconds} seconds",
