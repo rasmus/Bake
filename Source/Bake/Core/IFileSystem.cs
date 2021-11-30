@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
 
 namespace Bake.Core
 {
@@ -38,5 +39,13 @@ namespace Bake.Core
         Task<string> ReadAllTextAsync(
             string filePath,
             CancellationToken _);
+
+        IFile Open(string filePath);
+
+        Task<IFile> CompressAsync(
+            string fileName,
+            CompressionAlgorithm algorithm,
+            IReadOnlyCollection<IFile> files,
+            CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using Bake.Core;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        ToolWindows,
-        ToolLinux,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.ValueObjects;
+
+public class ReleaseFile
+{
+    public IFile Source { get; }
+    public string Destination { get; }
+    public string Sha256 { get; }
+
+    public ReleaseFile(
+        IFile source,
+        string destination,
+        string sha256)
+    {
+        Source = source;
+        Destination = destination;
+        Sha256 = sha256;
     }
 }

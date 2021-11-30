@@ -37,5 +37,9 @@ namespace Bake.Core
         Task<DockerLogin> TryGetDockerLoginAsync(
             ContainerTag containerTag,
             CancellationToken cancellationToken);
+
+        Task<string> TryGetGitHubTokenAsync(
+            Uri url,
+            CancellationToken cancellationToken);
     }
 }

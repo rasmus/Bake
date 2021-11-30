@@ -24,14 +24,24 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
 
 namespace Bake.Core
 {
     public interface IFile : IDisposable
     {
         string Path { get; }
+        string FileName { get; }
+        long Size { get; }
 
         Task<Stream> OpenWriteAsync(
+            CancellationToken cancellationToken);
+
+        Task<Stream> OpenReadAsync(
+            CancellationToken cancellationToken);
+
+        Task<string> GetHashAsync(
+            HashAlgorithm hashAlgorithm,
             CancellationToken cancellationToken);
     }
 }

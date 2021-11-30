@@ -246,7 +246,7 @@ namespace Bake.Cooking.Composers
                 yield return new DotNetDockerFileRecipe(
                     visualStudioProject.Path,
                     path.Replace("\\", "/"),
-                    $"{visualStudioProject.Name}.dll",
+                    $"{visualStudioProject.AssemblyName}.dll",
                     moniker,
                     labels,
                     new FileArtifact(
@@ -273,13 +273,17 @@ namespace Bake.Cooking.Composers
                     runtime,
                     path,
                     new FileArtifact(
-                        new ArtifactKey(ArtifactTypes[runtime], visualStudioProject.CsProj.ToolCommandName),
+                        new ArtifactKey(
+                            ArtifactTypes[runtime],
+                            runtime == DotNetTargetRuntime.Windows64
+                                ? $"{visualStudioProject.CsProj.ToolCommandName}.exe"
+                                : visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
                             runtime == DotNetTargetRuntime.Windows64
-                                ? $"{visualStudioProject.Name}.exe"
-                                : visualStudioProject.Name)));
+                                ? $"{visualStudioProject.AssemblyName}.exe"
+                                : visualStudioProject.AssemblyName)));
             }
         }
 
@@ -330,6 +334,7 @@ namespace Bake.Cooking.Composers
                 configuration,
                 false,
                 false,
+                ingredients.Version,
                 properties);
         }
 

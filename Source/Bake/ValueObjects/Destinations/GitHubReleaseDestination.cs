@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System;
+using YamlDotNet.Serialization;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        ToolWindows,
-        ToolLinux,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.ValueObjects.Destinations
+{
+    [Destination(Names.Destinations.GitHubReleases)]
+    public class GitHubReleaseDestination : Destination
+    {
+        [YamlMember(typeof(string))]
+        public string Owner { get; [Obsolete] set; }
+
+        [YamlMember(typeof(string))]
+        public string Repository { get; [Obsolete] set; }
+
+        [Obsolete]
+        public GitHubReleaseDestination() { }
+
+        public GitHubReleaseDestination(
+            string owner,
+            string repository)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Owner = owner;
+            Repository = repository;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Names.Destinations.GitHubReleases}|{Owner}|{Repository}";
+        }
     }
 }

@@ -20,31 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake
+using System;
+using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
+
+namespace Bake.ValueObjects.Recipes.GitHub
 {
-    public static class ExitCodes
+    [Recipe(Names.Recipes.GitHub.Release)]
+    public class GitHubReleaseRecipe : Recipe
     {
-        public static class Run
-        {
-        }
+        [YamlMember]
+        public GitHubInformation GitHubInformation { get; [Obsolete] set; }
 
-        public static class Core
-        {
-            public const int NoCommand = 257;
-            public const int UnexpectedError = 256;
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
 
-            public const int NoRecipes = 3;
-            public const int CookingFailed = 4;
-        }
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-        public static class Plan
-        {
-            public const int PlanFileAlreadyExists = 1;
-        }
+        [YamlMember]
+        public ReleaseNotes ReleaseNotes { get; [Obsolete] set; }
 
-        public static class Apply
+        [Obsolete]
+        public GitHubReleaseRecipe() { }
+
+        public GitHubReleaseRecipe(
+            GitHubInformation gitHubInformation,
+            SemVer version,
+            string sha,
+            ReleaseNotes releaseNotes,
+            Artifact[] artifacts)
+            : base(artifacts)
         {
-            public const int PlanFileNotFound = 2;
+#pragma warning disable CS0612 // Type or member is obsolete
+            GitHubInformation = gitHubInformation;
+            Version = version;
+            Sha = sha;
+            ReleaseNotes = releaseNotes;
+            Artifacts = artifacts;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

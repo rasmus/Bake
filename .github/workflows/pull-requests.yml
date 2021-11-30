@@ -57,4 +57,4 @@ jobs:
       run: dotnet publish -o bake-it Source/Bake
 
     - name: Run Bake
-      run: bake-it/Bake run --build-version 0.1.$GITHUB_RUN_NUMBER --print-plan=true
+      run: bake-it/bake run --build-version 0.4.$GITHUB_RUN_NUMBER --print-plan=true

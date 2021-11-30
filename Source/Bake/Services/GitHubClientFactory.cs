@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Octokit;
+using Octokit.Internal;
+using Credentials = Octokit.Credentials;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        ToolWindows,
-        ToolLinux,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Services
+{
+    public class GitHubClientFactory : IGitHubClientFactory
+    {
+        private static readonly Version Version = typeof(GitHubClientFactory).Assembly.GetName().Version;
+
+        public Task<IGitHubClient> CreateAsync(
+            string token,
+            CancellationToken cancellationToken)
+        {
+            var gitHubClient = Create(new InMemoryCredentialStore(new Credentials(token)));
+            return Task.FromResult(gitHubClient);
+        }
+
+        private static IGitHubClient Create(
+            ICredentialStore credentialStore)
+        {
+            return new GitHubClient(
+                new ProductHeaderValue("bake", Version.ToString()),
+                credentialStore);
+        }
     }
 }

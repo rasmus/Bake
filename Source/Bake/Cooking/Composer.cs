@@ -30,6 +30,8 @@ namespace Bake.Cooking
 {
     public abstract class Composer : IComposer
     {
+        protected static readonly IReadOnlyCollection<Recipe> EmptyRecipes = new Recipe[] { };
+
         private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
 
         public virtual IReadOnlyCollection<ArtifactType> Produces => EmptyArtifactTypes;

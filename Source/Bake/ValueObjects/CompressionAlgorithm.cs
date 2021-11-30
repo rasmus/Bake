@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+// ReSharper disable InconsistentNaming
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        ToolWindows,
-        ToolLinux,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.ValueObjects
+{
+    public enum CompressionAlgorithm
+    {
+        Undefined = 0,
+        ZIP
     }
 }

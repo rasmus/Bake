@@ -80,9 +80,41 @@ namespace Bake.Cooking.Ingredients.Gathers
                         await ExtractContainerDestinationAsync(ingredients, dynamicDestination);
                         break;
 
+                    case ArtifactType.Release:
+                        await ExtractReleaseDestinationAsync(ingredients, dynamicDestination);
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+        }
+
+        private async Task ExtractReleaseDestinationAsync(
+            ValueObjects.Ingredients ingredients,
+            DynamicDestination dynamicDestination)
+        {
+            switch (dynamicDestination.Destination)
+            {
+                case Names.DynamicDestinations.GitHub:
+                    var gitHubInformation = await ingredients.GitHubTask;
+
+                    var gitHubReleaseDestination = new GitHubReleaseDestination(
+                        gitHubInformation.Owner,
+                        gitHubInformation.Repository);
+                    ingredients.Destinations.Add(gitHubReleaseDestination);
+                    ingredients.Destinations.Remove(dynamicDestination);
+
+                    _logger.LogDebug(
+                        "Updated dynamic destination for {ArtifactType} from {DynamicDestination} to {StaticDestination}",
+                        dynamicDestination.ArtifactType,
+                        dynamicDestination.Destination,
+                        gitHubReleaseDestination.ToString());
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

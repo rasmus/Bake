@@ -21,11 +21,14 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.Services;
+using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -35,6 +38,9 @@ namespace Bake.Tests.Helpers
     {
         private CancellationTokenSource _timeout;
 
+        private List<Release> _releases;
+        protected IReadOnlyCollection<Release> Releases => _releases;
+
         protected BakeTest(string projectName) : base(projectName)
         {
         }
@@ -43,6 +49,7 @@ namespace Bake.Tests.Helpers
         public void SetUpBakeTest()
         {
             _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            _releases = new List<Release>();
         }
 
         [TearDown]
@@ -55,11 +62,6 @@ namespace Bake.Tests.Helpers
         protected Task<int> ExecuteAsync(
             params string[] args)
         {
-            if (args.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(args));
-            }
-
             return ExecuteAsync(TestState.New(args));
         }
 
@@ -68,8 +70,8 @@ namespace Bake.Tests.Helpers
         {
             void Override(IServiceCollection s)
             {
-                var dummyTestEnvVars = new TestEnvironmentVariables(testState.EnvironmentVariables);
-                ReplaceService<IEnvironmentVariables>(s, dummyTestEnvVars);
+                ReplaceService<IEnvironmentVariables>(s, new TestEnvironmentVariables(testState.EnvironmentVariables));
+                ReplaceService<IGitHub>(s, new TestGitHub(_releases));
                 testState.Overrides?.Invoke(s);
             }
 
@@ -103,6 +105,26 @@ namespace Bake.Tests.Helpers
             }
 
             serviceCollection.AddSingleton(instance);
+        }
+
+        private class TestGitHub : IGitHub
+        {
+            private readonly List<Release> _releases;
+
+            public TestGitHub(
+                List<Release> releases)
+            {
+                _releases = releases;
+            }
+
+            public Task CreateReleaseAsync(
+                Release release, 
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                _releases.Add(release);
+                return Task.CompletedTask;
+            }
         }
     }
 }

@@ -29,6 +29,7 @@ using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
 using Bake.Cooking.Cooks.Docker;
 using Bake.Cooking.Cooks.DotNet;
+using Bake.Cooking.Cooks.GitHub;
 using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Cooks.Pip;
 using Bake.Cooking.Ingredients.Gathers;
@@ -68,6 +69,8 @@ namespace Bake.Extensions
                 .AddTransient<IBakeProjectParser, BakeProjectParser>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>()
+                .AddTransient<IGitHub, GitHub>()
+                .AddSingleton<IGitHubClientFactory, GitHubClientFactory>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -85,7 +88,6 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, DotNetComposer>()
                 .AddTransient<IComposer, DockerComposer>()
                 .AddTransient<IComposer, GoComposer>()
-                .AddTransient<IComposer, MkDocsComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
@@ -105,6 +107,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GoDockerFileCook>()
                 // Cooks - Pip
                 .AddTransient<ICook, PipInstallRequirementsCook>()
+                // Cooks - GitHub
+                .AddTransient<ICook, GitHubReleaseCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()
