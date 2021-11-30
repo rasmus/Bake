@@ -4,6 +4,8 @@
 * Fixed: Release artifacts to GitHub releases are now correctly named
   after their release artifacts
 * Fixed: .NET released DLLs/EXEs are now correctly stamped with version
+* Fixed: Bake now correctly prints the help message if no sub-command
+  is given instead of merely doing nothing
 
 # 0.2-beta initial release
 
