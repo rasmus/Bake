@@ -334,6 +334,7 @@ namespace Bake.Cooking.Composers
                 configuration,
                 false,
                 false,
+                ingredients.Version,
                 properties);
         }
 
