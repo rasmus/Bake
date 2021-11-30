@@ -66,9 +66,9 @@ namespace Bake.Commands
                 typeof(SemVer),
                 (argName, value, _) =>
                 {
-                    if (value == null)
+                    if (string.IsNullOrEmpty(value))
                     {
-                        return null;
+                        return SemVer.With(1);
                     }
 
                     if (!SemVer.TryParse(value, out var version))

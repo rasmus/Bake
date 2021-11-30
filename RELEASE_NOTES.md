@@ -1,3 +1,8 @@
+# 0.4-beta
+
+* Fixed: Not specifying a version should merely default to 1.0 instead
+  of throwing an exception
+
 # 0.3-beta
 
 * New: ZIP release artifacts before uploading them to GitHub releases
