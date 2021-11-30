@@ -2,6 +2,8 @@
 
 * Fixed: Not specifying a version should merely default to 1.0 instead
   of throwing an exception
+* Fixed: Release files containing Bake should be named `bake` instead
+  of `Bake`
 
 # 0.3-beta
 

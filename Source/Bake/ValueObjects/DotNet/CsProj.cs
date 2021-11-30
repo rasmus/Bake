@@ -28,18 +28,22 @@ namespace Bake.ValueObjects.DotNet
     {
         public bool PackAsTool { get; }
         public string ToolCommandName { get; }
+        public string AssemblyName { get; }
         public bool IsPackable { get; }
         public bool IsPublishable { get; }
         public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
 
-        public CsProj(bool packAsTool,
+        public CsProj(
+            bool packAsTool,
             string toolCommandName,
+            string assemblyName,
             bool isPackable,
             bool isPublishable,
             IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
         {
             PackAsTool = packAsTool;
             ToolCommandName = toolCommandName;
+            AssemblyName = assemblyName;
             IsPackable = isPackable;
             IsPublishable = isPublishable;
             TargetFrameworkVersions = targetFrameworkVersions;
