@@ -3,6 +3,8 @@
 * New: Run .NET in an Alpine Linux image instead of a full blow Ubuntu
 * Fixed: Not specifying a version should merely default to 1.0 instead
   of throwing an exception
+* Fixed: Release files containing Bake should be named `bake` instead
+  of `Bake`
 * Fixed: Now correctly naming the ZIP filename of the release artifacts
   on GitHub releases
 
