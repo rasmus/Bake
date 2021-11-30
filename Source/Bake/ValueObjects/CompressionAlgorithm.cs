@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,32 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+// ReSharper disable InconsistentNaming
 
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public interface IFileSystem
+    public enum CompressionAlgorithm
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
-
-        IFile OpenTempFile();
-
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken _);
-
-        IFile Open(string filePath);
-
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
+        Undefined = 0,
+        ZIP
     }
 }

@@ -24,9 +24,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Core
@@ -80,6 +82,37 @@ namespace Bake.Core
                 skippedPaths);
 
             return validPaths;
+        }
+
+        public async Task<IFile> CompressAsync(
+            string fileName,
+            CompressionAlgorithm algorithm,
+            IReadOnlyCollection<IFile> files,
+            CancellationToken cancellationToken)
+        {
+            if (algorithm != CompressionAlgorithm.ZIP)
+            {
+                throw new ArgumentOutOfRangeException(nameof(algorithm));
+            }
+
+            var directoryPath = Path.Combine(
+                Path.GetTempPath(),
+                $"bake-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(directoryPath);
+            var filePath = Path.Combine(directoryPath, fileName);
+
+            await using var zipFileStream = System.IO.File.Open(filePath, FileMode.CreateNew);
+            using var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Create);
+
+            foreach (var file in files)
+            {
+                var zipArchiveEntry = zipArchive.CreateEntry(file.FileName, CompressionLevel.Optimal);
+                await using var zipArchiveEntrySteam = zipArchiveEntry.Open();
+                await using var fileStream = await file.OpenReadAsync(cancellationToken);
+                await fileStream.CopyToAsync(zipArchiveEntrySteam, 4096, cancellationToken);
+            }
+
+            return new File(filePath);
         }
 
         public async Task<string> ReadAllTextAsync(
