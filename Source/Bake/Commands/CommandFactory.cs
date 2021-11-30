@@ -42,7 +42,7 @@ namespace Bake.Commands
     public class CommandFactory : ICommandFactory
     {
         private const string MethodName = "ExecuteAsync";
-        private static readonly Regex UpperReplacer = new Regex(
+        private static readonly Regex UpperReplacer = new(
             "(?<char>[A-Z])", RegexOptions.Compiled);
 
         private readonly ILogger<CommandFactory> _logger;
@@ -112,6 +112,20 @@ namespace Bake.Commands
                         .ToArray();
                 }));
 
+            app.Description = 
+@"Bake is a convention based build tool that focuses on minimal to none
+effort to configure and setup. Ideally you should be able to run bake in
+any repository with minimal arguments and get the ""expected"" output or
+better. This however comes at the cost of conventions and how well Bake
+works on a project all depends on how many of the conventions that
+project follows.";
+            app.OnExecute(() =>
+            {
+                Console.WriteLine(app.GetHelpText());
+                return ExitCodes.Core.NoCommand;
+            });
+
+            app.ShowHint();
             app.HelpOption(true);
             app.VersionOption(
                 "-v|--version",

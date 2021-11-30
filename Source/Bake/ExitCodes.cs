@@ -30,6 +30,7 @@ namespace Bake
 
         public static class Core
         {
+            public const int NoCommand = 257;
             public const int UnexpectedError = 256;
 
             public const int NoRecipes = 3;
