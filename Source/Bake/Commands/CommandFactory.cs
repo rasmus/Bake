@@ -112,6 +112,13 @@ namespace Bake.Commands
                         .ToArray();
                 }));
 
+            app.Description = 
+@"Bake is a convention based build tool that focuses on minimal to none
+effort to configure and setup. Ideally you should be able to run bake in
+any repository with minimal arguments and get the ""expected"" output or
+better. This however comes at the cost of conventions and how well Bake
+works on a project all depends on how many of the conventions that
+project follows.";
             app.OnExecute(() =>
             {
                 Console.WriteLine(app.GetHelpText());
