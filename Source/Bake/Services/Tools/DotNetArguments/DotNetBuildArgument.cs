@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using Bake.Core;
 
 namespace Bake.Services.Tools.DotNetArguments
 {
@@ -29,6 +30,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public string Configuration { get; }
         public bool Incremental { get; }
         public bool Restore { get; }
+        public SemVer Version { get; }
         public IReadOnlyDictionary<string, string> Properties { get; }
 
         public DotNetBuildArgument(
@@ -36,12 +38,14 @@ namespace Bake.Services.Tools.DotNetArguments
             string configuration,
             bool incremental,
             bool restore,
+            SemVer version,
             IReadOnlyDictionary<string, string> properties)
             : base(filePath)
         {
             Configuration = configuration;
             Incremental = incremental;
             Restore = restore;
+            Version = version;
             Properties = properties;
         }
     }

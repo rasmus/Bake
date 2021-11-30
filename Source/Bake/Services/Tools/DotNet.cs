@@ -128,6 +128,9 @@ namespace Bake.Services.Tools
                      argument.FilePath,
                      "--nologo",
                      "--configuration", argument.Configuration,
+                     $"-p:Version={argument.Version}",
+                     $"-p:AssemblyVersion={argument.Version.Major}.0.0.0",
+                     $"-p:FileVersion={argument.Version}"
                 };
 
             foreach (var (property, value) in argument.Properties)

@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using Bake.Core;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -42,6 +43,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public bool Incremental { get; [Obsolete] set; }
 
         [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
+
+        [YamlMember]
         public Dictionary<string, string> Properties { get; [Obsolete] set; }
 
         [Obsolete]
@@ -52,6 +56,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string configuration,
             bool restore,
             bool incremental,
+            SemVer version,
             Dictionary<string, string> properties)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -59,6 +64,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Configuration = configuration;
             Restore = restore;
             Incremental = incremental;
+            Version = version;
             Properties = properties;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
