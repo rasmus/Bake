@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -52,12 +53,22 @@ namespace Bake.Cooking.Cooks.GitHub
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
+            var additionalFiles = new[]
+                {
+                    Path.Combine(context.Ingredients.WorkingDirectory, "README.md"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "LICENSE"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
+                }
+                .Where(System.IO.File.Exists)
+                .Select(p => _fileSystem.Open(p))
+                .ToArray();
+
             var stringBuilder = new StringBuilder()
                 .AppendLine("### Release notes")
                 .AppendLine(recipe.ReleaseNotes.Notes)
                 .AppendLine();
 
-            var releaseFiles = await CreateReleaseFilesAsync(recipe, cancellationToken);
+            var releaseFiles = await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken);
             if (releaseFiles.Any())
             {
                 stringBuilder.AppendLine("### Files");
@@ -83,6 +94,7 @@ namespace Bake.Cooking.Cooks.GitHub
         }
 
         private async Task<IReadOnlyCollection<ReleaseFile>> CreateReleaseFilesAsync(
+            IReadOnlyCollection<IFile> additionalFiles,
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
@@ -95,10 +107,10 @@ namespace Bake.Cooking.Cooks.GitHub
                     var compressedFile = await _fileSystem.CompressAsync(
                         fileName,
                         CompressionAlgorithm.ZIP,
-                        new[]
-                        {
-                            file,
-                        },
+                        Enumerable.Empty<IFile>()
+                            .Concat(additionalFiles)
+                            .Concat(new[] {file,})
+                            .ToArray(),
                         cancellationToken);
                     var sha256 = await compressedFile.GetHashAsync(
                         HashAlgorithm.SHA256,

@@ -107,7 +107,7 @@ namespace Bake.Core
             _logger.LogInformation(
                 "Compressing file {FileNames} of total size {TotalSize} into {FileName}",
                 files.Select(f => f.FileName).ToArray(),
-                totalSize.MB(),
+                totalSize.BytesToString(),
                 fileName);
 
             var directoryPath = Path.Combine(
@@ -132,7 +132,7 @@ namespace Bake.Core
                 "Finishing creating file {FileName} after {TotalSeconds} seconds with a size of {Size} (compression {CompressionRatio})",
                 fileName,
                 stopwatch.Elapsed.TotalSeconds,
-                zipFile.Size.MB(),
+                zipFile.Size.BytesToString(),
                 $"{(zipFile.Size * 100.0)/totalSize:0.#}%");
 
             return zipFile;
