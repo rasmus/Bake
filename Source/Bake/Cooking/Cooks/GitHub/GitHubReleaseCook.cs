@@ -51,6 +51,7 @@ namespace Bake.Cooking.Cooks.GitHub
             CancellationToken cancellationToken)
         {
             var stringBuilder = new StringBuilder()
+                .AppendLine("### Release notes")
                 .AppendLine(recipe.ReleaseNotes.Notes)
                 .AppendLine();
 
@@ -63,16 +64,21 @@ namespace Bake.Cooking.Cooks.GitHub
                         HashAlgorithm.SHA256,
                         cancellationToken);
                     return new
-                        {
-                            sha256,
-                            file,
-                            artifact
-                        };
+                    {
+                        sha256,
+                        file,
+                        artifact
+                    };
                 }));
-            foreach (var artifact in artifacts)
+
+            if (artifacts.Any())
             {
-                stringBuilder.AppendLine($"* `{artifact.artifact.Key.Name}`");
-                stringBuilder.AppendLine($"  * SHA256: `{artifact.sha256}`");
+                stringBuilder.AppendLine("### Files");
+                foreach (var artifact in artifacts)
+                {
+                    stringBuilder.AppendLine($"* `{artifact.artifact.Key.Name}`");
+                    stringBuilder.AppendLine($"  * SHA256: `{artifact.sha256}`");
+                }
             }
 
             var release = new Release(
