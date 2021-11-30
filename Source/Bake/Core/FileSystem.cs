@@ -23,11 +23,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -95,6 +97,19 @@ namespace Bake.Core
                 throw new ArgumentOutOfRangeException(nameof(algorithm));
             }
 
+            if (!files.Any())
+            {
+                throw new ArgumentNullException(nameof(files));
+            }
+
+            var totalSize = files.Sum(f => f.Size);
+            var stopwatch = Stopwatch.StartNew();
+            _logger.LogInformation(
+                "Compressing file {FileNames} of total size {TotalSize} into {FileName}",
+                files.Select(f => f.FileName).ToArray(),
+                totalSize.MB(),
+                fileName);
+
             var directoryPath = Path.Combine(
                 Path.GetTempPath(),
                 $"bake-{Guid.NewGuid():N}");
@@ -112,7 +127,15 @@ namespace Bake.Core
                 await fileStream.CopyToAsync(zipArchiveEntrySteam, 4096, cancellationToken);
             }
 
-            return new File(filePath);
+            var zipFile = new File(filePath);
+            _logger.LogInformation(
+                "Finishing creating file {FileName} after {TotalSeconds} seconds with a size of {Size} (compression {CompressionRatio})",
+                fileName,
+                stopwatch.Elapsed.TotalSeconds,
+                zipFile.Size.MB(),
+                $"{(zipFile.Size * 100.0)/totalSize:0.#}%");
+
+            return zipFile;
         }
 
         public async Task<string> ReadAllTextAsync(
