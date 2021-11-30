@@ -3,6 +3,7 @@
 * New: ZIP release artifacts before uploading them to GitHub releases
 * Fixed: Release artifacts to GitHub releases are now correctly named
   after their release artifacts
+* Fixed: .NET released DLLs/EXEs are now correctly stamped with version
 
 # 0.2-beta initial release
 
