@@ -34,7 +34,7 @@ namespace Bake.Core
 
         private static readonly Random R = new();
 
-        public static SemVer Random => new SemVer(
+        public static SemVer Random => new(
             R.Next(1000, 10000),
             R.Next(1000, 10000),
             R.Next(1000, 10000),
