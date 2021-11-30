@@ -60,13 +60,24 @@ namespace Bake.Cooking.Cooks.GitHub
                 .Select(async artifact =>
                 {
                     var file = _fileSystem.Open(artifact.Path);
-                    var sha256 = await file.GetHashAsync(
+                    var fileName = artifact.Key.Type == ArtifactType.ToolLinux
+                        ? $"{artifact.Key.Name}_linux_amd64.zip"
+                        : $"{artifact.Key.Name}_windows_amd64.zip";
+                    var compressedFile = await _fileSystem.CompressAsync(
+                        fileName,
+                        CompressionAlgorithm.ZIP,
+                        new[]
+                        {
+                            file,
+                        },
+                        cancellationToken);
+                    var sha256 = await compressedFile.GetHashAsync(
                         HashAlgorithm.SHA256,
                         cancellationToken);
                     return new
                     {
                         sha256,
-                        file,
+                        file = compressedFile,
                         artifact
                     };
                 }));
