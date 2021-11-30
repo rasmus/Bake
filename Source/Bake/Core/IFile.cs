@@ -32,6 +32,7 @@ namespace Bake.Core
     {
         string Path { get; }
         string FileName { get; }
+        long Size { get; }
 
         Task<Stream> OpenWriteAsync(
             CancellationToken cancellationToken);
