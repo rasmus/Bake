@@ -38,6 +38,21 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
 
         [Test]
+        public async Task Minimal()
+        {
+            // Arrange
+            var testState = TestState.New("run");
+
+            // Act
+            var returnCode = await ExecuteAsync(testState);
+
+            // Assert
+            returnCode.Should().Be(0);
+            AssertSuccessfulArtifacts();
+            Releases.Should().HaveCount(0);
+        }
+
+        [Test]
         public async Task Run()
         {
             // Arrange
