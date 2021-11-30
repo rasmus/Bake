@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -55,14 +57,41 @@ namespace Bake.Cooking.Cooks.GitHub
                 .AppendLine(recipe.ReleaseNotes.Notes)
                 .AppendLine();
 
-            var artifacts = await Task.WhenAll(recipe.Artifacts
+            var releaseFiles = await CreateReleaseFilesAsync(recipe, cancellationToken);
+            if (releaseFiles.Any())
+            {
+                stringBuilder.AppendLine("### Files");
+                foreach (var releaseFile in releaseFiles)
+                {
+                    stringBuilder.AppendLine($"* `{releaseFile.Destination}`");
+                    stringBuilder.AppendLine($"  * SHA256: `{releaseFile.Sha256}`");
+                }
+            }
+
+            var release = new Release(
+                recipe.Version,
+                recipe.Sha,
+                stringBuilder.ToString(),
+                releaseFiles);
+
+            await _gitHub.CreateReleaseAsync(
+                release,
+                recipe.GitHubInformation,
+                cancellationToken);
+
+            return true;
+        }
+
+        private async Task<IReadOnlyCollection<ReleaseFile>> CreateReleaseFilesAsync(
+            GitHubReleaseRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            return await Task.WhenAll(recipe.Artifacts
                 .OfType<FileArtifact>()
                 .Select(async artifact =>
                 {
                     var file = _fileSystem.Open(artifact.Path);
-                    var fileName = artifact.Key.Type == ArtifactType.ToolLinux
-                        ? $"{artifact.Key.Name}_linux_amd64.zip"
-                        : $"{artifact.Key.Name}_windows_amd64.zip";
+                    var fileName = CalculateArtifactFileName(artifact);
                     var compressedFile = await _fileSystem.CompressAsync(
                         fileName,
                         CompressionAlgorithm.ZIP,
@@ -74,40 +103,21 @@ namespace Bake.Cooking.Cooks.GitHub
                     var sha256 = await compressedFile.GetHashAsync(
                         HashAlgorithm.SHA256,
                         cancellationToken);
-                    return new
-                    {
-                        sha256,
-                        file = compressedFile,
-                        artifact
-                    };
+                    return new ReleaseFile(
+                        compressedFile,
+                        artifact.Key.Name,
+                        sha256);
                 }));
+        }
 
-            if (artifacts.Any())
-            {
-                stringBuilder.AppendLine("### Files");
-                foreach (var artifact in artifacts)
+        private static string CalculateArtifactFileName(FileArtifact artifact)
+        {
+            return artifact.Key.Type switch
                 {
-                    stringBuilder.AppendLine($"* `{artifact.artifact.Key.Name}`");
-                    stringBuilder.AppendLine($"  * SHA256: `{artifact.sha256}`");
-                }
-            }
-
-            var release = new Release(
-                recipe.Version,
-                recipe.Sha,
-                stringBuilder.ToString(),
-                artifacts
-                    .Select(a => new ReleaseFile(
-                        a.file,
-                        a.artifact.Key.Name))
-                    .ToArray());
-
-            await _gitHub.CreateReleaseAsync(
-                release,
-                recipe.GitHubInformation,
-                cancellationToken);
-
-            return true;
+                    ArtifactType.ToolLinux => $"{artifact.Key.Name}_linux_amd64.zip",
+                    ArtifactType.ToolWindows => $"{artifact.Key.Name}_windows_amd64.zip",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
         }
     }
 }

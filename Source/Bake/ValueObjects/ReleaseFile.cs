@@ -28,12 +28,15 @@ public class ReleaseFile
 {
     public IFile Source { get; }
     public string Destination { get; }
+    public string Sha256 { get; }
 
     public ReleaseFile(
         IFile source,
-        string destination)
+        string destination,
+        string sha256)
     {
         Source = source;
         Destination = destination;
+        Sha256 = sha256;
     }
 }
