@@ -34,8 +34,9 @@ namespace Bake.Cooking.Cooks.DotNet
         private readonly IDockerLabels _dockerLabels;
 
         private const string Dockerfile = @"
-FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}
+FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
 {{LABELS}}
+ENV DOTNET_RUNNING_IN_CONTAINER=true
 WORKDIR /app
 COPY ./{{PATH}} .
 ENTRYPOINT [""dotnet"", ""{{NAME}}""]
