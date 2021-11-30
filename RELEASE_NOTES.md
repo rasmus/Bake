@@ -4,6 +4,8 @@
   of throwing an exception
 * Fixed: Release files containing Bake should be named `bake` instead
   of `Bake`
+* Fixed: Now correctly naming the ZIP filename of the release artifacts
+  on GitHub releases
 
 # 0.3-beta
 
