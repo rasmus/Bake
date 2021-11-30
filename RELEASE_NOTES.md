@@ -1,3 +1,8 @@
+# 0.3-beta
+
+* Fixed: Release artifacts to GitHub releases are now correctly named
+  after their release artifacts
+
 # 0.2-beta initial release
 
 * New: Build, test and create containers for either .NET or Go
