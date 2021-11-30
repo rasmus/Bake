@@ -2,6 +2,8 @@
 
 * Fixed: Not specifying a version should merely default to 1.0 instead
   of throwing an exception
+* Fixed: Now correctly naming the ZIP filename of the release artifacts
+  on GitHub releases
 
 # 0.3-beta
 

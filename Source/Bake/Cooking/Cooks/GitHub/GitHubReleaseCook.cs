@@ -117,7 +117,7 @@ namespace Bake.Cooking.Cooks.GitHub
                         cancellationToken);
                     return new ReleaseFile(
                         compressedFile,
-                        artifact.Key.Name,
+                        fileName,
                         sha256);
                 }));
         }
