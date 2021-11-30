@@ -42,7 +42,7 @@ namespace Bake.Commands
     public class CommandFactory : ICommandFactory
     {
         private const string MethodName = "ExecuteAsync";
-        private static readonly Regex UpperReplacer = new Regex(
+        private static readonly Regex UpperReplacer = new(
             "(?<char>[A-Z])", RegexOptions.Compiled);
 
         private readonly ILogger<CommandFactory> _logger;
@@ -112,6 +112,13 @@ namespace Bake.Commands
                         .ToArray();
                 }));
 
+            app.OnExecute(() =>
+            {
+                Console.WriteLine(app.GetHelpText());
+                return ExitCodes.Core.NoCommand;
+            });
+
+            app.ShowHint();
             app.HelpOption(true);
             app.VersionOption(
                 "-v|--version",

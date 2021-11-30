@@ -98,6 +98,18 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "bin", "Release", "publish", "win-x64", "NetCore.Console.exe");
         }
 
+        [TestCase(ExitCodes.Core.NoCommand)]
+        public async Task ExitCodeTests(
+            int expectedExitCode,
+            params string[] args)
+        {
+            // Act
+            var returnCode = await ExecuteAsync(args);
+
+            // Assert
+            returnCode.Should().Be(expectedExitCode);
+        }
+
         [TestCase("-h")]
         [TestCase("-?")]
         [TestCase("--help")]

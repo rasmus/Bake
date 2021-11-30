@@ -62,11 +62,6 @@ namespace Bake.Tests.Helpers
         protected Task<int> ExecuteAsync(
             params string[] args)
         {
-            if (args.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(args));
-            }
-
             return ExecuteAsync(TestState.New(args));
         }
 
