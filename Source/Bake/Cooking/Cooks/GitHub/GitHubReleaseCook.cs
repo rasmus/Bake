@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -50,34 +53,29 @@ namespace Bake.Cooking.Cooks.GitHub
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
+            var additionalFiles = new[]
+                {
+                    Path.Combine(context.Ingredients.WorkingDirectory, "README.md"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "LICENSE"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
+                }
+                .Where(System.IO.File.Exists)
+                .Select(p => _fileSystem.Open(p))
+                .ToArray();
+
             var stringBuilder = new StringBuilder()
                 .AppendLine("### Release notes")
                 .AppendLine(recipe.ReleaseNotes.Notes)
                 .AppendLine();
 
-            var artifacts = await Task.WhenAll(recipe.Artifacts
-                .OfType<FileArtifact>()
-                .Select(async artifact =>
-                {
-                    var file = _fileSystem.Open(artifact.Path);
-                    var sha256 = await file.GetHashAsync(
-                        HashAlgorithm.SHA256,
-                        cancellationToken);
-                    return new
-                    {
-                        sha256,
-                        file,
-                        artifact
-                    };
-                }));
-
-            if (artifacts.Any())
+            var releaseFiles = await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken);
+            if (releaseFiles.Any())
             {
                 stringBuilder.AppendLine("### Files");
-                foreach (var artifact in artifacts)
+                foreach (var releaseFile in releaseFiles)
                 {
-                    stringBuilder.AppendLine($"* `{artifact.artifact.Key.Name}`");
-                    stringBuilder.AppendLine($"  * SHA256: `{artifact.sha256}`");
+                    stringBuilder.AppendLine($"* `{releaseFile.Destination}`");
+                    stringBuilder.AppendLine($"  * SHA256: `{releaseFile.Sha256}`");
                 }
             }
 
@@ -85,11 +83,7 @@ namespace Bake.Cooking.Cooks.GitHub
                 recipe.Version,
                 recipe.Sha,
                 stringBuilder.ToString(),
-                artifacts
-                    .Select(a => new ReleaseFile(
-                        a.file,
-                        a.artifact.Key.Name))
-                    .ToArray());
+                releaseFiles);
 
             await _gitHub.CreateReleaseAsync(
                 release,
@@ -97,6 +91,45 @@ namespace Bake.Cooking.Cooks.GitHub
                 cancellationToken);
 
             return true;
+        }
+
+        private async Task<IReadOnlyCollection<ReleaseFile>> CreateReleaseFilesAsync(
+            IReadOnlyCollection<IFile> additionalFiles,
+            GitHubReleaseRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            return await Task.WhenAll(recipe.Artifacts
+                .OfType<FileArtifact>()
+                .Select(async artifact =>
+                {
+                    var file = _fileSystem.Open(artifact.Path);
+                    var fileName = CalculateArtifactFileName(artifact);
+                    var compressedFile = await _fileSystem.CompressAsync(
+                        fileName,
+                        CompressionAlgorithm.ZIP,
+                        Enumerable.Empty<IFile>()
+                            .Concat(additionalFiles)
+                            .Concat(new[] {file,})
+                            .ToArray(),
+                        cancellationToken);
+                    var sha256 = await compressedFile.GetHashAsync(
+                        HashAlgorithm.SHA256,
+                        cancellationToken);
+                    return new ReleaseFile(
+                        compressedFile,
+                        artifact.Key.Name,
+                        sha256);
+                }));
+        }
+
+        private static string CalculateArtifactFileName(FileArtifact artifact)
+        {
+            return artifact.Key.Type switch
+                {
+                    ArtifactType.ToolLinux => $"{artifact.Key.Name}_linux_amd64.zip",
+                    ArtifactType.ToolWindows => $"{artifact.Key.Name}_windows_amd64.zip",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
         }
     }
 }

@@ -1,5 +1,6 @@
 # 0.3-beta
 
+* New: ZIP release artifacts before uploading them to GitHub releases
 * Fixed: Release artifacts to GitHub releases are now correctly named
   after their release artifacts
 

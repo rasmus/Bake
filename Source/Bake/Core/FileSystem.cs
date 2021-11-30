@@ -23,10 +23,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
+using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Core
@@ -80,6 +84,58 @@ namespace Bake.Core
                 skippedPaths);
 
             return validPaths;
+        }
+
+        public async Task<IFile> CompressAsync(
+            string fileName,
+            CompressionAlgorithm algorithm,
+            IReadOnlyCollection<IFile> files,
+            CancellationToken cancellationToken)
+        {
+            if (algorithm != CompressionAlgorithm.ZIP)
+            {
+                throw new ArgumentOutOfRangeException(nameof(algorithm));
+            }
+
+            if (!files.Any())
+            {
+                throw new ArgumentNullException(nameof(files));
+            }
+
+            var totalSize = files.Sum(f => f.Size);
+            var stopwatch = Stopwatch.StartNew();
+            _logger.LogInformation(
+                "Compressing file {FileNames} of total size {TotalSize} into {FileName}",
+                files.Select(f => f.FileName).ToArray(),
+                totalSize.BytesToString(),
+                fileName);
+
+            var directoryPath = Path.Combine(
+                Path.GetTempPath(),
+                $"bake-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(directoryPath);
+            var filePath = Path.Combine(directoryPath, fileName);
+
+            await using var zipFileStream = System.IO.File.Open(filePath, FileMode.CreateNew);
+            using var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Create);
+
+            foreach (var file in files)
+            {
+                var zipArchiveEntry = zipArchive.CreateEntry(file.FileName, CompressionLevel.Optimal);
+                await using var zipArchiveEntrySteam = zipArchiveEntry.Open();
+                await using var fileStream = await file.OpenReadAsync(cancellationToken);
+                await fileStream.CopyToAsync(zipArchiveEntrySteam, 4096, cancellationToken);
+            }
+
+            var zipFile = new File(filePath);
+            _logger.LogInformation(
+                "Finishing creating file {FileName} after {TotalSeconds} seconds with a size of {Size} (compression {CompressionRatio})",
+                fileName,
+                stopwatch.Elapsed.TotalSeconds,
+                zipFile.Size.BytesToString(),
+                $"{(zipFile.Size * 100.0)/totalSize:0.#}%");
+
+            return zipFile;
         }
 
         public async Task<string> ReadAllTextAsync(

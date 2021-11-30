@@ -33,6 +33,7 @@ namespace Bake.Core
     {
         public string Path { get; }
         public string FileName => System.IO.Path.GetFileName(Path);
+        public long Size => new FileInfo(Path).Length;
 
         public File(string path)
         {

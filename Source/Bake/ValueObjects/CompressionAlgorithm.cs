@@ -20,23 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
+// ReSharper disable InconsistentNaming
 
-namespace Bake.ValueObjects;
-
-public class ReleaseFile
+namespace Bake.ValueObjects
 {
-    public IFile Source { get; }
-    public string Destination { get; }
-    public string Sha256 { get; }
-
-    public ReleaseFile(
-        IFile source,
-        string destination,
-        string sha256)
+    public enum CompressionAlgorithm
     {
-        Source = source;
-        Destination = destination;
-        Sha256 = sha256;
+        Undefined = 0,
+        ZIP
     }
 }
