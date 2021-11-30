@@ -8,6 +8,7 @@
     <IsTool>true</IsTool>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>bake</ToolCommandName>
+    <AssemblyName>bake</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

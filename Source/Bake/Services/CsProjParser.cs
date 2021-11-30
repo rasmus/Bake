@@ -54,6 +54,7 @@ namespace Bake.Services
             var isPackable = ReadBool(xDocument, "/Project/PropertyGroup/IsPackable");
             var isPublishable = ReadBool(xDocument, "/Project/PropertyGroup/IsPublishable");
             var toolCommandName = ReadString(xDocument ,"/Project/PropertyGroup/ToolCommandName");
+            var assemblyName = ReadString(xDocument, "/Project/PropertyGroup/AssemblyName");
             var targetFrameworkVersions = $"{ReadString(xDocument, "/Project/PropertyGroup/TargetFramework")};{ReadString(xDocument, "/Project/PropertyGroup/TargetFrameworks")}"
                 .Split(';', StringSplitOptions.RemoveEmptyEntries)
                 .Select(m => _dotNetTfmParser.TryParse(m, out var v) ? v : null)
@@ -63,6 +64,7 @@ namespace Bake.Services
             return new CsProj(
                 packAsTool,
                 toolCommandName,
+                assemblyName,
                 isPackable,
                 isPublishable,
                 targetFrameworkVersions);
