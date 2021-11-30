@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -79,8 +78,12 @@ namespace Bake.Cooking.Cooks.GitHub
             var release = new Release(
                 recipe.Version,
                 recipe.Sha,
-                artifacts.Select(a => a.file).ToArray(),
-                stringBuilder.ToString());
+                stringBuilder.ToString(),
+                artifacts
+                    .Select(a => new ReleaseFile(
+                        a.file,
+                        a.artifact.Key.Name))
+                    .ToArray());
 
             await _gitHub.CreateReleaseAsync(
                 release,

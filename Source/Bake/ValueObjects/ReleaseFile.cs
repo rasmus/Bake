@@ -20,28 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using Bake.Core;
 
-namespace Bake.ValueObjects
-{
-    public class Release
-    {
-        public SemVer Version { get; }
-        public string Sha { get; }
-        public string Body { get; }
-        public IReadOnlyCollection<ReleaseFile> Files { get; }
+namespace Bake.ValueObjects;
 
-        public Release(
-            SemVer version,
-            string sha,
-            string body,
-            IReadOnlyCollection<ReleaseFile> files)
-        {
-            Version = version;
-            Sha = sha;
-            Body = body;
-            Files = files;
-        }
+public class ReleaseFile
+{
+    public IFile Source { get; }
+    public string Destination { get; }
+
+    public ReleaseFile(
+        IFile source,
+        string destination)
+    {
+        Source = source;
+        Destination = destination;
     }
 }
