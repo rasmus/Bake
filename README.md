@@ -46,7 +46,7 @@ created during the release to the GitHub package store for the owner of the
 current repository.
 
 ```
-bake run --convention=Release --destination="nuget>github"
+bake run --convention=Release --destination="nuget>github,container>rasmus"
 ```
 
 ### Recognized repository content
@@ -107,7 +107,7 @@ Here are some examples of common used arguments to Bake
       variable named `bake_credentials_nuget_{hostname}_apikey`, in which
       `{hostname}` is the hostname of the URL with invalid characters removed
   * **Release**
-    * `release->github` - Creates release on GitHub within the current GitHub
+    * `release>github` - Creates release on GitHub within the current GitHub
       repository with the release notes and any important artifacts neatly
       bundled together in ZIP files with any `README.md`, `LICENSE` and 
       `RELEASE_NOTES.md` in ZIP files found in the root of the repository
