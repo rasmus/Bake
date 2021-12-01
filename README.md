@@ -36,7 +36,7 @@ Here are some examples of typical arguments passed to Bake.
 Here is the simple use case for using Bake on e.g. pull requests
 
 ```
-bake run --build-version 1.0
+bake run
 ```
 
 ### Basic release build
@@ -46,7 +46,7 @@ created during the release to the GitHub package store for the owner of the
 current repository.
 
 ```
-bake run --convention=Release --build-version 1.0 --destination="nuget>github"
+bake run --convention=Release --destination="nuget>github"
 ```
 
 ### Examples of common used arguments
