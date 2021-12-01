@@ -32,6 +32,7 @@ using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Composers
 {
@@ -46,15 +47,18 @@ namespace Bake.Cooking.Composers
                 ArtifactType.Dockerfile,
             };
 
+        private readonly ILogger<DockerComposer> _logger;
         private readonly IFileSystem _fileSystem;
         private readonly IContainerTagParser _containerTagParser;
         private readonly IConventionInterpreter _conventionInterpreter;
 
         public DockerComposer(
+            ILogger<DockerComposer> logger,
             IFileSystem fileSystem,
             IContainerTagParser containerTagParser,
             IConventionInterpreter conventionInterpreter)
         {
+            _logger = logger;
             _fileSystem = fileSystem;
             _containerTagParser = containerTagParser;
             _conventionInterpreter = conventionInterpreter;
@@ -79,15 +83,26 @@ namespace Bake.Cooking.Composers
 
             foreach (var dockerFilePath in dockerFilePaths)
             {
+                _logger.LogInformation(
+                    "Located Dockerfile at these locations, scheduling build: {DockerFiles}",
+                    dockerFilePaths);
                 var directoryName = Path.GetFileName(Path.GetDirectoryName(dockerFilePath));
                 recipes.AddRange(CreateRecipes(dockerFilePath, directoryName, ingredients.Version, urls));
             }
 
-            foreach (var fileArtifact in context
+            var dockerfileArtifacts = context
                 .GetArtifacts<FileArtifact>()
-                .Where(a => a.Key.Type == ArtifactType.Dockerfile))
+                .Where(a => a.Key.Type == ArtifactType.Dockerfile)
+                .ToArray();
+            if (dockerfileArtifacts.Any())
             {
-                recipes.AddRange(CreateRecipes(fileArtifact.Path, fileArtifact.Key.Name, ingredients.Version, urls));
+                _logger.LogInformation(
+                    "Other build steps will produce Dockerfile at these locations, scheduling build: {DockerFiles}",
+                    dockerfileArtifacts.Select(a => a.Path).ToList());
+                foreach (var dockerfileArtifact in dockerfileArtifacts)
+                {
+                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Key.Name, ingredients.Version, urls));
+                }
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))

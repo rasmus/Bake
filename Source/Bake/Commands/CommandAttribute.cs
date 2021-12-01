@@ -24,19 +24,27 @@ using System;
 
 namespace Bake.Commands
 {
-    public class CommandVerbAttribute : Attribute
+    public class CommandAttribute : Attribute
     {
         public string Name { get; }
+        public string Description { get; }
 
-        public CommandVerbAttribute(
-            string name)
+        public CommandAttribute(
+            string name,
+            string description)
         {
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
+            if (string.IsNullOrEmpty(description))
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
             Name = name;
+            Description = description;
         }
     }
 }

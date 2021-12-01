@@ -43,7 +43,7 @@ namespace Bake.Tests.UnitTests.Commands
             Inject<IDestinationParser>(new DestinationParser(new Defaults()));
         }
 
-        [CommandVerb("A")]
+        [Command("A", "B")]
         public class CommandA : ICommand
         {
             // ReSharper disable once UnusedMember.Global

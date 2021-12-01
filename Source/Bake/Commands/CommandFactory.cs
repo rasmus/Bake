@@ -112,13 +112,15 @@ namespace Bake.Commands
                         .ToArray();
                 }));
 
-            app.Description = 
+            app.Description =
 @"Bake is a convention based build tool that focuses on minimal to none
 effort to configure and setup. Ideally you should be able to run bake in
 any repository with minimal arguments and get the ""expected"" output or
 better. This however comes at the cost of conventions and how well Bake
 works on a project all depends on how many of the conventions that
-project follows.";
+project follows.
+
+https://github.com/rasmus/Bake";
             app.OnExecute(() =>
             {
                 Console.WriteLine(app.GetHelpText());
@@ -143,10 +145,10 @@ project follows.";
                         $"Type '{type.PrettyPrint()}' is not of type '{commandType.PrettyPrint()}'");
                 }
 
-                var verb = type.GetCustomAttribute<CommandVerbAttribute>()?.Name;
-                if (string.IsNullOrEmpty(verb))
+                var commandAttribute = type.GetCustomAttribute<CommandAttribute>();
+                if (commandAttribute == null)
                 {
-                    throw new ArgumentException($"Type '{type.PrettyPrint()}' does not have a verb");
+                    throw new ArgumentException($"Type '{type.PrettyPrint()}' does not have a command attribute");
                 }
 
                 var methodInfos = type
@@ -162,7 +164,7 @@ project follows.";
 
                 var methodInfo = methodInfos.Single();
 
-                app.Command(verb, cmd =>
+                var command = app.Command(commandAttribute.Name, cmd =>
                 {
                     var options = new List<(CommandOption, Type)>();
                     foreach (var parameterInfo in methodInfo.GetParameters())
@@ -225,6 +227,8 @@ project follows.";
                         }
                     });
                 });
+
+                command.Description = commandAttribute.Description;
             }
 
             return app;

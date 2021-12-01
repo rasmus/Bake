@@ -34,7 +34,9 @@ using Serilog.Events;
 
 namespace Bake.Commands.Plan
 {
-    [CommandVerb("plan")]
+    [Command(
+        "plan",
+        "Analyzes the current directory and builds a plan")]
     public class PlanCommand : ICommand
     {
         private readonly ILogger<PlanCommand> _logger;

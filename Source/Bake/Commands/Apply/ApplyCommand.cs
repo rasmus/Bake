@@ -31,7 +31,9 @@ using Serilog.Events;
 
 namespace Bake.Commands.Apply
 {
-    [CommandVerb("apply")]
+    [Command(
+        "apply",
+        "Takes an existing plan and executes it")]
     public class ApplyCommand : ICommand
     {
         private readonly ILogger<ApplyCommand> _logger;

@@ -58,7 +58,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Arrange
             var testState = TestState.New(
                 "run",
-                "--print-plan=true",
                 "--convention=Release",
                 "--destination=release>github,nuget>http://localhost:5555/v3/index.json",
                 "--build-version", SemVer.Random.ToString())
