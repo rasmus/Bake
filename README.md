@@ -49,24 +49,56 @@ current repository.
 bake run --convention=Release --destination="nuget>github"
 ```
 
-### Examples of common used arguments
+### Recognized repository content
 
-Here are some examples of common used argumnets to Bake
+When Bake analyzes a repository, it first gathers gathers basic information
+regarding the environment its executed within.
+
+* **Git** - Repository information like origin, branch name and commit hash are
+  stored and used when creating e.g. release artifacts
+* **GitHub** - If the repository origin originates from GitHub, the information
+  is gathered and used to further enrich any release artifacts
+* **GitHub Action** - When Bake is executed from within a GitHub action, it
+  automatically recognizes the token and uses that when publishing artifacts
+  and releases
+* **Release notes** - If the repository contains a `RELEASE_NOTES.md` file,
+  the content as well as the version information is used to further enrich
+  any release artifacts
+
+After the initial environment information gathering is completed, Bake starts
+to scan the repository for files and structures it knows how to process.
+
+* **.NET** - Directories that contain [.NET](https://dot.net/) projects are
+  analyzed and the application/service is built, tested and optionally
+  containerized
+* **Docker** - Directories that contain a
+  [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) will get
+  the file built
+* **Go** - Directories that contain [Go](https://go.dev/) projects are analyzed
+  and the application/service is built, tested and optionally containerized
+
+Based on the selected convention (by providing e.g. `--convention=Release`)
+and the destinations for artifacts, Bake pushes/uploads/creates the built
+artifacts to their configured destinations.
+
+### Examples of sending artifacts to their destinations
+
+Here are some examples of common used arguments to Bake
 
 * `--destination=`
   * **Container**
     * `container>{username}`, e.g. simply `container>rasmus` - Will mark the
       destination as [Docker Hub](https://hub.docker.com/) with that username
-    * `container>github` - Send condcontainers to the GitHub package repository
+    * `container>github` - Send containers to the GitHub package repository
       for at owner/organization of the git repository
     * `container>localhost:5000` - Send containers to a specific container
       registry
   * **NuGet**
-    * `nuget` - An unamed destination will send NuGet packages to the central
+    * `nuget` - An unnamed destination will send NuGet packages to the central
       NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for
-      an API in an environment variabled named `NUGET_APIKEY`
+      an API in an environment variables named `NUGET_APIKEY`
     * `nuget>github` - Send NuGet packages to the specific need with is owned
-      by the owner of the repositry of the current repository. Bake will
+      by the owner of the repository of the current repository. Bake will
       automatically setup the API key for the current build using the
       `GITHUB_TOKEN` (automatically provided in GitHub actions), thus no
       additional configuration is required
