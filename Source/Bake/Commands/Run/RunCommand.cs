@@ -61,7 +61,7 @@ namespace Bake.Commands.Run
             Convention convention = Convention.Default,
             Destination[] destination = null,
             LogEventLevel logLevel = LogEventLevel.Information,
-            bool printPlan = false)
+            bool printPlan = true)
         {
             _logCollector.LogLevel = logLevel;
 

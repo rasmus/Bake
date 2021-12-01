@@ -56,6 +56,12 @@ namespace Bake.Cooking
             Context context,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation(
+                "Starting compose for {Convention} run in {WorkingDirectory} with initial version as {Version}",
+                context.Ingredients.Convention,
+                context.Ingredients.WorkingDirectory,
+                context.Ingredients.Version);
+
             await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, cancellationToken)));
 
             var recipes = new List<Recipe>();
