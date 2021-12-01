@@ -1,5 +1,6 @@
 # 0.4-beta
 
+* New: Provide desciptions of what each sub-command actually does
 * Fixed: Not specifying a version should merely default to 1.0 instead
   of throwing an exception
 * Fixed: Now correctly naming the ZIP filename of the release artifacts
