@@ -34,7 +34,9 @@ using Serilog.Events;
 
 namespace Bake.Commands.Run
 {
-    [CommandVerb("run")]
+    [Command(
+        "run",
+        "Analyzes the current directory, builds a plan and then executes the plan")]
     public class RunCommand : ICommand
     {
         private readonly IEditor _editor;
