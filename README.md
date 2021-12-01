@@ -74,7 +74,11 @@ Here are some examples of common used argumnets to Bake
       specified by the URL. Bake will look for the API key in an environment
       variable named `bake_credentials_nuget_{hostname}_apikey`, in which
       `{hostname}` is the hostname of the URL with invalid characters removed
-
+  * **Release**
+    * `release->github` - Creates release on GitHub within the current GitHub
+      repository with the release notes and any important artifacts neatly
+      bundled together in ZIP files with any `README.md`, `LICENSE` and 
+      `RELEASE_NOTES.md` in ZIP files found in the root of the repository
 
 ## License
 
