@@ -28,6 +28,7 @@ namespace Bake.ValueObjects.DotNet
         public CsProj CsProj { get; }
         public string Directory { get; }
         public string Name { get; set; }
+        public string AssemblyName => string.IsNullOrEmpty(CsProj.AssemblyName) ? Name : CsProj.AssemblyName;
 
         public bool ShouldBePacked => CsProj.IsPackable || CsProj.PackAsTool;
         public bool ShouldBePushed => CsProj.IsPackable || CsProj.PackAsTool;
