@@ -275,9 +275,7 @@ namespace Bake.Cooking.Composers
                     new FileArtifact(
                         new ArtifactKey(
                             ArtifactTypes[runtime],
-                            runtime == DotNetTargetRuntime.Windows64
-                                ? $"{visualStudioProject.CsProj.ToolCommandName}.exe"
-                                : visualStudioProject.CsProj.ToolCommandName),
+                            visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
