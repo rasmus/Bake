@@ -39,8 +39,7 @@ namespace Bake.Cooking.Composers
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } = new[]
             {
                 ArtifactType.NuGet,
-                ArtifactType.ToolLinux,
-                ArtifactType.ToolWindows
+                ArtifactType.Executable
             };
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -72,8 +71,7 @@ namespace Bake.Cooking.Composers
             }
 
             var artifacts = Enumerable.Empty<Artifact>()
-                .Concat(context.GetArtifacts<FileArtifact>()
-                    .Where(a => a.Key.Type is ArtifactType.ToolLinux or ArtifactType.ToolWindows))
+                .Concat(context.GetArtifacts<ExecutableFileArtifact>())
                 .ToArray();
 
             if (!artifacts.Any())

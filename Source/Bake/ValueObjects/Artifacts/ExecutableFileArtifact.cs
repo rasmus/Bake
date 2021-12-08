@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,37 +21,35 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    public abstract class FileArtifact : Artifact
+    [Artifact(Names.Artifacts.ExecutableFileArtifact)]
+    public class ExecutableFileArtifact : FileArtifact
     {
-        public string Path { get; [Obsolete] set; }
+        public ExecutableOperatingSystem Os { get; [Obsolete] set; }
+
+        public ExecutableArchitecture Arch { get; [Obsolete] set; }
 
         [Obsolete]
-        protected FileArtifact() { }
+        public ExecutableFileArtifact() { }
 
-        protected FileArtifact(
+        public ExecutableFileArtifact(
             ArtifactKey key,
-            string path)
-            : base(key)
+            string path,
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch)
+            : base(key, path)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
-        {
-            if (!File.Exists(Path))
+            if (key.Type != ArtifactType.Executable)
             {
-                yield return $"File {Path} does not exist";
+                throw new ArgumentException(nameof(key));
             }
+
+#pragma warning disable CS0612 // Type or member is obsolete
+            Os = os;
+            Arch = arch;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

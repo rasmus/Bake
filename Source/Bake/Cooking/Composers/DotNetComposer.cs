@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.DotNet;
@@ -43,10 +45,15 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : Composer
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ExecutableOperatingSystem> OsMap = new ConcurrentDictionary<DotNetTargetRuntime, ExecutableOperatingSystem>
             {
-                [DotNetTargetRuntime.Linux64] = ArtifactType.ToolLinux,
-                [DotNetTargetRuntime.Windows64] = ArtifactType.ToolWindows,
+                [DotNetTargetRuntime.Linux64] = ExecutableOperatingSystem.Linux,
+                [DotNetTargetRuntime.Windows64] = ExecutableOperatingSystem.Windows,
+            };
+        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ExecutableArchitecture> ArchMap = new ConcurrentDictionary<DotNetTargetRuntime, ExecutableArchitecture>
+            {
+                [DotNetTargetRuntime.Linux64] = ExecutableArchitecture.Intel64,
+                [DotNetTargetRuntime.Windows64] = ExecutableArchitecture.Intel64,
             };
 
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
@@ -65,8 +72,7 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.ToolWindows,
-                ArtifactType.ToolLinux,
+                ArtifactType.Executable,
                 ArtifactType.Dockerfile,
                 ArtifactType.NuGet,
                 ArtifactType.DotNetPublishedDirectory,
@@ -189,7 +195,7 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
-                    new FileArtifact(
+                    new NuGetFileArtifact(
                         new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
@@ -249,7 +255,7 @@ namespace Bake.Cooking.Composers
                     $"{visualStudioProject.AssemblyName}.dll",
                     moniker,
                     labels,
-                    new FileArtifact(
+                    new DockerFileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
@@ -272,16 +278,18 @@ namespace Bake.Cooking.Composers
                     configuration,
                     runtime,
                     path,
-                    new FileArtifact(
+                    new ExecutableFileArtifact(
                         new ArtifactKey(
-                            ArtifactTypes[runtime],
+                            ArtifactType.Executable,
                             visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
                             runtime == DotNetTargetRuntime.Windows64
                                 ? $"{visualStudioProject.AssemblyName}.exe"
-                                : visualStudioProject.AssemblyName)));
+                                : visualStudioProject.AssemblyName),
+                        OsMap[runtime],
+                        ArchMap[runtime]));
             }
         }
 

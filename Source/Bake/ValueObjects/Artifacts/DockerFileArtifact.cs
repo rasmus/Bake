@@ -21,36 +21,23 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    public abstract class FileArtifact : Artifact
+    [Artifact(Names.Artifacts.DockerFileArtifact)]
+    public class DockerFileArtifact : FileArtifact
     {
-        public string Path { get; [Obsolete] set; }
-
         [Obsolete]
-        protected FileArtifact() { }
+        public DockerFileArtifact() { }
 
-        protected FileArtifact(
+        public DockerFileArtifact(
             ArtifactKey key,
             string path)
-            : base(key)
+            : base(key, path)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
-        {
-            if (!File.Exists(Path))
+            if (key.Type != ArtifactType.Dockerfile)
             {
-                yield return $"File {Path} does not exist";
+                throw new ArgumentException(nameof(key));
             }
         }
     }

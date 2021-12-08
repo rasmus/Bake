@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,10 +33,24 @@ using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Cooking.Cooks.GitHub
 {
     public class GitHubReleaseCook : Cook<GitHubReleaseRecipe>
     {
+        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> NamingOs = new ConcurrentDictionary<ExecutableOperatingSystem, string>
+            {
+                [ExecutableOperatingSystem.Linux] = "linux",
+                [ExecutableOperatingSystem.MacOSX] = "macosx",
+                [ExecutableOperatingSystem.Windows] = "windows"
+            };
+        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> NamingArch = new ConcurrentDictionary<ExecutableArchitecture, string>
+            {
+                [ExecutableArchitecture.Intel32] = "x86",
+                [ExecutableArchitecture.Intel64] = "x86_64",
+            };
+
         private readonly IGitHub _gitHub;
         private readonly IFileSystem _fileSystem;
 
@@ -99,7 +113,7 @@ namespace Bake.Cooking.Cooks.GitHub
             CancellationToken cancellationToken)
         {
             return await Task.WhenAll(recipe.Artifacts
-                .OfType<FileArtifact>()
+                .OfType<ExecutableFileArtifact>()
                 .Select(async artifact =>
                 {
                     var file = _fileSystem.Open(artifact.Path);
@@ -122,14 +136,18 @@ namespace Bake.Cooking.Cooks.GitHub
                 }));
         }
 
-        private static string CalculateArtifactFileName(FileArtifact artifact)
+
+
+        private static string CalculateArtifactFileName(ExecutableFileArtifact fileArtifact)
         {
-            return artifact.Key.Type switch
+            var parts = new[]
                 {
-                    ArtifactType.ToolLinux => $"{artifact.Key.Name}_linux_amd64.zip",
-                    ArtifactType.ToolWindows => $"{artifact.Key.Name}_windows_amd64.zip",
-                    _ => throw new ArgumentOutOfRangeException()
+                    fileArtifact.Key.Name,
+                    NamingOs[fileArtifact.Os],
+                    NamingArch[fileArtifact.Arch]
                 };
+
+            return $"{string.Join("_", parts)}.zip";
         }
     }
 }

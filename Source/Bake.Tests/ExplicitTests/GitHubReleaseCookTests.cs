@@ -58,9 +58,11 @@ namespace Bake.Tests.ExplicitTests
                 new ReleaseNotes(SemVer.Random, "This is a test"),
                 new Artifact[]
                 {
-                    new FileArtifact(
-                        new ArtifactKey(ArtifactType.ToolLinux, "test_linux"),
-                        Path.Combine(WorkingDirectory, "README.md"))
+                    new ExecutableFileArtifact(
+                        new ArtifactKey(ArtifactType.Executable, "test_linux"),
+                        Path.Combine(WorkingDirectory, "README.md"),
+                        ExecutableOperatingSystem.Linux,
+                        ExecutableArchitecture.Intel64)
                 });
 
             // Arrange

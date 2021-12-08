@@ -45,8 +45,7 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.ToolWindows,
-                ArtifactType.ToolLinux,
+                ArtifactType.Executable,
                 ArtifactType.Dockerfile,
             };
 
@@ -128,18 +127,22 @@ namespace Bake.Cooking.Composers
                         directoryPath,
                         ExecutableOperatingSystem.Windows,
                         ExecutableArchitecture.Intel64,
-                        new FileArtifact(
-                            new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
-                            Path.Combine(directoryPath, windowsOutput))),
+                        new ExecutableFileArtifact(
+                            new ArtifactKey(ArtifactType.Executable, windowsOutput),
+                            Path.Combine(directoryPath, windowsOutput),
+                            ExecutableOperatingSystem.Windows,
+                            ExecutableArchitecture.Intel64)),
 
                     new GoBuildRecipe(
                         goModuleName.Name,
                         directoryPath,
                         ExecutableOperatingSystem.Linux,
                         ExecutableArchitecture.Intel64,
-                        new FileArtifact(
-                            new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
-                            Path.Combine(directoryPath, goModuleName.Name)))
+                        new ExecutableFileArtifact(
+                            new ArtifactKey(ArtifactType.Executable, goModuleName.Name),
+                            Path.Combine(directoryPath, goModuleName.Name),
+                            ExecutableOperatingSystem.Linux,
+                            ExecutableArchitecture.Intel64))
                 };
 
             if (projectType == BakeProjectType.Service)
@@ -149,7 +152,7 @@ namespace Bake.Cooking.Composers
                     servicePort,
                     directoryPath,
                     labels,
-                    new FileArtifact(
+                    new DockerFileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
                         Path.Combine(directoryPath, "Dockerfile"))));
             }

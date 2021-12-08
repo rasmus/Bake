@@ -52,7 +52,8 @@ namespace Bake
         /// </summary>
         public static class Artifacts
         {
-            public const string FileArtifact = "file-artifact";
+            public const string ExecutableFileArtifact = "executable-file-artifact";
+            public const string DockerFileArtifact = "docker-file-artifact";
             public const string DirectoryArtifact = "directory-artifact";
         }
 
@@ -63,8 +64,7 @@ namespace Bake
             public const string Dockerfile = "dockerfile";
             public const string DotNetPublishedDirectory = "dotnet-publish-directory";
             public const string NuGet = "nuget";
-            public const string ToolLinux = "tool-linux";
-            public const string ToolWindows = "tool-windows";
+            public const string Executable = "executable";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
@@ -73,8 +73,7 @@ namespace Bake
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.NuGet] = NuGet,
                     [ArtifactType.Release] = Release,
-                    [ArtifactType.ToolLinux] = ToolLinux,
-                    [ArtifactType.ToolWindows] = ToolWindows,
+                    [ArtifactType.Executable] = Executable,
                 };
 
             private static readonly IReadOnlyDictionary<string, ArtifactType> NameToType = TypeToName

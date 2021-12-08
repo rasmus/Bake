@@ -91,7 +91,7 @@ namespace Bake.Cooking.Composers
             }
 
             var dockerfileArtifacts = context
-                .GetArtifacts<FileArtifact>()
+                .GetArtifacts<ExecutableFileArtifact>()
                 .Where(a => a.Key.Type == ArtifactType.Dockerfile)
                 .ToArray();
             if (dockerfileArtifacts.Any())
