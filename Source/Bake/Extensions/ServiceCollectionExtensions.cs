@@ -72,6 +72,7 @@ namespace Bake.Extensions
                 .AddTransient<IGitHub, GitHub>()
                 .AddSingleton<IGitHubClientFactory, GitHubClientFactory>()
                 .AddTransient<IPlatformParser, PlatformParser>()
+                .AddTransient<IMkDocs, MkDocs>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
