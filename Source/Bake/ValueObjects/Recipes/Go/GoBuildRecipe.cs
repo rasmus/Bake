@@ -36,10 +36,10 @@ namespace Bake.ValueObjects.Recipes.Go
         public string WorkingDirectory { get; [Obsolete] set; }
 
         [YamlMember]
-        public GoOs Os { get; [Obsolete] set; }
+        public ExecutableOperatingSystem Os { get; [Obsolete] set; }
 
         [YamlMember]
-        public GoArch Arch { get; [Obsolete] set; }
+        public ExecutableArchitecture Arch { get; [Obsolete] set; }
 
         [Obsolete]
         public GoBuildRecipe() { }
@@ -47,8 +47,8 @@ namespace Bake.ValueObjects.Recipes.Go
         public GoBuildRecipe(
             string output,
             string workingDirectory,
-            GoOs os,
-            GoArch arch,
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch,
             params Artifact[] artifacts)
             : base(artifacts)
         {

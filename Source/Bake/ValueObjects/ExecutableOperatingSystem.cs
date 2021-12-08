@@ -20,16 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// ReSharper disable InconsistentNaming
-
-namespace Bake.ValueObjects.Recipes.Go
+namespace Bake.ValueObjects
 {
-    public enum GoArch
+    public enum ExecutableOperatingSystem
     {
         Undefined = 0,
-        AMD64,
-        Intel386,
-        ARM,
-        ARM64,
+        Linux,
+        Windows
     }
 }

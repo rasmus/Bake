@@ -22,6 +22,7 @@
 
 using System;
 using Bake.Core;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Recipes.Go;
 
 namespace Bake.Services.Tools.GoArguments
@@ -30,20 +31,20 @@ namespace Bake.Services.Tools.GoArguments
     {
         public string Output { get; }
         public string WorkingDirectory { get; }
-        public GoOs Os { get; }
-        public GoArch Arch { get; }
+        public ExecutableOperatingSystem Os { get; }
+        public ExecutableArchitecture Arch { get; }
 
         public GoBuildArgument(
             string output,
             string workingDirectory,
-            GoOs os,
-            GoArch arch)
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch)
         {
-            if (!Enum.IsDefined(typeof(GoOs), os) || os == GoOs.Undefined)
+            if (!Enum.IsDefined(typeof(ExecutableOperatingSystem), os) || os == ExecutableOperatingSystem.Undefined)
             {
                 throw new ArgumentOutOfRangeException(nameof(os));
             }
-            if (!Enum.IsDefined(typeof(GoArch), arch) || arch == GoArch.Undefined)
+            if (!Enum.IsDefined(typeof(ExecutableArchitecture), arch) || arch == ExecutableArchitecture.Undefined)
             {
                 throw new ArgumentOutOfRangeException(nameof(arch));
             }

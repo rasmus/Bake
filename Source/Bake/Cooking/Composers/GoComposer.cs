@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.BakeProjects;
 using Bake.ValueObjects.Recipes;
@@ -125,8 +126,8 @@ namespace Bake.Cooking.Composers
                     new GoBuildRecipe(
                         windowsOutput,
                         directoryPath,
-                        GoOs.Windows,
-                        GoArch.AMD64,
+                        ExecutableOperatingSystem.Windows,
+                        ExecutableArchitecture.AMD64,
                         new FileArtifact(
                             new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
                             Path.Combine(directoryPath, windowsOutput))),
@@ -134,8 +135,8 @@ namespace Bake.Cooking.Composers
                     new GoBuildRecipe(
                         goModuleName.Name,
                         directoryPath,
-                        GoOs.Linux,
-                        GoArch.AMD64,
+                        ExecutableOperatingSystem.Linux,
+                        ExecutableArchitecture.AMD64,
                         new FileArtifact(
                             new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
                             Path.Combine(directoryPath, goModuleName.Name)))

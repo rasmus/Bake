@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Recipes.Go;
 
 // ReSharper disable StringLiteralTypo
@@ -34,17 +35,17 @@ namespace Bake.Services.Tools
 {
     public class Go : IGo
     {
-        private static readonly IReadOnlyDictionary<GoOs, string> OsMap = new ConcurrentDictionary<GoOs, string>
+        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> OsMap = new ConcurrentDictionary<ExecutableOperatingSystem, string>
             {
-                [GoOs.Linux] = "linux",
-                [GoOs.Windows] = "windows",
+                [ExecutableOperatingSystem.Linux] = "linux",
+                [ExecutableOperatingSystem.Windows] = "windows",
             };
-        private static readonly IReadOnlyDictionary<GoArch, string> ArchMap = new ConcurrentDictionary<GoArch, string>
+        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchMap = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
-                [GoArch.Intel386] = "386",
-                [GoArch.AMD64] = "amd64",
-                [GoArch.ARM] = "arm",
-                [GoArch.ARM64] = "arm64"
+                [ExecutableArchitecture.Intel386] = "386",
+                [ExecutableArchitecture.AMD64] = "amd64",
+                [ExecutableArchitecture.ARM] = "arm",
+                [ExecutableArchitecture.ARM64] = "arm64"
             };
         private readonly IRunnerFactory _runnerFactory;
 
@@ -95,8 +96,8 @@ namespace Bake.Services.Tools
         }
 
         private static IReadOnlyDictionary<string, string> SetupEnvironment(
-            GoOs os,
-            GoArch arch)
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch)
         {
             return new Dictionary<string, string>
                 {
