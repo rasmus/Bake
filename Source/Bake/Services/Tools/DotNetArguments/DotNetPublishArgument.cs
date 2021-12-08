@@ -30,8 +30,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public bool SelfContained { get; }
         public bool Build { get; }
         public string Configuration { get; }
-        public ExecutableOperatingSystem Os { get; }
-        public ExecutableArchitecture Arch { get; }
+        public Platform Platform { get; }
         public string Output { get; }
 
         public DotNetPublishArgument(
@@ -40,8 +39,7 @@ namespace Bake.Services.Tools.DotNetArguments
             bool selfContained,
             bool build,
             string configuration,
-            ExecutableOperatingSystem os,
-            ExecutableArchitecture arch,
+            Platform platform,
             string output)
             : base(filePath)
         {
@@ -49,8 +47,7 @@ namespace Bake.Services.Tools.DotNetArguments
             SelfContained = selfContained;
             Build = build;
             Configuration = configuration;
-            Os = os;
-            Arch = arch;
+            Platform = platform;
             Output = output;
         }
     }

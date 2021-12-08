@@ -42,6 +42,9 @@ namespace Bake.ValueObjects.Recipes.Go
         [YamlMember]
         public Dictionary<string, string> Labels { get; [Obsolete] set; }
 
+        [YamlMember]
+        public string Output { get; [Obsolete] set; }
+
         [Obsolete]
         public GoDockerFileRecipe() { }
 
@@ -50,6 +53,7 @@ namespace Bake.ValueObjects.Recipes.Go
             int port,
             string projectPath,
             Dictionary<string, string> labels,
+            string output,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -58,6 +62,7 @@ namespace Bake.ValueObjects.Recipes.Go
             Port = port;
             ProjectPath = projectPath;
             Labels = labels;
+            Output = output;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

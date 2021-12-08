@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Destinations;
@@ -34,9 +35,13 @@ namespace Bake.ValueObjects
         public static Ingredients New(
             SemVer version,
             string workingDirectory,
+            IReadOnlyCollection<Platform> targetPlatforms = null,
             Convention convention = Convention.Default) => new(
                 version,
                 workingDirectory,
+                targetPlatforms != null && targetPlatforms.Any()
+                    ? targetPlatforms
+                    : Platform.Defaults,
                 convention);
 
         [YamlMember]
@@ -47,6 +52,9 @@ namespace Bake.ValueObjects
 
         [YamlMember]
         public Convention Convention { get; [Obsolete] set; }
+
+        [YamlMember]
+        public IReadOnlyCollection<Platform> Platforms { get; [Obsolete] set; }
 
         [YamlMember]
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
@@ -121,11 +129,13 @@ namespace Bake.ValueObjects
         public Ingredients(
             SemVer version,
             string workingDirectory,
+            IReadOnlyCollection<Platform> platforms,
             Convention convention)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             WorkingDirectory = workingDirectory;
+            Platforms = platforms;
             Convention = convention;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

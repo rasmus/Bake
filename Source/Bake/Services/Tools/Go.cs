@@ -22,12 +22,12 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Recipes.Go;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -39,6 +39,7 @@ namespace Bake.Services.Tools
             {
                 [ExecutableOperatingSystem.Linux] = "linux",
                 [ExecutableOperatingSystem.Windows] = "windows",
+                [ExecutableOperatingSystem.MacOSX] = "darwin",
             };
         private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchMap = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
@@ -47,11 +48,15 @@ namespace Bake.Services.Tools
                 [ExecutableArchitecture.Arm32] = "arm",
                 [ExecutableArchitecture.Arm64] = "arm64"
             };
+
+        private readonly ILogger<Go> _logger;
         private readonly IRunnerFactory _runnerFactory;
 
         public Go(
+            ILogger<Go> logger,
             IRunnerFactory runnerFactory)
         {
+            _logger = logger;
             _runnerFactory = runnerFactory;
         }
 
@@ -59,16 +64,21 @@ namespace Bake.Services.Tools
             GoBuildArgument argument,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation(
+                "Building Go application {Output}",
+                argument.Output);
+
             var arguments = new[]
                 {
                     "build",
                     "-ldflags", "\"-s -w\"",
-                    "-o", argument.Output                };
+                    "-o", argument.Output
+                };
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "go",
                 argument.WorkingDirectory,
-                SetupEnvironment(argument.Os, argument.Arch),
+                SetupEnvironment(argument.Platform.Os, argument.Platform.Arch),
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);

@@ -71,7 +71,7 @@ namespace Bake.Cooking.Composers
             }
 
             var artifacts = Enumerable.Empty<Artifact>()
-                .Concat(context.GetArtifacts<ExecutableFileArtifact>())
+                .Concat(context.GetArtifacts<ExecutableArtifact>())
                 .ToArray();
 
             if (!artifacts.Any())

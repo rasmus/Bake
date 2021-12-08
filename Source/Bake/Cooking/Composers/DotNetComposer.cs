@@ -182,7 +182,7 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
-                    new NuGetFileArtifact(
+                    new NuGetArtifact(
                         new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
@@ -221,8 +221,7 @@ namespace Bake.Cooking.Composers
                     false,
                     false,
                     configuration,
-                    ExecutableOperatingSystem.Any,
-                    ExecutableArchitecture.Any,
+                    Platform.Any,
                     path,
                     new DirectoryArtifact(
                         new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
@@ -249,14 +248,13 @@ namespace Bake.Cooking.Composers
             }
 
             foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.PackAsTool))
-            foreach (var os in new[] { ExecutableOperatingSystem.Windows, ExecutableOperatingSystem.Linux })
-            foreach (var arch in new []{ ExecutableArchitecture.Intel64 })
+            foreach (var targetPlatform in ingredients.Platforms)
             {
                 var path = Path.Combine(
                     "bin",
                     configuration,
                     "publish",
-                    DotNetTargetRuntime.ToName(os, arch));
+                    targetPlatform.GetDotNetRuntimeIdentifier());
 
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
@@ -264,21 +262,19 @@ namespace Bake.Cooking.Composers
                     false,
                     true,
                     configuration,
-                    os,
-                    arch,
+                    targetPlatform,
                     path,
-                    new ExecutableFileArtifact(
+                    new ExecutableArtifact(
                         new ArtifactKey(
                             ArtifactType.Executable,
                             visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
-                            os == ExecutableOperatingSystem.Windows
+                            targetPlatform.Os == ExecutableOperatingSystem.Windows
                                 ? $"{visualStudioProject.AssemblyName}.exe"
                                 : visualStudioProject.AssemblyName),
-                        os,
-                        arch));
+                        targetPlatform));
             }
         }
 

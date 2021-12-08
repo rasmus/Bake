@@ -36,10 +36,7 @@ namespace Bake.ValueObjects.Recipes.Go
         public string WorkingDirectory { get; [Obsolete] set; }
 
         [YamlMember]
-        public ExecutableOperatingSystem Os { get; [Obsolete] set; }
-
-        [YamlMember]
-        public ExecutableArchitecture Arch { get; [Obsolete] set; }
+        public Platform Platform { get; [Obsolete] set; }
 
         [Obsolete]
         public GoBuildRecipe() { }
@@ -47,16 +44,14 @@ namespace Bake.ValueObjects.Recipes.Go
         public GoBuildRecipe(
             string output,
             string workingDirectory,
-            ExecutableOperatingSystem os,
-            ExecutableArchitecture arch,
+            Platform platform,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Output = output;
             WorkingDirectory = workingDirectory;
-            Os = os;
-            Arch = arch;
+            Platform = platform;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

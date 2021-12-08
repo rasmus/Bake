@@ -52,8 +52,9 @@ namespace Bake
         /// </summary>
         public static class Artifacts
         {
-            public const string ExecutableFileArtifact = "executable-file-artifact";
-            public const string DockerFileArtifact = "docker-file-artifact";
+            public const string ExecutableArtifact = "executable-artifact";
+            public const string DockerfileArtifact = "dockerfile-artifact";
+            public const string NuGetArtifact = "nuget-artifact";
             public const string DirectoryArtifact = "directory-artifact";
         }
 

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,39 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+using Bake.ValueObjects;
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services
 {
-    [Artifact(Names.Artifacts.ExecutableFileArtifact)]
-    public class ExecutableFileArtifact : FileArtifact
+    public interface IPlatformParser
     {
-        [YamlMember]
-        public ExecutableOperatingSystem Os { get; [Obsolete] set; }
-
-        [YamlMember]
-        public ExecutableArchitecture Arch { get; [Obsolete] set; }
-
-        [Obsolete]
-        public ExecutableFileArtifact() { }
-
-        public ExecutableFileArtifact(
-            ArtifactKey key,
-            string path,
-            ExecutableOperatingSystem os,
-            ExecutableArchitecture arch)
-            : base(key, path)
-        {
-            if (key.Type != ArtifactType.Executable)
-            {
-                throw new ArgumentException(nameof(key));
-            }
-
-#pragma warning disable CS0612 // Type or member is obsolete
-            Os = os;
-            Arch = arch;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+        bool TryParse(string str, out Platform platform);
     }
 }

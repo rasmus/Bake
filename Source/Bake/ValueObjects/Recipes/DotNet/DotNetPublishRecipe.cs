@@ -45,10 +45,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public string Configuration { get; [Obsolete] set; }
 
         [YamlMember]
-        public ExecutableOperatingSystem Os { get; [Obsolete] set; }
-
-        [YamlMember]
-        public ExecutableArchitecture Arch { get; [Obsolete] set; }
+        public Platform Platform { get; [Obsolete] set; }
 
         [YamlMember]
         public string Output { get; [Obsolete] set; }
@@ -62,8 +59,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool selfContained,
             bool build,
             string configuration,
-            ExecutableOperatingSystem os,
-            ExecutableArchitecture arch,
+            Platform platform,
             string output,
             params Artifact[] artifacts)
             : base(artifacts)
@@ -74,8 +70,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             SelfContained = selfContained;
             Build = build;
             Configuration = configuration;
-            Os = os;
-            Arch = arch;
+            Platform = platform;
             Output = output;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

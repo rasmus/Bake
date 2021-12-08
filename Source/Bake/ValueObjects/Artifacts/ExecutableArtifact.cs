@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,28 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.DotNet
+namespace Bake.ValueObjects.Artifacts
 {
-    public static class DotNetTargetRuntime
+    [Artifact(Names.Artifacts.ExecutableArtifact)]
+    public class ExecutableArtifact : FileArtifact
     {
-        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> OsNaming = new ConcurrentDictionary<ExecutableOperatingSystem, string>
-            {
-                [ExecutableOperatingSystem.Linux] = "linux",
-                [ExecutableOperatingSystem.Windows] = "linux",
-            };
-        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchNaming = new ConcurrentDictionary<ExecutableArchitecture, string>
-            {
-                [ExecutableArchitecture.Intel64] = "x64",
-            };
+        [YamlMember]
+        public Platform Platform { get; [Obsolete] set; }
 
-        public static string ToName(
-            ExecutableOperatingSystem os,
-            ExecutableArchitecture arch)
+        [Obsolete]
+        public ExecutableArtifact() { }
+
+        public ExecutableArtifact(
+            ArtifactKey key,
+            string path,
+            Platform platform)
+            : base(key, path)
         {
-            return $"{OsNaming[os]}-{ArchNaming[arch]}";
+            if (key.Type != ArtifactType.Executable)
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+#pragma warning disable CS0612 // Type or member is obsolete
+            Platform = platform;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

@@ -24,7 +24,7 @@ using System;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    [Artifact(Names.Artifacts.DockerFileArtifact)]
+    [Artifact(Names.Artifacts.DockerfileArtifact)]
     public class DockerFileArtifact : FileArtifact
     {
         [Obsolete]

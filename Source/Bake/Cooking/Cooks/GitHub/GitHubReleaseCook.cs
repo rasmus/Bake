@@ -113,7 +113,7 @@ namespace Bake.Cooking.Cooks.GitHub
             CancellationToken cancellationToken)
         {
             return await Task.WhenAll(recipe.Artifacts
-                .OfType<ExecutableFileArtifact>()
+                .OfType<ExecutableArtifact>()
                 .Select(async artifact =>
                 {
                     var file = _fileSystem.Open(artifact.Path);
@@ -138,13 +138,13 @@ namespace Bake.Cooking.Cooks.GitHub
 
 
 
-        private static string CalculateArtifactFileName(ExecutableFileArtifact fileArtifact)
+        private static string CalculateArtifactFileName(ExecutableArtifact artifact)
         {
             var parts = new[]
                 {
-                    fileArtifact.Key.Name,
-                    NamingOs[fileArtifact.Os],
-                    NamingArch[fileArtifact.Arch]
+                    artifact.Key.Name,
+                    NamingOs[artifact.Platform.Os],
+                    NamingArch[artifact.Platform.Arch]
                 };
 
             return $"{string.Join("_", parts)}.zip";

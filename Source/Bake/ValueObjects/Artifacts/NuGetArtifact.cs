@@ -24,13 +24,13 @@ using System;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    [Artifact(Names.Artifacts.DockerFileArtifact)]
-    public class NuGetFileArtifact : FileArtifact
+    [Artifact(Names.Artifacts.NuGetArtifact)]
+    public class NuGetArtifact : FileArtifact
     {
         [Obsolete]
-        public NuGetFileArtifact() { }
+        public NuGetArtifact() { }
 
-        public NuGetFileArtifact(
+        public NuGetArtifact(
             ArtifactKey key,
             string path)
             : base(key, path)

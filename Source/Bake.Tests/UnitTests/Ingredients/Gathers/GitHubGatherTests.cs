@@ -47,10 +47,9 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
         public async Task Verify(string url, string expectedOwner, string expectedRepository)
         {
             // Arrange
-            var ingredients = new Bake.ValueObjects.Ingredients(
+            var ingredients = Bake.ValueObjects.Ingredients.New(
                 SemVer.Random,
-                string.Empty,
-                Convention.Default);
+                string.Empty);
 
             // Act
             var gather = Sut.GatherAsync(ingredients, CancellationToken.None);
