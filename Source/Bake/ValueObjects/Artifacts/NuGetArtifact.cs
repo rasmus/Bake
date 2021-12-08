@@ -20,16 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// ReSharper disable InconsistentNaming
+using System;
 
-namespace Bake.ValueObjects.Recipes.Go
+namespace Bake.ValueObjects.Artifacts
 {
-    public enum GoArch
+    [Artifact(Names.Artifacts.NuGetArtifact)]
+    public class NuGetArtifact : FileArtifact
     {
-        Undefined = 0,
-        AMD64,
-        Intel386,
-        ARM,
-        ARM64,
+        [Obsolete]
+        public NuGetArtifact() { }
+
+        public NuGetArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key, path)
+        {
+            if (key.Type != ArtifactType.NuGet)
+            {
+                throw new ArgumentException(nameof(key));
+            }
+        }
     }
 }

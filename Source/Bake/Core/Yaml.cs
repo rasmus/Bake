@@ -40,9 +40,10 @@ namespace Bake.Core
 {
     public class Yaml : IYaml
     {
-        private static readonly HashSet<Type> TypesWithTags = new HashSet<Type>
-            {
+        private static readonly HashSet<Type> TypesWithTags = new()
+        {
                 typeof(Artifact),
+                typeof(FileArtifact),
                 typeof(Destination),
                 typeof(Recipe),
             };
@@ -54,7 +55,10 @@ namespace Bake.Core
         {
             var recipeTypes = typeof(Yaml).Assembly
                 .GetTypes()
-                .Where(t => t.BaseType != null && TypesWithTags.Contains(t.BaseType))
+                .Where(t => 
+                    !t.IsAbstract && 
+                    t.BaseType != null && 
+                    TypesWithTags.Contains(t.BaseType))
                 .Select(t =>
                 {
                     var yamlTag = t.GetCustomAttributes().OfType<IYamlTag>().Single();

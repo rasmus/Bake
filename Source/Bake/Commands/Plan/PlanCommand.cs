@@ -64,7 +64,8 @@ namespace Bake.Commands.Plan
             bool force = false,
             Convention convention = Convention.Default,
             Destination[] destination = null,
-            LogEventLevel logLevel = LogEventLevel.Information)
+            LogEventLevel logLevel = LogEventLevel.Information,
+            Platform[] targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
 
@@ -105,6 +106,7 @@ namespace Bake.Commands.Plan
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory(),
+                    targetPlatform,
                     convention));
             content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 

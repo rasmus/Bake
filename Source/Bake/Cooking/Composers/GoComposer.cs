@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.BakeProjects;
 using Bake.ValueObjects.Recipes;
@@ -44,8 +45,7 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.ToolWindows,
-                ArtifactType.ToolLinux,
+                ArtifactType.Executable,
                 ArtifactType.Dockerfile,
             };
 
@@ -77,13 +77,14 @@ namespace Bake.Cooking.Composers
             return (await Task.WhenAll(
                     goModFilePaths
                         .Select(Path.GetDirectoryName)
-                        .Select(p => CreateRecipesAsync(p, labels, cancellationToken))))
+                        .Select(p => CreateRecipesAsync(p, context, labels, cancellationToken))))
                 .SelectMany(l => l)
                 .ToArray();
         }
 
         private async Task<IReadOnlyCollection<Recipe>> CreateRecipesAsync(
             string directoryPath,
+            IContext context,
             Dictionary<string, string> labels,
             CancellationToken cancellationToken)
         {
@@ -121,34 +122,38 @@ namespace Bake.Cooking.Composers
                 {
                     new GoTestRecipe(
                         directoryPath),
-
-                    new GoBuildRecipe(
-                        windowsOutput,
-                        directoryPath,
-                        GoOs.Windows,
-                        GoArch.AMD64,
-                        new FileArtifact(
-                            new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
-                            Path.Combine(directoryPath, windowsOutput))),
-
-                    new GoBuildRecipe(
-                        goModuleName.Name,
-                        directoryPath,
-                        GoOs.Linux,
-                        GoArch.AMD64,
-                        new FileArtifact(
-                            new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
-                            Path.Combine(directoryPath, goModuleName.Name)))
                 };
 
-            if (projectType == BakeProjectType.Service)
+            recipes.AddRange(context.Ingredients.Platforms
+                .Select(p =>
+                {
+                    var output = p.Os == ExecutableOperatingSystem.Windows
+                        ? Path.Combine(p.GetSlug(), windowsOutput)
+                        : Path.Combine(p.GetSlug(), goModuleName.Name);
+
+                    return new GoBuildRecipe(
+                        output,
+                        directoryPath,
+                        p,
+                        new ExecutableArtifact(
+                            new ArtifactKey(ArtifactType.Executable, output),
+                            Path.Combine(directoryPath, output),
+                            p));
+                }));
+
+            var linuxBuildRecipe = recipes
+                .OfType<GoBuildRecipe>()
+                .SingleOrDefault(a => a.Platform.Os == ExecutableOperatingSystem.Linux);
+
+            if (projectType == BakeProjectType.Service && linuxBuildRecipe != null)
             {
                 recipes.Add(new GoDockerFileRecipe(
                     goModuleName.Name,
                     servicePort,
                     directoryPath,
                     labels,
-                    new FileArtifact(
+                    linuxBuildRecipe.Output,
+                    new DockerFileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
                         Path.Combine(directoryPath, "Dockerfile"))));
             }

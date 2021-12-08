@@ -21,29 +21,33 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using Bake.ValueObjects.Recipes.DotNet;
+using YamlDotNet.Serialization;
 
-namespace Bake.Extensions
+namespace Bake.ValueObjects.Artifacts
 {
-    public static class DotNetTargetRuntimeExtensions
+    [Artifact(Names.Artifacts.ExecutableArtifact)]
+    public class ExecutableArtifact : FileArtifact
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, string> RuntimeMap = new Dictionary<DotNetTargetRuntime, string>
-            {
-                [DotNetTargetRuntime.Linux64] = "linux-x64",
-                [DotNetTargetRuntime.Windows64] = "win-x64",
-            };
+        [YamlMember]
+        public Platform Platform { get; [Obsolete] set; }
 
-        public static string ToName(this DotNetTargetRuntime runtime)
+        [Obsolete]
+        public ExecutableArtifact() { }
+
+        public ExecutableArtifact(
+            ArtifactKey key,
+            string path,
+            Platform platform)
+            : base(key, path)
         {
-            if (!RuntimeMap.TryGetValue(runtime, out var name))
+            if (key.Type != ArtifactType.Executable)
             {
-                throw new ArgumentOutOfRangeException(
-                    nameof(runtime),
-                    $"Value {runtime} ({(int) runtime}) is unknown");
+                throw new ArgumentException(nameof(key));
             }
 
-            return name;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Platform = platform;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

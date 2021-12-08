@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,43 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.ValueObjects;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Services
 {
-    public class DotNetPublishCook : Cook<DotNetPublishRecipe>
+    public interface IPlatformParser
     {
-        private readonly IDotNet _dotNet;
-
-        public DotNetPublishCook(
-            IDotNet dotNet)
-        {
-            _dotNet = dotNet;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetPublishRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new DotNetPublishArgument(
-                recipe.Path,
-                recipe.PublishSingleFile,
-                recipe.SelfContained,
-                recipe.Build,
-                recipe.Configuration,
-                recipe.Platform,
-                recipe.Output);
-
-            using var toolResult = await _dotNet.PublishAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
-        }
+        bool TryParse(string str, out Platform platform);
     }
 }

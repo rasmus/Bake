@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services.Tools.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.ValueObjects;
 
 // ReSharper disable StringLiteralTypo
 
@@ -248,9 +248,9 @@ namespace Bake.Services.Tools
                     "--output", argument.Output
                 };
 
-            if (argument.Runtime != DotNetTargetRuntime.NotConfigured)
+            if (argument.Platform.Os != ExecutableOperatingSystem.Any)
             {
-                arguments.AddRange(new []{"--runtime", argument.Runtime.ToName()});
+                arguments.AddRange(new []{"--runtime", argument.Platform.GetDotNetRuntimeIdentifier()});
             }
 
             AddIf(!argument.Build, arguments, "--no-build");

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,12 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Recipes.DotNet
+using System;
+
+namespace Bake.ValueObjects.Artifacts
 {
-    public enum DotNetTargetRuntime
+    [Artifact(Names.Artifacts.DockerfileArtifact)]
+    public class DockerFileArtifact : FileArtifact
     {
-        NotConfigured,
-        Linux64,
-        Windows64
+        [Obsolete]
+        public DockerFileArtifact() { }
+
+        public DockerFileArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key, path)
+        {
+            if (key.Type != ArtifactType.Dockerfile)
+            {
+                throw new ArgumentException(nameof(key));
+            }
+        }
     }
 }

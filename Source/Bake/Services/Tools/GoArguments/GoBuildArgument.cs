@@ -20,9 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.Core;
-using Bake.ValueObjects.Recipes.Go;
+using Bake.ValueObjects;
 
 namespace Bake.Services.Tools.GoArguments
 {
@@ -30,28 +29,16 @@ namespace Bake.Services.Tools.GoArguments
     {
         public string Output { get; }
         public string WorkingDirectory { get; }
-        public GoOs Os { get; }
-        public GoArch Arch { get; }
+        public Platform Platform { get; }
 
         public GoBuildArgument(
             string output,
             string workingDirectory,
-            GoOs os,
-            GoArch arch)
+            Platform platform)
         {
-            if (!Enum.IsDefined(typeof(GoOs), os) || os == GoOs.Undefined)
-            {
-                throw new ArgumentOutOfRangeException(nameof(os));
-            }
-            if (!Enum.IsDefined(typeof(GoArch), arch) || arch == GoArch.Undefined)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arch));
-            }
-
-            this.Output = output;
+            Output = output;
             WorkingDirectory = workingDirectory;
-            Os = os;
-            Arch = arch;
+            Platform = platform;
         }
     }
 }

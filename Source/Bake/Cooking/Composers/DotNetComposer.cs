@@ -27,8 +27,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
-using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.DotNet;
@@ -43,12 +43,6 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : Composer
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ArtifactType> ArtifactTypes = new Dictionary<DotNetTargetRuntime, ArtifactType>
-            {
-                [DotNetTargetRuntime.Linux64] = ArtifactType.ToolLinux,
-                [DotNetTargetRuntime.Windows64] = ArtifactType.ToolWindows,
-            };
-
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
             {
                 // We really don't want builds to fail due to old versions
@@ -65,8 +59,7 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
-                ArtifactType.ToolWindows,
-                ArtifactType.ToolLinux,
+                ArtifactType.Executable,
                 ArtifactType.Dockerfile,
                 ArtifactType.NuGet,
                 ArtifactType.DotNetPublishedDirectory,
@@ -189,7 +182,7 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
-                    new FileArtifact(
+                    new NuGetArtifact(
                         new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
@@ -228,7 +221,7 @@ namespace Bake.Cooking.Composers
                     false,
                     false,
                     configuration,
-                    DotNetTargetRuntime.NotConfigured,
+                    Platform.Any,
                     path,
                     new DirectoryArtifact(
                         new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
@@ -249,20 +242,19 @@ namespace Bake.Cooking.Composers
                     $"{visualStudioProject.AssemblyName}.dll",
                     moniker,
                     labels,
-                    new FileArtifact(
+                    new DockerFileArtifact(
                         new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
 
-            foreach (var visualStudioProject in visualStudioSolution.Projects
-                .Where(p => p.CsProj.PackAsTool))
-            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.PackAsTool))
+            foreach (var targetPlatform in ingredients.Platforms)
             {
                 var path = Path.Combine(
                     "bin",
                     configuration,
                     "publish",
-                    runtime.ToName());
+                    targetPlatform.GetDotNetRuntimeIdentifier());
 
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
@@ -270,18 +262,19 @@ namespace Bake.Cooking.Composers
                     false,
                     true,
                     configuration,
-                    runtime,
+                    targetPlatform,
                     path,
-                    new FileArtifact(
+                    new ExecutableArtifact(
                         new ArtifactKey(
-                            ArtifactTypes[runtime],
+                            ArtifactType.Executable,
                             visualStudioProject.CsProj.ToolCommandName),
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
-                            runtime == DotNetTargetRuntime.Windows64
+                            targetPlatform.Os == ExecutableOperatingSystem.Windows
                                 ? $"{visualStudioProject.AssemblyName}.exe"
-                                : visualStudioProject.AssemblyName)));
+                                : visualStudioProject.AssemblyName),
+                        targetPlatform));
             }
         }
 

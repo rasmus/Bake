@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.ValueObjects;
 
 namespace Bake.Services.Tools.DotNetArguments
 {
@@ -30,7 +30,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public bool SelfContained { get; }
         public bool Build { get; }
         public string Configuration { get; }
-        public DotNetTargetRuntime Runtime { get; }
+        public Platform Platform { get; }
         public string Output { get; }
 
         public DotNetPublishArgument(
@@ -39,7 +39,7 @@ namespace Bake.Services.Tools.DotNetArguments
             bool selfContained,
             bool build,
             string configuration,
-            DotNetTargetRuntime runtime,
+            Platform platform,
             string output)
             : base(filePath)
         {
@@ -47,7 +47,7 @@ namespace Bake.Services.Tools.DotNetArguments
             SelfContained = selfContained;
             Build = build;
             Configuration = configuration;
-            Runtime = runtime;
+            Platform = platform;
             Output = output;
         }
     }

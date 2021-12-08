@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -28,15 +28,14 @@ using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
-    [Artifact(Names.Artifacts.FileArtifact)]
-    public class FileArtifact : Artifact
+    public abstract class FileArtifact : Artifact
     {
         public string Path { get; [Obsolete] set; }
 
         [Obsolete]
-        public FileArtifact() { }
+        protected FileArtifact() { }
 
-        public FileArtifact(
+        protected FileArtifact(
             ArtifactKey key,
             string path)
             : base(key)

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Abstractions;
@@ -48,15 +49,18 @@ namespace Bake.Commands
         private readonly ILogger<CommandFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDestinationParser _destinationParser;
+        private readonly IPlatformParser _platformParser;
 
         public CommandFactory(
             ILogger<CommandFactory> logger,
             IServiceProvider serviceProvider,
-            IDestinationParser destinationParser)
+            IDestinationParser destinationParser,
+            IPlatformParser platformParser)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _destinationParser = destinationParser;
+            _platformParser = platformParser;
         }
 
         public CommandLineApplication Create(IEnumerable<Type> types)
@@ -111,6 +115,40 @@ namespace Bake.Commands
                         })
                         .ToArray();
                 }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Platform),
+                (argName, value, _) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    if (!_platformParser.TryParse(value, out var platform))
+                    {
+                        throw new FormatException($"'{value}' is an invalid Platform value for argument '{argName}'");
+                    }
+
+                    return platform;
+                }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Platform[]),
+                (argName, value, _) =>
+                {
+                    return value?.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v =>
+                        {
+                            if (!_platformParser.TryParse(v, out var platform))
+                            {
+                                throw new FormatException(
+                                    $"'{value}' is an invalid Platform value for argument '{argName}'");
+                            }
+
+                            return platform;
+                        })
+                        .ToArray();
+                }));
+
 
             app.Description =
 @"Bake is a convention based build tool that focuses on minimal to none
