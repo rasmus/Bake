@@ -49,7 +49,8 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.SelfContained,
                 recipe.Build,
                 recipe.Configuration,
-                recipe.Runtime,
+                recipe.Os,
+                recipe.Arch,
                 recipe.Output);
 
             using var toolResult = await _dotNet.PublishAsync(

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,12 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Recipes.DotNet
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+
+namespace Bake.ValueObjects.DotNet
 {
-    public enum DotNetTargetRuntime
+    public static class DotNetTargetRuntime
     {
-        NotConfigured,
-        Linux64,
-        Windows64
+        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> OsNaming = new ConcurrentDictionary<ExecutableOperatingSystem, string>
+            {
+                [ExecutableOperatingSystem.Linux] = "linux",
+                [ExecutableOperatingSystem.Windows] = "linux",
+            };
+        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchNaming = new ConcurrentDictionary<ExecutableArchitecture, string>
+            {
+                [ExecutableArchitecture.Intel64] = "x64",
+            };
+
+        public static string ToName(
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch)
+        {
+            return $"{OsNaming[os]}-{ArchNaming[arch]}";
+        }
     }
 }

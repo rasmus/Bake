@@ -27,6 +27,7 @@ namespace Bake.ValueObjects
     public enum ExecutableArchitecture
     {
         Undefined = 0,
+        Any,
         Intel64,
         Intel32,
         Arm32,

@@ -27,6 +27,7 @@ namespace Bake.ValueObjects
     public enum ExecutableOperatingSystem
     {
         Undefined = 0,
+        Any,
         Linux,
         Windows,
         MacOSX,

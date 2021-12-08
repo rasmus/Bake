@@ -21,14 +21,12 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
-using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
@@ -45,17 +43,6 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : Composer
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ExecutableOperatingSystem> OsMap = new ConcurrentDictionary<DotNetTargetRuntime, ExecutableOperatingSystem>
-            {
-                [DotNetTargetRuntime.Linux64] = ExecutableOperatingSystem.Linux,
-                [DotNetTargetRuntime.Windows64] = ExecutableOperatingSystem.Windows,
-            };
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, ExecutableArchitecture> ArchMap = new ConcurrentDictionary<DotNetTargetRuntime, ExecutableArchitecture>
-            {
-                [DotNetTargetRuntime.Linux64] = ExecutableArchitecture.Intel64,
-                [DotNetTargetRuntime.Windows64] = ExecutableArchitecture.Intel64,
-            };
-
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
             {
                 // We really don't want builds to fail due to old versions
@@ -234,7 +221,8 @@ namespace Bake.Cooking.Composers
                     false,
                     false,
                     configuration,
-                    DotNetTargetRuntime.NotConfigured,
+                    ExecutableOperatingSystem.Any,
+                    ExecutableArchitecture.Any,
                     path,
                     new DirectoryArtifact(
                         new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
@@ -260,15 +248,15 @@ namespace Bake.Cooking.Composers
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
 
-            foreach (var visualStudioProject in visualStudioSolution.Projects
-                .Where(p => p.CsProj.PackAsTool))
-            foreach (var runtime in new []{DotNetTargetRuntime.Linux64, DotNetTargetRuntime.Windows64})
+            foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.PackAsTool))
+            foreach (var os in new[] { ExecutableOperatingSystem.Windows, ExecutableOperatingSystem.Linux })
+            foreach (var arch in new []{ ExecutableArchitecture.Intel64 })
             {
                 var path = Path.Combine(
                     "bin",
                     configuration,
                     "publish",
-                    runtime.ToName());
+                    DotNetTargetRuntime.ToName(os, arch));
 
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
@@ -276,7 +264,8 @@ namespace Bake.Cooking.Composers
                     false,
                     true,
                     configuration,
-                    runtime,
+                    os,
+                    arch,
                     path,
                     new ExecutableFileArtifact(
                         new ArtifactKey(
@@ -285,11 +274,11 @@ namespace Bake.Cooking.Composers
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,
-                            runtime == DotNetTargetRuntime.Windows64
+                            os == ExecutableOperatingSystem.Windows
                                 ? $"{visualStudioProject.AssemblyName}.exe"
                                 : visualStudioProject.AssemblyName),
-                        OsMap[runtime],
-                        ArchMap[runtime]));
+                        os,
+                        arch));
             }
         }
 

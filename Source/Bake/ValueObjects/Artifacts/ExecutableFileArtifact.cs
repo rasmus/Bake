@@ -21,14 +21,17 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.ExecutableFileArtifact)]
     public class ExecutableFileArtifact : FileArtifact
     {
+        [YamlMember]
         public ExecutableOperatingSystem Os { get; [Obsolete] set; }
 
+        [YamlMember]
         public ExecutableArchitecture Arch { get; [Obsolete] set; }
 
         [Obsolete]
