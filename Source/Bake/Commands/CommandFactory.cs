@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Abstractions;
@@ -48,15 +49,18 @@ namespace Bake.Commands
         private readonly ILogger<CommandFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDestinationParser _destinationParser;
+        private readonly IPlatformParser _platformParser;
 
         public CommandFactory(
             ILogger<CommandFactory> logger,
             IServiceProvider serviceProvider,
-            IDestinationParser destinationParser)
+            IDestinationParser destinationParser,
+            IPlatformParser platformParser)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _destinationParser = destinationParser;
+            _platformParser = platformParser;
         }
 
         public CommandLineApplication Create(IEnumerable<Type> types)
@@ -111,14 +115,50 @@ namespace Bake.Commands
                         })
                         .ToArray();
                 }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Platform),
+                (argName, value, _) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
 
-            app.Description = 
+                    if (!_platformParser.TryParse(value, out var platform))
+                    {
+                        throw new FormatException($"'{value}' is an invalid Platform value for argument '{argName}'");
+                    }
+
+                    return platform;
+                }));
+            app.ValueParsers.Add(ValueParser.Create(
+                typeof(Platform[]),
+                (argName, value, _) =>
+                {
+                    return value?.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v =>
+                        {
+                            if (!_platformParser.TryParse(v, out var platform))
+                            {
+                                throw new FormatException(
+                                    $"'{value}' is an invalid Platform value for argument '{argName}'");
+                            }
+
+                            return platform;
+                        })
+                        .ToArray();
+                }));
+
+
+            app.Description =
 @"Bake is a convention based build tool that focuses on minimal to none
 effort to configure and setup. Ideally you should be able to run bake in
 any repository with minimal arguments and get the ""expected"" output or
 better. This however comes at the cost of conventions and how well Bake
 works on a project all depends on how many of the conventions that
-project follows.";
+project follows.
+
+https://github.com/rasmus/Bake";
             app.OnExecute(() =>
             {
                 Console.WriteLine(app.GetHelpText());
@@ -143,10 +183,10 @@ project follows.";
                         $"Type '{type.PrettyPrint()}' is not of type '{commandType.PrettyPrint()}'");
                 }
 
-                var verb = type.GetCustomAttribute<CommandVerbAttribute>()?.Name;
-                if (string.IsNullOrEmpty(verb))
+                var commandAttribute = type.GetCustomAttribute<CommandAttribute>();
+                if (commandAttribute == null)
                 {
-                    throw new ArgumentException($"Type '{type.PrettyPrint()}' does not have a verb");
+                    throw new ArgumentException($"Type '{type.PrettyPrint()}' does not have a command attribute");
                 }
 
                 var methodInfos = type
@@ -162,7 +202,7 @@ project follows.";
 
                 var methodInfo = methodInfos.Single();
 
-                app.Command(verb, cmd =>
+                var command = app.Command(commandAttribute.Name, cmd =>
                 {
                     var options = new List<(CommandOption, Type)>();
                     foreach (var parameterInfo in methodInfo.GetParameters())
@@ -225,6 +265,8 @@ project follows.";
                         }
                     });
                 });
+
+                command.Description = commandAttribute.Description;
             }
 
             return app;

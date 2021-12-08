@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,51 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Extensions;
+using Bake.Services;
 using Bake.Tests.Helpers;
+using Bake.ValueObjects;
 using FluentAssertions;
 using NUnit.Framework;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.Tests.UnitTests.Services
 {
-    public class GoLangServiceTests : BakeTest
+    public class PlatformParserTests : TestFor<PlatformParser>
     {
-        public GoLangServiceTests() : base("GoLang.Service")
+        [TestCase("win/x86", ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel32)]
+        [TestCase("linux/x64", ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64)]
+        public void Success(
+            string str,
+            ExecutableOperatingSystem executableOs,
+            ExecutableArchitecture expectedArch)
         {
-        }
-
-        [Test]
-        public async Task Run()
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/golang-service:{version}";
-
             // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--build-version", version));
+            Sut.TryParse(str, out var targetPlatform).Should().BeTrue();
 
             // Assert
-            returnCode.Should().Be(0);
-            AssertFileExists(
-                1L.MB(),
-                "linux-x64",
-                "golang-service");
-            AssertFileExists(
-                1L.MB(),
-                "osx-x64",
-                "golang-service");
-            AssertFileExists(
-                1L.MB(),
-                "win-x64",
-                "golang-service.exe");
-
-            await AssertContainerPingsAsync(expectedImage, 8080);
+            targetPlatform.Os.Should().Be(executableOs);
+            targetPlatform.Arch.Should().Be(expectedArch);
         }
     }
 }

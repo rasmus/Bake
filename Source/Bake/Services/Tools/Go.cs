@@ -22,11 +22,12 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools.GoArguments;
-using Bake.ValueObjects.Recipes.Go;
+using Bake.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -34,23 +35,28 @@ namespace Bake.Services.Tools
 {
     public class Go : IGo
     {
-        private static readonly IReadOnlyDictionary<GoOs, string> OsMap = new ConcurrentDictionary<GoOs, string>
+        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> OsMap = new ConcurrentDictionary<ExecutableOperatingSystem, string>
             {
-                [GoOs.Linux] = "linux",
-                [GoOs.Windows] = "windows",
+                [ExecutableOperatingSystem.Linux] = "linux",
+                [ExecutableOperatingSystem.Windows] = "windows",
+                [ExecutableOperatingSystem.MacOSX] = "darwin",
             };
-        private static readonly IReadOnlyDictionary<GoArch, string> ArchMap = new ConcurrentDictionary<GoArch, string>
+        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchMap = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
-                [GoArch.Intel386] = "386",
-                [GoArch.AMD64] = "amd64",
-                [GoArch.ARM] = "arm",
-                [GoArch.ARM64] = "arm64"
+                [ExecutableArchitecture.Intel32] = "386",
+                [ExecutableArchitecture.Intel64] = "amd64",
+                [ExecutableArchitecture.Arm32] = "arm",
+                [ExecutableArchitecture.Arm64] = "arm64"
             };
+
+        private readonly ILogger<Go> _logger;
         private readonly IRunnerFactory _runnerFactory;
 
         public Go(
+            ILogger<Go> logger,
             IRunnerFactory runnerFactory)
         {
+            _logger = logger;
             _runnerFactory = runnerFactory;
         }
 
@@ -58,16 +64,21 @@ namespace Bake.Services.Tools
             GoBuildArgument argument,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation(
+                "Building Go application {Output}",
+                argument.Output);
+
             var arguments = new[]
                 {
                     "build",
                     "-ldflags", "\"-s -w\"",
-                    "-o", argument.Output                };
+                    "-o", argument.Output
+                };
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "go",
                 argument.WorkingDirectory,
-                SetupEnvironment(argument.Os, argument.Arch),
+                SetupEnvironment(argument.Platform.Os, argument.Platform.Arch),
                 arguments);
 
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
@@ -95,8 +106,8 @@ namespace Bake.Services.Tools
         }
 
         private static IReadOnlyDictionary<string, string> SetupEnvironment(
-            GoOs os,
-            GoArch arch)
+            ExecutableOperatingSystem os,
+            ExecutableArchitecture arch)
         {
             return new Dictionary<string, string>
                 {

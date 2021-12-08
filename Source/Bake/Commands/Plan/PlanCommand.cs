@@ -34,7 +34,9 @@ using Serilog.Events;
 
 namespace Bake.Commands.Plan
 {
-    [CommandVerb("plan")]
+    [Command(
+        "plan",
+        "Analyzes the current directory and builds a plan")]
     public class PlanCommand : ICommand
     {
         private readonly ILogger<PlanCommand> _logger;
@@ -62,7 +64,8 @@ namespace Bake.Commands.Plan
             bool force = false,
             Convention convention = Convention.Default,
             Destination[] destination = null,
-            LogEventLevel logLevel = LogEventLevel.Information)
+            LogEventLevel logLevel = LogEventLevel.Information,
+            Platform[] targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
 
@@ -103,6 +106,7 @@ namespace Bake.Commands.Plan
                 Ingredients.New(
                     buildVersion,
                     Directory.GetCurrentDirectory(),
+                    targetPlatform,
                     convention));
             content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 

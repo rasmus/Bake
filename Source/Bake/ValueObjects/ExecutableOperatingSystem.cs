@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,23 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+// ReSharper disable InconsistentNaming
 
-namespace Bake.Commands
+namespace Bake.ValueObjects
 {
-    public class CommandVerbAttribute : Attribute
+    public enum ExecutableOperatingSystem
     {
-        public string Name { get; }
-
-        public CommandVerbAttribute(
-            string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Name = name;
-        }
+        Undefined = 0,
+        Any,
+        Linux,
+        Windows,
+        MacOSX,
     }
 }

@@ -40,7 +40,7 @@ namespace Bake.Cooking.Cooks.Go
 
         protected override string GetName(GoBuildRecipe recipe)
         {
-            return $"{base.GetName(recipe)} ({recipe.Os}/{recipe.Arch})";
+            return $"{base.GetName(recipe)} ({recipe.Platform.Os}/{recipe.Platform.Arch})";
         }
 
         protected override async Task<bool> CookAsync(
@@ -51,8 +51,7 @@ namespace Bake.Cooking.Cooks.Go
             var argument = new GoBuildArgument(
                 recipe.Output,
                 recipe.WorkingDirectory,
-                recipe.Os,
-                recipe.Arch);
+                recipe.Platform);
 
             using var toolResult = await _go.BuildAsync(
                 argument,

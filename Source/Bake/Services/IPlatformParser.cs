@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,30 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using Bake.ValueObjects.Recipes.DotNet;
+using Bake.ValueObjects;
 
-namespace Bake.Extensions
+namespace Bake.Services
 {
-    public static class DotNetTargetRuntimeExtensions
+    public interface IPlatformParser
     {
-        private static readonly IReadOnlyDictionary<DotNetTargetRuntime, string> RuntimeMap = new Dictionary<DotNetTargetRuntime, string>
-            {
-                [DotNetTargetRuntime.Linux64] = "linux-x64",
-                [DotNetTargetRuntime.Windows64] = "win-x64",
-            };
-
-        public static string ToName(this DotNetTargetRuntime runtime)
-        {
-            if (!RuntimeMap.TryGetValue(runtime, out var name))
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(runtime),
-                    $"Value {runtime} ({(int) runtime}) is unknown");
-            }
-
-            return name;
-        }
+        bool TryParse(string str, out Platform platform);
     }
 }

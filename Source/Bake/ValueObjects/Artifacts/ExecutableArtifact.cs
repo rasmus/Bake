@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,12 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Recipes.Go
+using System;
+using YamlDotNet.Serialization;
+
+namespace Bake.ValueObjects.Artifacts
 {
-    public enum GoOs
+    [Artifact(Names.Artifacts.ExecutableArtifact)]
+    public class ExecutableArtifact : FileArtifact
     {
-        Undefined = 0,
-        Linux,
-        Windows
+        [YamlMember]
+        public Platform Platform { get; [Obsolete] set; }
+
+        [Obsolete]
+        public ExecutableArtifact() { }
+
+        public ExecutableArtifact(
+            ArtifactKey key,
+            string path,
+            Platform platform)
+            : base(key, path)
+        {
+            if (key.Type != ArtifactType.Executable)
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+#pragma warning disable CS0612 // Type or member is obsolete
+            Platform = platform;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

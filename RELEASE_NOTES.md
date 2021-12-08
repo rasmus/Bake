@@ -1,6 +1,13 @@
+# 0.5-beta
+
+* Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
+* New: Now possible to set target platforms via --target-platform argument,
+  which has the default win/x64, linux/x64 and osx/x64
+
 # 0.4-beta
 
 * New: Run .NET in an Alpine Linux image instead of a full blow Ubuntu
+* New: Provide descriptions of what each sub-command actually does
 * Fixed: Not specifying a version should merely default to 1.0 instead
   of throwing an exception
 * Fixed: Release files containing Bake should be named `bake` instead

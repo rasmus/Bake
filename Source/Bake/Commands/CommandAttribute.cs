@@ -20,43 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools;
-using Bake.Services.Tools.DotNetArguments;
-using Bake.ValueObjects.Recipes.DotNet;
+using System;
 
-namespace Bake.Cooking.Cooks.DotNet
+namespace Bake.Commands
 {
-    public class DotNetPublishCook : Cook<DotNetPublishRecipe>
+    public class CommandAttribute : Attribute
     {
-        private readonly IDotNet _dotNet;
+        public string Name { get; }
+        public string Description { get; }
 
-        public DotNetPublishCook(
-            IDotNet dotNet)
+        public CommandAttribute(
+            string name,
+            string description)
         {
-            _dotNet = dotNet;
-        }
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
 
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            DotNetPublishRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new DotNetPublishArgument(
-                recipe.Path,
-                recipe.PublishSingleFile,
-                recipe.SelfContained,
-                recipe.Build,
-                recipe.Configuration,
-                recipe.Platform,
-                recipe.Output);
+            if (string.IsNullOrEmpty(description))
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
 
-            using var toolResult = await _dotNet.PublishAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+            Name = name;
+            Description = description;
         }
     }
 }

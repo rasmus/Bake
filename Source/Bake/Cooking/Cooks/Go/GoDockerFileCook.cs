@@ -38,10 +38,10 @@ namespace Bake.Cooking.Cooks.Go
 FROM gcr.io/distroless/base-debian10
 {{LABELS}}
 WORKDIR /
-COPY {{NAME}} /{{NAME}}
+COPY {{SRC}} /{{DST}}
 EXPOSE {{PORT}}
 USER nonroot:nonroot
-ENTRYPOINT [""/{{NAME}}""]
+ENTRYPOINT [""/{{DST}}""]
 ";
 
         public GoDockerFileCook(
@@ -59,9 +59,10 @@ ENTRYPOINT [""/{{NAME}}""]
         {
             var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
             var dockerLabels = _dockerLabels.Serialize(recipe.Labels);
-
+            
             var dockerfileContent = Dockerfile
-                .Replace("{{NAME}}", recipe.Name)
+                .Replace("{{SRC}}", recipe.Output.Replace("\\", "/"))
+                .Replace("{{DST}}", Path.GetFileName(recipe.Output))
                 .Replace("{{PORT}}", recipe.Port.ToString())
                 .Replace("{{LABELS}}", dockerLabels);
 
