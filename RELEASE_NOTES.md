@@ -1,3 +1,7 @@
+# 0.5-beta
+
+* Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
+
 # 0.4-beta
 
 * New: Run .NET in an Alpine Linux image instead of a full blow Ubuntu
