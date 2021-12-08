@@ -29,11 +29,11 @@ namespace Bake.ValueObjects
 {
     public class Platform
     {
-        public static IReadOnlyCollection<Platform> Defaults { get; } = new[]
+        public static Platform[] Defaults { get; } = 
             {
-                new Platform(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
-                new Platform(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
-                new Platform(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
             };
         public static Platform Any { get; } = new(ExecutableOperatingSystem.Any, ExecutableArchitecture.Any);
 

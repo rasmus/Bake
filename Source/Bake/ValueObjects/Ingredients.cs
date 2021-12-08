@@ -40,7 +40,7 @@ namespace Bake.ValueObjects
                 version,
                 workingDirectory,
                 targetPlatforms != null && targetPlatforms.Any()
-                    ? targetPlatforms
+                    ? targetPlatforms.ToArray()
                     : Platform.Defaults,
                 convention);
 
@@ -54,7 +54,7 @@ namespace Bake.ValueObjects
         public Convention Convention { get; [Obsolete] set; }
 
         [YamlMember]
-        public IReadOnlyCollection<Platform> Platforms { get; [Obsolete] set; }
+        public Platform[] Platforms { get; [Obsolete] set; }
 
         [YamlMember]
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
@@ -129,7 +129,7 @@ namespace Bake.ValueObjects
         public Ingredients(
             SemVer version,
             string workingDirectory,
-            IReadOnlyCollection<Platform> platforms,
+            Platform[] platforms,
             Convention convention)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
