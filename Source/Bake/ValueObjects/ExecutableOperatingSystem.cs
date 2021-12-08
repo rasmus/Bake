@@ -20,12 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// ReSharper disable InconsistentNaming
+
 namespace Bake.ValueObjects
 {
     public enum ExecutableOperatingSystem
     {
         Undefined = 0,
         Linux,
-        Windows
+        Windows,
+        MacOSX,
     }
 }

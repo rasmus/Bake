@@ -42,10 +42,10 @@ namespace Bake.Services.Tools
             };
         private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> ArchMap = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
-                [ExecutableArchitecture.Intel386] = "386",
-                [ExecutableArchitecture.AMD64] = "amd64",
-                [ExecutableArchitecture.ARM] = "arm",
-                [ExecutableArchitecture.ARM64] = "arm64"
+                [ExecutableArchitecture.Intel32] = "386",
+                [ExecutableArchitecture.Intel64] = "amd64",
+                [ExecutableArchitecture.Arm32] = "arm",
+                [ExecutableArchitecture.Arm64] = "arm64"
             };
         private readonly IRunnerFactory _runnerFactory;
 

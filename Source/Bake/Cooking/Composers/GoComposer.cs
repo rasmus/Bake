@@ -127,7 +127,7 @@ namespace Bake.Cooking.Composers
                         windowsOutput,
                         directoryPath,
                         ExecutableOperatingSystem.Windows,
-                        ExecutableArchitecture.AMD64,
+                        ExecutableArchitecture.Intel64,
                         new FileArtifact(
                             new ArtifactKey(ArtifactType.ToolWindows, windowsOutput),
                             Path.Combine(directoryPath, windowsOutput))),
@@ -136,7 +136,7 @@ namespace Bake.Cooking.Composers
                         goModuleName.Name,
                         directoryPath,
                         ExecutableOperatingSystem.Linux,
-                        ExecutableArchitecture.AMD64,
+                        ExecutableArchitecture.Intel64,
                         new FileArtifact(
                             new ArtifactKey(ArtifactType.ToolLinux, goModuleName.Name),
                             Path.Combine(directoryPath, goModuleName.Name)))
