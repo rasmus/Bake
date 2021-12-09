@@ -20,23 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class Author
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<Commit>> CompareAsync(
-            string sha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Email { get; [Obsolete] set; }
+
+        [Obsolete]
+        public Author() { }
+
+        public Author(
+            string name,
+            string email)
+        {
+            Name = name;
+            Email = email;
+        }
     }
 }

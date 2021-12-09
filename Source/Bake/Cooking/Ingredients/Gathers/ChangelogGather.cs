@@ -20,23 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Services;
 using Bake.ValueObjects;
 
-namespace Bake.Services
+namespace Bake.Cooking.Ingredients.Gathers
 {
-    public interface IGitHub
+    public class ChangelogGather : IGather
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        private readonly IGitHub _gitHub;
 
-        Task<IReadOnlyCollection<Commit>> CompareAsync(
-            string sha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public ChangelogGather(
+            IGitHub gitHub)
+        {
+            _gitHub = gitHub;
+        }
+
+        public async Task GatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
+            GitInformation gitInformation;
+            GitHubInformation gitHubInformation;
+
+            try
+            {
+                gitInformation = await ingredients.GitTask;
+                gitHubInformation = await ingredients.GitHubTask;
+            }
+            catch (OperationCanceledException)
+            {
+                ingredients.FailChangelog();
+                return;
+            }
+
+            ingredients.Changelog = (await _gitHub.CompareAsync(
+                gitInformation.Sha,
+                gitHubInformation,
+                cancellationToken))
+                .ToList();
+        }
     }
 }

@@ -20,23 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class Commit
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Message { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<Commit>> CompareAsync(
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
+
+        [YamlMember]
+        public Author Author { get; [Obsolete] set; }
+
+        [YamlMember]
+        public DateTimeOffset Time { get; [Obsolete] set; }
+
+        [Obsolete]
+        public Commit() { }
+
+        public Commit(
+            string message,
             string sha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+            DateTimeOffset time,
+            Author author)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Message = message;
+            Sha = sha;
+            Author = author;
+            Time = time;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

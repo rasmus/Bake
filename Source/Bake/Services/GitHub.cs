@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -28,12 +29,16 @@ using Bake.Core;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Octokit;
+using Author = Bake.ValueObjects.Author;
+using Commit = Bake.ValueObjects.Commit;
 using Release = Bake.ValueObjects.Release;
 
 namespace Bake.Services
 {
     public class GitHub : IGitHub
     {
+        private static readonly IReadOnlyCollection<Commit> EmptyCommits = new Commit[] { };
+
         private readonly ILogger<GitHub> _logger;
         private readonly ICredentials _credentials;
         private readonly IGitHubClientFactory _gitHubClientFactory;
@@ -89,6 +94,51 @@ namespace Bake.Services
                 gitHubInformation.Repository,
                 gitHubRelease.Id,
                 gitHubReleaseUpdate);
+        }
+
+        public async Task<IReadOnlyCollection<Commit>> CompareAsync(
+            string sha,
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var token = await _credentials.TryGetGitHubTokenAsync(
+                gitHubInformation.Url,
+                cancellationToken);
+
+            var gitHubClient = await _gitHubClientFactory.CreateAsync(
+                token,
+                cancellationToken);
+
+            var branches = await gitHubClient.Repository.Branch.GetAll(
+                gitHubInformation.Owner,
+                gitHubInformation.Repository);
+
+            // TODO: Allow better selection
+            var releaseBranch = branches.SingleOrDefault(b => string.Equals(b.Name, "release"));
+            if (releaseBranch == null)
+            {
+                return EmptyCommits;
+            }
+
+            var compareResult = await gitHubClient.Repository.Commit.Compare(
+                gitHubInformation.Owner,
+                gitHubInformation.Repository,
+                releaseBranch.Commit.Sha,
+                sha);
+            if (compareResult.AheadBy <= 0 || compareResult.BehindBy >= 0)
+            {
+                return EmptyCommits;
+            }
+
+            return compareResult.Commits
+                .Select(c => new Commit(
+                    c.Commit.Message,
+                    c.Commit.Sha,
+                    c.Commit.Author.Date,
+                    new Author(
+                        c.Commit.Author.Name,
+                        c.Commit.Author.Email)))
+                .ToList();
         }
 
         private async Task UploadFileAsync(

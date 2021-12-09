@@ -77,6 +77,7 @@ namespace Bake.Extensions
                 .AddTransient<IGather, GitHubGather>()
                 .AddTransient<IGather, ReleaseNotesGather>()
                 .AddTransient<IGather, DynamicDestinationGather>()
+                .AddTransient<IGather, ChangelogGather>()
 
                 // CLI wrappers
                 .AddTransient<IDotNet, DotNet>()

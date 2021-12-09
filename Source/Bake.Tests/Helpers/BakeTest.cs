@@ -32,6 +32,8 @@ using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
@@ -124,6 +126,20 @@ namespace Bake.Tests.Helpers
             {
                 _releases.Add(release);
                 return Task.CompletedTask;
+            }
+
+            public Task<IReadOnlyCollection<Commit>> CompareAsync(
+                string sha,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                var commits = new List<Commit>
+                    {
+                        new("Wrote some awesome tests", "c2dbe6e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu")),
+                        new("Got it working", "4d79e4e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu"))
+                    };
+
+                return Task.FromResult<IReadOnlyCollection<Commit>>(commits);
             }
         }
     }

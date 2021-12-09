@@ -60,6 +60,20 @@ namespace Bake.ValueObjects
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
 
         [YamlMember]
+        public List<Commit> Changelog
+        {
+            get => _changelog.Task.IsCompletedSuccessfully ? _changelog.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _changelog.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public GitInformation Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
@@ -119,9 +133,13 @@ namespace Bake.ValueObjects
         [YamlIgnore]
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
+        [YamlIgnore]
+        public Task<List<Commit>> ChangelogTask => _changelog.Task;
+
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
+        private readonly TaskCompletionSource<List<Commit>> _changelog = new();
 
         [Obsolete]
         public Ingredients() { }
@@ -142,6 +160,7 @@ namespace Bake.ValueObjects
 
         public void FailGit() => _git.SetCanceled();
         public void FailGitHub() => _gitHub.SetCanceled();
+        public void FailChangelog() => _changelog.SetCanceled();
 
         public void FailOutstanding()
         {
@@ -153,6 +172,11 @@ namespace Bake.ValueObjects
             if (!_gitHub.Task.IsCompleted)
             {
                 _gitHub.SetCanceled();
+            }
+
+            if (!_changelog.Task.IsCompleted)
+            {
+                _changelog.SetCanceled();
             }
         }
     }
