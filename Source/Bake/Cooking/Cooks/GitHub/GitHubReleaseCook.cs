@@ -102,7 +102,7 @@ namespace Bake.Cooking.Cooks.GitHub
                 var file = _fileSystem.Open(documentationZipFilePath);
                 releaseFiles.Add(new ReleaseFile(
                     file,
-                    "documentation.zip",
+                    $"documentation_v{context.Ingredients.Version}.zip",
                     await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
             }
 
