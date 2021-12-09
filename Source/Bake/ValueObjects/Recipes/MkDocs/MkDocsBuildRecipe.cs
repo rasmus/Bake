@@ -20,25 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.Tools.MkDocsArguments
+using System;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
+
+namespace Bake.ValueObjects.Recipes.MkDocs
 {
-    public class MkDocsBuildArgument
+    [Recipe(Names.Recipes.MkDocs.Release)]
+    public class MkDocsBuildRecipe : Recipe
     {
-        public string WorkingDirectory { get; }
-        public bool UseDirectoryUrls { get; }
-        public bool Strict { get; }
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
+
+        [YamlMember]
+        public bool UseDirectoryUrls { get; [Obsolete] set; }
+
+        [YamlMember]
+        public bool Strict { get; [Obsolete] set; }
+
+        [YamlMember]
         public string OutputDirectory { get; }
 
-        public MkDocsBuildArgument(
+        [Obsolete]
+        public MkDocsBuildRecipe() {}
+
+        public MkDocsBuildRecipe(
             string workingDirectory,
             bool useDirectoryUrls,
             bool strict,
-            string outputDirectory)
+            string outputDirectory,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             WorkingDirectory = workingDirectory;
             UseDirectoryUrls = useDirectoryUrls;
             Strict = strict;
             OutputDirectory = outputDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

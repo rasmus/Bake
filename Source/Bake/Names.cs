@@ -56,6 +56,7 @@ namespace Bake
             public const string DockerfileArtifact = "dockerfile-artifact";
             public const string NuGetArtifact = "nuget-artifact";
             public const string DirectoryArtifact = "directory-artifact";
+            public const string DocumentationSiteArtifact = "documentation-site-artifact";
         }
 
         public static class ArtifactTypes
@@ -66,6 +67,7 @@ namespace Bake
             public const string DotNetPublishedDirectory = "dotnet-publish-directory";
             public const string NuGet = "nuget";
             public const string Executable = "executable";
+            public const string DocumentationSite = "documentation-site";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
@@ -75,6 +77,7 @@ namespace Bake
                     [ArtifactType.NuGet] = NuGet,
                     [ArtifactType.Release] = Release,
                     [ArtifactType.Executable] = Executable,
+                    [ArtifactType.DocumentationSite] = DocumentationSite,
                 };
 
             private static readonly IReadOnlyDictionary<string, ArtifactType> NameToType = TypeToName
@@ -122,6 +125,11 @@ namespace Bake
             public static class GitHub
             {
                 public const string Release = "github-release";
+            }
+
+            public static class MkDocs
+            {
+                public const string Release = "mkdocs-build";
             }
 
             public static class Docker

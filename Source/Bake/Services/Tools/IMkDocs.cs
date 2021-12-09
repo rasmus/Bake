@@ -20,9 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.MkDocsArguments;
+
 namespace Bake.Services.Tools
 {
     public interface IMkDocs
     {
+        Task<ToolResult> BuildAsync(
+            MkDocsBuildArgument argument,
+            CancellationToken cancellationToken);
     }
 }

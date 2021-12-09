@@ -20,25 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.Tools.MkDocsArguments
-{
-    public class MkDocsBuildArgument
-    {
-        public string WorkingDirectory { get; }
-        public bool UseDirectoryUrls { get; }
-        public bool Strict { get; }
-        public string OutputDirectory { get; }
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.MkDocsArguments;
+using Bake.ValueObjects.Recipes.MkDocs;
 
-        public MkDocsBuildArgument(
-            string workingDirectory,
-            bool useDirectoryUrls,
-            bool strict,
-            string outputDirectory)
+namespace Bake.Cooking.Cooks.MkDocs
+{
+    public class MkDocsBuildCook : Cook<MkDocsBuildRecipe>
+    {
+        private readonly IMkDocs _mkDocs;
+
+        public MkDocsBuildCook(
+            IMkDocs mkDocs)
         {
-            WorkingDirectory = workingDirectory;
-            UseDirectoryUrls = useDirectoryUrls;
-            Strict = strict;
-            OutputDirectory = outputDirectory;
+            _mkDocs = mkDocs;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            MkDocsBuildRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new MkDocsBuildArgument(
+                recipe.WorkingDirectory,
+                recipe.UseDirectoryUrls,
+                recipe.Strict,
+                recipe.OutputDirectory);
+
+            var toolResult = await _mkDocs.BuildAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

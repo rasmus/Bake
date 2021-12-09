@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,25 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Services.Tools.MkDocsArguments
-{
-    public class MkDocsBuildArgument
-    {
-        public string WorkingDirectory { get; }
-        public bool UseDirectoryUrls { get; }
-        public bool Strict { get; }
-        public string OutputDirectory { get; }
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
-        public MkDocsBuildArgument(
-            string workingDirectory,
-            bool useDirectoryUrls,
-            bool strict,
-            string outputDirectory)
+namespace Bake.ValueObjects.Artifacts
+{
+    [Artifact(Names.Artifacts.DocumentationSiteArtifact)]
+    public class DocumentationSiteArtifact : Artifact
+    {
+        public string Path { get; [Obsolete] set; }
+
+        public DocumentationSiteArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key)
         {
-            WorkingDirectory = workingDirectory;
-            UseDirectoryUrls = useDirectoryUrls;
-            Strict = strict;
-            OutputDirectory = outputDirectory;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Path = path;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        [Obsolete]
+        public DocumentationSiteArtifact() { }
+
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            [EnumeratorCancellation] CancellationToken _)
+        {
+            if (!Directory.Exists(Path))
+            {
+                yield return $"Directory {Path} does not exist";
+            }
         }
     }
 }

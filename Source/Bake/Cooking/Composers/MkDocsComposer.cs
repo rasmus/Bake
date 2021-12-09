@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
+using Bake.ValueObjects.Recipes.MkDocs;
 using Bake.ValueObjects.Recipes.Pip;
 using File = System.IO.File;
 
@@ -78,6 +79,17 @@ namespace Bake.Cooking.Composers
                     requirementsFilePath,
                     workingDirectory);
             }
+
+            var outputDirectory = Path.Combine(workingDirectory, "site");
+
+            yield return new MkDocsBuildRecipe(
+                workingDirectory,
+                false,
+                true,
+                outputDirectory,
+                new DocumentationSiteArtifact(
+                    new ArtifactKey(ArtifactType.DocumentationSite, "documentation"),
+                    outputDirectory));
         }
     }
 }

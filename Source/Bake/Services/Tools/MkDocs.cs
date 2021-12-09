@@ -20,9 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Extensions;
+using Bake.Services.Tools.MkDocsArguments;
+
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Services.Tools
 {
     public class MkDocs : IMkDocs
     {
+        private readonly IRunnerFactory _runnerFactory;
+
+        public MkDocs(
+            IRunnerFactory runnerFactory)
+        {
+            _runnerFactory = runnerFactory;
+        }
+
+        public async Task<ToolResult> BuildAsync(
+            MkDocsBuildArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+                {
+                    "build",
+                    argument.UseDirectoryUrls ? "--use-directory-urls" : "--no-directory-urls",
+                    "--verbose",
+                    "--site-dir", argument.OutputDirectory
+                };
+            if (argument.Strict)
+            {
+                arguments.Add("--strict");
+            }
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "mkdocs",
+                argument.WorkingDirectory,
+                arguments);
+
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
+        }
     }
 }
