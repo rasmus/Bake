@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.MkDocsArguments;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Services.Tools
+{
+    public interface IMkDocs
+    {
+        Task<ToolResult> BuildAsync(
+            MkDocsBuildArgument argument,
+            CancellationToken cancellationToken);
     }
 }

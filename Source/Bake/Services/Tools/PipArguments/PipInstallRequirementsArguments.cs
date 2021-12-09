@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools.PipArguments
 {
-    public enum ArtifactType
+    public class PipInstallRequirementsArguments
     {
-        Invalid = 0,
+        public string Path { get; }
+        public string WorkingDirectory { get; }
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+        public PipInstallRequirementsArguments(
+            string path,
+            string workingDirectory)
+        {
+            Path = path;
+            WorkingDirectory = workingDirectory;
+        }
     }
 }

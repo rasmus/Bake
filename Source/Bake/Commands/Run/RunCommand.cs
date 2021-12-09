@@ -30,6 +30,7 @@ using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
+using Microsoft.Extensions.Logging;
 using Serilog.Events;
 
 namespace Bake.Commands.Run
@@ -39,17 +40,20 @@ namespace Bake.Commands.Run
         "Analyzes the current directory, builds a plan and then executes the plan")]
     public class RunCommand : ICommand
     {
+        private readonly ILogger<RunCommand> _logger;
         private readonly IEditor _editor;
         private readonly IKitchen _kitchen;
         private readonly ILogCollector _logCollector;
         private readonly IYaml _yaml;
 
         public RunCommand(
+            ILogger<RunCommand> logger,
             IEditor editor,
             IKitchen kitchen,
             ILogCollector logCollector,
             IYaml yaml)
         {
+            _logger = logger;
             _editor = editor;
             _kitchen = kitchen;
             _logCollector = logCollector;
@@ -83,6 +87,7 @@ namespace Bake.Commands.Run
 
             if (!book.Recipes.Any())
             {
+                _logger.LogCritical("No recipes created!");
                 return ExitCodes.Core.NoRecipes;
             }
 

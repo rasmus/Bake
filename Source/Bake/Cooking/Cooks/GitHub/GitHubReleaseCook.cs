@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -32,6 +34,7 @@ using Bake.Services;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -51,13 +54,16 @@ namespace Bake.Cooking.Cooks.GitHub
                 [ExecutableArchitecture.Intel64] = "x86_64",
             };
 
+        private readonly ILogger<GitHubReleaseCook> _logger;
         private readonly IGitHub _gitHub;
         private readonly IFileSystem _fileSystem;
 
         public GitHubReleaseCook(
+            ILogger<GitHubReleaseCook> logger,
             IGitHub gitHub,
             IFileSystem fileSystem)
         {
+            _logger = logger;
             _gitHub = gitHub;
             _fileSystem = fileSystem;
         }
@@ -77,12 +83,37 @@ namespace Bake.Cooking.Cooks.GitHub
                 .Select(p => _fileSystem.Open(p))
                 .ToArray();
 
-            var stringBuilder = new StringBuilder()
-                .AppendLine("### Release notes")
-                .AppendLine(recipe.ReleaseNotes.Notes)
-                .AppendLine();
+            var stringBuilder = new StringBuilder();
 
-            var releaseFiles = await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken);
+            if (recipe.ReleaseNotes != null)
+            {
+                stringBuilder
+                    .AppendLine("### Release notes")
+                    .AppendLine(recipe.ReleaseNotes.Notes)
+                    .AppendLine();
+            }
+
+            var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
+
+            var documentationSite = recipe.Artifacts
+                .OfType<DocumentationSiteArtifact>()
+                .FirstOrDefault();
+            if (documentationSite != null)
+            {
+                _logger.LogInformation("Documentation site built, packing it into a release file");
+                var documentationZipFilePath = Path.Combine(
+                    Path.GetTempPath(),
+                    Guid.NewGuid().ToString("N"),
+                    "documentation.zip");
+                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath));
+                ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
+                var file = _fileSystem.Open(documentationZipFilePath);
+                releaseFiles.Add(new ReleaseFile(
+                    file,
+                    $"documentation_v{context.Ingredients.Version}.zip",
+                    await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
+            }
+
             if (releaseFiles.Any())
             {
                 stringBuilder.AppendLine("### Files");

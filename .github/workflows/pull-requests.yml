@@ -48,6 +48,10 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: '^1.17.2'
+    - name: Setup Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
     - name: Create a CLI version of Bake to use
       run: dotnet publish -o bake-it Source/Bake

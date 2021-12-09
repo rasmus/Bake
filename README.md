@@ -68,14 +68,19 @@ regarding the environment its executed within.
 After the initial environment information gathering is completed, Bake starts
 to scan the repository for files and structures it knows how to process.
 
-* **.NET** - Directories that contain [.NET](https://dot.net/) projects are
+* **[.NET](https://dot.net/)** - 
+  Directories that contain [.NET](https://dot.net/) projects are
   analyzed and the application/service is built, tested and optionally
   containerized
-* **Docker** - Directories that contain a
+* **[Docker](https://www.docker.com/)** - 
+  Directories that contain a
   [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) will get
   the file built
-* **Go** - Directories that contain [Go](https://go.dev/) projects are analyzed
+* **[Go](https://go.dev/)** -
+  Directories that contain Go projects are analyzed
   and the application/service is built, tested and optionally containerized
+* **[MkDocs](https://www.mkdocs.org/)** -
+  MkDocs documentation sites are built and prepared as artifacts
 
 Based on the selected convention (by providing e.g. `--convention=Release`)
 and the destinations for artifacts, Bake pushes/uploads/creates the built
