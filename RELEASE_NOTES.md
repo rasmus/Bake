@@ -1,8 +1,8 @@
 # 0.5-beta
 
-* Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
 * New: Now possible to set target platforms via --target-platform argument,
   which has the default win/x64, linux/x64 and osx/x64
+* Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
 
 # 0.4-beta
 
