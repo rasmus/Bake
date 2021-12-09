@@ -43,7 +43,7 @@ namespace Bake.Tests.ExplicitTests
         [Test]
         public async Task T()
         {
-            await Sut.CompareAsync(
+            var commits = await Sut.CompareAsync(
                 "c2dbe6e",
                 new GitHubInformation(
                     "rasmus",

@@ -125,7 +125,7 @@ namespace Bake.Services
                 gitHubInformation.Repository,
                 releaseBranch.Commit.Sha,
                 sha);
-            if (compareResult.AheadBy <= 0 || compareResult.BehindBy >= 0)
+            if (compareResult.AheadBy <= 0)
             {
                 return EmptyCommits;
             }
