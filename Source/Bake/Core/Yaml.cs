@@ -150,8 +150,15 @@ namespace Bake.Core
 
             public void WriteYaml(IEmitter emitter, object? value, Type type)
             {
-                var dateTimeOffset = (DateTimeOffset)value;
-                ValueSerializer.SerializeValue(emitter, dateTimeOffset.ToString("O"), typeof(string));
+                if (value == null)
+                {
+                    ValueSerializer.SerializeValue(emitter, null, typeof(string));
+                }
+                else
+                {
+                    var dateTimeOffset = (DateTimeOffset)value;
+                    ValueSerializer.SerializeValue(emitter, dateTimeOffset.ToString("O"), typeof(string));
+                }
             }
         }
 
