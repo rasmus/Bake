@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.PipArguments;
+using Bake.ValueObjects.Recipes.Pip;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Cooking.Cooks.Pip
+{
+    public class PipInstallRequirementsCook : Cook<PipInstallRequirementsRecipe>
+    {
+        private readonly IPip _pip;
+
+        public PipInstallRequirementsCook(
+            IPip pip)
+        {
+            _pip = pip;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            PipInstallRequirementsRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new PipInstallRequirementsArguments(
+                recipe.Path,
+                recipe.WorkingDirectory);
+
+            using var toolResult = await _pip.InstallRequirementsAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
+        }
     }
 }

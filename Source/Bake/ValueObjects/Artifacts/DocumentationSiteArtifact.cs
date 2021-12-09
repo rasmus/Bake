@@ -20,18 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
+
 namespace Bake.ValueObjects.Artifacts
 {
-    public enum ArtifactType
+    [Artifact(Names.Artifacts.DocumentationSiteArtifact)]
+    public class DocumentationSiteArtifact : Artifact
     {
-        Invalid = 0,
+        public string Path { get; [Obsolete] set; }
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+        public DocumentationSiteArtifact(
+            ArtifactKey key,
+            string path)
+            : base(key)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Path = path;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        [Obsolete]
+        public DocumentationSiteArtifact() { }
+
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            [EnumeratorCancellation] CancellationToken _)
+        {
+            if (!Directory.Exists(Path))
+            {
+                yield return $"Directory {Path} does not exist";
+            }
+        }
     }
 }

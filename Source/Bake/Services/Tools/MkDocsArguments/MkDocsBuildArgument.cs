@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools.MkDocsArguments
 {
-    public enum ArtifactType
+    public class MkDocsBuildArgument
     {
-        Invalid = 0,
+        public string WorkingDirectory { get; }
+        public bool UseDirectoryUrls { get; }
+        public bool Strict { get; }
+        public string OutputDirectory { get; }
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+        public MkDocsBuildArgument(
+            string workingDirectory,
+            bool useDirectoryUrls,
+            bool strict,
+            string outputDirectory)
+        {
+            WorkingDirectory = workingDirectory;
+            UseDirectoryUrls = useDirectoryUrls;
+            Strict = strict;
+            OutputDirectory = outputDirectory;
+        }
     }
 }

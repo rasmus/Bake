@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,18 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System;
+using YamlDotNet.Serialization;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.ValueObjects.Recipes.Pip
+{
+    [Recipe(Names.Recipes.Pip.InstallRequirements)]
+    public class PipInstallRequirementsRecipe : Recipe
+    {
+        [YamlMember]
+        public string Path { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
+
+        [Obsolete]
+        public PipInstallRequirementsRecipe() { }
+
+        public PipInstallRequirementsRecipe(
+            string path,
+            string workingDirectory)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Path = path;
+            WorkingDirectory = workingDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }
