@@ -83,14 +83,21 @@ namespace Bake.Cooking.Cooks.GitHub
                 .Select(p => _fileSystem.Open(p))
                 .ToArray();
 
-            var stringBuilder = new StringBuilder()
-                .AppendLine("### Release notes")
-                .AppendLine(recipe.ReleaseNotes.Notes)
-                .AppendLine();
+            var stringBuilder = new StringBuilder();
+
+            if (recipe.ReleaseNotes != null)
+            {
+                stringBuilder
+                    .AppendLine("### Release notes")
+                    .AppendLine(recipe.ReleaseNotes.Notes)
+                    .AppendLine();
+            }
 
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
 
-            var documentationSite = context.GetArtifacts<DocumentationSiteArtifact>().FirstOrDefault();
+            var documentationSite = recipe.Artifacts
+                .OfType<DocumentationSiteArtifact>()
+                .FirstOrDefault();
             if (documentationSite != null)
             {
                 _logger.LogInformation("Documentation site built, packing it into a release file");
@@ -98,6 +105,7 @@ namespace Bake.Cooking.Cooks.GitHub
                     Path.GetTempPath(),
                     Guid.NewGuid().ToString("N"),
                     "documentation.zip");
+                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath));
                 ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
                 var file = _fileSystem.Open(documentationZipFilePath);
                 releaseFiles.Add(new ReleaseFile(
