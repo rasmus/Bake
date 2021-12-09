@@ -93,6 +93,16 @@ namespace Bake.Cooking.Cooks.GitHub
                     .AppendLine();
             }
 
+            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Any())
+            {
+                foreach (var commit in context.Ingredients.Changelog)
+                {
+                    stringBuilder.AppendLine($"* {commit.Message}");
+                }
+
+                stringBuilder.AppendLine();
+            }
+
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
 
             var documentationSite = recipe.Artifacts
