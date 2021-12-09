@@ -2,6 +2,8 @@
 
 * New: Now possible to set target platforms via --target-platform argument,
   which has the default win/x64, linux/x64 and osx/x64
+* New: Bake now builds MkDocs built projects into ZIP files and releases
+  them as part of the release process
 * Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
 
 # 0.4-beta
@@ -24,7 +26,7 @@
 * Fixed: Bake now correctly prints the help message if no sub-command
   is given instead of merely doing nothing
 
-# 0.2-beta initial release
+# 0.2-beta
 
 * New: Build, test and create containers for either .NET or Go
 * New: Supported destinations for artifacts
@@ -32,6 +34,6 @@
   * GitHub Packages (NuGet and container)
   * GitHub Releases (tools)
 
-# 0.1-alpha version of Bake
+# 0.1-alpha
 
 - Basic functionality
