@@ -24,33 +24,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bake.Cooking;
+using Bake.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Services
 {
     public class ComposerOrdering : IComposerOrdering
     {
+        private readonly ILogger<ComposerOrdering> _logger;
+
+        public ComposerOrdering(
+            ILogger<ComposerOrdering> logger)
+        {
+            _logger = logger;
+        }
+
         public IReadOnlyCollection<IComposer> Order(IEnumerable<IComposer> composers)
         {
-            var unordered = composers.ToList();
+            var unordered = composers
+                .OrderBy(c => c.GetType().PrettyPrint())
+                .ToList();
             var ordered = new List<IComposer>();
 
             while (unordered.Any())
             {
                 var satisfied = unordered
-                    .Where(c => c.Consumes.All(a => ordered.Any(o => o.Produces.Contains(a))))
-                    .ToList();
-
-                if (!satisfied.Any())
+                    .FirstOrDefault(c => 
+                        c.Consumes.All(a => ordered.Any(o => o.Produces.Contains(a))) &&
+                        c.Consumes.All(a => unordered.All(o => !o.Produces.Contains(a)))
+                        );
+                if (satisfied == null)
                 {
-                    throw new Exception("Cannot order any more");
+                    throw new Exception("Could not find a consumer to pick for the next in line");
                 }
 
-                ordered.AddRange(satisfied);
-                foreach (var composer in satisfied)
-                {
-                    unordered.Remove(composer);
-                }
+                ordered.Add(satisfied);
+                unordered.Remove(satisfied);
             }
+
+            _logger.LogInformation(
+                "Ordering composers like this: {Composers}",
+                ordered.Select(c => c.GetType().PrettyPrint()));
 
             return ordered;
         }
