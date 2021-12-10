@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bake.Cooking;
@@ -30,7 +31,28 @@ namespace Bake.Services
     {
         public IReadOnlyCollection<IComposer> Order(IEnumerable<IComposer> composers)
         {
-            return composers.ToList();
+            var unordered = composers.ToList();
+            var ordered = new List<IComposer>();
+
+            while (unordered.Any())
+            {
+                var satisfied = unordered
+                    .Where(c => c.Consumes.All(a => ordered.Any(o => o.Produces.Contains(a))))
+                    .ToList();
+
+                if (!satisfied.Any())
+                {
+                    throw new Exception("Cannot order any more");
+                }
+
+                ordered.AddRange(satisfied);
+                foreach (var composer in satisfied)
+                {
+                    unordered.Remove(composer);
+                }
+            }
+
+            return ordered;
         }
     }
 }

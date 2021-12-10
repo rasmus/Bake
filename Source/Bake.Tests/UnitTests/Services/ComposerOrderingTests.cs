@@ -24,6 +24,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.Kernel;
 using Bake.Cooking;
 using Bake.Services;
 using Bake.Tests.Helpers;
@@ -39,7 +41,7 @@ namespace Bake.Tests.UnitTests.Services
         private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
 
         [Test]
-        public void T()
+        public void BasicOrdering()
         {
             // Arrange
             var composers = new[]
@@ -51,6 +53,24 @@ namespace Bake.Tests.UnitTests.Services
 
             // Act + Assert
             Test(composers, "E", "E", "R");
+        }
+
+        [Test]
+        public void Current()
+        {
+            // Arrange
+            var composers = typeof(Program).Assembly
+                .Types()
+                .Where(t => t.IsAssignableTo(typeof(IComposer)) && !t.IsAbstract)
+                .Select(t => new SpecimenContext(Fixture).Resolve(t))
+                .Cast<IComposer>()
+                .ToList();
+
+            // Act
+            IReadOnlyCollection<IComposer> ordered = null;
+            Assert.DoesNotThrow(() => ordered = Sut.Order(composers));
+            ordered.Should().NotBeNull();
+            ordered.Should().HaveCount(composers.Count);
         }
 
         private void Test(
@@ -77,16 +97,18 @@ namespace Bake.Tests.UnitTests.Services
 
         private static IComposer DummyProducer(string name, params ArtifactType[] artifactTypes) => new DummyComposer(
             name,
-            artifactTypes,
-            EmptyArtifactTypes);
-        private static IComposer DummyConsumer(string name, params ArtifactType[] artifactTypes) => new DummyComposer(
-            name,
             EmptyArtifactTypes,
             artifactTypes);
+        
+        private static IComposer DummyConsumer(string name, params ArtifactType[] artifactTypes) => new DummyComposer(
+            name,
+            artifactTypes,
+            EmptyArtifactTypes);
+
         private static IComposer Dummy(string name, ArtifactType consume, ArtifactType produce) => new DummyComposer(
             name,
-            new []{consume},
-            new []{produce});
+            new[] { consume },
+            new[] { produce });
 
         private class DummyComposer : IComposer
         {
@@ -96,10 +118,9 @@ namespace Bake.Tests.UnitTests.Services
             public IReadOnlyCollection<ArtifactType> Produces { get; }
             public IReadOnlyCollection<ArtifactType> Consumes { get; }
 
-            public DummyComposer(
-                string name,
-                IReadOnlyCollection<ArtifactType> produces,
-                IReadOnlyCollection<ArtifactType> consumes)
+            public DummyComposer(string name,
+                IReadOnlyCollection<ArtifactType> consumes,
+                IReadOnlyCollection<ArtifactType> produces)
             {
                 Name = name;
                 Produces = produces;
