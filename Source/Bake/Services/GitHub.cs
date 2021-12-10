@@ -59,6 +59,7 @@ namespace Bake.Services
 
             var gitHubClient = await _gitHubClientFactory.CreateAsync(
                 token,
+                gitHubInformation.ApiUrl,
                 cancellationToken);
 
             var tag = $"v{release.Version}";

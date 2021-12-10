@@ -35,18 +35,23 @@ namespace Bake.Services
 
         public Task<IGitHubClient> CreateAsync(
             string token,
+            Uri apiUrl,
             CancellationToken cancellationToken)
         {
-            var gitHubClient = Create(new InMemoryCredentialStore(new Credentials(token)));
+            var gitHubClient = Create(
+                apiUrl,
+                new InMemoryCredentialStore(new Credentials(token)));
             return Task.FromResult(gitHubClient);
         }
 
         private static IGitHubClient Create(
+            Uri apiUrl,
             ICredentialStore credentialStore)
         {
             return new GitHubClient(
                 new ProductHeaderValue("bake", Version.ToString()),
-                credentialStore);
+                credentialStore,
+                apiUrl);
         }
     }
 }

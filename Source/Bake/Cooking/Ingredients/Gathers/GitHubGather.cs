@@ -21,25 +21,31 @@
 // SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
 {
     public class GitHubGather : IGather
     {
-        private static readonly Regex GitHubUrlExtractor = new Regex(
+        private static readonly Regex GitHubUrlExtractor = new(
             @"^/(?<owner>[^/]+)/(?<repo>.+)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        public static readonly Uri GitHubApiUrl = new("https://api.github.com/", UriKind.Absolute);
 
+        private readonly ILogger<GitHubGather> _logger;
         private readonly IDefaults _defaults;
 
         public GitHubGather(
+            ILogger<GitHubGather> logger,
             IDefaults defaults)
         {
+            _logger = logger;
             _defaults = defaults;
         }
 
@@ -54,12 +60,40 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
             catch (OperationCanceledException)
             {
+                _logger.LogInformation("No git information, thus failed to get any GitHub information");
                 ingredients.FailGitHub();
                 return;
             }
 
-            if (!string.Equals(gitInformation.OriginUrl.Host, _defaults.GitHubUrl.Host, StringComparison.OrdinalIgnoreCase))
+            Uri apiUrl;
+            if (string.Equals(gitInformation.OriginUrl.Host, _defaults.GitHubUrl.Host, StringComparison.OrdinalIgnoreCase))
             {
+                apiUrl = GitHubApiUrl;
+                _logger.LogInformation(
+                    "Public GitHub detected on origin {Url}. Setting API URL to {ApiUrl}",
+                    gitInformation.OriginUrl,
+                    apiUrl);
+            }
+            else if (string.Equals(
+                "github",
+                gitInformation.OriginUrl.Host.Split('.', StringSplitOptions.RemoveEmptyEntries).First(),
+                StringComparison.OrdinalIgnoreCase))
+            {
+                apiUrl = new UriBuilder(gitInformation.OriginUrl)
+                    {
+                        Scheme = "https",
+                        Path = "/api/v3"
+                    }.Uri;
+                _logger.LogInformation(
+                    "The first part of the URL {Url} is 'github', thus we expect that its GitHub Enterprise. Setting API URL to {ApiUrl}",
+                    gitInformation.OriginUrl,
+                    apiUrl);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Could not determine public nor enterprise GitHub URL from {RemoteUrl}",
+                    gitInformation.OriginUrl);
                 ingredients.FailGitHub();
                 return;
             }
@@ -67,6 +101,9 @@ namespace Bake.Cooking.Ingredients.Gathers
             var match = GitHubUrlExtractor.Match(gitInformation.OriginUrl.LocalPath);
             if (!match.Success)
             {
+                _logger.LogWarning(
+                    "Could not determine GitHub owner and repository from {RemoteUrl}",
+                    gitInformation.OriginUrl);
                 ingredients.FailGitHub();
                 return;
             }
@@ -82,7 +119,8 @@ namespace Bake.Cooking.Ingredients.Gathers
             ingredients.GitHub = new GitHubInformation(
                 match.Groups["owner"].Value,
                 repo,
-                url);
+                url,
+                apiUrl);
         }
     }
 }

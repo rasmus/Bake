@@ -42,9 +42,14 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             Inject<IDefaults>(new Defaults());
         }
 
-        [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake")]
-        [TestCase("https://github.com/rasmus/Bake", "rasmus", "Bake")]
-        public async Task Verify(string url, string expectedOwner, string expectedRepository)
+        [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake", "https://api.github.com/")]
+        [TestCase("https://github.com/rasmus/Bake", "rasmus", "Bake", "https://api.github.com/")]
+        [TestCase("https://github.schibsted.com/rasmus-mikkelsen/Bake", "rasmus-mikkelsen", "Bake", "https://github.schibsted.com/api/v3")]
+        public async Task Verify(
+            string url,
+            string expectedOwner,
+            string expectedRepository,
+            string expectedApiUrl)
         {
             // Arrange
             var ingredients = Bake.ValueObjects.Ingredients.New(
@@ -62,6 +67,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             // Assert
             gitHubInformation.Owner.Should().Be(expectedOwner);
             gitHubInformation.Repository.Should().Be(expectedRepository);
+            gitHubInformation.ApiUrl.Should().Be(expectedApiUrl);
         }
     }
 }

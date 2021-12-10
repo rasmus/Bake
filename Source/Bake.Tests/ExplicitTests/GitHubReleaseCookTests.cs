@@ -52,7 +52,8 @@ namespace Bake.Tests.ExplicitTests
                 new GitHubInformation(
                     "rasmus",
                     "testtest",
-                    new Uri("https://github.com/rasmus/testtest")),
+                    new Uri("https://github.com/rasmus/testtest"),
+                    new Uri("https://api.guthub.com/")),
                 SemVer.Random,
                 "a108d8a38b4ac154172cb7eeea8530e316ead798",
                 new ReleaseNotes(SemVer.Random, "This is a test"),

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Octokit;
@@ -28,8 +29,8 @@ namespace Bake.Services
 {
     public interface IGitHubClientFactory
     {
-        Task<IGitHubClient> CreateAsync(
-            string token,
+        Task<IGitHubClient> CreateAsync(string token,
+            Uri apiUrl,
             CancellationToken cancellationToken);
     }
 }
