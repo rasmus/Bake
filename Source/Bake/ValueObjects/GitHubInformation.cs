@@ -36,7 +36,7 @@ namespace Bake.ValueObjects
         [YamlMember(typeof(string))]
         public Uri Url { get; [Obsolete] set; }
 
-        [YamlMember]
+        [YamlMember(typeof(string))]
         public Uri ApiUrl { get; [Obsolete] set; }
 
         [Obsolete]
