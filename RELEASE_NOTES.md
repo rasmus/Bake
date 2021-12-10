@@ -5,6 +5,7 @@
 * New: Bake now builds MkDocs built projects into ZIP files and releases
   them as part of the release process
 * Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
+* Fixed: GitHub Enterprise usage should be detected in most cases now
 
 # 0.4-beta
 

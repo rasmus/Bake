@@ -69,6 +69,10 @@ namespace Bake.Cooking.Ingredients.Gathers
             if (string.Equals(gitInformation.OriginUrl.Host, _defaults.GitHubUrl.Host, StringComparison.OrdinalIgnoreCase))
             {
                 apiUrl = GitHubApiUrl;
+                _logger.LogInformation(
+                    "Public GitHub detected on origin {Url}. Setting API URL to {ApiUrl}",
+                    gitInformation.OriginUrl,
+                    apiUrl);
             }
             else if (string.Equals(
                 "github",
@@ -80,6 +84,10 @@ namespace Bake.Cooking.Ingredients.Gathers
                         Scheme = "https",
                         Path = "/api/v3"
                     }.Uri;
+                _logger.LogInformation(
+                    "The first part of the URL {Url} is 'github', thus we expect that its GitHub Enterprise. Setting API URL to {ApiUrl}",
+                    gitInformation.OriginUrl,
+                    apiUrl);
             }
             else
             {
