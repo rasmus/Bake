@@ -94,6 +94,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, GoComposer>()
                 .AddTransient<IComposer, MkDocsComposer>()
                 .AddTransient<IComposer, ReleaseComposer>()
+                .AddTransient<IComposer, PythonFlaskComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
