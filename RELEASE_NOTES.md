@@ -6,6 +6,8 @@
   them as part of the release process
 * Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
 * Fixed: GitHub Enterprise usage should be detected in most cases now
+* Fixed: Made sure that composers are do in an order that statisfies their
+  needs
 
 # 0.4-beta
 
