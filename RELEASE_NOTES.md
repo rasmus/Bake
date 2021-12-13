@@ -1,3 +1,7 @@
+# 0.6-beta
+
+* **Nothing yet**
+
 # 0.5-beta
 
 * New: Now possible to set target platforms via --target-platform argument,
