@@ -51,12 +51,18 @@ namespace Bake.Cooking.Composers
             IContext context,
             CancellationToken cancellationToken)
         {
-            var appFiles = await _fileSystem.FindFilesAsync(
+            var appFilesTask = _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "app.py",
                 cancellationToken);
+            var runFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "run.py",
+                cancellationToken);
 
-            var recipes = (await Task.WhenAll(appFiles.Select(f => CreateRecipesAsync(f, cancellationToken))))
+            var files = (await Task.WhenAll(appFilesTask, runFilesTask)).SelectMany(l => l);
+
+            var recipes = (await Task.WhenAll(files.Select(f => CreateRecipesAsync(f, cancellationToken))))
                 .SelectMany(a => a)
                 .ToList();
 
