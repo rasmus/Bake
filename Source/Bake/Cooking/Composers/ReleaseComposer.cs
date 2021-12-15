@@ -41,6 +41,7 @@ namespace Bake.Cooking.Composers
                 ArtifactType.NuGet,
                 ArtifactType.Executable,
                 ArtifactType.DocumentationSite,
+                ArtifactType.Container
             };
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -74,6 +75,7 @@ namespace Bake.Cooking.Composers
             var artifacts = Enumerable.Empty<Artifact>()
                 .Concat(context.GetArtifacts<ExecutableArtifact>())
                 .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
+                .Concat(context.GetArtifacts<ContainerArtifact>())
                 .ToArray();
 
             if (!artifacts.Any())

@@ -134,7 +134,10 @@ namespace Bake.Cooking.Composers
             yield return new DockerBuildRecipe(
                 path,
                 slug,
-                tags);
+                tags,
+                new ContainerArtifact(
+                    new ArtifactKey(ArtifactType.Container, slug),
+                    tags.ToArray()));
         }
     }
 }
