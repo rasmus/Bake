@@ -75,6 +75,7 @@ namespace Bake.Cooking.Composers
             var artifacts = Enumerable.Empty<Artifact>()
                 .Concat(context.GetArtifacts<ExecutableArtifact>())
                 .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
+                .Concat(context.GetArtifacts<ContainerArtifact>())
                 .ToArray();
 
             if (!artifacts.Any())
