@@ -87,21 +87,6 @@ namespace Bake
             {
                 return NameToType.TryGetValue(name, out artifactType);
             }
-
-            public static string GetName(ArtifactType artifactType)
-            {
-                if (!Enum.IsDefined(typeof(ArtifactType), artifactType) || artifactType == ArtifactType.Invalid)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
-                }
-
-                if (!TypeToName.TryGetValue(artifactType, out var name))
-                {
-                    throw new NotImplementedException();
-                }
-
-                return name;
-            }
         }
 
         /// <summary>

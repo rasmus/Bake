@@ -183,7 +183,7 @@ namespace Bake.Cooking.Composers
                     configuration,
                     ingredients.Version,
                     new NuGetArtifact(
-                        new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
+                        //new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
 
@@ -224,7 +224,6 @@ namespace Bake.Cooking.Composers
                     Platform.Any,
                     path,
                     new DirectoryArtifact(
-                        new ArtifactKey(ArtifactType.DotNetPublishedDirectory, visualStudioProject.Name),
                         Path.Combine(visualStudioProject.Directory, path)));
 
                 var moniker = visualStudioProject.CsProj.TargetFrameworkVersions
@@ -243,7 +242,7 @@ namespace Bake.Cooking.Composers
                     moniker,
                     labels,
                     new DockerFileArtifact(
-                        new ArtifactKey(ArtifactType.Dockerfile, visualStudioProject.Name),
+                        visualStudioProject.Name,
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
 
@@ -265,9 +264,7 @@ namespace Bake.Cooking.Composers
                     targetPlatform,
                     path,
                     new ExecutableArtifact(
-                        new ArtifactKey(
-                            ArtifactType.Executable,
-                            visualStudioProject.CsProj.ToolCommandName),
+                        visualStudioProject.CsProj.ToolCommandName,
                         Path.Combine(
                             visualStudioProject.Directory,
                             path,

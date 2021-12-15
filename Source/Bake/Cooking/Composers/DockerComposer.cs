@@ -100,7 +100,7 @@ namespace Bake.Cooking.Composers
                     dockerfileArtifacts.Select(a => a.Path).ToList());
                 foreach (var dockerfileArtifact in dockerfileArtifacts)
                 {
-                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Key.Name, ingredients.Version, urls));
+                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, urls));
                 }
             }
 

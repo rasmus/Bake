@@ -88,7 +88,6 @@ namespace Bake.Cooking.Composers
                 true,
                 outputDirectory,
                 new DocumentationSiteArtifact(
-                    new ArtifactKey(ArtifactType.DocumentationSite, "documentation"),
                     outputDirectory));
         }
     }

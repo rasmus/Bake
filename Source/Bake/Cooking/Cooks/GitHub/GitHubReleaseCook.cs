@@ -173,7 +173,7 @@ namespace Bake.Cooking.Cooks.GitHub
         {
             var parts = new[]
                 {
-                    artifact.Key.Name,
+                    artifact.Name,
                     NamingOs[artifact.Platform.Os],
                     NamingArch[artifact.Platform.Arch]
                 };
