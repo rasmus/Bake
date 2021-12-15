@@ -41,6 +41,7 @@ namespace Bake.Cooking.Composers
                 ArtifactType.NuGet,
                 ArtifactType.Executable,
                 ArtifactType.DocumentationSite,
+                ArtifactType.Container
             };
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
