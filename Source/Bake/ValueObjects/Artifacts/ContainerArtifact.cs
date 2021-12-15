@@ -27,6 +27,7 @@ using System.Threading;
 
 namespace Bake.ValueObjects.Artifacts
 {
+    [Artifact(Names.Artifacts.ContainerArtifact)]
     public class ContainerArtifact : Artifact
     {
         public string[] Tags { get; [Obsolete] set; }
