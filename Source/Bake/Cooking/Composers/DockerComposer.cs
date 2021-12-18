@@ -136,7 +136,7 @@ namespace Bake.Cooking.Composers
                 slug,
                 tags,
                 new ContainerArtifact(
-                    new ArtifactKey(ArtifactType.Container, slug),
+                    slug,
                     tags.ToArray()));
         }
     }

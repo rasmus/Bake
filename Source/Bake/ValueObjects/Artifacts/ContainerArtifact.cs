@@ -24,31 +24,31 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.ContainerArtifact)]
     public class ContainerArtifact : Artifact
     {
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
+
+        [YamlMember]
         public string[] Tags { get; [Obsolete] set; }
 
         [Obsolete]
         public ContainerArtifact() { }
 
-        public ContainerArtifact(
-            ArtifactKey key,
-            string[] tags)
-            : base(key)
-        {
-            if (key.Type != ArtifactType.Container)
-            {
-                throw new ArgumentException(nameof(key));
-            }
-
 #pragma warning disable CS0612 // Type or member is obsolete
+        public ContainerArtifact(
+            string name,
+            string[] tags)
+        {
+            Name = name;
             Tags = tags;
-#pragma warning restore CS0612 // Type or member is obsolete
         }
+#pragma warning restore CS0612 // Type or member is obsolete
 
         public override async IAsyncEnumerable<string> ValidateAsync(
             [EnumeratorCancellation] CancellationToken _)

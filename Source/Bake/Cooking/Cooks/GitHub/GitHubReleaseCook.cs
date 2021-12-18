@@ -122,7 +122,7 @@ namespace Bake.Cooking.Cooks.GitHub
                 stringBuilder.AppendLine("### Containers");
                 foreach (var containerArtifact in containerArtifacts)
                 {
-                    stringBuilder.AppendLine($"* `{containerArtifact.Key.Name}`");
+                    stringBuilder.AppendLine($"* `{containerArtifact.Name}`");
                     foreach (var tag in containerArtifact.Tags)
                     {
                         stringBuilder.AppendLine($"  * `{tag}`");
