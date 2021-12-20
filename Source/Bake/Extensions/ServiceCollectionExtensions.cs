@@ -96,7 +96,8 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, GoComposer>()
                 .AddTransient<IComposer, MkDocsComposer>()
                 .AddTransient<IComposer, HelmComposer>()
-                .AddTransient<IComposer, ReleaseComposer>()
+                .AddTransient<IComposer, OctopusDeployPackageComposer>()
+                .AddTransient<IComposer, GitHubReleaseComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()

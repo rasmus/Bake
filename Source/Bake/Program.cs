@@ -57,6 +57,7 @@ namespace Bake
 
             var serviceCollection = new ServiceCollection()
                 .AddLogging(f => f.AddSerilog(LoggerBuilder.CreateLogger(logCollector)))
+                .AddHttpClient()
                 .AddBake(logCollector);
 
             overrides?.Invoke(serviceCollection);

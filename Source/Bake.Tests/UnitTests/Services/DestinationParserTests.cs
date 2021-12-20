@@ -77,6 +77,20 @@ namespace Bake.Tests.UnitTests.Services
         }
 
         [TestCase(
+            "helm-chart>https://localhost:4321/",
+            "https://localhost:4321/")]
+        public void HelmChart(
+            string input,
+            string expectedRegistryUrl)
+        {
+            // Act
+            Sut.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            ((OctopusDeployDestination)destination).Url.Should().Be(expectedRegistryUrl);
+        }
+
+        [TestCase(
             "container>github",
             "container",
             "github")]

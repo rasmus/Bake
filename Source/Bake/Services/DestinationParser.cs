@@ -84,6 +84,21 @@ namespace Bake.Services
                     destination = new NuGetRegistryDestination(nugetRegistryUrl);
                     return true;
 
+
+                case Names.ArtifactTypes.HelmChart:
+                    if (parts.Length != 2)
+                    {
+                        return false;
+                    }
+
+                    if (!Uri.TryCreate(parts[1], UriKind.Absolute, out var octopusDeployUrl))
+                    {
+                        return false;
+                    }
+
+                    destination = new OctopusDeployDestination(octopusDeployUrl.AbsoluteUri);
+                    return true;
+
                 case Names.ArtifactTypes.Container:
                     if (string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))
                     {

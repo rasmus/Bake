@@ -71,6 +71,7 @@ namespace Bake
             public const string NuGet = "nuget";
             public const string Executable = "executable";
             public const string DocumentationSite = "documentation-site";
+            public const string HelmChart = "helm-chart";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
@@ -124,6 +125,11 @@ namespace Bake
             public static class MkDocs
             {
                 public const string Release = "mkdocs-build";
+            }
+
+            public static class OctopusDeploy
+            {
+                public const string PackageRawPush = "octopus-deploy-package-raw-push";
             }
 
             public static class Docker
