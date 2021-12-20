@@ -20,20 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools.HelmArguments;
+using System;
+using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services.Tools
+namespace Bake.ValueObjects.Recipes.Helm
 {
-    public interface IHelm
+    [Recipe(Names.Recipes.Helm.Package)]
+    public class HelmPackageRecipe : Recipe
     {
-        Task<IToolResult> LintAsync(
-            HelmLintArgument argument,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string ChartDirectory { get; [Obsolete] set; }
 
-        Task<IToolResult> PackageAsync(
-            HelmPackageArgument argument,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string OutputDirectory { get; [Obsolete] set; }
+
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
+
+        [Obsolete]
+        public HelmPackageRecipe() { }
+
+        public HelmPackageRecipe(
+            string chartDirectory,
+            string outputDirectory,
+            SemVer version,
+            params Artifact[] artifacts)
+            : base(artifacts)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            ChartDirectory = chartDirectory;
+            OutputDirectory = outputDirectory;
+            Version = version;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

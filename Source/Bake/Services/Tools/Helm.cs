@@ -57,5 +57,28 @@ namespace Bake.Services.Tools
 
             return new ToolResult(runnerResult);
         }
+
+        public async Task<IToolResult> PackageAsync(
+            HelmPackageArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+                {
+                    "package",
+                    argument.ChartDirectory,
+                    "--dependency-update",
+                    "--version", argument.Version.ToString(),
+                    "--destination", argument.OutputDirectory
+                };
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "helm",
+                Directory.GetCurrentDirectory(),
+                arguments);
+
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
+        }
     }
 }

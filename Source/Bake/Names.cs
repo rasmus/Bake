@@ -117,6 +117,7 @@ namespace Bake
             public static class Helm
             {
                 public const string Lint = "helm-lint";
+                public const string Package = "helm-package";
             }
 
             public static class MkDocs

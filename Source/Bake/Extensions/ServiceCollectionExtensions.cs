@@ -118,6 +118,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, PipInstallRequirementsCook>()
                 // Cooks - Helm
                 .AddTransient<ICook, HelmLintCook>()
+                .AddTransient<ICook, HelmPackageCook>()
                 // Cooks - GitHub
                 .AddTransient<ICook, GitHubReleaseCook>()
                 // Cooks - MkDocs

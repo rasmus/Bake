@@ -20,20 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services.Tools.HelmArguments;
+using Bake.Core;
 
-namespace Bake.Services.Tools
+namespace Bake.Services.Tools.HelmArguments
 {
-    public interface IHelm
+    public class HelmPackageArgument
     {
-        Task<IToolResult> LintAsync(
-            HelmLintArgument argument,
-            CancellationToken cancellationToken);
+        public string ChartDirectory { get; }
+        public string OutputDirectory { get; }
+        public SemVer Version { get; }
 
-        Task<IToolResult> PackageAsync(
-            HelmPackageArgument argument,
-            CancellationToken cancellationToken);
+        public HelmPackageArgument(
+            string chartDirectory,
+            string outputDirectory,
+            SemVer version)
+        {
+            ChartDirectory = chartDirectory;
+            OutputDirectory = outputDirectory;
+            Version = version;
+        }
     }
 }

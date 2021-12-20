@@ -29,12 +29,14 @@ using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Helm;
+using YamlDotNet.Serialization;
 
 namespace Bake.Cooking.Composers
 {
     public class HelmComposer : Composer
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IYaml _yaml;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
         {
@@ -42,9 +44,11 @@ namespace Bake.Cooking.Composers
         };
 
         public HelmComposer(
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IYaml yaml)
         {
             _fileSystem = fileSystem;
+            _yaml = yaml;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -56,17 +60,46 @@ namespace Bake.Cooking.Composers
                 "Chart.yaml",
                 cancellationToken);
 
-            return chartFiles
-                .Select(Path.GetDirectoryName)
-                .SelectMany(CreateRecipes)
-                .ToList();
+            var ingredients = context.Ingredients;
+
+            return (await Task.WhenAll(chartFiles
+                    .Select(p => CreateRecipes(p, ingredients, cancellationToken))))
+                .SelectMany(r => r)
+                .ToArray();
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
-            string chartDirectory)
+        private async Task<IReadOnlyCollection<Recipe>> CreateRecipes(
+            string chartFilePath,
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
         {
-            yield return new HelmLintRecipe(
-                chartDirectory);
+            var recipes = new List<Recipe>();
+
+            var yaml = await _fileSystem.ReadAllTextAsync(chartFilePath, cancellationToken);
+            var chart = await _yaml.DeserializeAsync<HelmChart>(
+                yaml,
+                cancellationToken);
+
+            var chartDirectory = Path.GetDirectoryName(chartFilePath);
+            var chartFileName = $"{chart.Name}-{ingredients.Version}.tgz";
+            var parentDirectory = Path.GetDirectoryName(chartDirectory);
+
+            recipes.Add(new HelmLintRecipe(
+                chartDirectory));
+            recipes.Add(new HelmPackageRecipe(
+                chartDirectory,
+                parentDirectory,
+                ingredients.Version,
+                new HelmChartArtifact(
+                    Path.Combine(parentDirectory, chartFileName))));
+
+            return recipes;
+        }
+
+        private class HelmChart
+        {
+            [YamlMember(Alias = "name")]
+            public string Name { get; set; }
         }
     }
 }

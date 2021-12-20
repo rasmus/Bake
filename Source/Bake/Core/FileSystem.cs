@@ -140,7 +140,7 @@ namespace Bake.Core
 
         public async Task<string> ReadAllTextAsync(
             string filePath,
-            CancellationToken _)
+            CancellationToken cancellationToken)
         {
             await using var file = System.IO.File.Open(
                 filePath,

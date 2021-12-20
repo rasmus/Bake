@@ -22,18 +22,37 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Services.Tools;
 using Bake.Services.Tools.HelmArguments;
+using Bake.ValueObjects.Recipes.Helm;
 
-namespace Bake.Services.Tools
+namespace Bake.Cooking.Cooks.Helm
 {
-    public interface IHelm
+    public class HelmPackageCook : Cook<HelmPackageRecipe>
     {
-        Task<IToolResult> LintAsync(
-            HelmLintArgument argument,
-            CancellationToken cancellationToken);
+        private readonly IHelm _helm;
 
-        Task<IToolResult> PackageAsync(
-            HelmPackageArgument argument,
-            CancellationToken cancellationToken);
+        public HelmPackageCook(
+            IHelm helm)
+        {
+            _helm = helm;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            HelmPackageRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new HelmPackageArgument(
+                recipe.ChartDirectory,
+                recipe.OutputDirectory,
+                recipe.Version);
+
+            var toolResult = await _helm.PackageAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
+        }
     }
 }
