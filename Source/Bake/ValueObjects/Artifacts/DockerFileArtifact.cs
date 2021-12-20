@@ -21,24 +21,27 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.DockerfileArtifact)]
     public class DockerFileArtifact : FileArtifact
     {
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerFileArtifact() { }
 
         public DockerFileArtifact(
-            ArtifactKey key,
+            string name,
             string path)
-            : base(key, path)
+            : base(path)
         {
-            if (key.Type != ArtifactType.Dockerfile)
-            {
-                throw new ArgumentException(nameof(key));
-            }
+#pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

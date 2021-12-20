@@ -34,9 +34,7 @@ namespace Bake.ValueObjects.Artifacts
         public string Path { get; [Obsolete] set; }
 
         public DirectoryArtifact(
-            ArtifactKey key,
             string path)
-            : base(key)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
