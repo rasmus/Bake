@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.HelmArguments;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Services.Tools
+{
+    public class Helm : IHelm
+    {
+        private readonly IRunnerFactory _runnerFactory;
+
+        public Helm(
+            IRunnerFactory runnerFactory)
+        {
+            _runnerFactory = runnerFactory;
+        }
+
+
+        public async Task<IToolResult> LintAsync(
+            HelmLintArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+                {
+                    "lint",
+                    argument.ChartDirectory,
+                };
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "helm",
+                Directory.GetCurrentDirectory(),
+                arguments);
+
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
+        }
     }
 }

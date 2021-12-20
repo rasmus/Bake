@@ -104,6 +104,11 @@ namespace Bake.Cooking.Composers
                 }
             }
 
+            if (!recipes.Any())
+            {
+                return new Recipe[] { };
+            }
+
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
             {
                 var tags = recipes

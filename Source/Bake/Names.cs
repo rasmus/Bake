@@ -58,6 +58,7 @@ namespace Bake
             public const string NuGetArtifact = "nuget-artifact";
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
+            public const string HelmChartArtifact = "helm-chart-artifact";
         }
 
         public static class ArtifactTypes
@@ -111,6 +112,11 @@ namespace Bake
             public static class GitHub
             {
                 public const string Release = "github-release";
+            }
+
+            public static class Helm
+            {
+                public const string Lint = "helm-lint";
             }
 
             public static class MkDocs
