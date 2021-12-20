@@ -39,6 +39,7 @@ namespace Bake
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
+            public const string OctopusDeploy = "octopus-deploy";
         }
 
         public static class DynamicDestinations
