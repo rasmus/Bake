@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using Bake.Core;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Services.Tools.HelmArguments
+{
+    public class HelmPackageArgument
+    {
+        public string ChartDirectory { get; }
+        public string OutputDirectory { get; }
+        public SemVer Version { get; }
+
+        public HelmPackageArgument(
+            string chartDirectory,
+            string outputDirectory,
+            SemVer version)
+        {
+            ChartDirectory = chartDirectory;
+            OutputDirectory = outputDirectory;
+            Version = version;
+        }
     }
 }

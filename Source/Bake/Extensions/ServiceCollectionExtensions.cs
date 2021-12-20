@@ -31,6 +31,7 @@ using Bake.Cooking.Cooks.Docker;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Cooking.Cooks.GitHub;
 using Bake.Cooking.Cooks.Go;
+using Bake.Cooking.Cooks.Helm;
 using Bake.Cooking.Cooks.MkDocs;
 using Bake.Cooking.Cooks.Pip;
 using Bake.Cooking.Ingredients.Gathers;
@@ -75,6 +76,7 @@ namespace Bake.Extensions
                 .AddTransient<IPlatformParser, PlatformParser>()
                 .AddTransient<IMkDocs, MkDocs>()
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
+                .AddTransient<IHelm, Helm>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -93,6 +95,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, DockerComposer>()
                 .AddTransient<IComposer, GoComposer>()
                 .AddTransient<IComposer, MkDocsComposer>()
+                .AddTransient<IComposer, HelmComposer>()
                 .AddTransient<IComposer, ReleaseComposer>()
 
                 // Cooks - .NET
@@ -113,6 +116,9 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GoDockerFileCook>()
                 // Cooks - Pip
                 .AddTransient<ICook, PipInstallRequirementsCook>()
+                // Cooks - Helm
+                .AddTransient<ICook, HelmLintCook>()
+                .AddTransient<ICook, HelmPackageCook>()
                 // Cooks - GitHub
                 .AddTransient<ICook, GitHubReleaseCook>()
                 // Cooks - MkDocs

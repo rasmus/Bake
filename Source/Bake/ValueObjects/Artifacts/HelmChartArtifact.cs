@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace Bake.ValueObjects.Artifacts
 {
-    public enum ArtifactType
+    [Artifact(Names.Artifacts.HelmChartArtifact)]
+    public class HelmChartArtifact : FileArtifact
     {
-        Invalid = 0,
+        [Obsolete]
+        public HelmChartArtifact() { }
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+        public HelmChartArtifact(
+            string path)
+            : base(path)
+        {
+        }
     }
 }

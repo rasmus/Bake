@@ -20,19 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.IntegrationTests.BakeTests
+{
+    public class HelmChart : BakeTest
+    {
+        public HelmChart() : base("helm-chart")
+        {
+        }
+
+        [Test]
+        public async Task Run()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                "run",
+                "--convention=Release",
+                "--build-version", version));
+
+            // Assert
+            returnCode.Should().Be(0);
+        }
     }
 }

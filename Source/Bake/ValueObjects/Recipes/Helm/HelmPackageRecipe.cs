@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System;
+using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.ValueObjects.Recipes.Helm
+{
+    [Recipe(Names.Recipes.Helm.Package)]
+    public class HelmPackageRecipe : Recipe
+    {
+        [YamlMember]
+        public string ChartDirectory { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string OutputDirectory { get; [Obsolete] set; }
+
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
+
+        [Obsolete]
+        public HelmPackageRecipe() { }
+
+        public HelmPackageRecipe(
+            string chartDirectory,
+            string outputDirectory,
+            SemVer version,
+            params Artifact[] artifacts)
+            : base(artifacts)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            ChartDirectory = chartDirectory;
+            OutputDirectory = outputDirectory;
+            Version = version;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }
