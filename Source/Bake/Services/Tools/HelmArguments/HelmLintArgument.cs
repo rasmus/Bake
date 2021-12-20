@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools.HelmArguments
 {
-    public enum ArtifactType
+    public class HelmLintArgument
     {
-        Invalid = 0,
+        public string ChartDirectory { get; }
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+        public HelmLintArgument(
+            string chartDirectory)
+        {
+            ChartDirectory = chartDirectory;
+        }
     }
 }

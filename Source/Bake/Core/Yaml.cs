@@ -75,6 +75,7 @@ namespace Bake.Core
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
+                .IgnoreUnmatchedProperties()
                 .Build();
             Serializer = recipeTypes.Aggregate(
                 new SerializerBuilder(),

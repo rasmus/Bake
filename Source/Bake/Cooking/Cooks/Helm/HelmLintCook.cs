@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,19 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.ValueObjects.Artifacts
-{
-    public enum ArtifactType
-    {
-        Invalid = 0,
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.HelmArguments;
+using Bake.ValueObjects.Recipes.Helm;
 
-        NuGet,
-        Dockerfile,
-        DotNetPublishedDirectory,
-        Executable,
-        HelmChart,
-        Container,
-        DocumentationSite,
-        Release,
+namespace Bake.Cooking.Cooks.Helm
+{
+    public class HelmLintCook : Cook<HelmLintRecipe>
+    {
+        private readonly IHelm _helm;
+
+        public HelmLintCook(
+            IHelm helm)
+        {
+            _helm = helm;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            HelmLintRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new HelmLintArgument(
+                recipe.ChartDirectory);
+
+            var toolResult = await _helm.LintAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
+        }
     }
 }

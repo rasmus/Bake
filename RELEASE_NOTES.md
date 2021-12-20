@@ -1,6 +1,7 @@
 # 0.6-beta
 
 * New: Containers and their tags are now listed on GitHub releases
+* New: Helm charts are now linted and packaged
 
 # 0.5-beta
 
