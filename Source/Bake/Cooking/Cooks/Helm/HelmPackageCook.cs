@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,41 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.HelmArguments;
+using Bake.ValueObjects.Recipes.Helm;
 
-namespace Bake.ValueObjects.Recipes.Docker
+namespace Bake.Cooking.Cooks.Helm
 {
-    [Recipe(Names.Recipes.Docker.Build)]
-    public class DockerBuildRecipe : Recipe
+    public class HelmPackageCook : Cook<HelmPackageRecipe>
     {
-        [YamlMember]
-        public string Path { get; [Obsolete] set; }
+        private readonly IHelm _helm;
 
-        [YamlMember]
-        public string Name { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string[] Tags { get; [Obsolete] set; }
-
-        [Obsolete]
-        public DockerBuildRecipe() { }
-
-        public DockerBuildRecipe(
-            string path,
-            string name,
-            IEnumerable<string> tags,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public HelmPackageCook(
+            IHelm helm)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-            Name = name;
-            Tags = tags.ToArray();
-#pragma warning restore CS0612 // Type or member is obsolete
+            _helm = helm;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            HelmPackageRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new HelmPackageArgument(
+                recipe.ChartDirectory,
+                recipe.OutputDirectory,
+                recipe.Version);
+
+            var toolResult = await _helm.PackageAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

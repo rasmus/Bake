@@ -38,7 +38,7 @@ namespace Bake.Core
 
         Task<string> ReadAllTextAsync(
             string filePath,
-            CancellationToken _);
+            CancellationToken cancellationToken);
 
         IFile Open(string filePath);
 

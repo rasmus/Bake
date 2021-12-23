@@ -31,14 +31,9 @@ namespace Bake.ValueObjects.Artifacts
         public NuGetArtifact() { }
 
         public NuGetArtifact(
-            ArtifactKey key,
             string path)
-            : base(key, path)
+            : base(path)
         {
-            if (key.Type != ArtifactType.NuGet)
-            {
-                throw new ArgumentException(nameof(key));
-            }
         }
     }
 }

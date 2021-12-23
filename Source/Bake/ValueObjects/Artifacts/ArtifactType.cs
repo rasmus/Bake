@@ -30,6 +30,7 @@ namespace Bake.ValueObjects.Artifacts
         Dockerfile,
         DotNetPublishedDirectory,
         Executable,
+        HelmChart,
         Container,
         DocumentationSite,
         Release,

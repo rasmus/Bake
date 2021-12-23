@@ -60,7 +60,7 @@ namespace Bake.Tests.ExplicitTests
                 new Artifact[]
                 {
                     new ExecutableArtifact(
-                        new ArtifactKey(ArtifactType.Executable, "test_linux"),
+                        "test_linux",
                         Path.Combine(WorkingDirectory, "README.md"),
                         new Platform(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64))
                 });

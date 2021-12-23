@@ -52,11 +52,13 @@ namespace Bake
         /// </summary>
         public static class Artifacts
         {
+            public const string ContainerArtifact = "container-artifact";
             public const string ExecutableArtifact = "executable-artifact";
             public const string DockerfileArtifact = "dockerfile-artifact";
             public const string NuGetArtifact = "nuget-artifact";
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
+            public const string HelmChartArtifact = "helm-chart-artifact";
         }
 
         public static class ArtifactTypes
@@ -87,21 +89,6 @@ namespace Bake
             {
                 return NameToType.TryGetValue(name, out artifactType);
             }
-
-            public static string GetName(ArtifactType artifactType)
-            {
-                if (!Enum.IsDefined(typeof(ArtifactType), artifactType) || artifactType == ArtifactType.Invalid)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
-                }
-
-                if (!TypeToName.TryGetValue(artifactType, out var name))
-                {
-                    throw new NotImplementedException();
-                }
-
-                return name;
-            }
         }
 
         /// <summary>
@@ -125,6 +112,12 @@ namespace Bake
             public static class GitHub
             {
                 public const string Release = "github-release";
+            }
+
+            public static class Helm
+            {
+                public const string Lint = "helm-lint";
+                public const string Package = "helm-package";
             }
 
             public static class MkDocs

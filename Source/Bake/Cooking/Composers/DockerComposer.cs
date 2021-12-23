@@ -100,8 +100,13 @@ namespace Bake.Cooking.Composers
                     dockerfileArtifacts.Select(a => a.Path).ToList());
                 foreach (var dockerfileArtifact in dockerfileArtifacts)
                 {
-                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Key.Name, ingredients.Version, urls));
+                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, urls));
                 }
+            }
+
+            if (!recipes.Any())
+            {
+                return new Recipe[] { };
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
@@ -134,7 +139,10 @@ namespace Bake.Cooking.Composers
             yield return new DockerBuildRecipe(
                 path,
                 slug,
-                tags);
+                tags,
+                new ContainerArtifact(
+                    slug,
+                    tags.ToArray()));
         }
     }
 }

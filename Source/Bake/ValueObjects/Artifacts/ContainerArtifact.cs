@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -22,18 +22,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Bake.ValueObjects.Artifacts;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.Docker
+namespace Bake.ValueObjects.Artifacts
 {
-    [Recipe(Names.Recipes.Docker.Build)]
-    public class DockerBuildRecipe : Recipe
+    [Artifact(Names.Artifacts.ContainerArtifact)]
+    public class ContainerArtifact : Artifact
     {
-        [YamlMember]
-        public string Path { get; [Obsolete] set; }
-
         [YamlMember]
         public string Name { get; [Obsolete] set; }
 
@@ -41,20 +38,22 @@ namespace Bake.ValueObjects.Recipes.Docker
         public string[] Tags { get; [Obsolete] set; }
 
         [Obsolete]
-        public DockerBuildRecipe() { }
+        public ContainerArtifact() { }
 
-        public DockerBuildRecipe(
-            string path,
-            string name,
-            IEnumerable<string> tags,
-            params Artifact[] artifacts)
-            : base(artifacts)
-        {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
+        public ContainerArtifact(
+            string name,
+            string[] tags)
+        {
             Name = name;
-            Tags = tags.ToArray();
+            Tags = tags;
+        }
 #pragma warning restore CS0612 // Type or member is obsolete
+
+        public override async IAsyncEnumerable<string> ValidateAsync(
+            [EnumeratorCancellation] CancellationToken _)
+        {
+            yield break;
         }
     }
 }

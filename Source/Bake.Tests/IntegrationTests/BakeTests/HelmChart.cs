@@ -20,41 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.ValueObjects.Recipes.Docker
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    [Recipe(Names.Recipes.Docker.Build)]
-    public class DockerBuildRecipe : Recipe
+    public class HelmChart : BakeTest
     {
-        [YamlMember]
-        public string Path { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string Name { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string[] Tags { get; [Obsolete] set; }
-
-        [Obsolete]
-        public DockerBuildRecipe() { }
-
-        public DockerBuildRecipe(
-            string path,
-            string name,
-            IEnumerable<string> tags,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public HelmChart() : base("helm-chart")
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-            Name = name;
-            Tags = tags.ToArray();
-#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        [Test]
+        public async Task Run()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                "run",
+                "--convention=Release",
+                "--build-version", version));
+
+            // Assert
+            returnCode.Should().Be(0);
         }
     }
 }

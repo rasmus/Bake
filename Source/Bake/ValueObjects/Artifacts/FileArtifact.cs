@@ -35,15 +35,13 @@ namespace Bake.ValueObjects.Artifacts
         [Obsolete]
         protected FileArtifact() { }
 
-        protected FileArtifact(
-            ArtifactKey key,
-            string path)
-            : base(key)
-        {
 #pragma warning disable CS0612 // Type or member is obsolete
+        protected FileArtifact(
+            string path)
+        {
             Path = path;
-#pragma warning restore CS0612 // Type or member is obsolete
         }
+#pragma warning restore CS0612 // Type or member is obsolete
 
         public override async IAsyncEnumerable<string> ValidateAsync(
             [EnumeratorCancellation] CancellationToken _)

@@ -136,7 +136,7 @@ namespace Bake.Cooking.Composers
                         directoryPath,
                         p,
                         new ExecutableArtifact(
-                            new ArtifactKey(ArtifactType.Executable, output),
+                            output,
                             Path.Combine(directoryPath, output),
                             p));
                 }));
@@ -154,7 +154,7 @@ namespace Bake.Cooking.Composers
                     labels,
                     linuxBuildRecipe.Output,
                     new DockerFileArtifact(
-                        new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
+                        goModuleName.Name,
                         Path.Combine(directoryPath, "Dockerfile"))));
             }
 

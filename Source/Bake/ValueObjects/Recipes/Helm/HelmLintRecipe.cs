@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -21,39 +21,24 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.Docker
+namespace Bake.ValueObjects.Recipes.Helm
 {
-    [Recipe(Names.Recipes.Docker.Build)]
-    public class DockerBuildRecipe : Recipe
+    [Recipe(Names.Recipes.Helm.Lint)]
+    public class HelmLintRecipe : Recipe
     {
         [YamlMember]
-        public string Path { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string Name { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string[] Tags { get; [Obsolete] set; }
+        public string ChartDirectory { get; [Obsolete] set; }
 
         [Obsolete]
-        public DockerBuildRecipe() { }
+        public HelmLintRecipe() { }
 
-        public DockerBuildRecipe(
-            string path,
-            string name,
-            IEnumerable<string> tags,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public HelmLintRecipe(
+            string chartDirectory)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
-            Name = name;
-            Tags = tags.ToArray();
+            ChartDirectory = chartDirectory;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

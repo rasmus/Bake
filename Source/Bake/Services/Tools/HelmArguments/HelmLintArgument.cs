@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021 Rasmus Mikkelsen
 // 
@@ -20,31 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools.HelmArguments
 {
-    public class ArtifactKey : ValueObject
+    public class HelmLintArgument
     {
-        public ArtifactType Type { get; [Obsolete] set; }
-        public string Name { get; [Obsolete] set; }
+        public string ChartDirectory { get; }
 
-        [Obsolete]
-        public ArtifactKey() { }
-
-        public ArtifactKey(
-            ArtifactType type,
-            string name)
+        public HelmLintArgument(
+            string chartDirectory)
         {
-            if (!Enum.IsDefined(typeof(ArtifactType), type) || type == ArtifactType.Invalid)
-                throw new ArgumentOutOfRangeException(nameof(type));
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name));
-
-#pragma warning disable CS0612 // Type or member is obsolete
-            Type = type;
-            Name = name;
-#pragma warning restore CS0612 // Type or member is obsolete
+            ChartDirectory = chartDirectory;
         }
     }
 }

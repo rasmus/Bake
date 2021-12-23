@@ -28,67 +28,78 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
-using Bake.ValueObjects.Recipes.MkDocs;
-using Bake.ValueObjects.Recipes.Pip;
-using File = System.IO.File;
-
-// ReSharper disable StringLiteralTypo
+using Bake.ValueObjects.Recipes.Helm;
+using YamlDotNet.Serialization;
 
 namespace Bake.Cooking.Composers
 {
-    public class MkDocsComposer : Composer
+    public class HelmComposer : Composer
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IYaml _yaml;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
-            {
-                ArtifactType.DocumentationSite,
-            };
+        {
+            ArtifactType.HelmChart
+        };
 
-        public MkDocsComposer(
-            IFileSystem fileSystem)
+        public HelmComposer(
+            IFileSystem fileSystem,
+            IYaml yaml)
         {
             _fileSystem = fileSystem;
+            _yaml = yaml;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
             IContext context,
             CancellationToken cancellationToken)
         {
-            var mkDocsFilePaths = await _fileSystem.FindFilesAsync(
+            var chartFiles = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
-                "mkdocs.yml",
+                "Chart.yaml",
                 cancellationToken);
 
-            return mkDocsFilePaths
-                .SelectMany(CreateRecipes)
+            var ingredients = context.Ingredients;
+
+            return (await Task.WhenAll(chartFiles
+                    .Select(p => CreateRecipes(p, ingredients, cancellationToken))))
+                .SelectMany(r => r)
                 .ToArray();
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
-            string mkDocsFilePath)
+        private async Task<IReadOnlyCollection<Recipe>> CreateRecipes(
+            string chartFilePath,
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
         {
-            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath);
-            var requirementsFilePath = Path.Combine(
-                workingDirectory,
-                "requirements.txt");
+            var recipes = new List<Recipe>();
 
-            if (File.Exists(requirementsFilePath))
-            {
-                yield return new PipInstallRequirementsRecipe(
-                    requirementsFilePath,
-                    workingDirectory);
-            }
+            var yaml = await _fileSystem.ReadAllTextAsync(chartFilePath, cancellationToken);
+            var chart = await _yaml.DeserializeAsync<HelmChart>(
+                yaml,
+                cancellationToken);
 
-            var outputDirectory = Path.Combine(workingDirectory, "site");
+            var chartDirectory = Path.GetDirectoryName(chartFilePath);
+            var chartFileName = $"{chart.Name}-{ingredients.Version}.tgz";
+            var parentDirectory = Path.GetDirectoryName(chartDirectory);
 
-            yield return new MkDocsBuildRecipe(
-                workingDirectory,
-                false,
-                true,
-                outputDirectory,
-                new DocumentationSiteArtifact(
-                    outputDirectory));
+            recipes.Add(new HelmLintRecipe(
+                chartDirectory));
+            recipes.Add(new HelmPackageRecipe(
+                chartDirectory,
+                parentDirectory,
+                ingredients.Version,
+                new HelmChartArtifact(
+                    Path.Combine(parentDirectory, chartFileName))));
+
+            return recipes;
+        }
+
+        private class HelmChart
+        {
+            [YamlMember(Alias = "name")]
+            public string Name { get; set; }
         }
     }
 }

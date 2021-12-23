@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
 {
@@ -31,19 +30,8 @@ namespace Bake.ValueObjects.Artifacts
     {
         public static IReadOnlyCollection<Artifact> Empty { get; } = new Artifact[] { };
 
-        [YamlMember]
-        public ArtifactKey Key { get; [Obsolete] set; }
-
         [Obsolete]
         protected Artifact() { }
-
-        protected Artifact(
-            ArtifactKey key)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Key = key;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
 
         public abstract IAsyncEnumerable<string> ValidateAsync(
             CancellationToken cancellationToken);
