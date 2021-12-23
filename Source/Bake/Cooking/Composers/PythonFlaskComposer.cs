@@ -26,9 +26,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
-using Bake.ValueObjects.Recipes.Pip;
+using Bake.ValueObjects.Recipes.Python;
 
 namespace Bake.Cooking.Composers
 {
@@ -51,41 +52,26 @@ namespace Bake.Cooking.Composers
             IContext context,
             CancellationToken cancellationToken)
         {
-            var appFilesTask = _fileSystem.FindFilesAsync(
+            var files = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "app.py",
                 cancellationToken);
-            var runFilesTask = _fileSystem.FindFilesAsync(
-                context.Ingredients.WorkingDirectory,
-                "run.py",
-                cancellationToken);
 
-            var files = (await Task.WhenAll(appFilesTask, runFilesTask)).SelectMany(l => l);
-
-            var recipes = (await Task.WhenAll(files.Select(f => CreateRecipesAsync(f, cancellationToken))))
-                .SelectMany(a => a)
+            return files
+                .SelectMany(CreateRecipes)
                 .ToList();
-
-            return recipes;
         }
 
-        private async Task<IReadOnlyCollection<Recipe>> CreateRecipesAsync(
-            string appFilePath,
-            CancellationToken cancellationToken)
+        private static IEnumerable<Recipe> CreateRecipes(
+            string appFilePath)
         {
-            var recipes = new List<Recipe>();
-            var directoryPath = Path.GetDirectoryName(appFilePath);
-            var requirementsFile = Path.Combine(
-                directoryPath,
-                "requirements.txt");
-            if (System.IO.File.Exists(requirementsFile))
-            {
-                recipes.Add(new PipInstallRequirementsRecipe(
-                    requirementsFile,
-                    directoryPath));
-            }
+            var directory = Path.GetDirectoryName(appFilePath);
+            var dockerfilePath = Path.Combine(directory, "Dockerfile");
+            var name = Path.GetFileName(directory).ToSlug();
 
-            return recipes;
+            yield return new PythonFlaskDockerfileRecipe(
+                directory,
+                new DockerFileArtifact(name, dockerfilePath));
         }
     }
 }
