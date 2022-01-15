@@ -1,3 +1,7 @@
+# 0.7-beta
+
+* *Nothing yet...*
+
 # 0.6-beta
 
 * New: Containers and their tags are now listed on GitHub releases
