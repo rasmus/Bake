@@ -284,7 +284,7 @@ namespace Bake.Cooking.Composers
             var gitHub = ingredients.GitHub;
             if (gitHub != null)
             {
-                sources.Add(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", $"/{gitHub.Owner}/"));
+                sources.Add(_defaults.GitHubNuGetRegistry.Replace("/OWNER/", $"/{gitHub.Owner}/"));
             }
 
             return new DotNetRestoreSolutionRecipe(

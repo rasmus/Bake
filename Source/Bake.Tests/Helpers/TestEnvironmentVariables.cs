@@ -29,6 +29,8 @@ namespace Bake.Tests.Helpers
 {
     public class TestEnvironmentVariables : IEnvironmentVariables
     {
+        public static IEnvironmentVariables None { get; } = new TestEnvironmentVariables(new Dictionary<string, string>());
+
         private readonly IReadOnlyDictionary<string, string> _environmentVariables;
 
         public TestEnvironmentVariables(

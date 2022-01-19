@@ -36,7 +36,7 @@ namespace Bake.Tests.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
-            Inject<IDefaults>(new Defaults());
+            Inject<IDefaults>(new Defaults(TestEnvironmentVariables.None));
         }
 
         [TestCase(

@@ -71,12 +71,14 @@ namespace Bake.Core
                     $"bake_credentials_nuget_{hostname}_apikey"
                 };
 
-            if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
+            var gitHubNuGetRegistry = new Uri(_defaults.GitHubNuGetRegistry, UriKind.Absolute);
+            if (string.Equals(url.Host, gitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.AddRange(GitHubTokenPossibilities);
             }
 
-            if (string.Equals(url.Host, _defaults.NuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
+            var nuGetRegistry = new Uri(_defaults.NuGetRegistry, UriKind.Absolute);
+            if (string.Equals(url.Host, nuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.Add("nuget_apikey");
             }

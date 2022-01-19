@@ -20,18 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 // ReSharper disable StringLiteralTypo
+
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bake.Core
 {
     public class Defaults : IDefaults
     {
-        public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
-        public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
-        public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("{USER}/");
-        public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
+        private readonly IEnvironmentVariables _environmentVariables;
+
+        public string GitHubUrl { get; private set; } = "https://github.com/";
+        public string GitHubNuGetRegistry { get; private set; } = "https://nuget.pkg.github.com/OWNER/index.json";
+        public string NuGetRegistry { get; private set; } = "https://api.nuget.org/v3/index.json";
+        public string DockerHubUserRegistry { get; private set; } = "{USER}/";
+        public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
+
+        public Defaults(
+            IEnvironmentVariables environmentVariables)
+        {
+            _environmentVariables = environmentVariables;
+        }
+
+        public async Task InitializeAsync(
+            CancellationToken cancellationToken)
+        {
+            var e = await _environmentVariables.GetAsync(cancellationToken);
+
+            GitHubUrl = Get(e, "github_url", GitHubUrl);
+            GitHubNuGetRegistry = Get(e, "github_packages_nuget_url", GitHubNuGetRegistry);
+            GitHubUserRegistry = Get(e, "github_packages_container_url", GitHubUserRegistry);
+            NuGetRegistry = Get(e, "nuget_url", NuGetRegistry);
+            DockerHubUserRegistry = Get(e, "dockerhub_user_url", DockerHubUserRegistry);
+        }
+
+        private static string Get(
+            IReadOnlyDictionary<string, string> environmentVariables,
+            string name,
+            string defaultValue)
+        {
+            return environmentVariables.TryGetValue($"bake_defaults_{name}", out var v) && !string.IsNullOrEmpty(v)
+                ? v
+                : defaultValue;
+        }
     }
 }

@@ -14,6 +14,9 @@
       drop:
       - all
   ```
+  * New: Now possible to change Bake internal defaults via environment
+    variables. More of these will be exposed in upcomming releases
+  * Fixed: Docker Hub push URL should just be the username
 
 # 0.6-beta
 
