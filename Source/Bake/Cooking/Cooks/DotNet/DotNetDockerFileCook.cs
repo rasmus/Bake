@@ -38,11 +38,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
 
 {{LABELS}}
 
-ENV \
-    DOTNET_RUNNING_IN_CONTAINER=true \
-    DOTNET_CLI_TELEMETRY_OPTOUT=1 \
-    # OPT OUT OF Diagnostic pipeline so we can run readonly.
-    COMPlus_EnableDiagnostics=0
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# OPT OUT OF Diagnostic pipeline so we can run readonly.
+ENV COMPlus_EnableDiagnostics=0
 
 RUN \
     addgroup --group app-group --gid 2000 && \
