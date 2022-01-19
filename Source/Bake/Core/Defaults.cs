@@ -31,7 +31,7 @@ namespace Bake.Core
         public Uri GitHubUrl { get; } = new("https://github.com/", UriKind.Absolute);
         public Uri GitHubNuGetRegistry { get; } = new("https://nuget.pkg.github.com/OWNER/index.json");
         public Uri NuGetRegistry { get; } = new("https://api.nuget.org/v3/index.json");
-        public string DockerHubUserRegistry { get; } = new("registry.hub.docker.com/{USER}/");
+        public string DockerHubUserRegistry { get; } = new("{USER}/");
         public string GitHubUserRegistry { get; } = new("ghcr.io/{USER}/");
     }
 }
