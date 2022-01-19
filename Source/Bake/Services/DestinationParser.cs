@@ -64,7 +64,7 @@ namespace Bake.Services
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
                     {
-                        destination = new NuGetRegistryDestination(_defaults.NuGetRegistry);
+                        destination = new NuGetRegistryDestination(new Uri(_defaults.NuGetRegistry, UriKind.Absolute));
                         return true;
                     }
 

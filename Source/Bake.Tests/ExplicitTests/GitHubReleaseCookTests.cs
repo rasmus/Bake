@@ -91,6 +91,7 @@ namespace Bake.Tests.ExplicitTests
                 .AddSingleton<GitHubReleaseCook>()
                 .AddSingleton<IDefaults, Defaults>()
                 .AddSingleton<IFileSystem, FileSystem>()
+                .AddSingleton(TestEnvironmentVariables.None)
                 .AddSingleton<IEnvironmentVariables>(new TestEnvironmentVariables(new Dictionary<string, string>
                 {
                     ["github_personal_token"] = GetToken(),

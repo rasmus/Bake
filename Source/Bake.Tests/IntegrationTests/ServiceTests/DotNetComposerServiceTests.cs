@@ -63,6 +63,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<ICredentials, Credentials>()
                 .AddTransient<IDefaults, Defaults>()
+                .AddSingleton(TestEnvironmentVariables.None)
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>();

@@ -39,7 +39,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
         [SetUp]
         public void SetUp()
         {
-            Inject<IDefaults>(new Defaults());
+            Inject<IDefaults>(new Defaults(TestEnvironmentVariables.None));
         }
 
         [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake", "https://api.github.com/")]

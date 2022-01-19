@@ -153,7 +153,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 case Names.DynamicDestinations.GitHub:
                     var gitHubInformation = await ingredients.GitHubTask;
-                    var url = new Uri(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", $"/{gitHubInformation.Owner}/"), UriKind.Absolute);
+                    var url = new Uri(_defaults.GitHubNuGetRegistry.Replace("/OWNER/", $"/{gitHubInformation.Owner}/"), UriKind.Absolute);
 
                     var nugetRegistryDestination = new NuGetRegistryDestination(url);
                     ingredients.Destinations.Add(nugetRegistryDestination);
