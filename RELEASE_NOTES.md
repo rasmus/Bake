@@ -1,8 +1,8 @@
 # 0.7-beta
 
 * New: Produce ASP.NET Core containers that are able to run in read-only
-  file systems as well as drop all capabilities. Here is an example
-  security configuration
+  file systems, run as non-root as well as drop all capabilities. Here is
+  an example security configuration
   ```yaml
   securityContext:
     runAsUser: 1000
