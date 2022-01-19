@@ -53,7 +53,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 DockerArguments
                     .With(expectedImage)
                     .WithPort(5123)
-                    .WithEnvironmentVariable("URLS", "http://0.0.0.0:5123"));
+                    .WithEnvironmentVariable("URLS", "http://0.0.0.0:5123")
+                    .WithReadOnlyFilesystem());
         }
     }
 }

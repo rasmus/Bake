@@ -10,6 +10,7 @@ namespace Bake.Tests.Helpers
         private readonly Dictionary<string, string> _environmentVariables = new();
 
         public string Image { get; }
+        public bool ReadOnlyFilesystem { get; private set; }
         public IReadOnlyDictionary<int, int> Ports => _ports;
         public IReadOnlyDictionary<string, string> EnvironmentVariables => _environmentVariables;
 
@@ -33,6 +34,12 @@ namespace Bake.Tests.Helpers
         public DockerArguments WithEnvironmentVariable(string name, string value)
         {
             _environmentVariables[name] = value;
+            return this;
+        }
+
+        public DockerArguments WithReadOnlyFilesystem()
+        {
+            ReadOnlyFilesystem = true;
             return this;
         }
     }

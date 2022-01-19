@@ -54,8 +54,12 @@ namespace Bake.Tests.Helpers
                     {
                         PortBindings = arguments.Ports.ToDictionary(
                             kv => kv.Key.ToString(),
-                            kv => (IList<PortBinding>) new List<PortBinding>{new() {HostPort = kv.Value.ToString()}}),
+                            kv => (IList<PortBinding>) new List<PortBinding>{new()
+                                {
+                                    HostPort = kv.Value.ToString(),
+                                }}),
                         PublishAllPorts = true,
+                        ReadonlyRootfs = arguments.ReadOnlyFilesystem,
                     },
                 },
                 cancellationToken);
