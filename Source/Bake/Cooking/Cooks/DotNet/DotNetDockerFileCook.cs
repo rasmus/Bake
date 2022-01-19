@@ -44,18 +44,20 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 # OPT OUT OF Diagnostic pipeline so we can run readonly.
 ENV COMPlus_EnableDiagnostics=0
 
-RUN \
-    addgroup --group app-group --gid 2000 && \
-    adduser \    
-        --uid 1000 \
-        --gid 2000 \
-        app-user && \
-    chown app-user:app-group /app
-
-USER app-user:app-group
-
 WORKDIR /app
 COPY ./{{PATH}} .
+
+RUN \
+    addgroup -S -g 2000 app_group && \
+    adduser \  
+        -S \
+        -s /sbin/nologin \
+        -g app_group \
+        app_user && \
+    chown app_user:app_group /app
+
+USER app_user:app_group
+
 ENTRYPOINT [""dotnet"", ""{{NAME}}""]
 ";
 
