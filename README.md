@@ -71,7 +71,7 @@ to scan the repository for files and structures it knows how to process.
 * **[.NET](https://dot.net/)** - 
   Directories that contain [.NET](https://dot.net/) projects are
   analyzed and the application/service is built, tested and optionally
-  containerized
+  put in a non-root and readonly filesystem compatible container
 * **[Docker](https://www.docker.com/)** - 
   Directories that contain a
   [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) will get

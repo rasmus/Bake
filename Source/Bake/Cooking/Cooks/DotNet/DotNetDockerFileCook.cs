@@ -35,10 +35,29 @@ namespace Bake.Cooking.Cooks.DotNet
 
         private const string Dockerfile = @"
 FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
+
 {{LABELS}}
+
 ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# OPT OUT OF Diagnostic pipeline so we can run readonly.
+ENV COMPlus_EnableDiagnostics=0
+
 WORKDIR /app
 COPY ./{{PATH}} .
+
+RUN \
+    addgroup -S -g 2000 app_group && \
+    adduser \  
+        -S \
+        -s /sbin/nologin \
+        -g app_group \
+        app_user && \
+    chown app_user:app_group /app
+
+USER app_user:app_group
+
 ENTRYPOINT [""dotnet"", ""{{NAME}}""]
 ";
 

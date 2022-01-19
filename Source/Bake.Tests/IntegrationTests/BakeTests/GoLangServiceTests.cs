@@ -64,7 +64,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "win-x64",
                 "golang-service.exe");
 
-            await AssertContainerPingsAsync(expectedImage, 8080);
+            await AssertContainerPingsAsync(
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(8080));
         }
     }
 }
