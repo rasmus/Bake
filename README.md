@@ -26,6 +26,23 @@ Bake is **NOT** the right tool for you if you
 - **Release notes** are parsed and added to all applicable artifacts
 - **Tests** are automatically located and executed
 
+## Installing Bake
+
+There is a few different ways to install Bake, choose one that best suites your
+needs.
+
+* **Download binary** - Simply download a binary from the
+  [releases](https://github.com/rasmus/Bake/releases)
+  page that suites your platform and architecture
+* **Install .NET tool** - If have the .NET SDK installed, you can install
+  Bake as a .NET tool.
+  ```
+  dotnet tool install --global Bake --version [VERSION]
+  ```
+  **NOTE:** Be sure to always install a specific version to ensure that your
+  builds does not suddenly change behavior when new features are introduced
+  in new versions of Bake.
+
 
 ## Usage
 
