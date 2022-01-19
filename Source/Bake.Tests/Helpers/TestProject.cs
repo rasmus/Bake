@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -104,17 +103,14 @@ namespace Bake.Tests.Helpers
         }
 
         protected static async Task AssertContainerPingsAsync(
-            string expectedImage,
-            int port,
-            IReadOnlyDictionary<string, string> environmentVariables = null)
+            DockerArguments arguments,
+            CancellationToken cancellationToken = default)
         {
-            var hostPort = SocketHelper.FreeTcpPort();
+            var hostPort = arguments.Ports.Single().Value;
             var url = $"http://localhost:{hostPort}/ping";
             using var _ = await DockerHelper.RunAsync(
-                expectedImage,
-                new Dictionary<int, int> { [port] = hostPort },
-                environmentVariables ?? new Dictionary<string, string>(),
-                CancellationToken.None);
+                arguments,
+                cancellationToken);
             using var httpClient = new HttpClient();
             var start = Stopwatch.StartNew();
             var success = false;
@@ -122,13 +118,13 @@ namespace Bake.Tests.Helpers
             {
                 try
                 {
-                    using var response = await httpClient.GetAsync(url);
+                    using var response = await httpClient.GetAsync(url, cancellationToken);
                     if (!response.IsSuccessStatusCode)
                     {
                         Console.WriteLine($"Status code {response.StatusCode}");
                     }
 
-                    var content = await response.Content.ReadAsStringAsync();
+                    var content = await response.Content.ReadAsStringAsync(cancellationToken);
                     Console.WriteLine($"Got content: {Environment.NewLine}{content}");
 
                     success = true;
@@ -139,7 +135,7 @@ namespace Bake.Tests.Helpers
                     Console.WriteLine($"Failed with {e.GetType().Name}: {e.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
 
             success.Should().BeTrue();

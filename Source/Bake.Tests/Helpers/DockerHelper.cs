@@ -22,9 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -38,25 +36,23 @@ namespace Bake.Tests.Helpers
         private static readonly DockerClient Client = new DockerClientConfiguration().CreateClient();
 
         public static async Task<IDisposable> RunAsync(
-            string image,
-            IReadOnlyDictionary<int, int> ports,
-            IReadOnlyDictionary<string, string> environmentVariables,
+            DockerArguments arguments,
             CancellationToken cancellationToken)
         {
             var createContainerResponse = await Client.Containers.CreateContainerAsync(
                 new CreateContainerParameters
                 {
-                    Image = image,
-                    ExposedPorts = ports.Keys.ToDictionary(
+                    Image = arguments.Image,
+                    ExposedPorts = arguments.Ports.Keys.ToDictionary(
                         p => p.ToString(),
                         _ => default(EmptyStruct)),
-                    Env = environmentVariables
+                    Env = arguments.EnvironmentVariables
                         .Select(kv => $"{kv.Key}={kv.Value}")
                         .ToList(),
                     AttachStdout = true,
                     HostConfig = new HostConfig
                     {
-                        PortBindings = ports.ToDictionary(
+                        PortBindings = arguments.Ports.ToDictionary(
                             kv => kv.Key.ToString(),
                             kv => (IList<PortBinding>) new List<PortBinding>{new() {HostPort = kv.Value.ToString()}}),
                         PublishAllPorts = true,
