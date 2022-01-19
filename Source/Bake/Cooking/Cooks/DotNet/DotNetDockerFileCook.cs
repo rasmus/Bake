@@ -35,8 +35,15 @@ namespace Bake.Cooking.Cooks.DotNet
 
         private const string Dockerfile = @"
 FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
+
 {{LABELS}}
+
 ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# OPT OUT OF Diagnostic pipeline so we can run readonly.
+ENV COMPlus_EnableDiagnostics=0
+
 WORKDIR /app
 COPY ./{{PATH}} .
 ENTRYPOINT [""dotnet"", ""{{NAME}}""]
