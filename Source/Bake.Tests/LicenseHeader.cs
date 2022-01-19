@@ -34,7 +34,7 @@ namespace Bake.Tests
 {
     public class LicenseHeader : TestIt
     {
-        private static readonly Regex LicenseHeaderFinder = new Regex(
+        private static readonly Regex LicenseHeaderFinder = new(
             @"^\s*\/\/ MIT License.+(?:\n\s*\/\/.*)+\s*",
             RegexOptions.Compiled);
 
