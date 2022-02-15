@@ -183,7 +183,6 @@ namespace Bake.Cooking.Composers
                     configuration,
                     ingredients.Version,
                     new NuGetArtifact(
-                        //new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
 
@@ -308,7 +307,7 @@ namespace Bake.Cooking.Composers
             {
                 var gitHub = ingredients.GitHub;
                 properties["Authors"] = gitHub.Owner;
-                properties["RepositoryUrl"] = gitHub.Repository;
+                properties["RepositoryUrl"] = gitHub.Url.AbsoluteUri;
             }
 
             var legacyVersion = ingredients.Version.LegacyVersion.ToString();
