@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
+using Bake.Services;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Python;
@@ -41,11 +42,14 @@ namespace Bake.Cooking.Composers
             };
 
         private readonly IFileSystem _fileSystem;
+        private readonly IDockerLabels _dockerLabels;
 
         public PythonFlaskComposer(
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IDockerLabels dockerLabels)
         {
             _fileSystem = fileSystem;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -57,13 +61,19 @@ namespace Bake.Cooking.Composers
                 "app.py",
                 cancellationToken);
 
+            var labels = (await _dockerLabels.FromIngredientsAsync(
+                    context.Ingredients,
+                    cancellationToken))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
             return files
-                .SelectMany(CreateRecipes)
+                .SelectMany(p => CreateRecipes(p, labels))
                 .ToList();
         }
 
         private static IEnumerable<Recipe> CreateRecipes(
-            string appFilePath)
+            string appFilePath,
+            Dictionary<string, string> labels)
         {
             var directory = Path.GetDirectoryName(appFilePath);
             var dockerfilePath = Path.Combine(directory, "Dockerfile");
@@ -71,6 +81,7 @@ namespace Bake.Cooking.Composers
 
             yield return new PythonFlaskDockerfileRecipe(
                 directory,
+                labels,
                 new DockerFileArtifact(name, dockerfilePath));
         }
     }

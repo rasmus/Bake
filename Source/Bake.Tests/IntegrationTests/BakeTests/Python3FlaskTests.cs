@@ -30,9 +30,9 @@ using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class Python3Flask : BakeTest
+    public class Python3FlaskTests : BakeTest
     {
-        public Python3Flask() : base("Python3.Flask")
+        public Python3FlaskTests() : base("Python3.Flask")
         {
         }
 
@@ -41,6 +41,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/python3-flask:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
@@ -50,6 +51,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+
+            await AssertContainerPingsAsync(
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(5000));
         }
     }
 }

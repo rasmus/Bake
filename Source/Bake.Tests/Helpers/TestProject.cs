@@ -62,7 +62,7 @@ namespace Bake.Tests.Helpers
                         ProjectHelper.GetRoot(),
                         "TestProjects",
                         ProjectName),
-                    _folder.Path);
+                    Path.Join(_folder.Path, ProjectName));
             }
 
             _previousCurrentDirectory = Directory.GetCurrentDirectory();
