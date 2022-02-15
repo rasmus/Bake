@@ -1,5 +1,7 @@
 # 0.8-beta
 
+* New: Now understands Python Flask applications and bundles these
+  into containers
 * Fixed: Required `RepositoryUrl` parameter for NuGet packages is now
   the correct URL for the repository
 

@@ -108,7 +108,12 @@ namespace Bake
             {
                 public const string InstallRequirements = "pip-install-requirements";
             }
-			
+
+            public static class Python
+            {
+                public const string FlaskDockerfile = "python-flask-dockerfile";
+            }
+
             public static class GitHub
             {
                 public const string Release = "github-release";

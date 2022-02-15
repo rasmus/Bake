@@ -100,6 +100,9 @@ to scan the repository for files and structures it knows how to process.
   Helm charts are linted and packaged
 * **[MkDocs](https://www.mkdocs.org/)** -
   MkDocs documentation sites are built and prepared as artifacts
+* **[Python Flask](https://flask.palletsprojects.com/)** -
+  Directories containing a Python Flask `app.py` file, will be bundled
+  into a container
 
 Based on the selected convention (by providing e.g. `--convention=Release`)
 and the destinations for artifacts, Bake pushes/uploads/creates the built

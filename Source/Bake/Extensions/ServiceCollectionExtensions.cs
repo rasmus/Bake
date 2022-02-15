@@ -34,6 +34,7 @@ using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Cooks.Helm;
 using Bake.Cooking.Cooks.MkDocs;
 using Bake.Cooking.Cooks.Pip;
+using Bake.Cooking.Cooks.Python;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
@@ -97,6 +98,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, MkDocsComposer>()
                 .AddTransient<IComposer, HelmComposer>()
                 .AddTransient<IComposer, ReleaseComposer>()
+                .AddTransient<IComposer, PythonFlaskComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
@@ -116,6 +118,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GoDockerFileCook>()
                 // Cooks - Pip
                 .AddTransient<ICook, PipInstallRequirementsCook>()
+                // Cooks - Python
+                .AddTransient<ICook, PythonFlaskDockerfileCook>()
                 // Cooks - Helm
                 .AddTransient<ICook, HelmLintCook>()
                 .AddTransient<ICook, HelmPackageCook>()
