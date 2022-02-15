@@ -96,6 +96,8 @@ to scan the repository for files and structures it knows how to process.
 * **[Go](https://go.dev/)** -
   Directories that contain Go projects are analyzed
   and the application/service is built, tested and optionally containerized
+* **[Helm chart](https://helm.sh/)** -
+  Helm charts are linted and packaged
 * **[MkDocs](https://www.mkdocs.org/)** -
   MkDocs documentation sites are built and prepared as artifacts
 * **[Python Flask](https://flask.palletsprojects.com/)** -
@@ -144,7 +146,7 @@ Here are some examples of common used arguments to Bake
 ```
 MIT License
 
-Copyright (c) 2021 Rasmus Mikkelsen
+Copyright (c) 2021-2022 Rasmus Mikkelsen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
