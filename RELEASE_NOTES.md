@@ -1,3 +1,8 @@
+# 0.8-beta
+
+* Fixed: Required `RepositoryUrl` parameter for NuGet packages is now
+  the correct URL for the repository
+
 # 0.7-beta
 
 * New: Produce ASP.NET Core containers that are able to run in read-only
