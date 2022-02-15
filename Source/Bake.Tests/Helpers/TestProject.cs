@@ -37,7 +37,7 @@ namespace Bake.Tests.Helpers
     public abstract class TestProject : TestIt
     {
         protected string ProjectName { get; }
-        protected string WorkingDirectory => _folder.Path;
+        protected string WorkingDirectory => Path.Join(_folder.Path, ProjectName);
         private string _previousCurrentDirectory;
 
         private Folder _folder;
