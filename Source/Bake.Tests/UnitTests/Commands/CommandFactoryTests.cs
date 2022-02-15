@@ -40,7 +40,7 @@ namespace Bake.Tests.UnitTests.Commands
         [SetUp]
         public void SetUp()
         {
-            Inject<IDestinationParser>(new DestinationParser(new Defaults()));
+            Inject<IDestinationParser>(new DestinationParser(new Defaults(TestEnvironmentVariables.None)));
         }
 
         [Command("A", "B")]

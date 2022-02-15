@@ -20,16 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bake.Core
 {
     public interface IDefaults
     {
-        Uri GitHubUrl { get; }
-        Uri GitHubNuGetRegistry { get; }
-        Uri NuGetRegistry { get; }
+        string GitHubUrl { get; }
+        string GitHubNuGetRegistry { get; }
+        string NuGetRegistry { get; }
         string DockerHubUserRegistry { get; }
         string GitHubUserRegistry { get; }
+
+        Task InitializeAsync(
+            CancellationToken cancellationToken);
     }
 }

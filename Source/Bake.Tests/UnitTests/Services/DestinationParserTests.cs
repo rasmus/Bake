@@ -36,7 +36,7 @@ namespace Bake.Tests.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
-            Inject<IDefaults>(new Defaults());
+            Inject<IDefaults>(new Defaults(TestEnvironmentVariables.None));
         }
 
         [TestCase(
@@ -58,7 +58,7 @@ namespace Bake.Tests.UnitTests.Services
 
         [TestCase(
             "container>rasmus",
-            "registry.hub.docker.com/rasmus/")]
+            "rasmus/")]
         [TestCase(
             "container>localhost:5000",
             "localhost:5000/")]

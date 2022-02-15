@@ -30,7 +30,7 @@ namespace Bake.Core
 {
     public class EnvironmentVariables : IEnvironmentVariables
     {
-        private readonly Lazy<Task<IReadOnlyDictionary<string, string>>> _environmentVariables = new Lazy<Task<IReadOnlyDictionary<string, string>>>(
+        private readonly Lazy<Task<IReadOnlyDictionary<string, string>>> _environmentVariables = new(
             GetEnvironmentVariablesAsync,
             LazyThreadSafetyMode.ExecutionAndPublication);
 

@@ -25,17 +25,21 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Commands;
+using Bake.Core;
 
 namespace Bake
 {
     public class Executor : IExecutor
     {
         private readonly ICommandFactory _commandFactory;
+        private readonly IDefaults _defaults;
 
         public Executor(
-            ICommandFactory commandFactory)
+            ICommandFactory commandFactory,
+            IDefaults defaults)
         {
             _commandFactory = commandFactory;
+            _defaults = defaults;
         }
 
         public async Task<int> ExecuteAsync(
@@ -43,6 +47,8 @@ namespace Bake
             IReadOnlyCollection<Type> commandTypes,
             CancellationToken cancellationToken)
         {
+            await _defaults.InitializeAsync(cancellationToken);
+
             var app = _commandFactory.Create(commandTypes);
 
             return await app.ExecuteAsync(args, cancellationToken);
