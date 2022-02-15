@@ -38,7 +38,7 @@ FROM python:3.9-alpine
 {{LABELS}}
 
 WORKDIR /app
-COPY ./* .
+COPY ./ .
 
 RUN \
   adduser -h /app --disabled-password appuser && \
