@@ -96,6 +96,8 @@ to scan the repository for files and structures it knows how to process.
 * **[Go](https://go.dev/)** -
   Directories that contain Go projects are analyzed
   and the application/service is built, tested and optionally containerized
+* **[Helm chart](https://helm.sh/)** -
+  Helm charts are linted and packaged
 * **[MkDocs](https://www.mkdocs.org/)** -
   MkDocs documentation sites are built and prepared as artifacts
 
