@@ -110,14 +110,17 @@ namespace Bake.Cooking.Ingredients.Gathers
 
                 if (withExactVersion.Count > 1)
                 {
-                    _logger.LogWarning(
-                        "Found {Count} release notes with version {Version}, just picking one at random",
-                        withExactVersion.Count,
-                        version.ToString());
-
                     // Instead of having system rely on the ordering of some implementation
                     // we might as well pick one randomly... or should we fail the build?
-                    return withExactVersion[_random.NextInt(withExactVersion.Count)];
+                    var notes = withExactVersion[_random.NextInt(withExactVersion.Count)];
+
+                    _logger.LogWarning(
+                        "Found {Count} release notes with version {Version}, just picking one at random. Got {PickedVersion}",
+                        withExactVersion.Count,
+                        version.ToString(),
+                        notes.Version.ToString());
+
+                    return notes;
                 }
             }
             else
@@ -129,25 +132,30 @@ namespace Bake.Cooking.Ingredients.Gathers
 
                 if (withSubset.Any())
                 {
-                    _logger.LogInformation(
-                        "Found {Count} release notes that matches {Version}, picking the most recent",
-                        withSubset.Count,
-                        version.ToString());
+                    var notes = withSubset.First();
 
-                    return withSubset.First();
+                    _logger.LogInformation(
+                        "Found {Count} release notes that matches {Version}, picking the most recent. Got {PickedVersion}",
+                        withSubset.Count,
+                        version.ToString(),
+                        notes.Version.ToString());
+
+                    return notes;
                 }
             }
 
             var orderedReleaseNotes = releaseNotes
                 .OrderByDescending(n => n.Version)
                 .ToList();
+            var pickedNotes = orderedReleaseNotes.First();
 
             _logger.LogWarning(
-                "Found {Count} releases, none matches the version {Version}, picking the most recent",
+                "Found {Count} releases, none matches the version {Version}, picking the most recent. Got {PickedVersion}",
                 orderedReleaseNotes.Count,
-                version.ToString());
+                version.ToString(),
+                pickedNotes.Version.ToString());
 
-            return orderedReleaseNotes.First();
+            return pickedNotes;
         }
     }
 }
