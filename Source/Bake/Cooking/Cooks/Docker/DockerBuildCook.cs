@@ -54,14 +54,15 @@ namespace Bake.Cooking.Cooks.Docker
             DockerBuildRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var dockerIgnoreFilePath = Path.Join(recipe.Path, ".dockerignore");
+            var directoryPath = Path.GetDirectoryName(recipe.Path);
+            var dockerIgnoreFilePath = Path.Join(directoryPath, ".dockerignore");
             if (!File.Exists(dockerIgnoreFilePath))
             {
                 _logger.LogWarning(
                     "There is no '.dockerignore' file at {FilePath}, consider adding one! Bake will create one with some sensible defaults for you",
                     dockerIgnoreFilePath);
                 await _dockerIgnores.WriteAsync(
-                    recipe.Path,
+                    directoryPath,
                     cancellationToken);
             }
 
