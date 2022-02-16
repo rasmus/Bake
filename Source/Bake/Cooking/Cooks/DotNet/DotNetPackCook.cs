@@ -50,7 +50,8 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Build,
                 recipe.IncludeSymbols,
                 recipe.IncludeSource,
-                recipe.Configuration);
+                recipe.Configuration,
+                recipe.Properties);
 
             using var toolResult = await _dotNet.PackAsync(
                 argument,

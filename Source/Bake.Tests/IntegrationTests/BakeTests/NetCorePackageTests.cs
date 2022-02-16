@@ -20,32 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using LibGit2Sharp;
+using System.Threading.Tasks;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Tests.Helpers
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class GitHelper
+    public class NetCorePackageTests : BakeTest
     {
-        public static string Create(string path)
+        public NetCorePackageTests()
+            : base("NetCore.Package")
         {
-            Repository.Init(path);
-            
-            using var repository = new Repository(path);
+        }
 
-            repository.Network.Remotes.Add("origin", "git@github.com:rasmus/Bake.git");
+        [Test]
+        public async Task Run()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
 
-            var signature = new Signature("test", "test@example.org", DateTimeOffset.Now);
-            var commit = repository.Commit(
-                "test",
-                signature,
-                signature,
-                new CommitOptions
-                {
-                    AllowEmptyCommit = true,
-                });
+            // Act
+            var returnCode = await ExecuteAsync(
+                "run",
+                "--build-version", version);
 
-            return commit.Sha;
+            // Assert
+            returnCode.Should().Be(0);
+            var nuSpec = await AssertNuGetExistsAsync(
+                "bin",
+                "Release",
+                $"{ProjectName}.{version}.nupkg");
+            nuSpec.RepositoryUrl.Should().Be(RepositoryUrl);
+            nuSpec.RepositoryCommit.Should().Be(Sha);
         }
     }
 }

@@ -20,32 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using LibGit2Sharp;
-
-namespace Bake.Tests.Helpers
+namespace NetCore.Package
 {
-    public class GitHelper
+    public static class Dummy
     {
-        public static string Create(string path)
-        {
-            Repository.Init(path);
-            
-            using var repository = new Repository(path);
-
-            repository.Network.Remotes.Add("origin", "git@github.com:rasmus/Bake.git");
-
-            var signature = new Signature("test", "test@example.org", DateTimeOffset.Now);
-            var commit = repository.Commit(
-                "test",
-                signature,
-                signature,
-                new CommitOptions
-                {
-                    AllowEmptyCommit = true,
-                });
-
-            return commit.Sha;
-        }
+        public const int TheAnswer = 42;
     }
 }

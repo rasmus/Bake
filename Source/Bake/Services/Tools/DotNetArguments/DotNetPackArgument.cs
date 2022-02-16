@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.Services.Tools.DotNetArguments
@@ -32,6 +33,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public bool IncludeSymbols { get; }
         public bool IncludeSource { get; }
         public string Configuration { get; }
+        public Dictionary<string, string> Properties { get; }
 
         public DotNetPackArgument(
             string filePath,
@@ -40,7 +42,8 @@ namespace Bake.Services.Tools.DotNetArguments
             bool build,
             bool includeSymbols,
             bool includeSource,
-            string configuration)
+            string configuration,
+            Dictionary<string, string> properties)
             : base(filePath)
         {
             Version = version;
@@ -49,6 +52,7 @@ namespace Bake.Services.Tools.DotNetArguments
             IncludeSymbols = includeSymbols;
             IncludeSource = includeSource;
             Configuration = configuration;
+            Properties = properties;
         }
     }
 }
