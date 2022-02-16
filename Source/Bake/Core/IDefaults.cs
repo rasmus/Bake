@@ -33,6 +33,8 @@ namespace Bake.Core
         string DockerHubUserRegistry { get; }
         string GitHubUserRegistry { get; }
 
+        bool DockerBuildCompress { get; }
+
         Task InitializeAsync(
             CancellationToken cancellationToken);
     }

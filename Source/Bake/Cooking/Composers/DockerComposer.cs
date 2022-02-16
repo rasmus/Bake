@@ -48,17 +48,20 @@ namespace Bake.Cooking.Composers
             };
 
         private readonly ILogger<DockerComposer> _logger;
+        private readonly IDefaults _defaults;
         private readonly IFileSystem _fileSystem;
         private readonly IContainerTagParser _containerTagParser;
         private readonly IConventionInterpreter _conventionInterpreter;
 
         public DockerComposer(
             ILogger<DockerComposer> logger,
+            IDefaults defaults,
             IFileSystem fileSystem,
             IContainerTagParser containerTagParser,
             IConventionInterpreter conventionInterpreter)
         {
             _logger = logger;
+            _defaults = defaults;
             _fileSystem = fileSystem;
             _containerTagParser = containerTagParser;
             _conventionInterpreter = conventionInterpreter;
@@ -140,6 +143,7 @@ namespace Bake.Cooking.Composers
                 path,
                 slug,
                 tags,
+                _defaults.DockerBuildCompress,
                 new ContainerArtifact(
                     slug,
                     tags.ToArray()));

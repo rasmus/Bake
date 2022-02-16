@@ -52,6 +52,10 @@ namespace Bake.Services.Tools
                 };
             arguments.AddRange(argument.Tags.SelectMany(t => new []{"-t", t}));
             arguments.Add(".");
+            if (argument.Compress)
+            {
+                arguments.Add("--compress");
+            }
 
             var workingDirectory = Path.GetDirectoryName(argument.Path);
 

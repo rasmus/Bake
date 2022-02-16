@@ -20,9 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+// ReSharper disable StringLiteralTypo
 
 namespace Bake.Core
 {
@@ -35,6 +38,7 @@ namespace Bake.Core
         public string NuGetRegistry { get; private set; } = "https://api.nuget.org/v3/index.json";
         public string DockerHubUserRegistry { get; private set; } = "{USER}/";
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
+        public bool DockerBuildCompress { get; private set; } = true;
 
         public Defaults(
             IEnvironmentVariables environmentVariables)
@@ -47,14 +51,30 @@ namespace Bake.Core
         {
             var e = await _environmentVariables.GetAsync(cancellationToken);
 
-            GitHubUrl = Get(e, "github_url", GitHubUrl);
-            GitHubNuGetRegistry = Get(e, "github_packages_nuget_url", GitHubNuGetRegistry);
-            GitHubUserRegistry = Get(e, "github_packages_container_url", GitHubUserRegistry);
-            NuGetRegistry = Get(e, "nuget_url", NuGetRegistry);
-            DockerHubUserRegistry = Get(e, "dockerhub_user_url", DockerHubUserRegistry);
+            GitHubUrl = GetString(e, "github_url", GitHubUrl);
+            GitHubNuGetRegistry = GetString(e, "github_packages_nuget_url", GitHubNuGetRegistry);
+            GitHubUserRegistry = GetString(e, "github_packages_container_url", GitHubUserRegistry);
+            NuGetRegistry = GetString(e, "nuget_url", NuGetRegistry);
+            DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
+            DockerBuildCompress = GetBool(e, "docker_build_compress", true);
         }
 
-        private static string Get(
+        private static bool GetBool(
+            IReadOnlyDictionary<string, string> environmentVariables,
+            string name,
+            bool defaultValue)
+        {
+            var value = GetString(environmentVariables, name, defaultValue.ToString());
+            if (!bool.TryParse(value, out var b))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot parse value '{value}' to bool for key '{name}'");
+            }
+
+            return b;
+        }
+
+        private static string GetString(
             IReadOnlyDictionary<string, string> environmentVariables,
             string name,
             string defaultValue)

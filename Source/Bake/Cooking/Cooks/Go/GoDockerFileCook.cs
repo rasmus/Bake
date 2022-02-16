@@ -36,10 +36,14 @@ namespace Bake.Cooking.Cooks.Go
 
         private const string Dockerfile = @"
 FROM gcr.io/distroless/base-debian10
+
 {{LABELS}}
+
 WORKDIR /
 COPY {{SRC}} /{{DST}}
+
 EXPOSE {{PORT}}
+
 USER nonroot:nonroot
 ENTRYPOINT [""/{{DST}}""]
 ";
