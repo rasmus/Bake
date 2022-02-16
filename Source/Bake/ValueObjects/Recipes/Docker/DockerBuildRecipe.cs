@@ -40,6 +40,9 @@ namespace Bake.ValueObjects.Recipes.Docker
         [YamlMember]
         public string[] Tags { get; [Obsolete] set; }
 
+        [YamlMember]
+        public bool Compress { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerBuildRecipe() { }
 
@@ -47,6 +50,7 @@ namespace Bake.ValueObjects.Recipes.Docker
             string path,
             string name,
             IEnumerable<string> tags,
+            bool compress,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -54,6 +58,7 @@ namespace Bake.ValueObjects.Recipes.Docker
             Path = path;
             Name = name;
             Tags = tags.ToArray();
+            Compress = compress;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

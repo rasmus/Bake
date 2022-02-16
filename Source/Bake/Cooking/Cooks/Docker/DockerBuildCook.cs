@@ -60,7 +60,8 @@ namespace Bake.Cooking.Cooks.Docker
 
             var argument = new DockerBuildArgument(
                 recipe.Path,
-                recipe.Tags);
+                recipe.Tags,
+                recipe.Compress);
 
             using var toolResult = await _docker.BuildAsync(
                 argument,
