@@ -32,6 +32,7 @@ namespace Bake.Cooking.Cooks.DotNet
     {
         private readonly IDotNetTfmParser _dotNetTfmParser;
         private readonly IDockerLabels _dockerLabels;
+        private readonly IDockerIgnores _dockerIgnores;
 
         private const string Dockerfile = @"
 FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
@@ -63,10 +64,12 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
 
         public DotNetDockerFileCook(
             IDotNetTfmParser dotNetTfmParser,
-            IDockerLabels dockerLabels)
+            IDockerLabels dockerLabels,
+            IDockerIgnores dockerIgnores)
         {
             _dotNetTfmParser = dotNetTfmParser;
             _dockerLabels = dockerLabels;
+            _dockerIgnores = dockerIgnores;
         }
 
         protected override async Task<bool> CookAsync(
@@ -92,6 +95,10 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
             await File.WriteAllTextAsync(
                 dockerFilePath,
                 dockerfileContent,
+                cancellationToken);
+
+            await _dockerIgnores.WriteAsync(
+                directoryPath,
                 cancellationToken);
 
             return true;

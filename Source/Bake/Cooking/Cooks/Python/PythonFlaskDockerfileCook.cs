@@ -31,6 +31,7 @@ namespace Bake.Cooking.Cooks.Python
     public class PythonFlaskDockerfileCook : Cook<PythonFlaskDockerfileRecipe>
     {
         private readonly IDockerLabels _dockerLabels;
+        private readonly IDockerIgnores _dockerIgnores;
 
         private const string Dockerfile = @"
 FROM python:3.9-alpine
@@ -49,9 +50,11 @@ CMD [ ""python"", ""-m"", ""flask"", ""run"", ""--host=0.0.0.0"" ]
 ";
 
         public PythonFlaskDockerfileCook(
-            IDockerLabels dockerLabels)
+            IDockerLabels dockerLabels,
+            IDockerIgnores dockerIgnores)
         {
             _dockerLabels = dockerLabels;
+            _dockerIgnores = dockerIgnores;
         }
 
         protected override async Task<bool> CookAsync(
@@ -68,6 +71,10 @@ CMD [ ""python"", ""-m"", ""flask"", ""run"", ""--host=0.0.0.0"" ]
             await File.WriteAllTextAsync(
                 dockerFilePath,
                 dockerfileContent,
+                cancellationToken);
+
+            await _dockerIgnores.WriteAsync(
+                recipe.Directory,
                 cancellationToken);
 
             return true;

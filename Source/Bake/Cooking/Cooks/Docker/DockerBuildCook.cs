@@ -20,21 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DockerArguments;
 using Bake.ValueObjects.Recipes.Docker;
+using Microsoft.Extensions.Logging;
+
+// ReSharper disable StringLiteralTypo
 
 namespace Bake.Cooking.Cooks.Docker
 {
     public class DockerBuildCook : Cook<DockerBuildRecipe>
     {
+        private readonly ILogger<DockerBuildCook> _logger;
         private readonly IDocker _docker;
 
         public DockerBuildCook(
+            ILogger<DockerBuildCook> logger,
             IDocker docker)
         {
+            _logger = logger;
             _docker = docker;
         }
 
@@ -43,6 +50,14 @@ namespace Bake.Cooking.Cooks.Docker
             DockerBuildRecipe recipe,
             CancellationToken cancellationToken)
         {
+            var dockerIgnoreFilePath = Path.Join(recipe.Path, ".dockerignore");
+            if (!File.Exists(dockerIgnoreFilePath))
+            {
+                _logger.LogWarning(
+                    "There is no '.dockerignore' file at {FilePath}, consider adding one!",
+                    dockerIgnoreFilePath);
+            }
+
             var argument = new DockerBuildArgument(
                 recipe.Path,
                 recipe.Tags);

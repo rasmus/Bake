@@ -72,6 +72,7 @@ namespace Bake.Extensions
                 .AddTransient<IBakeProjectParser, BakeProjectParser>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>()
+                .AddTransient<IDockerIgnores, DockerIgnores>()
                 .AddTransient<IGitHub, GitHub>()
                 .AddSingleton<IGitHubClientFactory, GitHubClientFactory>()
                 .AddTransient<IPlatformParser, PlatformParser>()
