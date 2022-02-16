@@ -323,10 +323,20 @@ namespace Bake.Cooking.Composers
                 properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
             }
 
+            if (ingredients.Git != null)
+            {
+                var git = ingredients.Git;
+                properties["RepositoryType"] = "git";
+                properties["RepositoryCommit"] = git.Sha;
+                properties["RepositoryUrl"] = git.OriginUrl.AbsoluteUri;
+            }
+
             if (ingredients.GitHub != null)
             {
                 var gitHub = ingredients.GitHub;
                 properties["Authors"] = gitHub.Owner;
+
+                // Remove the git value and use GitHub
                 properties["RepositoryUrl"] = gitHub.Url.AbsoluteUri;
             }
 
