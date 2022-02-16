@@ -41,12 +41,22 @@ namespace Bake.Services
             "# Git",
             "**/.git*",
 
+            "# GitHub",
+            "**/.github",
+
             "# Python",
             "**/env",
             "**/*.pyc",
             "**/.cache",
             "**/.coverage",
             "**/.pytest_cache",
+
+            "# .NET",
+            "**/obj",
+            "**/*.*proj.user",
+
+            "# Java",
+            "**/.classpath",
 
             "# Docker files",
             "**/docker-compose*.yml",
@@ -58,10 +68,13 @@ namespace Bake.Services
 
             "# NodeJS",
             "**/node_modules",
+            "**/.bundleignore",
+            "**/.bundle",
 
-            "# Code editors",
+            "# Editors",
             "**/.vscode",
             "**/.idea",
+            "**/.vs",
 
             "# Specific files",
             "**/Makefile",
@@ -69,11 +82,19 @@ namespace Bake.Services
             "# Build systems",
             "**/.gitlab-ci.yml",
             "**/.travis.yml",
+            "**/.drone.yml",
+
+            "# Helm",
+            "**/charts",
 
             "# Others",
             "**/.env",
             "**/*~",
             "**/*.log",
+            "**/.settings",
+            "**/.toolstarget",
+            "**/tmp",
+            "**/.rspec",
         };
 
         private const string FileName = ".dockerignore";
