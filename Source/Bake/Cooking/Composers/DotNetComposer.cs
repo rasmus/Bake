@@ -156,6 +156,7 @@ namespace Bake.Cooking.Composers
             const string configuration = "Release";
 
             var ingredients = context.Ingredients;
+            var properties = CreateProperties(ingredients, visualStudioSolution);
 
             yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
@@ -163,7 +164,11 @@ namespace Bake.Cooking.Composers
 
             yield return CreateRestoreRecipe(visualStudioSolution, ingredients);
 
-            yield return CreateBuildRecipe(visualStudioSolution, ingredients, configuration);
+            yield return CreateBuildRecipe(
+                visualStudioSolution,
+                ingredients,
+                configuration,
+                properties);
 
             yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
@@ -182,6 +187,7 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
+                    properties,
                     new NuGetArtifact(
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
@@ -295,7 +301,21 @@ namespace Bake.Cooking.Composers
         private static Recipe CreateBuildRecipe(
             VisualStudioSolution visualStudioSolution,
             ValueObjects.Ingredients ingredients,
-            string configuration)
+            string configuration,
+            Dictionary<string, string> properties)
+        {
+            return new DotNetBuildSolutionRecipe(
+                visualStudioSolution.Path,
+                configuration,
+                false,
+                false,
+                ingredients.Version,
+                properties);
+        }
+
+        private Dictionary<string, string> CreateProperties(
+            ValueObjects.Ingredients ingredients,
+            VisualStudioSolution visualStudioSolution)
         {
             var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
             if (ingredients.ReleaseNotes != null)
@@ -316,13 +336,7 @@ namespace Bake.Cooking.Composers
             properties["AssemblyFileVersion"] = legacyVersion;
             properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
 
-            return new DotNetBuildSolutionRecipe(
-                visualStudioSolution.Path,
-                configuration,
-                false,
-                false,
-                ingredients.Version,
-                properties);
+            return properties;
         }
 
         private static string BuildDescription(

@@ -191,6 +191,11 @@ namespace Bake.Services.Tools
                     $"-p:PackageVersion={argument.Version}"
                 };
 
+            foreach (var (property, value) in argument.Properties)
+            {
+                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
+            }
+
             AddIf(!argument.Restore, arguments, "--no-restore");
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.IncludeSource, arguments, "--include-source");
