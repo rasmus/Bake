@@ -1,5 +1,9 @@
 # 0.9-beta
 
+* New: If there is no `.dockerignore` file found when building a `Dockerfile`,
+  create one with some sensible defaults
+* New: By default, Docker builds will compress build context before sending
+  it to the Docker daemon
 * Fixed: Required `RepositoryUrl` parameter for NuGet packages is now
   the correct URL for the repository... for real this time
 
