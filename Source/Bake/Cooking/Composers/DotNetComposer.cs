@@ -50,7 +50,7 @@ namespace Bake.Cooking.Composers
 
                 // Make the NuGet package easier for everyone to debug
                 ["EmbedUntrackedSources"] = "true",
-                ["EmbedUntrackedSources"] = "true",
+                ["PublishRepositoryUrl"] = "true",
                 ["IncludeSymbols"] = "true",
                 ["DebugType"] = "portable",
                 ["SymbolPackageFormat"] = "snupkg",

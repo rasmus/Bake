@@ -26,6 +26,8 @@ using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
     public class NetCorePackageTests : BakeTest
@@ -48,6 +50,12 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+            var nuSpec = await AssertNuGetExistsAsync(
+                "bin",
+                "Release",
+                $"{ProjectName}.{version}.nupkg");
+            nuSpec.RepositoryUrl.Should().Be(RepositoryUrl);
+            nuSpec.RepositoryCommit.Should().Be(Sha);
         }
     }
 }

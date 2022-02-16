@@ -38,6 +38,9 @@ namespace Bake.Tests.Helpers
     {
         protected string ProjectName { get; }
         protected string WorkingDirectory => Path.Join(_folder.Path, ProjectName);
+        protected string RepositoryUrl => "https://github.com/rasmus/Bake";
+        protected string Sha { get; private set; }
+
         private string _previousCurrentDirectory;
 
         private Folder _folder;
@@ -55,7 +58,7 @@ namespace Bake.Tests.Helpers
 
             if (!string.IsNullOrEmpty(ProjectName))
             {
-                GitHelper.Create(_folder.Path);
+                Sha = GitHelper.Create(_folder.Path);
 
                 DirectoryCopy(
                     Path.Combine(
@@ -100,6 +103,14 @@ namespace Bake.Tests.Helpers
             Console.WriteLine($"File {filePath} exists");
 
             return filePath;
+        }
+
+        protected Task<NuGetHelper.NuSpec> AssertNuGetExistsAsync(
+            params string[] path)
+        {
+            var packagePath = AssertFileExists(path);
+
+            return NuGetHelper.LoadAsync(packagePath);
         }
 
         protected static async Task AssertContainerPingsAsync(

@@ -27,7 +27,7 @@ namespace Bake.Tests.Helpers
 {
     public class GitHelper
     {
-        public static void Create(string path)
+        public static string Create(string path)
         {
             Repository.Init(path);
             
@@ -36,7 +36,7 @@ namespace Bake.Tests.Helpers
             repository.Network.Remotes.Add("origin", "git@github.com:rasmus/Bake.git");
 
             var signature = new Signature("test", "test@example.org", DateTimeOffset.Now);
-            repository.Commit(
+            var commit = repository.Commit(
                 "test",
                 signature,
                 signature,
@@ -44,6 +44,8 @@ namespace Bake.Tests.Helpers
                 {
                     AllowEmptyCommit = true,
                 });
+
+            return commit.Sha;
         }
     }
 }
