@@ -33,7 +33,6 @@ namespace Bake.Cooking.Cooks.Go
     {
         private readonly ILogger<GoDockerFileCook> _logger;
         private readonly IDockerLabels _dockerLabels;
-        private readonly IDockerIgnores _dockerIgnores;
 
         private const string Dockerfile = @"
 FROM gcr.io/distroless/base-debian10
@@ -51,12 +50,10 @@ ENTRYPOINT [""/{{DST}}""]
 
         public GoDockerFileCook(
             ILogger<GoDockerFileCook> logger,
-            IDockerLabels dockerLabels,
-            IDockerIgnores dockerIgnores)
+            IDockerLabels dockerLabels)
         {
             _logger = logger;
             _dockerLabels = dockerLabels;
-            _dockerIgnores = dockerIgnores;
         }
 
         protected override async Task<bool> CookAsync(
@@ -81,10 +78,6 @@ ENTRYPOINT [""/{{DST}}""]
             await File.WriteAllTextAsync(
                 dockerFilePath,
                 dockerfileContent,
-                cancellationToken);
-
-            await _dockerIgnores.WriteAsync(
-                recipe.ProjectPath,
                 cancellationToken);
 
             return true;

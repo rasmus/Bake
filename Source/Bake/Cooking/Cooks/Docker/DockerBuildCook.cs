@@ -23,6 +23,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Services;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DockerArguments;
 using Bake.ValueObjects.Recipes.Docker;
@@ -35,13 +36,16 @@ namespace Bake.Cooking.Cooks.Docker
     public class DockerBuildCook : Cook<DockerBuildRecipe>
     {
         private readonly ILogger<DockerBuildCook> _logger;
+        private readonly IDockerIgnores _dockerIgnores;
         private readonly IDocker _docker;
 
         public DockerBuildCook(
             ILogger<DockerBuildCook> logger,
+            IDockerIgnores dockerIgnores,
             IDocker docker)
         {
             _logger = logger;
+            _dockerIgnores = dockerIgnores;
             _docker = docker;
         }
 
@@ -54,8 +58,11 @@ namespace Bake.Cooking.Cooks.Docker
             if (!File.Exists(dockerIgnoreFilePath))
             {
                 _logger.LogWarning(
-                    "There is no '.dockerignore' file at {FilePath}, consider adding one!",
+                    "There is no '.dockerignore' file at {FilePath}, consider adding one! Bake will create one with some sensible defaults for you",
                     dockerIgnoreFilePath);
+                await _dockerIgnores.WriteAsync(
+                    recipe.Path,
+                    cancellationToken);
             }
 
             var argument = new DockerBuildArgument(
