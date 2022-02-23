@@ -46,6 +46,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
+                "--log-level:Verbose",
                 "--build-version", version);
 
             // Assert
@@ -56,6 +57,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 $"{ProjectName}.{version}.nupkg");
             nuSpec.RepositoryUrl.Should().Be(RepositoryUrl);
             nuSpec.RepositoryCommit.Should().Be(Sha);
+            nuSpec.Files.Should().Contain("lib/net6.0/NetCore.Package.dll");
         }
     }
 }

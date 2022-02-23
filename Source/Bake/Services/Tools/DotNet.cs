@@ -130,7 +130,7 @@ namespace Bake.Services.Tools
                      "--configuration", argument.Configuration,
                      $"-p:Version={argument.Version}",
                      $"-p:AssemblyVersion={argument.Version.Major}.0.0.0",
-                     $"-p:FileVersion={argument.Version}"
+                     $"-p:FileVersion={argument.Version.LegacyVersion}"
                 };
 
             foreach (var (property, value) in argument.Properties)
@@ -200,9 +200,7 @@ namespace Bake.Services.Tools
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.IncludeSource, arguments, "--include-source");
             AddIf(argument.IncludeSymbols, arguments, "--include-symbols");
-            AddIf(argument.Build, arguments, "--no-build");
             AddIf(!string.IsNullOrEmpty(argument.Version.Meta), arguments, "--version-suffix", argument.Version.Meta);
-
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,

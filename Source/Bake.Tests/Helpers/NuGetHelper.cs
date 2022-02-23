@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using NuGet.Packaging;
@@ -38,7 +40,13 @@ namespace Bake.Tests.Helpers
             await using var fileStream = File.Open(packagePath, FileMode.Open);
             using var packageArchiveReader = new PackageArchiveReader(fileStream);
             var nuSpecReader = packageArchiveReader.NuspecReader;
+            var files = packageArchiveReader.GetFiles().ToArray();
 
+            Console.WriteLine(new string('=', 42));
+            foreach (var file in files)
+            {
+                Console.WriteLine(file);
+            }
             Console.WriteLine(new string('=', 42));
             Console.WriteLine(nuSpecReader.Xml.ToString(SaveOptions.None));
             Console.WriteLine(new string('=', 42));
@@ -47,6 +55,7 @@ namespace Bake.Tests.Helpers
 
             return new NuSpec(
                 nuSpecReader.GetId(),
+                files,
                 repositoryMetadata?.Url,
                 repositoryMetadata?.Commit);
         }
@@ -54,15 +63,18 @@ namespace Bake.Tests.Helpers
         public class NuSpec
         {
             public string Id { get; }
+            public IReadOnlyCollection<string> Files { get; }
             public string RepositoryCommit { get; }
             public string RepositoryUrl { get; }
 
             public NuSpec(
                 string id,
+                IReadOnlyCollection<string> files,
                 string? repositoryUrl,
                 string? repositoryCommit)
             {
                 Id = id;
+                Files = files;
                 RepositoryCommit = repositoryCommit ?? string.Empty;
                 RepositoryUrl = repositoryUrl ?? string.Empty;
             }
