@@ -56,6 +56,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 $"{ProjectName}.{version}.nupkg");
             nuSpec.RepositoryUrl.Should().Be(RepositoryUrl);
             nuSpec.RepositoryCommit.Should().Be(Sha);
+            nuSpec.Files.Should().Contain(s => s.EndsWith("NetCore.Package.dll"));
         }
     }
 }
