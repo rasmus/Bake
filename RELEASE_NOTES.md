@@ -1,3 +1,7 @@
+# 0.10-beta
+
+* Fixed: Project DLLs are now actually added to NuGet packages
+
 # 0.9-beta
 
 * New: If there is no `.dockerignore` file found when building a `Dockerfile`,
