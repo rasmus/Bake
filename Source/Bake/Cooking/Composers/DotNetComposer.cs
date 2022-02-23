@@ -54,8 +54,7 @@ namespace Bake.Cooking.Composers
                 ["IncludeSymbols"] = "true",
                 ["DebugType"] = "portable",
                 ["SymbolPackageFormat"] = "snupkg",
-                ["AllowedOutputExtensionsInPackageBuildOutputFolder"] = "$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb",
-            };
+        };
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -313,11 +312,12 @@ namespace Bake.Cooking.Composers
                 properties);
         }
 
-        private Dictionary<string, string> CreateProperties(
+        private static Dictionary<string, string> CreateProperties(
             ValueObjects.Ingredients ingredients,
             VisualStudioSolution visualStudioSolution)
         {
             var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
+
             if (ingredients.ReleaseNotes != null)
             {
                 properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
@@ -330,7 +330,6 @@ namespace Bake.Cooking.Composers
                 properties["RepositoryCommit"] = git.Sha;
                 properties["RepositoryUrl"] = git.OriginUrl.AbsoluteUri;
             }
-
             if (ingredients.GitHub != null)
             {
                 var gitHub = ingredients.GitHub;
