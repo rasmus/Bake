@@ -79,6 +79,7 @@ namespace Bake.Extensions
                 .AddTransient<IMkDocs, MkDocs>()
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
+                .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
