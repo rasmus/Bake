@@ -65,4 +65,3 @@ jobs:
       with:
         name: test-results
         path: "**/*.trx"
-        reporter: dotnet-trx
