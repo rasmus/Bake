@@ -58,3 +58,10 @@ jobs:
 
     - name: Run Bake
       run: bake-it/bake run --build-version 0.11.$GITHUB_RUN_NUMBER
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      if: success() || failure()
+      with:
+        name: test-results
+        path: "**/*.trx"
