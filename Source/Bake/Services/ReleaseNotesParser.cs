@@ -51,7 +51,9 @@ namespace Bake.Services
 
             var lines = markdown.Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
-            return ParseLines(lines).ToList();
+            return ParseLines(lines)
+                .OrderByDescending(n => n.Version)
+                .ToArray();
         }
 
         private IEnumerable<ReleaseNotes> ParseLines(IEnumerable<string> lines)
