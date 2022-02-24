@@ -1,3 +1,7 @@
+# 0.12-beta
+
+* Fixed: Not limits description of NuGet packages to 4.000 characters
+
 # 0.11-beta
 
 * New: Use content of `README.md` files as DLL and NuGet descriptions

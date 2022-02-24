@@ -39,7 +39,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         }
 
         [Test]
-        public async Task T()
+        public async Task TestIt()
         {
             // Arrange
             var ingredients = Ingredients.New(
@@ -63,6 +63,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<ICredentials, Credentials>()
                 .AddTransient<IDefaults, Defaults>()
+                .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
                 .AddSingleton(TestEnvironmentVariables.None)
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()

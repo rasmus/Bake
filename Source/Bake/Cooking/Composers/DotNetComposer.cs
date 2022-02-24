@@ -43,6 +43,7 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : Composer
     {
+        public const int MaximumNuGetDescription = 4000;
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
             {
                 // We really don't want builds to fail due to old versions
@@ -70,6 +71,7 @@ namespace Bake.Cooking.Composers
         private readonly IConventionInterpreter _conventionInterpreter;
         private readonly IDefaults _defaults;
         private readonly IDockerLabels _dockerLabels;
+        private readonly IDescriptionLimiter _descriptionLimiter;
 
         public DotNetComposer(
             ILogger<DotNetComposer> logger,
@@ -77,7 +79,8 @@ namespace Bake.Cooking.Composers
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter,
             IDefaults defaults,
-            IDockerLabels dockerLabels)
+            IDockerLabels dockerLabels,
+            IDescriptionLimiter descriptionLimiter)
         {
             _logger = logger;
             _fileSystem = fileSystem;
@@ -85,6 +88,7 @@ namespace Bake.Cooking.Composers
             _conventionInterpreter = conventionInterpreter;
             _defaults = defaults;
             _dockerLabels = dockerLabels;
+            _descriptionLimiter = descriptionLimiter;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -312,7 +316,7 @@ namespace Bake.Cooking.Composers
                 properties);
         }
 
-        private static Dictionary<string, string> CreateProperties(
+        private Dictionary<string, string> CreateProperties(
             ValueObjects.Ingredients ingredients,
             VisualStudioSolution visualStudioSolution)
         {
@@ -348,13 +352,13 @@ namespace Bake.Cooking.Composers
             return properties;
         }
 
-        private static string BuildDescription(
+        private string BuildDescription(
             VisualStudioSolution visualStudioSolution,
             ValueObjects.Ingredients ingredients)
         {
             if (ingredients.Description != null)
             {
-                return ingredients.Description.Text;
+                return _descriptionLimiter.Limit(ingredients.Description.Text, MaximumNuGetDescription);
             }
 
             var elements = new Dictionary<string, string>
