@@ -1,0 +1,1 @@
+README for NetCore.Package

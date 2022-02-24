@@ -57,7 +57,14 @@ namespace Bake.Cooking.Ingredients.Gathers
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
 
-            ingredients.Git = gitInformation;
+            if (gitInformation == null)
+            {
+                ingredients.FailGit();
+            }
+            else
+            {
+                ingredients.Git = gitInformation;
+            }
         }
 
         private GitInformation Gather(
