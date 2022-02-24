@@ -109,10 +109,9 @@ namespace Bake.Cooking.Composers
             var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
-            var labels = (await _dockerLabels.FromIngredientsAsync(
+            var labels = await _dockerLabels.FromIngredientsAsync(
                 context.Ingredients,
-                cancellationToken))
-                .ToDictionary(kv => kv.Key, kv => kv.Value);
+                cancellationToken);
 
             return visualStudioSolutions
                 .SelectMany(s => CreateRecipe(context, labels, s))

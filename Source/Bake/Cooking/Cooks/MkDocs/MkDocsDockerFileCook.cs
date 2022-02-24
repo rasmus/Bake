@@ -20,68 +20,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Recipes;
-using Bake.ValueObjects.Recipes.Python;
+using Bake.ValueObjects.Recipes.MkDocs;
 
-namespace Bake.Cooking.Composers
+namespace Bake.Cooking.Cooks.MkDocs
 {
-    public class PythonFlaskComposer : Composer
+    public class MkDocsDockerFileCook : Cook<MkDocsDockerFileRecipe>
     {
-        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
-            {
-                ArtifactType.Dockerfile,
-            };
-
-        private readonly IFileSystem _fileSystem;
         private readonly IDockerLabels _dockerLabels;
 
-        public PythonFlaskComposer(
-            IFileSystem fileSystem,
+        private const string Dockerfile = @"
+FROM alpine:3.13.2 AS builder
+
+ARG THTTPD_VERSION=2.29
+
+RUN \
+  apk add gcc musl-dev make && \
+  wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
+  tar xzf thttpd-${THTTPD_VERSION}.tar.gz && \
+  mv /thttpd-${THTTPD_VERSION} /thttpd && \
+  cd /thttpd && \
+  ./configure && \
+  make CCOPT='-O2 -s -static' thttpd && \
+  adduser -D static
+
+FROM scratch
+
+{{LABELS}}
+
+EXPOSE 8080
+
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /thttpd/thttpd /
+
+USER static
+WORKDIR /home/static
+
+COPY {{PATH}} .
+
+CMD [""/thttpd"", ""-D"", ""-h"", ""0.0.0.0"", ""-p"", ""8080"", ""-d"", ""/home/static"", ""-u"", ""static"", ""-l"", ""-"", ""-M"", ""60""]
+";
+
+        public MkDocsDockerFileCook(
             IDockerLabels dockerLabels)
         {
-            _fileSystem = fileSystem;
             _dockerLabels = dockerLabels;
         }
 
-        public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+        protected override async Task<bool> CookAsync(
             IContext context,
+            MkDocsDockerFileRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var files = await _fileSystem.FindFilesAsync(
-                context.Ingredients.WorkingDirectory,
-                "app.py",
+            var dockerFilePath = recipe.Artifacts
+                .OfType<DockerFileArtifact>()
+                .Single()
+                .Path;
+            var labels = _dockerLabels.Serialize(recipe.Labels);
+
+            var dockerfileContent = Dockerfile
+                .Replace("{{PATH}}", recipe.Directory)
+                .Replace("{{LABELS}}", labels);
+
+            await File.WriteAllTextAsync(
+                dockerFilePath,
+                dockerfileContent,
                 cancellationToken);
 
-            var labels = await _dockerLabels.FromIngredientsAsync(
-                context.Ingredients,
-                cancellationToken);
-
-            return files
-                .SelectMany(p => CreateRecipes(p, labels))
-                .ToList();
-        }
-
-        private static IEnumerable<Recipe> CreateRecipes(
-            string appFilePath,
-            Dictionary<string, string> labels)
-        {
-            var directory = Path.GetDirectoryName(appFilePath);
-            var dockerfilePath = Path.Combine(directory, "Dockerfile");
-            var name = Path.GetFileName(directory).ToSlug();
-
-            yield return new PythonFlaskDockerfileRecipe(
-                directory,
-                labels,
-                new DockerFileArtifact(name, dockerfilePath));
+            return true;
         }
     }
 }

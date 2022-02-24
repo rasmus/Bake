@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Extensions;
@@ -44,6 +45,11 @@ namespace Bake.Services.Tools
             MkDocsBuildArgument argument,
             CancellationToken cancellationToken)
         {
+            if (Directory.Exists(argument.OutputDirectory))
+            {
+                Directory.CreateDirectory(argument.OutputDirectory);
+            }
+
             var arguments = new List<string>
                 {
                     "build",

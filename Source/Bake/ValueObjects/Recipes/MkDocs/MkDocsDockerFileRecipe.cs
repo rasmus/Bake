@@ -20,42 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.ValueObjects.Recipes.MkDocs
 {
-    public class MkDocsSimple : BakeTest
+    [Recipe(Names.Recipes.MkDocs.DockerFile)]
+    public class MkDocsDockerFileRecipe : Recipe
     {
-        public MkDocsSimple() : base("MkDocs.Simple")
+        [YamlMember]
+        public string Directory { get; [Obsolete] set; }
+
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; }
+
+        [Obsolete]
+        public MkDocsDockerFileRecipe() { }
+
+        public MkDocsDockerFileRecipe(
+            string directory,
+            Dictionary<string, string> labels,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
-        }
-
-        [Test]
-        public async Task Run()
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/docs:{version}";
-
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--convention=Release",
-                "--destination=release>github",
-                "--build-version", version));
-
-            // Assert
-            returnCode.Should().Be(0);
-            await AssertContainerPingsAsync(
-                DockerArguments.With(expectedImage)
-                    .WithPort(8080),
-                "index.html");
+#pragma warning disable CS0612 // Type or member is obsolete
+            Directory = directory;
+            Labels = labels;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

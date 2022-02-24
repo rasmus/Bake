@@ -128,6 +128,7 @@ namespace Bake
             public static class MkDocs
             {
                 public const string Release = "mkdocs-build";
+                public const string DockerFile = "mkdocs-dockerfile";
             }
 
             public static class Docker

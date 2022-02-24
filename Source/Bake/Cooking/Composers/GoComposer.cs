@@ -69,10 +69,9 @@ namespace Bake.Cooking.Composers
                 context.Ingredients.WorkingDirectory,
                 "go.mod",
                 cancellationToken);
-            var labels = (await _dockerLabels.FromIngredientsAsync(
+            var labels = await _dockerLabels.FromIngredientsAsync(
                 context.Ingredients,
-                cancellationToken))
-                .ToDictionary(kv => kv.Key, kv => kv.Value);
+                cancellationToken);
 
             return (await Task.WhenAll(
                     goModFilePaths

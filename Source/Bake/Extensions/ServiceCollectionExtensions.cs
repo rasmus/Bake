@@ -130,6 +130,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GitHubReleaseCook>()
                 // Cooks - MkDocs
                 .AddTransient<ICook, MkDocsBuildCook>()
+                .AddTransient<ICook, MkDocsDockerFileCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()
