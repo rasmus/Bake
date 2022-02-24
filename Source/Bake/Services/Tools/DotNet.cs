@@ -162,6 +162,7 @@ namespace Bake.Services.Tools
                     argument.FilePath,
                     "--nologo",
                     "--configuration", argument.Configuration,
+                    "--logger", "\"trx;LogFileName=test-results.trx\""
                 };
 
             AddIf(!argument.Restore, arguments, "--no-restore");
