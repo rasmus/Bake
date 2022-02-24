@@ -1,6 +1,10 @@
 # 0.11-beta
 
-* New: Use content of `README.md` files as DLL and NuGet descriptions. 
+* New: Use content of `README.md` files as DLL and NuGet descriptions
+* Fixed: Bake is now better at picking release notes with versions that
+  are *similar* to the build version if no exact match can be found. As
+  an example `1.0-alpha` is picked among `1.1`, `1.0-alpha` and `0.9`
+  when the build version is `1.0.42`
 
 # 0.10-beta
 

@@ -37,16 +37,16 @@ namespace Bake.Cooking.Ingredients.Gathers
     {
         private readonly ILogger<ReleaseNotesGather> _logger;
         private readonly IReleaseNotesParser _releaseNotesParser;
-        private readonly IRandom _random;
+        private readonly IFileSystem _fileSystem;
 
         public ReleaseNotesGather(
             ILogger<ReleaseNotesGather> logger,
             IReleaseNotesParser releaseNotesParser,
-            IRandom random)
+            IFileSystem fileSystem)
         {
             _logger = logger;
             _releaseNotesParser = releaseNotesParser;
-            _random = random;
+            _fileSystem = fileSystem;
         }
 
         public async Task GatherAsync(
@@ -57,17 +57,27 @@ namespace Bake.Cooking.Ingredients.Gathers
                 ingredients.WorkingDirectory,
                 "RELEASE_NOTES.md");
 
-            if (!System.IO.File.Exists(releaseNotesPath))
+            if (!_fileSystem.FileExists(releaseNotesPath))
             {
                 _logger.LogInformation(
                     "No release notes found at {ReleaseNotesPath}",
                     releaseNotesPath);
+                ingredients.FailReleaseNotes();
                 return;
             }
 
             var releaseNotes = await _releaseNotesParser.ParseAsync(
                 releaseNotesPath,
                 cancellationToken);
+
+            if (!releaseNotes.Any())
+            {
+                _logger.LogInformation(
+                    "Was not able to parse any release notes from {ReleaseNotesPath}",
+                    releaseNotesPath);
+                ingredients.FailReleaseNotes();
+                return;
+            }
 
             _logger.LogInformation(() =>
             {
@@ -107,41 +117,24 @@ namespace Bake.Cooking.Ingredients.Gathers
                 {
                     return withExactVersion.Single();
                 }
-
-                if (withExactVersion.Count > 1)
-                {
-                    // Instead of having system rely on the ordering of some implementation
-                    // we might as well pick one randomly... or should we fail the build?
-                    var notes = withExactVersion[_random.NextInt(withExactVersion.Count)];
-
-                    _logger.LogWarning(
-                        "Found {Count} release notes with version {Version}, just picking one at random. Got {PickedVersion}",
-                        withExactVersion.Count,
-                        version.ToString(),
-                        notes.Version.ToString());
-
-                    return notes;
-                }
             }
-            else
+
+            var withSubset = releaseNotes
+                .Where(n => n.Version.IsSubset(version))
+                .OrderByDescending(n => n.Version)
+                .ToList();
+
+            if (withSubset.Any())
             {
-                var withSubset = releaseNotes
-                    .Where(n => version.IsSubset(n.Version))
-                    .OrderByDescending(n => n.Version)
-                    .ToList();
+                var notes = withSubset.First();
 
-                if (withSubset.Any())
-                {
-                    var notes = withSubset.First();
+                _logger.LogInformation(
+                    "Found {Count} release notes that matches {Version}, picking the most recent. Got {PickedVersion}",
+                    withSubset.Count,
+                    version.ToString(),
+                    notes.Version.ToString());
 
-                    _logger.LogInformation(
-                        "Found {Count} release notes that matches {Version}, picking the most recent. Got {PickedVersion}",
-                        withSubset.Count,
-                        version.ToString(),
-                        notes.Version.ToString());
-
-                    return notes;
-                }
+                return notes;
             }
 
             var orderedReleaseNotes = releaseNotes

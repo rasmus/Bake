@@ -160,8 +160,7 @@ namespace Bake.Core
             return Patch.HasValue
                 ? Equals(other)
                 : Major == other.Major &&
-                  Minor == other.Minor &&
-                  string.Equals(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
+                  Minor == other.Minor;
         }
 
         public int CompareTo(SemVer other)
