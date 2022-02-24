@@ -1,3 +1,7 @@
+# 0.11-beta
+
+* New: Use content of `README.md` files as DLL and NuGet descriptions. 
+
 # 0.10-beta
 
 * Fixed: Project DLLs are now actually added to NuGet packages
