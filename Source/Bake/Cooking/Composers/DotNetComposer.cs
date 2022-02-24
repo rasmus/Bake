@@ -352,6 +352,11 @@ namespace Bake.Cooking.Composers
             VisualStudioSolution visualStudioSolution,
             ValueObjects.Ingredients ingredients)
         {
+            if (ingredients.Description != null)
+            {
+                return ingredients.Description.Text;
+            }
+
             var elements = new Dictionary<string, string>
                 {
                     ["SolutionName"] = visualStudioSolution.Name,

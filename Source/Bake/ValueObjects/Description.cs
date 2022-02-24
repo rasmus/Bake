@@ -20,45 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.ValueObjects
 {
-    public class NetCorePackageTests : BakeTest
+    public class Description
     {
-        public NetCorePackageTests()
-            : base("NetCore.Package")
+        public string Text { get; }
+
+        public Description(
+            string text)
         {
-        }
+            if (string.IsNullOrEmpty(text))
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
 
-        [Test]
-        public async Task Run()
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-
-            // Act
-            var returnCode = await ExecuteAsync(
-                "run",
-                "--log-level:Verbose",
-                "--build-version", version);
-
-            // Assert
-            returnCode.Should().Be(0);
-            var nuSpec = await AssertNuGetExistsAsync(
-                "bin",
-                "Release",
-                $"{ProjectName}.{version}.nupkg");
-            nuSpec.RepositoryUrl.Should().Be(RepositoryUrl);
-            nuSpec.RepositoryCommit.Should().Be(Sha);
-            nuSpec.Files.Should().Contain("lib/net6.0/NetCore.Package.dll");
-            nuSpec.Description.Should().Contain("README for NetCore.Package");
+            Text = text;
         }
     }
 }

@@ -56,6 +56,7 @@ namespace Bake.Tests.Helpers
             return new NuSpec(
                 nuSpecReader.GetId(),
                 files,
+                nuSpecReader.GetDescription(),
                 repositoryMetadata?.Url,
                 repositoryMetadata?.Commit);
         }
@@ -64,17 +65,19 @@ namespace Bake.Tests.Helpers
         {
             public string Id { get; }
             public IReadOnlyCollection<string> Files { get; }
+            public string Description { get; }
             public string RepositoryCommit { get; }
             public string RepositoryUrl { get; }
 
-            public NuSpec(
-                string id,
+            public NuSpec(string id,
                 IReadOnlyCollection<string> files,
+                string description,
                 string? repositoryUrl,
                 string? repositoryCommit)
             {
                 Id = id;
                 Files = files;
+                Description = description;
                 RepositoryCommit = repositoryCommit ?? string.Empty;
                 RepositoryUrl = repositoryUrl ?? string.Empty;
             }
