@@ -1,6 +1,8 @@
 # 0.11-beta
 
 * New: Use content of `README.md` files as DLL and NuGet descriptions
+* New: .NET test reports are now saved as `.trx` files allow artifact uploads
+  to pick these up after build completion
 * Fixed: Bake is now better at picking release notes with versions that
   are *similar* to the build version if no exact match can be found. As
   an example `1.0-alpha` is picked among `1.1`, `1.0-alpha` and `0.9`
