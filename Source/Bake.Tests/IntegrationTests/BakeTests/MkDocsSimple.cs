@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -52,10 +53,18 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
-            await AssertContainerPingsAsync(
-                DockerArguments.With(expectedImage)
-                    .WithPort(8080),
-                "index.html");
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // thttpd is very picky about file permissions, which makes the container
+                // impossible to test on Windows :(
+                // http://acme.com/software/thttpd/thttpd_man.html#PERMISSIONS
+
+                await AssertContainerPingsAsync(
+                    DockerArguments.With(expectedImage)
+                        .WithPort(8080),
+                    "index.html");
+            }
         }
     }
 }
