@@ -39,7 +39,7 @@ namespace Bake.Tests.UnitTests.Services
             var text = A<string>();
 
             // Act
-            var output = Sut.Cut(text, int.MaxValue);
+            var output = Sut.Limit(text, int.MaxValue);
 
             // Assert
             output.Should().Be(text);
@@ -56,7 +56,7 @@ namespace Bake.Tests.UnitTests.Services
                 new string('y', 10));
 
             // Act
-            var output = Sut.Cut(text, 15);
+            var output = Sut.Limit(text, 15);
 
             // Assert
             AssertEquals(
@@ -80,7 +80,7 @@ namespace Bake.Tests.UnitTests.Services
                 new string('i', 10));
 
             // Act
-            var output = Sut.Cut(text, 36);
+            var output = Sut.Limit(text, 36);
 
             // Assert
             AssertEquals(
@@ -98,7 +98,7 @@ namespace Bake.Tests.UnitTests.Services
             var text = new string('x', 42);
 
             // Act
-            var output = Sut.Cut(text, 40);
+            var output = Sut.Limit(text, 40);
 
             // Assert
             output.Should().Be(new string('x', 40));

@@ -24,5 +24,6 @@ namespace Bake.Services
 {
     public interface IDescriptionLimiter
     {
+        string Limit(string markdown, int maxLength);
     }
 }
