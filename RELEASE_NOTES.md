@@ -1,3 +1,8 @@
+# 0.13-beta
+
+* Fixed: .NET test reports now have unique names to ensure that reports
+  are not overwritten if a projects targets multiple frameworks
+
 # 0.12-beta
 
 * Fixed: Not limits description of NuGet packages to 4.000 characters
