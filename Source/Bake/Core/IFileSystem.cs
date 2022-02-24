@@ -47,5 +47,7 @@ namespace Bake.Core
             CompressionAlgorithm algorithm,
             IReadOnlyCollection<IFile> files,
             CancellationToken cancellationToken);
+
+        bool FileExists(string filePath);
     }
 }

@@ -47,6 +47,11 @@ namespace Bake.Core
             _logger = logger;
         }
 
+        public bool FileExists(string filePath)
+        {
+            return System.IO.File.Exists(filePath);
+        }
+
         public async Task<IReadOnlyCollection<string>> FindFilesAsync(
             string directoryPath,
             string searchPattern,

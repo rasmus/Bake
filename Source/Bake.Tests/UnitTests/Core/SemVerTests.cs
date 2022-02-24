@@ -95,6 +95,10 @@ namespace Bake.Tests.UnitTests.Core
             "1.0.0",
             "0.0.1",
             "0.1.0")]
+        [TestCase(
+            "1.0 1.0-alpha",
+            "1.0",
+            "1.0-alpha")]
         public void Compare(
             string expectedSorting,
             params string[] versions)
