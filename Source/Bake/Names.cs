@@ -35,6 +35,7 @@ namespace Bake
         /// </summary>
         public static class Destinations
         {
+            public const string Container = "container";
             public const string ContainerRegistry = "container-registry";
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";

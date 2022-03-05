@@ -48,7 +48,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
                 "--convention=Release",
-                "--destination=release>github",
+                "--destination=release>github,documentation-site>container",
                 "--build-version", version));
 
             // Assert

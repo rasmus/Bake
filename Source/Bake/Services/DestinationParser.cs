@@ -23,6 +23,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Bake.Core;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 
 namespace Bake.Services
@@ -58,8 +59,7 @@ namespace Bake.Services
                             Names.DynamicDestinations.GitHub);
                         return true;
                     }
-
-                    return false;
+                    break;
 
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
@@ -103,9 +103,16 @@ namespace Bake.Services
                     destination = new ContainerRegistryDestination($"{parts[1].TrimEnd('/')}/");
                     return true;
 
-                default:
-                    return false;
+                case Names.ArtifactTypes.DocumentationSite:
+                    if (string.Equals(parts[1], Names.Destinations.Container))
+                    {
+                        destination = new ContainerDestination(ArtifactType.DocumentationSite);
+                        return true;
+                    }
+                    break;
             }
+
+            return false;
         }
     }
 }

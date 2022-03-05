@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.MkDocs;
 using Bake.ValueObjects.Recipes.Pip;
@@ -68,15 +69,18 @@ namespace Bake.Cooking.Composers
             var labels = await _dockerLabels.FromIngredientsAsync(
                 context.Ingredients,
                 cancellationToken);
+            var buildContainer = context.Ingredients.Destinations
+                .OfType<ContainerDestination>()
+                .Any(d => d.ArtifactType == ArtifactType.DocumentationSite);
 
             return mkDocsFilePaths
-                .SelectMany(p => CreateRecipes(p, labels))
+                .SelectMany(p => CreateRecipes(p, labels, buildContainer))
                 .ToArray();
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
-            string mkDocsFilePath,
-            Dictionary<string, string> labels)
+        private static IEnumerable<Recipe> CreateRecipes(string mkDocsFilePath,
+            Dictionary<string, string> labels,
+            bool buildContainer)
         {
             var workingDirectory = Path.GetDirectoryName(mkDocsFilePath);
             var requirementsFilePath = Path.Combine(
@@ -104,12 +108,15 @@ namespace Bake.Cooking.Composers
                 workingDirectory,
                 "Dockerfile");
 
-            yield return new MkDocsDockerFileRecipe(
-                outputDirectory,
-                labels,
-                new DockerFileArtifact(
-                    "docs",
-                    dockerFilePath));
+            if (buildContainer)
+            {
+                yield return new MkDocsDockerFileRecipe(
+                    outputDirectory,
+                    labels,
+                    new DockerFileArtifact(
+                        "docs",
+                        dockerFilePath));
+            }
         }
     }
 }
