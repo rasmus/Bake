@@ -50,6 +50,9 @@ namespace Bake.Extensions
             ILogCollector logCollector)
         {
             serviceCollection
+                // Dependencies
+                .AddHttpClient()
+
                 // Core
                 .AddSingleton<IExecutor, Executor>()
                 .AddTransient<IEditor, Editor>()
@@ -80,6 +83,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
                 .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
+                .AddSingleton<IToolInstaller, ToolInstaller>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
