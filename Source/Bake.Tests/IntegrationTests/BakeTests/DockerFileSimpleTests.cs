@@ -44,7 +44,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var expectedContainerNameAndTag = $"magic-container:{version}";
+            var expectedContainerNameAndTag = $"awesome-container:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
