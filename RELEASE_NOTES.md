@@ -1,6 +1,7 @@
 # 0.14-beta
 
-* *Nothing yet...*
+* New: Allow naming of containers by creating a `bake.yaml` file besides
+  the `Dockerfile`
 
 # 0.13-beta
 
