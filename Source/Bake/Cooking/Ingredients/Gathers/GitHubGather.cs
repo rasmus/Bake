@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,8 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
 
             Uri apiUrl;
-            if (string.Equals(gitInformation.OriginUrl.Host, _defaults.GitHubUrl.Host, StringComparison.OrdinalIgnoreCase))
+            var gitHubUrl = new Uri(_defaults.GitHubUrl);
+            if (string.Equals(gitInformation.OriginUrl.Host, gitHubUrl.Host, StringComparison.OrdinalIgnoreCase))
             {
                 apiUrl = GitHubApiUrl;
                 _logger.LogInformation(
@@ -115,7 +116,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 repo = repo[..lastIndex];
             }
 
-            var url = new Uri($"{_defaults.GitHubUrl.Scheme}://{_defaults.GitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
+            var url = new Uri($"{gitHubUrl.Scheme}://{gitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
             ingredients.GitHub = new GitHubInformation(
                 match.Groups["owner"].Value,
                 repo,

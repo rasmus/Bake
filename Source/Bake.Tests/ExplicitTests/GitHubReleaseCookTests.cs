@@ -1,6 +1,6 @@
-﻿// MIT License
+// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -91,6 +91,7 @@ namespace Bake.Tests.ExplicitTests
                 .AddSingleton<GitHubReleaseCook>()
                 .AddSingleton<IDefaults, Defaults>()
                 .AddSingleton<IFileSystem, FileSystem>()
+                .AddSingleton(TestEnvironmentVariables.None)
                 .AddSingleton<IEnvironmentVariables>(new TestEnvironmentVariables(new Dictionary<string, string>
                 {
                     ["github_personal_token"] = GetToken(),

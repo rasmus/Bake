@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ namespace Bake.Cooking.Composers
 {
     public class DotNetComposer : Composer
     {
+        public const int MaximumNuGetDescription = 4000;
         private static readonly IReadOnlyDictionary<string, string> DefaultProperties = new Dictionary<string, string>
             {
                 // We really don't want builds to fail due to old versions
@@ -50,12 +51,11 @@ namespace Bake.Cooking.Composers
 
                 // Make the NuGet package easier for everyone to debug
                 ["EmbedUntrackedSources"] = "true",
-                ["EmbedUntrackedSources"] = "true",
+                ["PublishRepositoryUrl"] = "true",
                 ["IncludeSymbols"] = "true",
                 ["DebugType"] = "portable",
                 ["SymbolPackageFormat"] = "snupkg",
-                ["AllowedOutputExtensionsInPackageBuildOutputFolder"] = "$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb",
-            };
+        };
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -71,6 +71,7 @@ namespace Bake.Cooking.Composers
         private readonly IConventionInterpreter _conventionInterpreter;
         private readonly IDefaults _defaults;
         private readonly IDockerLabels _dockerLabels;
+        private readonly IDescriptionLimiter _descriptionLimiter;
 
         public DotNetComposer(
             ILogger<DotNetComposer> logger,
@@ -78,7 +79,8 @@ namespace Bake.Cooking.Composers
             ICsProjParser csProjParser,
             IConventionInterpreter conventionInterpreter,
             IDefaults defaults,
-            IDockerLabels dockerLabels)
+            IDockerLabels dockerLabels,
+            IDescriptionLimiter descriptionLimiter)
         {
             _logger = logger;
             _fileSystem = fileSystem;
@@ -86,6 +88,7 @@ namespace Bake.Cooking.Composers
             _conventionInterpreter = conventionInterpreter;
             _defaults = defaults;
             _dockerLabels = dockerLabels;
+            _descriptionLimiter = descriptionLimiter;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -156,6 +159,7 @@ namespace Bake.Cooking.Composers
             const string configuration = "Release";
 
             var ingredients = context.Ingredients;
+            var properties = CreateProperties(ingredients, visualStudioSolution);
 
             yield return new DotNetCleanSolutionRecipe(
                 visualStudioSolution.Path,
@@ -163,7 +167,11 @@ namespace Bake.Cooking.Composers
 
             yield return CreateRestoreRecipe(visualStudioSolution, ingredients);
 
-            yield return CreateBuildRecipe(visualStudioSolution, ingredients, configuration);
+            yield return CreateBuildRecipe(
+                visualStudioSolution,
+                ingredients,
+                configuration,
+                properties);
 
             yield return new DotNetTestSolutionRecipe(
                 visualStudioSolution.Path,
@@ -182,8 +190,8 @@ namespace Bake.Cooking.Composers
                     true,
                     configuration,
                     ingredients.Version,
+                    properties,
                     new NuGetArtifact(
-                        //new ArtifactKey(ArtifactType.NuGet, visualStudioProject.Name),
                         CalculateNuGetPath(ingredients, visualStudioProject, configuration)));
             }
 
@@ -284,7 +292,7 @@ namespace Bake.Cooking.Composers
             var gitHub = ingredients.GitHub;
             if (gitHub != null)
             {
-                sources.Add(_defaults.GitHubNuGetRegistry.AbsoluteUri.Replace("/OWNER/", $"/{gitHub.Owner}/"));
+                sources.Add(_defaults.GitHubNuGetRegistry.Replace("/OWNER/", $"/{gitHub.Owner}/"));
             }
 
             return new DotNetRestoreSolutionRecipe(
@@ -296,27 +304,9 @@ namespace Bake.Cooking.Composers
         private static Recipe CreateBuildRecipe(
             VisualStudioSolution visualStudioSolution,
             ValueObjects.Ingredients ingredients,
-            string configuration)
+            string configuration,
+            Dictionary<string, string> properties)
         {
-            var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
-            if (ingredients.ReleaseNotes != null)
-            {
-                properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
-            }
-
-            if (ingredients.GitHub != null)
-            {
-                var gitHub = ingredients.GitHub;
-                properties["Authors"] = gitHub.Owner;
-                properties["RepositoryUrl"] = gitHub.Repository;
-            }
-
-            var legacyVersion = ingredients.Version.LegacyVersion.ToString();
-            properties["Version"] = legacyVersion;
-            properties["AssemblyVersion"] = legacyVersion;
-            properties["AssemblyFileVersion"] = legacyVersion;
-            properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
-
             return new DotNetBuildSolutionRecipe(
                 visualStudioSolution.Path,
                 configuration,
@@ -326,10 +316,51 @@ namespace Bake.Cooking.Composers
                 properties);
         }
 
-        private static string BuildDescription(
+        private Dictionary<string, string> CreateProperties(
+            ValueObjects.Ingredients ingredients,
+            VisualStudioSolution visualStudioSolution)
+        {
+            var properties = DefaultProperties.ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            if (ingredients.ReleaseNotes != null)
+            {
+                properties["PackageReleaseNotes"] = ingredients.ReleaseNotes.Notes;
+            }
+
+            if (ingredients.Git != null)
+            {
+                var git = ingredients.Git;
+                properties["RepositoryType"] = "git";
+                properties["RepositoryCommit"] = git.Sha;
+                properties["RepositoryUrl"] = git.OriginUrl.AbsoluteUri;
+            }
+            if (ingredients.GitHub != null)
+            {
+                var gitHub = ingredients.GitHub;
+                properties["Authors"] = gitHub.Owner;
+
+                // Remove the git value and use GitHub
+                properties["RepositoryUrl"] = gitHub.Url.AbsoluteUri;
+            }
+
+            var legacyVersion = ingredients.Version.LegacyVersion.ToString();
+            properties["Version"] = legacyVersion;
+            properties["AssemblyVersion"] = legacyVersion;
+            properties["AssemblyFileVersion"] = legacyVersion;
+            properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
+
+            return properties;
+        }
+
+        private string BuildDescription(
             VisualStudioSolution visualStudioSolution,
             ValueObjects.Ingredients ingredients)
         {
+            if (ingredients.Description != null)
+            {
+                return _descriptionLimiter.Limit(ingredients.Description.Text, MaximumNuGetDescription);
+            }
+
             var elements = new Dictionary<string, string>
                 {
                     ["SolutionName"] = visualStudioSolution.Name,

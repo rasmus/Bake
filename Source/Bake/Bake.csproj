@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RepositoryUrl>https://github.com/rasmus/Bake</RepositoryUrl>
     <PackageId>Bake</PackageId>
     <IsTool>true</IsTool>
     <PackAsTool>true</PackAsTool>

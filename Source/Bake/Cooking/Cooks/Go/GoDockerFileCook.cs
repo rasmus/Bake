@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,14 @@ namespace Bake.Cooking.Cooks.Go
 
         private const string Dockerfile = @"
 FROM gcr.io/distroless/base-debian10
+
 {{LABELS}}
+
 WORKDIR /
 COPY {{SRC}} /{{DST}}
+
 EXPOSE {{PORT}}
+
 USER nonroot:nonroot
 ENTRYPOINT [""/{{DST}}""]
 ";

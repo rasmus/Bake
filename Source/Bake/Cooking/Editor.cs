@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,13 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
+using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
@@ -73,7 +75,18 @@ namespace Bake.Cooking
 
             foreach (var composer in composers)
             {
+                var composerTypeName = composer.GetType().PrettyPrint();
+                _logger.LogInformation(
+                    "Executing composer {ComposerType}",
+                    composerTypeName);
+
+                var stopWatch = Stopwatch.StartNew();
                 var createdRecipes = await composer.ComposeAsync(context, cancellationToken);
+                _logger.LogInformation(
+                    "Composer {ComposerType} finished after {TotalSeconds}",
+                    composerTypeName,
+                    stopWatch.Elapsed.TotalSeconds);
+
                 var createdArtifacts = createdRecipes
                     .SelectMany(r => r.Artifacts ?? Artifact.Empty)
                     .ToList();

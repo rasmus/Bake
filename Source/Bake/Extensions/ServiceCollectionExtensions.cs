@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Cooks.Helm;
 using Bake.Cooking.Cooks.MkDocs;
 using Bake.Cooking.Cooks.Pip;
+using Bake.Cooking.Cooks.Python;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
@@ -71,18 +72,21 @@ namespace Bake.Extensions
                 .AddTransient<IBakeProjectParser, BakeProjectParser>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>()
+                .AddTransient<IDockerIgnores, DockerIgnores>()
                 .AddTransient<IGitHub, GitHub>()
                 .AddSingleton<IGitHubClientFactory, GitHubClientFactory>()
                 .AddTransient<IPlatformParser, PlatformParser>()
                 .AddTransient<IMkDocs, MkDocs>()
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
+                .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
                 .AddTransient<IGather, GitHubGather>()
                 .AddTransient<IGather, ReleaseNotesGather>()
                 .AddTransient<IGather, DynamicDestinationGather>()
+                .AddTransient<IGather, DescriptionGather>()
 
                 // CLI wrappers
                 .AddTransient<IDotNet, DotNet>()
@@ -98,6 +102,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, HelmComposer>()
                 .AddTransient<IComposer, OctopusDeployPackageComposer>()
                 .AddTransient<IComposer, GitHubReleaseComposer>()
+                .AddTransient<IComposer, PythonFlaskComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
@@ -117,6 +122,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GoDockerFileCook>()
                 // Cooks - Pip
                 .AddTransient<ICook, PipInstallRequirementsCook>()
+                // Cooks - Python
+                .AddTransient<ICook, PythonFlaskDockerfileCook>()
                 // Cooks - Helm
                 .AddTransient<ICook, HelmLintCook>()
                 .AddTransient<ICook, HelmPackageCook>()

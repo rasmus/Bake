@@ -1,8 +1,47 @@
+# 0.13-beta
+
+* Fixed: .NET test reports now have unique names to ensure that reports
+  are not overwritten if a projects targets multiple frameworks
+
+# 0.12-beta
+
+* Fixed: Not limits description of NuGet packages to 4.000 characters
+
+# 0.11-beta
+
+* New: Use content of `README.md` files as DLL and NuGet descriptions
+* New: .NET test reports are now saved as `.trx` files allow artifact uploads
+  to pick these up after build completion
+* Fixed: Bake is now better at picking release notes with versions that
+  are *similar* to the build version if no exact match can be found. As
+  an example `1.0-alpha` is picked among `1.1`, `1.0-alpha` and `0.9`
+  when the build version is `1.0.42`
+
+# 0.10-beta
+
+* Fixed: Project DLLs are now actually added to NuGet packages
+
+# 0.9-beta
+
+* New: If there is no `.dockerignore` file found when building a `Dockerfile`,
+  create one with some sensible defaults
+* New: By default, Docker builds will compress build context before sending
+  it to the Docker daemon
+* Fixed: Required `RepositoryUrl` parameter for NuGet packages is now
+  the correct URL for the repository... for real this time
+
+# 0.8-beta
+
+* New: Now understands Python Flask applications and bundles these
+  into containers
+* Fixed: Required `RepositoryUrl` parameter for NuGet packages is now
+  the correct URL for the repository
+
 # 0.7-beta
 
 * New: Produce ASP.NET Core containers that are able to run in read-only
-  file systems as well as drop all capabilities. Here is an example
-  security configuration
+  file systems, run as non-root as well as drop all capabilities. Here is
+  an example security configuration
   ```yaml
   securityContext:
     runAsUser: 1000
@@ -14,6 +53,9 @@
       drop:
       - all
   ```
+  * New: Now possible to change Bake internal defaults via environment
+    variables. More of these will be exposed in upcomming releases
+  * Fixed: Docker Hub push URL should just be the username
 
 # 0.6-beta
 

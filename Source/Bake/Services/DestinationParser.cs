@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ namespace Bake.Services
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
                     {
-                        destination = new NuGetRegistryDestination(_defaults.NuGetRegistry);
+                        destination = new NuGetRegistryDestination(new Uri(_defaults.NuGetRegistry, UriKind.Absolute));
                         return true;
                     }
 

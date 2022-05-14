@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,10 @@ namespace Bake.Tests.Helpers
     public abstract class TestProject : TestIt
     {
         protected string ProjectName { get; }
-        protected string WorkingDirectory => _folder.Path;
+        protected string WorkingDirectory => Path.Join(_folder.Path, ProjectName);
+        protected string RepositoryUrl => "https://github.com/rasmus/Bake";
+        protected string Sha { get; private set; }
+
         private string _previousCurrentDirectory;
 
         private Folder _folder;
@@ -55,14 +58,14 @@ namespace Bake.Tests.Helpers
 
             if (!string.IsNullOrEmpty(ProjectName))
             {
-                GitHelper.Create(_folder.Path);
+                Sha = GitHelper.Create(_folder.Path);
 
                 DirectoryCopy(
                     Path.Combine(
                         ProjectHelper.GetRoot(),
                         "TestProjects",
                         ProjectName),
-                    _folder.Path);
+                    Path.Join(_folder.Path, ProjectName));
             }
 
             _previousCurrentDirectory = Directory.GetCurrentDirectory();
@@ -100,6 +103,14 @@ namespace Bake.Tests.Helpers
             Console.WriteLine($"File {filePath} exists");
 
             return filePath;
+        }
+
+        protected Task<NuGetHelper.NuSpec> AssertNuGetExistsAsync(
+            params string[] path)
+        {
+            var packagePath = AssertFileExists(path);
+
+            return NuGetHelper.LoadAsync(packagePath);
         }
 
         protected static async Task AssertContainerPingsAsync(

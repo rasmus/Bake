@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -130,7 +130,7 @@ namespace Bake.Services.Tools
                      "--configuration", argument.Configuration,
                      $"-p:Version={argument.Version}",
                      $"-p:AssemblyVersion={argument.Version.Major}.0.0.0",
-                     $"-p:FileVersion={argument.Version}"
+                     $"-p:FileVersion={argument.Version.LegacyVersion}"
                 };
 
             foreach (var (property, value) in argument.Properties)
@@ -162,6 +162,7 @@ namespace Bake.Services.Tools
                     argument.FilePath,
                     "--nologo",
                     "--configuration", argument.Configuration,
+                    "--logger:trx"
                 };
 
             AddIf(!argument.Restore, arguments, "--no-restore");
@@ -191,13 +192,16 @@ namespace Bake.Services.Tools
                     $"-p:PackageVersion={argument.Version}"
                 };
 
+            foreach (var (property, value) in argument.Properties)
+            {
+                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
+            }
+
             AddIf(!argument.Restore, arguments, "--no-restore");
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.IncludeSource, arguments, "--include-source");
             AddIf(argument.IncludeSymbols, arguments, "--include-symbols");
-            AddIf(argument.Build, arguments, "--no-build");
             AddIf(!string.IsNullOrEmpty(argument.Version.Meta), arguments, "--version-suffix", argument.Version.Meta);
-
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
