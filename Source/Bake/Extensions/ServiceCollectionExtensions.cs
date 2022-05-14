@@ -33,6 +33,7 @@ using Bake.Cooking.Cooks.GitHub;
 using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Cooks.Helm;
 using Bake.Cooking.Cooks.MkDocs;
+using Bake.Cooking.Cooks.OctopusDeploy;
 using Bake.Cooking.Cooks.Pip;
 using Bake.Cooking.Cooks.Python;
 using Bake.Cooking.Ingredients.Gathers;
@@ -100,7 +101,8 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, GoComposer>()
                 .AddTransient<IComposer, MkDocsComposer>()
                 .AddTransient<IComposer, HelmComposer>()
-                .AddTransient<IComposer, ReleaseComposer>()
+                .AddTransient<IComposer, OctopusDeployPackageComposer>()
+                .AddTransient<IComposer, GitHubReleaseComposer>()
                 .AddTransient<IComposer, PythonFlaskComposer>()
 
                 // Cooks - .NET
@@ -130,6 +132,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GitHubReleaseCook>()
                 // Cooks - MkDocs
                 .AddTransient<ICook, MkDocsBuildCook>()
+                // Cooks - Octopus Deploy
+                .AddTransient<ICook, OctopusDeployPackagePushCook>()
 
                 // Commands
                 .AddTransient<ApplyCommand>()

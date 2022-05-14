@@ -32,7 +32,7 @@ using Bake.ValueObjects.Recipes.GitHub;
 
 namespace Bake.Cooking.Composers
 {
-    public class ReleaseComposer : Composer
+    public class GitHubReleaseComposer : Composer
     {
         private readonly IConventionInterpreter _conventionInterpreter;
 
@@ -48,7 +48,7 @@ namespace Bake.Cooking.Composers
                 ArtifactType.Release,
             };
 
-        public ReleaseComposer(
+        public GitHubReleaseComposer(
             IConventionInterpreter conventionInterpreter)
         {
             _conventionInterpreter = conventionInterpreter;

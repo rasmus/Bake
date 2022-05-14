@@ -32,6 +32,8 @@ namespace Bake.Services
         private static readonly Regex DockerHubUsernameValidator = new(
             @"^[a-z\-0-9]+$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex TypedDestination = new(
+            "^(?<type>[a-z]+)@(?<rest>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const char Separator = '>';
 
         private readonly IDefaults _defaults;
@@ -83,6 +85,29 @@ namespace Bake.Services
 
                     destination = new NuGetRegistryDestination(nugetRegistryUrl);
                     return true;
+
+
+                case Names.ArtifactTypes.HelmChart:
+                    if (parts.Length != 2)
+                    {
+                        return false;
+                    }
+
+                    var typedMatch = TypedDestination.Match(parts[1]);
+                    if (!typedMatch.Success)
+                    {
+                        return false;
+                    }
+
+                    destination = typedMatch.Groups["type"].Value switch
+                    {
+                        "octopus" => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var octopusDeployUrl)
+                            ? new OctopusDeployDestination(octopusDeployUrl.AbsoluteUri)
+                            : null,
+                        _ => null
+                    };
+
+                    return destination != null;
 
                 case Names.ArtifactTypes.Container:
                     if (string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))
