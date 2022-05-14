@@ -77,7 +77,7 @@ namespace Bake.Tests.UnitTests.Services
         }
 
         [TestCase(
-            "helm-chart>https://localhost:4321/",
+            "helm-chart>octopus@https://localhost:4321/",
             "https://localhost:4321/")]
         public void HelmChart(
             string input,
