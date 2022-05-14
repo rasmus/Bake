@@ -1,3 +1,7 @@
+# 0.15-beta
+
+* *Nothing yet...*
+
 # 0.14-beta
 
 * New: Allow naming of containers by creating a `bake.yaml` file besides
