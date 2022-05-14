@@ -14,27 +14,11 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
 
-    services:
-      baget:
-        image: loicsharma/baget
-        env:
-          ApiKey: acd0b30512ac4fa39f62eb7a61fcf56c
-        ports:
-        - 5555:80
-
     steps:
     - uses: actions/checkout@v2
       
-    - name: Start Docker registry (delayed, as we need to mount the htpasswd from the checkout)
-      run: |
-        docker run \
-          -d \
-          -v ${{ github.workspace }}/Services/Registry:/auth:rw \
-          -p 5000:5000 \
-          -e "REGISTRY_AUTH=htpasswd" \
-          -e "REGISTRY_AUTH_HTPASSWD_REALM=Bake test registry" \
-          -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
-          registry:2
+    - name: Start Docker services
+      run: docker-compose up --wait
 
     - name: Setup .NET Core 3.1.x
       uses: actions/setup-dotnet@v1
