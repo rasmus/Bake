@@ -130,6 +130,7 @@ namespace Bake.Core
             var hostname = HostnameInvalidCharacters.Replace(url.Host, "_");
             var possibilities = new List<string>
                 {
+                    "octopus_deploy_apikey",
                     "bake_credentials_octopusdeploy_apikey",
                     $"bake_credentials_octopusdeploy_{hostname}_apikey"
                 };

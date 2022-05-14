@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -37,6 +39,7 @@ namespace Bake.Tests.Helpers
         public Uri Url => new(Server.Url!);
         public string ApiKey { get; } = Guid.NewGuid().ToString("N");
         public WireMockServer Server { get; }
+        public List<IRequestMessage> ReceivedPackages { get; } = new();
 
         private OctopusDeployMock()
         {
@@ -48,7 +51,11 @@ namespace Bake.Tests.Helpers
                     .WithPath("/api/packages/raw")
                     .WithHeader("X-Octopus-ApiKey", ApiKey))
                 .RespondWith(Response.Create()
-                    .WithSuccess());
+                    .WithCallback(r =>
+                    {
+                        ReceivedPackages.Add(r);
+                        return new ResponseMessage();
+                    }));
         }
 
         public void Dispose()

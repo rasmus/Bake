@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -31,9 +30,9 @@ using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class HelmChart : BakeTest
+    public class HelmChartTests : BakeTest
     {
-        public HelmChart() : base("helm-chart")
+        public HelmChartTests() : base("helm-chart")
         {
         }
 
@@ -53,12 +52,14 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             returnCode.Should().Be(0);
         }
 
-        [Test]
-        public async Task PushToOctopusDeploy()
+        [TestCase("octopus_deploy_apikey")]
+        [TestCase("bake_credentials_octopusdeploy_apikey")]
+        [TestCase("bake_credentials_octopusdeploy_localhost_apikey")]
+        public async Task PushToOctopusDeploy(
+            string environmentNamesForApiKey)
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var apiKey = A<string>();
             using var octopusDeploy = OctopusDeployMock.Start();
 
             // Act
@@ -67,10 +68,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--convention=Release",
                 $"--destination=helm-chart>octopus@{octopusDeploy.Url}",
                 "--build-version", version)
-                .WithEnvironmentVariable("bake_credentials_octopusdeploy_apikey", apiKey));
+                .WithEnvironmentVariable(environmentNamesForApiKey, octopusDeploy.ApiKey));
 
             // Assert
             returnCode.Should().Be(0);
+            octopusDeploy.ReceivedPackages.Should().HaveCount(1);
         }
     }
 }
