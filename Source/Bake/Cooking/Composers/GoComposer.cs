@@ -95,7 +95,7 @@ namespace Bake.Cooking.Composers
             var projectType = BakeProjectType.Tool;
             var servicePort = -1;
 
-            var bakeProjectPath = Path.Combine(directoryPath, "bake.yaml");
+            var bakeProjectPath = Path.Combine(directoryPath, "bake.yaml"); // TODO: Rework to align file name
             if (System.IO.File.Exists(bakeProjectPath))
             {
                 var bakeProjectContent = await _fileSystem.ReadAllTextAsync(

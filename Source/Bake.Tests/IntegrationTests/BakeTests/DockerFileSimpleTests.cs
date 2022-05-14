@@ -21,11 +21,13 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
+using File = System.IO.File;
 
 // ReSharper disable StringLiteralTypo
 
@@ -40,12 +42,16 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         [Test]
         public async Task Run()
         {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var expectedContainerNameAndTag = $"magic-container:{version}";
+
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
                 "--convention=Release",
                 "--destination=container>localhost:5000",
-                "--build-version", SemVer.Random.ToString())
+                "--build-version", version)
                 .WithEnvironmentVariables(new Dictionary<string, string>
                     {
                         ["bake_credentials_docker_localhost_username"] = "registryuser",
@@ -54,6 +60,48 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+            var images = await DockerHelper.ListImagesAsync();
+            images.Should().Contain(new[]
+            {
+                $"bake.local/{expectedContainerNameAndTag}",
+                $"localhost:5000/{expectedContainerNameAndTag}"
+            });
+        }
+
+        [Test]
+        public async Task NamedDockerfile()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var projectFilePath = Path.Combine(
+                WorkingDirectory,
+                "Awesome.Container",
+                "bake.yaml");
+            await File.WriteAllTextAsync(
+                projectFilePath,
+                "name: \"magic-container\"");
+            var expectedContainerNameAndTag = $"magic-container:{version}";
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                    "run",
+                    "--convention=Release",
+                    "--destination=container>localhost:5000",
+                    "--build-version", version)
+                .WithEnvironmentVariables(new Dictionary<string, string>
+                {
+                    ["bake_credentials_docker_localhost_username"] = "registryuser",
+                    ["bake_credentials_docker_localhost_password"] = "registrypassword",
+                }));
+
+            // Assert
+            returnCode.Should().Be(0);
+            var images = await DockerHelper.ListImagesAsync();
+            images.Should().Contain(new []
+            {
+                $"bake.local/{expectedContainerNameAndTag}",
+                $"localhost:5000/{expectedContainerNameAndTag}"
+            });
         }
     }
 }
