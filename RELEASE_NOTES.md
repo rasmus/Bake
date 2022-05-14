@@ -1,5 +1,6 @@
 # 0.13-beta
 
+* New: Push Helm charts to Octopus Deploy raw package feed
 * Fixed: .NET test reports now have unique names to ensure that reports
   are not overwritten if a projects targets multiple frameworks
 

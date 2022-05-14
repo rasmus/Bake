@@ -1,6 +1,6 @@
-// MIT License
+﻿// MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,30 @@
 // SOFTWARE.
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-using Bake.ValueObjects.Credentials;
+using YamlDotNet.Serialization;
 
-namespace Bake.Core
+namespace Bake.ValueObjects.Destinations
 {
-    public interface ICredentials
+    [Destination(Names.Destinations.OctopusDeploy)]
+    public class OctopusDeployDestination : Destination
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        [YamlMember(typeof(string))]
+        public string Url { get; [Obsolete] set; }
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
-            ContainerTag containerTag,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public OctopusDeployDestination() { }
 
-        Task<string> TryGetGitHubTokenAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public OctopusDeployDestination(
+            string url)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
 
-        Task<string> TryGetOctopusDeployApiKeyAsync(
-            Uri url,
-            CancellationToken cancellationToken);
+        public override string ToString()
+        {
+            return $"{Names.Destinations.OctopusDeploy}|{Url}";
+        }
     }
 }
