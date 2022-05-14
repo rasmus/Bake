@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -47,6 +48,26 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "run",
                 "--convention=Release",
                 "--build-version", version));
+
+            // Assert
+            returnCode.Should().Be(0);
+        }
+
+        [Test]
+        public async Task PushToOctopusDeploy()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var apiKey = A<string>();
+            using var octopusDeploy = OctopusDeployMock.Start();
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                "run",
+                "--convention=Release",
+                $"--destination=helm-chart>octopus@{octopusDeploy.Url}",
+                "--build-version", version)
+                .WithEnvironmentVariable("bake_credentials_octopusdeploy_apikey", apiKey));
 
             // Assert
             returnCode.Should().Be(0);

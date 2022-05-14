@@ -144,7 +144,7 @@ namespace Bake.Core
             if (string.IsNullOrEmpty(value))
             {
                 _logger.LogInformation(
-                    "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
+                    "Dit not find any Octopus Deploy API key for {Url} in any of the environment variables {EnvironmentVariables}",
                     url.AbsoluteUri,
                     string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
             }
