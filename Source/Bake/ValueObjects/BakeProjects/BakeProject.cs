@@ -26,6 +26,9 @@ namespace Bake.ValueObjects.BakeProjects
 {
     public class BakeProject
     {
+        [YamlMember(Alias = "name")]
+        public string? Name { get; set; }
+
         [YamlMember]
         public BakeProjectType Type { get; set; }
 

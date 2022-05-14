@@ -87,5 +87,22 @@ namespace Bake.Tests.Helpers
                     CancellationToken.None).Wait(CancellationToken.None);
             });
         }
+
+        public static async Task<IReadOnlyCollection<string>> ListImagesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var imageResponse = await Client.Images.ListImagesAsync(
+                new ImagesListParameters
+                {
+                    All = true,
+                },
+                cancellationToken);
+
+            return imageResponse
+                .Where(i => i.RepoTags != null)
+                .SelectMany(i => i.RepoTags)
+                .OrderBy(t => t)
+                .ToArray();
+        }
     }
 }

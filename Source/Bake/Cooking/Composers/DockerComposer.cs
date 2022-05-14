@@ -33,6 +33,7 @@ using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
 using Microsoft.Extensions.Logging;
+using File = System.IO.File;
 
 namespace Bake.Cooking.Composers
 {
@@ -52,19 +53,22 @@ namespace Bake.Cooking.Composers
         private readonly IFileSystem _fileSystem;
         private readonly IContainerTagParser _containerTagParser;
         private readonly IConventionInterpreter _conventionInterpreter;
+        private readonly IBakeProjectParser _bakeProjectParser;
 
         public DockerComposer(
             ILogger<DockerComposer> logger,
             IDefaults defaults,
             IFileSystem fileSystem,
             IContainerTagParser containerTagParser,
-            IConventionInterpreter conventionInterpreter)
+            IConventionInterpreter conventionInterpreter,
+            IBakeProjectParser bakeProjectParser)
         {
             _logger = logger;
             _defaults = defaults;
             _fileSystem = fileSystem;
             _containerTagParser = containerTagParser;
             _conventionInterpreter = conventionInterpreter;
+            _bakeProjectParser = bakeProjectParser;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -89,8 +93,12 @@ namespace Bake.Cooking.Composers
                 _logger.LogInformation(
                     "Located Dockerfile at these locations, scheduling build: {DockerFiles}",
                     dockerFilePaths);
-                var directoryName = Path.GetFileName(Path.GetDirectoryName(dockerFilePath));
-                recipes.AddRange(CreateRecipes(dockerFilePath, directoryName, ingredients.Version, urls));
+
+                var containerName = await GetContainerNameAsync(
+                    Path.GetDirectoryName(dockerFilePath),
+                    cancellationToken);
+
+                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, urls));
             }
 
             var dockerfileArtifacts = context
@@ -124,6 +132,27 @@ namespace Bake.Cooking.Composers
             return recipes;
         }
 
+        private async Task<string> GetContainerNameAsync(
+            string directory,
+            CancellationToken cancellationToken)
+        {
+            var projectFilePath = Path.Combine(
+                directory,
+                "bake.yaml"); // TODO: Rework to align file name
+
+            if (File.Exists(projectFilePath))
+            {
+                var fileContent = await File.ReadAllTextAsync(projectFilePath, cancellationToken);
+                var bakeProject = await _bakeProjectParser.ParseAsync(fileContent, cancellationToken);
+                if (!string.IsNullOrEmpty(bakeProject.Name))
+                {
+                    return bakeProject.Name;
+                }
+            }
+
+            return Path.GetFileName(directory);
+        }
+        
         private IEnumerable<Recipe> CreateRecipes(
             string path,
             string name,
