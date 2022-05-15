@@ -21,8 +21,10 @@
 // SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -83,12 +85,26 @@ namespace Bake.Cooking.Cooks.OctopusDeploy
             HttpClient httpClient,
             CancellationToken cancellationToken)
         {
-            url = new Uri(url, "/api/packages/raw");
+            url = new Uri(url, "/api/packages/raw?replace=false");
             var file = _fileSystem.Open(packagePath);
             await using var stream = await file.OpenReadAsync(cancellationToken);
             using var request = new HttpRequestMessage(HttpMethod.Post, url)
                 {
-                    Content = new StreamContent(stream),
+                    Content = new MultipartFormDataContent
+                    {
+                        new StreamContent(stream)
+                        {
+                            Headers =
+                            {
+                                ContentType = new MediaTypeHeaderValue("multipart/form-data"),
+                                ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                                {
+                                    Name = "fileData",
+                                    FileName = Path.GetFileName(packagePath)
+                                }
+                            }
+                        }
+                    },
                     Headers =
                     {
                         {"X-Octopus-ApiKey", apiKey}

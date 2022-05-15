@@ -28,7 +28,7 @@ namespace Bake.ValueObjects.Recipes.OctopusDeploy
     [Recipe(Names.Recipes.OctopusDeploy.PackageRawPush)]
     public class OctopusDeployPackagePushRecipe : Recipe
     {
-        [YamlMember]
+        [YamlMember(SerializeAs = typeof(string))]
         public Uri Url { get; [Obsolete] set; }
 
         [YamlMember]
