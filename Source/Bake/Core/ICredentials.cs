@@ -41,5 +41,9 @@ namespace Bake.Core
         Task<string> TryGetGitHubTokenAsync(
             Uri url,
             CancellationToken cancellationToken);
+
+        Task<string> TryGetOctopusDeployApiKeyAsync(
+            Uri url,
+            CancellationToken cancellationToken);
     }
 }

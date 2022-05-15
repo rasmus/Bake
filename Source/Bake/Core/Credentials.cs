@@ -123,6 +123,36 @@ namespace Bake.Core
             return value;
         }
 
+        public async Task<string> TryGetOctopusDeployApiKeyAsync(
+            Uri url,
+            CancellationToken cancellationToken)
+        {
+            var hostname = HostnameInvalidCharacters.Replace(url.Host, "_");
+            var possibilities = new List<string>
+                {
+                    "octopus_deploy_apikey",
+                    "bake_credentials_octopusdeploy_apikey",
+                    $"bake_credentials_octopusdeploy_{hostname}_apikey"
+                };
+
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            var value = possibilities
+                .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)
+                .SkipWhile(string.IsNullOrEmpty)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                _logger.LogInformation(
+                    "Dit not find any Octopus Deploy API key for {Url} in any of the environment variables {EnvironmentVariables}",
+                    url.AbsoluteUri,
+                    string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
+            }
+
+            return value;
+        }
+
         public async Task<DockerLogin> TryGetDockerLoginAsync(
             ContainerTag containerTag,
             CancellationToken cancellationToken)

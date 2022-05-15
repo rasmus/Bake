@@ -1,6 +1,6 @@
-// MIT License
+﻿// MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,36 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
-using Bake.Core;
-using Bake.Tests.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
+using System;
+using YamlDotNet.Serialization;
 
-// ReSharper disable StringLiteralTypo
-
-namespace Bake.Tests.IntegrationTests.BakeTests
+namespace Bake.ValueObjects.Destinations
 {
-    public class HelmChart : BakeTest
+    [Destination(Names.Destinations.OctopusDeploy)]
+    public class OctopusDeployDestination : Destination
     {
-        public HelmChart() : base("helm-chart")
+        [YamlMember(typeof(string))]
+        public string Url { get; [Obsolete] set; }
+
+        [Obsolete]
+        public OctopusDeployDestination() { }
+
+        public OctopusDeployDestination(
+            string url)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        [Test]
-        public async Task Run()
+        public override string ToString()
         {
-            // Arrange
-            var version = SemVer.Random.ToString();
-
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--convention=Release",
-                "--build-version", version));
-
-            // Assert
-            returnCode.Should().Be(0);
+            return $"{Names.Destinations.OctopusDeploy}|{Url}";
         }
     }
 }

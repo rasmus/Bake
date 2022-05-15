@@ -1,5 +1,19 @@
+# 0.16-beta
+
+* *Nothing yet...*
+
+# 0.15-beta
+
+* Fixed: Actually a working upload to Octopus Deploy
+
+# 0.14-beta
+
+* New: Allow naming of containers by creating a `bake.yaml` file besides
+  the `Dockerfile`
+
 # 0.13-beta
 
+* New: Push Helm charts to Octopus Deploy raw package feed
 * Fixed: .NET test reports now have unique names to ensure that reports
   are not overwritten if a projects targets multiple frameworks
 

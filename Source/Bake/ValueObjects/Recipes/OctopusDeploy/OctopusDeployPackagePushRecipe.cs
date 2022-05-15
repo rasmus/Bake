@@ -1,6 +1,6 @@
-// MIT License
+﻿// MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,19 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.BakeProjects
+namespace Bake.ValueObjects.Recipes.OctopusDeploy
 {
-    public class BakeProject
+    [Recipe(Names.Recipes.OctopusDeploy.PackageRawPush)]
+    public class OctopusDeployPackagePushRecipe : Recipe
     {
-        [YamlMember(Alias = "name")]
-        public string? Name { get; set; }
+        [YamlMember(SerializeAs = typeof(string))]
+        public Uri Url { get; [Obsolete] set; }
 
         [YamlMember]
-        public BakeProjectType Type { get; set; }
+        public string[] Packages { get; [Obsolete] set; }
 
-        [YamlMember]
-        public BakeProjectService Service { get; set; }
+        [Obsolete]
+        public OctopusDeployPackagePushRecipe() { }
+
+        public OctopusDeployPackagePushRecipe(
+            Uri url,
+            string[] packages)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Url = url;
+            Packages = packages;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

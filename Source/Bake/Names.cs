@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bake.ValueObjects.Artifacts;
@@ -40,6 +39,7 @@ namespace Bake
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
+            public const string OctopusDeploy = "octopus-deploy";
         }
 
         public static class DynamicDestinations
@@ -71,6 +71,7 @@ namespace Bake
             public const string NuGet = "nuget";
             public const string Executable = "executable";
             public const string DocumentationSite = "documentation-site";
+            public const string HelmChart = "helm-chart";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
@@ -130,6 +131,11 @@ namespace Bake
             {
                 public const string Release = "mkdocs-build";
                 public const string DockerFile = "mkdocs-dockerfile";
+            }
+
+            public static class OctopusDeploy
+            {
+                public const string PackageRawPush = "octopus-deploy-package-raw-push";
             }
 
             public static class Docker

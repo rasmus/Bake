@@ -118,18 +118,22 @@ Here are some examples of common used arguments to Bake
       destination as [Docker Hub](https://hub.docker.com/) with that username
     * `container>github` - Send containers to the GitHub package repository
       for at owner/organization of the git repository
-    * `container>localhost:5000` - Send containers to a specific container
+    * `container>registry.local:5000` - Send containers to a specific container
       registry
+  * **Helm**
+    * `helm-chart>octopus@http://octopus.local/` - Sends Helm charts to the built-in
+      repository in [Octopus Deploy][octopus-repository]. Bake looks for the API-key
+      in an environment variable named `OCTOPUS_DEPLOY_APIKEY`
   * **NuGet**
     * `nuget` - An unnamed destination will send NuGet packages to the central
       NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for
-      an API in an environment variables named `NUGET_APIKEY`
+      an API in an environment variable named `NUGET_APIKEY`
     * `nuget>github` - Send NuGet packages to the specific need with is owned
       by the owner of the repository of the current repository. Bake will
       automatically setup the API key for the current build using the
       `GITHUB_TOKEN` (automatically provided in GitHub actions), thus no
       additional configuration is required
-    * `nuget>http://localhost:5555/v3/index.json` - Send NuGet packages to the feed
+    * `nuget>http://nuget.local/v3/index.json` - Send NuGet packages to the feed
       specified by the URL. Bake will look for the API key in an environment
       variable named `bake_credentials_nuget_{hostname}_apikey`, in which
       `{hostname}` is the hostname of the URL with invalid characters removed
@@ -166,3 +170,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+[octopus-repository]: https://octopus.com/docs/packaging-applications/package-repositories/built-in-repository
