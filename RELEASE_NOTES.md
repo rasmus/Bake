@@ -1,6 +1,6 @@
 # 0.15-beta
 
-* *Nothing yet...*
+* Fixed: Actually a working upload to Octopus Deploy
 
 # 0.14-beta
 
