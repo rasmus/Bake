@@ -104,6 +104,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, OctopusDeployPackageComposer>()
                 .AddTransient<IComposer, GitHubReleaseComposer>()
                 .AddTransient<IComposer, PythonFlaskComposer>()
+                .AddTransient<IComposer, NodeJsComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
