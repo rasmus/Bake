@@ -30,11 +30,13 @@ using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.NodeJS;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Composers
 {
     public class NodeJsComposer : Composer
     {
+        private readonly ILogger<NodeJsComposer> _logger;
         private readonly IFileSystem _fileSystem;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
@@ -43,8 +45,10 @@ namespace Bake.Cooking.Composers
             };
 
         public NodeJsComposer(
+            ILogger<NodeJsComposer> logger,
             IFileSystem fileSystem)
         {
+            _logger = logger;
             _fileSystem = fileSystem;
         }
 
@@ -77,13 +81,16 @@ namespace Bake.Cooking.Composers
             string packageJsonPath,
             CancellationToken cancellationToken)
         {
+            var workingDirectory = Path.GetDirectoryName(packageJsonPath);
             var parts = packageJsonPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Any(p => string.Equals("node_modules", p, StringComparison.OrdinalIgnoreCase)))
             {
+                _logger.LogDebug(
+                    "Skipping directory {DirectoryPath} as its within a 'node_modules' folder",
+                    workingDirectory);
                 return Array.Empty<Recipe>();
             }
 
-            var workingDirectory = Path.GetDirectoryName(packageJsonPath);
             var recipes = new List<Recipe>
             {
                 new NpmCIRecipe(workingDirectory),
