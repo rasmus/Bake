@@ -21,13 +21,17 @@ namespace Bake.Services.Tools
         {
             var arguments = new List<string>
             {
+                "/c",
+                "npm.cmd",
                 "ci",
                 "--only=production"
             };
 
             var runner = _runnerFactory.CreateRunner(
-                "npm.cmd",
+                "cmd.exe",
                 argument.WorkingDirectory,
+                true,
+                null,
                 arguments.ToArray());
 
             var runnerResult = await runner.ExecuteAsync(cancellationToken);

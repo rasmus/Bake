@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Bake.Core;
 using Microsoft.Extensions.Logging;
 
@@ -43,36 +45,65 @@ namespace Bake.Services
         }
 
         public IRunner CreateRunner(
+                string command,
+                string? workingDirectory,
+                bool asShell,
+                IReadOnlyDictionary<string, string>? environmentVariables,
+                params string[] arguments)
+        {
+            if (asShell)
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    arguments = new [] {"/c", command, }
+                        .Concat(arguments)
+                        .ToArray();
+                    
+                    return CreateRunner(
+                        "cmd",
+                        workingDirectory,
+                        environmentVariables,
+                        arguments);
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    arguments = new[]
+                        {
+                            "-c",
+                            command,
+                            $"\"{string.Join(" ", arguments)}\""
+                        };
+
+                    return CreateRunner(
+                        "/bin/bash",
+                        workingDirectory,
+                        environmentVariables,
+                        arguments);
+                }
+            }
+
+            return CreateRunner(
+                command,
+                workingDirectory,
+                environmentVariables,
+                arguments);
+        }
+
+        private IRunner CreateRunner(
             string command,
-            string workingDirectory,
+            string? workingDirectory,
+            IReadOnlyDictionary<string, string>? environmentVariables,
             params string[] arguments)
         {
             return new Runner(
                 _logger,
                 command,
-                workingDirectory,
+                string.IsNullOrEmpty(workingDirectory)
+                    ? Directory.GetCurrentDirectory()
+                    : workingDirectory,
                 arguments,
-                Empty,
-                _fileSystem);
-        }
-
-        public IRunner CreateRunner(
-                string command,
-                string workingDirectory,
-                IReadOnlyDictionary<string, string> environmentVariables,
-                params string[] arguments)
-        {
-            if (string.IsNullOrEmpty(workingDirectory))
-            {
-                workingDirectory = Directory.GetCurrentDirectory();
-            }
-
-            return new Runner(
-                _logger,
-                command,
-                workingDirectory,
-                arguments,
-                environmentVariables,
+                environmentVariables ?? Empty,
                 _fileSystem);
         }
     }

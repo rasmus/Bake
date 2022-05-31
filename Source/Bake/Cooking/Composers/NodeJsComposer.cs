@@ -77,8 +77,13 @@ namespace Bake.Cooking.Composers
             string packageJsonPath,
             CancellationToken cancellationToken)
         {
-            var workingDirectory = Path.GetDirectoryName(packageJsonPath);
+            var parts = packageJsonPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Any(p => string.Equals("node_modules", p, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Array.Empty<Recipe>();
+            }
 
+            var workingDirectory = Path.GetDirectoryName(packageJsonPath);
             var recipes = new List<Recipe>
             {
                 new NpmCIRecipe(workingDirectory),

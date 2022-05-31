@@ -24,6 +24,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services.Tools.GoArguments;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;

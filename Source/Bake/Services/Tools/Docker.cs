@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services.Tools.DockerArguments;
 
 namespace Bake.Services.Tools

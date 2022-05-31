@@ -23,6 +23,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services.Tools.HelmArguments;
 
 namespace Bake.Services.Tools

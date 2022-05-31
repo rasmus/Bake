@@ -28,13 +28,9 @@ namespace Bake.Services
     {
         IRunner CreateRunner(
             string command,
-            string workingDirectory,
-            params string[] arguments);
-
-        IRunner CreateRunner(
-            string command,
-            string workingDirectory,
-            IReadOnlyDictionary<string, string> environmentVariables,
+            string? workingDirectory,
+            bool asShell,
+            IReadOnlyDictionary<string, string>? environmentVariables,
             params string[] arguments);
     }
 }
