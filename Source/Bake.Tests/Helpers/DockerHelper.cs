@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -123,6 +124,9 @@ namespace Bake.Tests.Helpers
 
         private class ConsoleOutProgress : IProgress<string>
         {
+            private static readonly Regex UnicodeFinder = new(
+                @"[^\t\r\n -~]",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
             private readonly string _prefix;
 
             public ConsoleOutProgress(
@@ -133,6 +137,7 @@ namespace Bake.Tests.Helpers
 
             public void Report(string value)
             {
+                value = UnicodeFinder.Replace(value, string.Empty);
                 Console.WriteLine($"{_prefix}: {value}");
             }
         }

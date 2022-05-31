@@ -57,10 +57,12 @@ RUN \
 COPY --chown=node:node . /usr/src/app
 
 # Add dumb-init
-ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/local/bin/dumb-init
-RUN chmod +x /usr/local/bin/dumb-init
+ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/bin/dumb-init
+RUN chmod +x /usr/bin/dumb-init
 
-CMD [""dumb-init"", ""node"", ""{{MAIN}}""]
+ENTRYPOINT [""/usr/bin/dumb-init"", ""--""]
+
+CMD [""node"", ""{{MAIN}}""]
 ";
 
         public NodeJSDockerfileCook(
