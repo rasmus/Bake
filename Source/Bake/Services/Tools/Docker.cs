@@ -58,11 +58,14 @@ namespace Bake.Services.Tools
                 arguments.Add("--compress");
             }
 
-            var workingDirectory = Path.GetDirectoryName(argument.Path);
+            foreach (var secretMount in argument.SecretMounts)
+            {
+                arguments.AddRange(new[]{ "--secret", $"id={secretMount.Key},src={secretMount.Value}"});   
+            }
 
             var runner = _runnerFactory.CreateRunner(
                 "docker",
-                workingDirectory,
+                argument.WorkingDirectory,
                 arguments.ToArray());
 
             var result = await runner.ExecuteAsync(cancellationToken);

@@ -27,6 +27,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Extensions;
+using Bake.Services;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.NodeJS;
@@ -38,6 +40,7 @@ namespace Bake.Cooking.Composers
     {
         private readonly ILogger<NodeJsComposer> _logger;
         private readonly IFileSystem _fileSystem;
+        private readonly IDockerLabels _dockerLabels;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -46,10 +49,12 @@ namespace Bake.Cooking.Composers
 
         public NodeJsComposer(
             ILogger<NodeJsComposer> logger,
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IDockerLabels dockerLabels)
         {
             _logger = logger;
             _fileSystem = fileSystem;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -67,7 +72,7 @@ namespace Bake.Cooking.Composers
             }
 
             var recipeTasks = packageJsonPaths
-                .Select(p => CreateRecipesAsync(p, cancellationToken))
+                .Select(p => CreateRecipesAsync(context.Ingredients, p, cancellationToken))
                 .ToArray();
 
             var recipes = await Task.WhenAll(recipeTasks);
@@ -78,6 +83,7 @@ namespace Bake.Cooking.Composers
         }
 
         private async Task<IReadOnlyCollection<Recipe>> CreateRecipesAsync(
+            ValueObjects.Ingredients ingredients,
             string packageJsonPath,
             CancellationToken cancellationToken)
         {
@@ -91,11 +97,22 @@ namespace Bake.Cooking.Composers
                 return Array.Empty<Recipe>();
             }
 
+            // TODO: Actually figure out if is a service or NPM package
+
+            var labels = await _dockerLabels.FromIngredientsAsync(
+                ingredients,
+                cancellationToken);
+
             var recipes = new List<Recipe>
             {
                 new NpmCIRecipe(workingDirectory),
+                new NodeJSDockerfileRecipe(
+                    workingDirectory,
+                    labels,
+                    new DockerFileArtifact(
+                        Path.GetFileName(workingDirectory).ToSlug(), // TODO: Need to pick up name from package.json
+                        Path.Combine(workingDirectory, "Dockerfile")))
             };
-
 
             return recipes;
         }

@@ -21,13 +21,18 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.NodeJS
 {
     [Recipe(Names.Recipes.NodeJS.NpmCI)]
     public class NpmCIRecipe : Recipe
     {
+        [YamlMember]
         public string WorkingDirectory { get; [Obsolete] set; }
+
+        [Obsolete]
+        public NpmCIRecipe() { }
 
         public NpmCIRecipe(
             string workingDirectory)

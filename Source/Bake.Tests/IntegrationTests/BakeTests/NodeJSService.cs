@@ -41,6 +41,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/nodejs-service:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
@@ -50,6 +51,13 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
+            /*
+            await AssertContainerPingsAsync(
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(8080)
+                    .WithEnvironmentVariable("PORT", "8080"));
+            */
         }
     }
 }

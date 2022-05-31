@@ -27,18 +27,20 @@ namespace Bake.Services.Tools.DockerArguments
 {
     public class DockerBuildArgument : Argument
     {
-        public string Path { get; }
+        public string WorkingDirectory { get; }
         public IReadOnlyCollection<string> Tags { get; }
         public bool Compress { get; }
+        public IReadOnlyDictionary<string, string> SecretMounts { get; }
 
-        public DockerBuildArgument(
-            string path,
+        public DockerBuildArgument(string workingDirectory,
             IReadOnlyCollection<string> tags,
-            bool compress)
+            bool compress,
+            IReadOnlyDictionary<string, string> secretMounts)
         {
-            Path = path;
+            WorkingDirectory = workingDirectory;
             Tags = tags;
             Compress = compress;
+            SecretMounts = secretMounts;
         }
     }
 }

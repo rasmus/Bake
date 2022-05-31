@@ -134,6 +134,7 @@ namespace Bake
             public static class NodeJS
             {
                 public const string NpmCI = "npm-ci";
+                public const string Dockerfile = "nodejs-dockerfile";
             }
 
             public static class OctopusDeploy

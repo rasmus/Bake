@@ -135,6 +135,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, GitHubReleaseCook>()
                 // NodeJS / NPM
                 .AddTransient<ICook, NpmCICook>()
+                .AddTransient<ICook, NodeJSDockerfileCook>()
                 // Cooks - MkDocs
                 .AddTransient<ICook, MkDocsBuildCook>()
                 // Cooks - Octopus Deploy

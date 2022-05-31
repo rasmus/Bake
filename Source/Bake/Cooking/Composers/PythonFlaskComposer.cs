@@ -61,10 +61,9 @@ namespace Bake.Cooking.Composers
                 "app.py",
                 cancellationToken);
 
-            var labels = (await _dockerLabels.FromIngredientsAsync(
-                    context.Ingredients,
-                    cancellationToken))
-                .ToDictionary(kv => kv.Key, kv => kv.Value);
+            var labels = await _dockerLabels.FromIngredientsAsync(
+                context.Ingredients,
+                cancellationToken);
 
             return files
                 .SelectMany(p => CreateRecipes(p, labels))

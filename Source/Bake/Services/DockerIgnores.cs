@@ -70,6 +70,8 @@ namespace Bake.Services
             "**/node_modules",
             "**/.bundleignore",
             "**/.bundle",
+            "**/.npmrc",
+            "**/.env",
 
             "# Editors",
             "**/.vscode",
