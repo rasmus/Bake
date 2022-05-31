@@ -21,29 +21,19 @@
 // SOFTWARE.
 
 using System;
-using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.OctopusDeploy
+namespace Bake.ValueObjects.Recipes.NodeJS
 {
-    [Recipe(Names.Recipes.OctopusDeploy.PackageRawPush)]
-    public class OctopusDeployPackagePushRecipe : Recipe
+    [Recipe(Names.Recipes.NodeJS.NpmCI)]
+    public class NpmCIRecipe : Recipe
     {
-        [YamlMember(SerializeAs = typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public string WorkingDirectory { get; [Obsolete] set; }
 
-        [YamlMember]
-        public string[] Packages { get; [Obsolete] set; }
-
-        [Obsolete]
-        public OctopusDeployPackagePushRecipe() { }
-
-        public OctopusDeployPackagePushRecipe(
-            Uri url,
-            string[] packages)
+        public NpmCIRecipe(
+            string workingDirectory)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-            Packages = packages;
+            WorkingDirectory = workingDirectory;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

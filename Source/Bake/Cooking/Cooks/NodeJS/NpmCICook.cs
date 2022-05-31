@@ -20,31 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.NPMArguments;
+using Bake.ValueObjects.Recipes.NodeJS;
 
-namespace Bake.ValueObjects.Recipes.OctopusDeploy
+namespace Bake.Cooking.Cooks.NodeJS
 {
-    [Recipe(Names.Recipes.OctopusDeploy.PackageRawPush)]
-    public class OctopusDeployPackagePushRecipe : Recipe
+    public class NpmCICook : Cook<NpmCIRecipe>
     {
-        [YamlMember(SerializeAs = typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        private readonly INPM _npm;
 
-        [YamlMember]
-        public string[] Packages { get; [Obsolete] set; }
-
-        [Obsolete]
-        public OctopusDeployPackagePushRecipe() { }
-
-        public OctopusDeployPackagePushRecipe(
-            Uri url,
-            string[] packages)
+        public NpmCICook(
+            INPM npm)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Url = url;
-            Packages = packages;
-#pragma warning restore CS0612 // Type or member is obsolete
+            _npm = npm;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            NpmCIRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new NPMCIArgument(
+                recipe.WorkingDirectory);
+
+            var toolResult = await _npm.CIAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

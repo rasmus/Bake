@@ -33,6 +33,7 @@ using Bake.Cooking.Cooks.GitHub;
 using Bake.Cooking.Cooks.Go;
 using Bake.Cooking.Cooks.Helm;
 using Bake.Cooking.Cooks.MkDocs;
+using Bake.Cooking.Cooks.NodeJS;
 using Bake.Cooking.Cooks.OctopusDeploy;
 using Bake.Cooking.Cooks.Pip;
 using Bake.Cooking.Cooks.Python;
@@ -80,6 +81,7 @@ namespace Bake.Extensions
                 .AddTransient<IMkDocs, MkDocs>()
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
+                .AddTransient<INPM, NPM>()
                 .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
 
                 // Gathers
@@ -131,6 +133,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, HelmPackageCook>()
                 // Cooks - GitHub
                 .AddTransient<ICook, GitHubReleaseCook>()
+                // NodeJS / NPM
+                .AddTransient<ICook, NpmCICook>()
                 // Cooks - MkDocs
                 .AddTransient<ICook, MkDocsBuildCook>()
                 // Cooks - Octopus Deploy
