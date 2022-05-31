@@ -39,8 +39,12 @@ namespace Bake.Services
             "bake.yaml",
             ".bake-ignore",
 
+            "# Credentials",
+            "**/.aws",
+
             "# Repository stuff",
             "**/*.md",
+            "**/LICENSE",
 
             "# Git",
             "**/.git*",
@@ -76,11 +80,13 @@ namespace Bake.Services
             "**/.bundle",
             "**/.npmrc",
             "**/.env",
+            "**/dist",
 
             "# Editors",
             "**/.vscode",
             "**/.idea",
             "**/.vs",
+            "**/.editorconfig",
 
             "# Specific files",
             "**/Makefile",
