@@ -23,8 +23,10 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects.Recipes.NodeJS;
+using File = System.IO.File;
 
 // ReSharper disable StringLiteralTypo
 
@@ -55,7 +57,7 @@ RUN \
 COPY --chown=node:node . /usr/src/app
 
 # Add dumb-init
-ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/bin/dumb-init
+ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
 CMD [""dumb-init"", ""node"", ""{{MAIN}}""]
@@ -82,6 +84,7 @@ CMD [""dumb-init"", ""node"", ""{{MAIN}}""]
             var dockerfileContent = Dockerfile
                 .Replace("{{LABELS}}", labels)
                 .Replace("{{MAIN}}", recipe.Main)
+                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
                 .Replace("{{NPMRC_MOUNT}}", npmRcMount);
 
             await File.WriteAllTextAsync(
