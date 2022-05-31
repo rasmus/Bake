@@ -176,7 +176,7 @@ namespace Bake.Cooking.Composers
             if (File.Exists(npmRcPath))
             {
                 _logger.LogInformation(
-                    "Found a .npmrc file at {FilePath}, mounting that as 'npmrc' (note no '.' in front) to be used during build",
+                    "Found a .npmrc file at {FilePath}, parsing that as secret named 'npmrc' (note no '.' in front) to be used during build",
                     npmRcPath);
                 secretMounts.Add("npmrc", ".npmrc");
             }

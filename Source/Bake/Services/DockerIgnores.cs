@@ -35,6 +35,10 @@ namespace Bake.Services
     {
         private static readonly IReadOnlyCollection<string> Ignores = new[]
         {
+            "# Bake",
+            "bake.yaml",
+            ".bake-ignore",
+
             "# Repository stuff",
             "**/*.md",
 

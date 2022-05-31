@@ -88,14 +88,6 @@ namespace Bake.Cooking.Composers
             CancellationToken cancellationToken)
         {
             var workingDirectory = Path.GetDirectoryName(packageJsonPath);
-            var parts = packageJsonPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Any(p => string.Equals("node_modules", p, StringComparison.OrdinalIgnoreCase)))
-            {
-                _logger.LogDebug(
-                    "Skipping directory {DirectoryPath} as its within a 'node_modules' folder",
-                    workingDirectory);
-                return Array.Empty<Recipe>();
-            }
 
             // TODO: Actually figure out if is a service or NPM package
 
