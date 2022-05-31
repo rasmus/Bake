@@ -20,40 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Recipes.NodeJS
+namespace Bake.ValueObjects
 {
-    [Recipe(Names.Recipes.NodeJS.Dockerfile)]
-    public class NodeJSDockerfileRecipe : Recipe
+    public class PackageJson
     {
-        [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
+        public string Name { get; }
+        public string Main { get; }
 
-        [YamlMember]
-        public string Main { get; [Obsolete] set; }
-
-        [YamlMember]
-        public Dictionary<string, string> Labels { get; [Obsolete] set; }
-
-        [Obsolete]
-        public NodeJSDockerfileRecipe() { }
-
-        public NodeJSDockerfileRecipe(
-            string workingDirectory,
-            string main,
-            Dictionary<string, string> labels,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        public PackageJson(
+            string name,
+            string main)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            WorkingDirectory = workingDirectory;
+            Name = name;
             Main = main;
-            Labels = labels;
-#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

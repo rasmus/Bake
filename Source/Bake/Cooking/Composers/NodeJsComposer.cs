@@ -29,10 +29,13 @@ using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.NodeJS;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using File = Bake.Core.File;
 
 namespace Bake.Cooking.Composers
 {
@@ -88,23 +91,34 @@ namespace Bake.Cooking.Composers
             CancellationToken cancellationToken)
         {
             var workingDirectory = Path.GetDirectoryName(packageJsonPath);
+            var packageJson = JsonConvert.DeserializeObject<PackageJson>(
+                await System.IO.File.ReadAllTextAsync(packageJsonPath, cancellationToken));
 
-            // TODO: Actually figure out if is a service or NPM package
+            var recipes = new List<Recipe>
+                {
+                    new NpmCIRecipe(workingDirectory),
+                };
+
+            if (string.IsNullOrEmpty(packageJson?.Main))
+            {
+                return recipes;
+            }
+
+            var name = string.IsNullOrEmpty(packageJson.Name)
+                ? Path.GetFileName(workingDirectory)
+                : packageJson.Name;
 
             var labels = await _dockerLabels.FromIngredientsAsync(
                 ingredients,
                 cancellationToken);
 
-            var recipes = new List<Recipe>
-            {
-                new NpmCIRecipe(workingDirectory),
-                new NodeJSDockerfileRecipe(
-                    workingDirectory,
-                    labels,
-                    new DockerFileArtifact(
-                        Path.GetFileName(workingDirectory).ToSlug(), // TODO: Need to pick up name from package.json
-                        Path.Combine(workingDirectory, "Dockerfile")))
-            };
+            recipes.Add(new NodeJSDockerfileRecipe(
+                workingDirectory,
+                packageJson.Main,
+                labels,
+                new DockerFileArtifact(
+                    name.ToSlug(),
+                    Path.Combine(workingDirectory, "Dockerfile"))));
 
             return recipes;
         }

@@ -46,15 +46,19 @@ WORKDIR /usr/src/app
 
 # Do a clean restore first
 COPY --chown=node:node ./package*.json /usr/src/app
-RUN {{NPMRC_MOUNT}} npm ci --only=production && npm cache clean --force
+RUN \
+    {{NPMRC_MOUNT}} npm ci --only=production && \
+    npm cache clean --force && \
+    rm -f ./package*.json
 
+# Copy service
 COPY --chown=node:node . /usr/src/app
 
 # Add dumb-init
 ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
-CMD [""dumb-init"", ""node"", ""server.js""]
+CMD [""dumb-init"", ""node"", ""{{MAIN}}""]
 ";
 
         public NodeJSDockerfileCook(
@@ -77,6 +81,7 @@ CMD [""dumb-init"", ""node"", ""server.js""]
 
             var dockerfileContent = Dockerfile
                 .Replace("{{LABELS}}", labels)
+                .Replace("{{MAIN}}", recipe.Main)
                 .Replace("{{NPMRC_MOUNT}}", npmRcMount);
 
             await File.WriteAllTextAsync(
