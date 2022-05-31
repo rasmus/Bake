@@ -51,13 +51,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
-            /*
             await AssertContainerPingsAsync(
                 DockerArguments
                     .With(expectedImage)
                     .WithPort(8080)
                     .WithEnvironmentVariable("PORT", "8080"));
-            */
         }
     }
 }

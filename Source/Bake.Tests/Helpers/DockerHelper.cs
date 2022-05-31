@@ -69,6 +69,22 @@ namespace Bake.Tests.Helpers
                 null,
                 cancellationToken);
 
+            var autoResetEvent = new AutoResetEvent(false);
+            Task.Run(async () =>
+            {
+                await Client.Containers.GetContainerLogsAsync(
+                    createContainerResponse.ID,
+                    new ContainerLogsParameters
+                    {
+                        Follow = true,
+                        ShowStderr = true,
+                        ShowStdout = true,
+                        Since = "0",
+                    },
+                    cancellationToken,
+                    new ConsoleOutProgress(arguments.Image.Split('/').Last()));
+            });
+
             return new DisposableAction(() =>
             {
                 Client.Containers.StopContainerAsync(
@@ -103,6 +119,22 @@ namespace Bake.Tests.Helpers
                 .SelectMany(i => i.RepoTags)
                 .OrderBy(t => t)
                 .ToArray();
+        }
+
+        private class ConsoleOutProgress : IProgress<string>
+        {
+            private readonly string _prefix;
+
+            public ConsoleOutProgress(
+                string prefix)
+            {
+                _prefix = prefix;
+            }
+
+            public void Report(string value)
+            {
+                Console.WriteLine($"{_prefix}: {value}");
+            }
         }
     }
 }
