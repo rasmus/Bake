@@ -55,7 +55,7 @@ namespace Bake.Services
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    arguments = new [] {"/c", command, }
+                    arguments = new [] { "/c", command, }
                         .Concat(arguments)
                         .ToArray();
                     
@@ -68,12 +68,9 @@ namespace Bake.Services
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    arguments = new[]
-                        {
-                            "-c",
-                            command,
-                            $"\"{string.Join(" ", arguments)}\""
-                        };
+                    arguments = new[] { "-c", command, }
+                        .Concat(arguments)
+                        .ToArray();
 
                     return CreateRunner(
                         "/bin/bash",
