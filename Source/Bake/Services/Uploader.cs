@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -32,6 +34,18 @@ namespace Bake.Services
 {
     public class Uploader : IUploader
     {
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+        private readonly IReadOnlyDictionary<string, string> MediaTypes = new ConcurrentDictionary<string, string>
+        {
+            ["bz"] = "application/x-bzip",
+            ["bz"] = "application/x-bzip2",
+            ["gz"] = "application/gzip",
+            ["png"] = "image/png",
+            ["zip"] = "application/zip",
+        };
+
+        private const string DefaultMediaType = "application/octet-stream";
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IFileSystem _fileSystem;
 
@@ -49,29 +63,20 @@ namespace Bake.Services
             CancellationToken cancellationToken)
         {
             var file = _fileSystem.Open(filePath);
+            var fileName = Path.GetFileName(filePath);
+            var mediaType = MediaTypes.TryGetValue(Path.GetExtension(filePath), out var t) ? t : DefaultMediaType;
+            var httpClient = _httpClientFactory.CreateClient();
+
             await using var stream = await file.OpenReadAsync(cancellationToken);
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, url)
-            {
-                Content = new MultipartFormDataContent
-                {
-                    new StreamContent(stream)
-                    {
-                        Headers =
-                        {
-                            ContentType = new MediaTypeHeaderValue("multipart/form-data"),
-                            ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                            {
-                                Name = "fileData",
-                                FileName = Path.GetFileName(filePath)
-                            }
-                        }
-                    }
-                }
-            };
+            using var multipartFormDataContent = new MultipartFormDataContent();
 
-            var httpClient = _httpClientFactory.CreateClient();
-            using var response = await httpClient.SendAsync(request, cancellationToken);
+            var fileStreamContent = new StreamContent(stream);
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
+
+            multipartFormDataContent.Add(fileStreamContent, name: "file", fileName: fileName);
+
+            var response = await httpClient.PostAsync(url, multipartFormDataContent, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {

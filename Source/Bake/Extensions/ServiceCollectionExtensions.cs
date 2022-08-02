@@ -27,6 +27,7 @@ using Bake.Commands.Run;
 using Bake.Cooking;
 using Bake.Cooking.Composers;
 using Bake.Cooking.Cooks;
+using Bake.Cooking.Cooks.ChartMuseum;
 using Bake.Cooking.Cooks.Docker;
 using Bake.Cooking.Cooks.DotNet;
 using Bake.Cooking.Cooks.GitHub;
@@ -116,6 +117,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, DotNetNuGetPushCook>()
                 .AddTransient<ICook, DotNetPublishCook>()
                 .AddTransient<ICook, DotNetDockerFileCook>()
+                // Cooks - ChartMuseum
+                .AddTransient<ICook, ChartMuseumUploadCook>()
                 // Cooks - Docker
                 .AddTransient<ICook, DockerBuildCook>()
                 .AddTransient<ICook, DockerPushCook>()
