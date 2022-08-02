@@ -124,6 +124,8 @@ Here are some examples of common used arguments to Bake
     * `helm-chart>octopus@http://octopus.local/` - Sends Helm charts to the built-in
       repository in [Octopus Deploy][octopus-repository]. Bake looks for the API-key
       in an environment variable named `OCTOPUS_DEPLOY_APIKEY`
+    * `helm-chart>chart-museum@http://chart-museum.local/` - Sends Helm charts to an
+      instance of [ChartMuseum](https://chartmuseum.com/)
   * **NuGet**
     * `nuget` - An unnamed destination will send NuGet packages to the central
       NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for
