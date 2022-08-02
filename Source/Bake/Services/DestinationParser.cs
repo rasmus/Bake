@@ -104,6 +104,9 @@ namespace Bake.Services
                         "octopus" => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var octopusDeployUrl)
                             ? new OctopusDeployDestination(octopusDeployUrl.AbsoluteUri)
                             : null,
+                        Names.Destinations.OctopusDeploy => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var octopusDeployUrl)
+                            ? new ChartMuseumDestination(octopusDeployUrl.AbsoluteUri)
+                            : null,
                         _ => null
                     };
 

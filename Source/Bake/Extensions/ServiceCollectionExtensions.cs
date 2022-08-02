@@ -81,6 +81,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
                 .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
+                .AddSingleton<IUploader, Uploader>()
 
                 // Gathers
                 .AddTransient<IGather, GitGather>()
@@ -104,6 +105,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, OctopusDeployPackageComposer>()
                 .AddTransient<IComposer, GitHubReleaseComposer>()
                 .AddTransient<IComposer, PythonFlaskComposer>()
+                .AddTransient<IComposer, ChartMuseumComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
