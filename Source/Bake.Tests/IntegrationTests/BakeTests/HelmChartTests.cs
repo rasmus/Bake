@@ -74,5 +74,22 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             returnCode.Should().Be(0);
             octopusDeploy.ReceivedPackages.Should().HaveCount(1);
         }
+
+        [Test]
+        public async Task PushToChartMuseum()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                    "run",
+                    "--convention=Release",
+                    $"--destination=helm-chart>chart-museum@http://localhost:5556",
+                    "--build-version", version));
+
+            // Assert
+            returnCode.Should().Be(0);
+        }
     }
 }

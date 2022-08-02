@@ -29,6 +29,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Services
 {
@@ -42,17 +43,21 @@ namespace Bake.Services
             ["gz"] = "application/gzip",
             ["png"] = "image/png",
             ["zip"] = "application/zip",
+            ["tgz"] = "application/gzip",
         };
 
         private const string DefaultMediaType = "application/octet-stream";
 
+        private readonly ILogger<Uploader> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IFileSystem _fileSystem;
 
         public Uploader(
+            ILogger<Uploader> logger,
             IHttpClientFactory httpClientFactory,
             IFileSystem fileSystem)
         {
+            _logger = logger;
             _httpClientFactory = httpClientFactory;
             _fileSystem = fileSystem;
         }
@@ -64,8 +69,13 @@ namespace Bake.Services
         {
             var file = _fileSystem.Open(filePath);
             var fileName = Path.GetFileName(filePath);
-            var mediaType = MediaTypes.TryGetValue(Path.GetExtension(filePath), out var t) ? t : DefaultMediaType;
+            var fileExtension = Path.GetExtension(filePath).Trim('.');
+            var mediaType = MediaTypes.TryGetValue(fileExtension, out var t) ? t : DefaultMediaType;
             var httpClient = _httpClientFactory.CreateClient();
+
+            _logger.LogInformation(
+                "Uploading file {FileName} with extension {Extension} and MIME type {MIME} to URL {Url}",
+                fileName, fileExtension, mediaType, url);
 
             await using var stream = await file.OpenReadAsync(cancellationToken);
 
@@ -74,13 +84,14 @@ namespace Bake.Services
             var fileStreamContent = new StreamContent(stream);
             fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
 
-            multipartFormDataContent.Add(fileStreamContent, name: "file", fileName: fileName);
+            multipartFormDataContent.Add(fileStreamContent, name: "chart", fileName: fileName);
 
             var response = await httpClient.PostAsync(url, multipartFormDataContent, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"POST {url} failed with {response.StatusCode}");
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new Exception($"POST {url} failed with {response.StatusCode}{Environment.NewLine}{content[..(Math.Min(content.Length, 1024) - 1)]}");
             }
         }
     }

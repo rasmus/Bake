@@ -1,6 +1,6 @@
 # 0.16-beta
 
-* *Nothing yet...*
+* New: Ability to upload Helm charts to ChartMuseum
 
 # 0.15-beta
 

@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
@@ -46,11 +47,13 @@ namespace Bake.Cooking.Cooks.ChartMuseum
             ChartMuseumUploadRecipe recipe,
             CancellationToken cancellationToken)
         {
+            var url = new Uri(recipe.Url, "/api/charts");
+
             foreach (var packagePath in recipe.Packages)
             {
                 await _uploader.UploadAsync(
                     packagePath,
-                    recipe.Url,
+                    url,
                     cancellationToken);
             }
 
