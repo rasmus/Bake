@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         }
 
         [Test]
-        public async Task T()
+        public async Task TestIt()
         {
             // Arrange
             var ingredients = Ingredients.New(
@@ -63,6 +63,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<ICredentials, Credentials>()
                 .AddTransient<IDefaults, Defaults>()
+                .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
+                .AddSingleton(TestEnvironmentVariables.None)
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>();

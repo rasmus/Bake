@@ -1,6 +1,6 @@
-﻿// MIT License
+// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,18 +35,23 @@ namespace Bake.Services
 
         public Task<IGitHubClient> CreateAsync(
             string token,
+            Uri apiUrl,
             CancellationToken cancellationToken)
         {
-            var gitHubClient = Create(new InMemoryCredentialStore(new Credentials(token)));
+            var gitHubClient = Create(
+                apiUrl,
+                new InMemoryCredentialStore(new Credentials(token)));
             return Task.FromResult(gitHubClient);
         }
 
         private static IGitHubClient Create(
+            Uri apiUrl,
             ICredentialStore credentialStore)
         {
             return new GitHubClient(
                 new ProductHeaderValue("bake", Version.ToString()),
-                credentialStore);
+                credentialStore,
+                apiUrl);
         }
     }
 }

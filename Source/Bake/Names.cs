@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bake.ValueObjects.Artifacts;
@@ -39,6 +38,8 @@ namespace Bake
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
+            public const string OctopusDeploy = "octopus-deploy";
+            public const string ChartMuseum = "chart-museum";
         }
 
         public static class DynamicDestinations
@@ -52,11 +53,13 @@ namespace Bake
         /// </summary>
         public static class Artifacts
         {
+            public const string ContainerArtifact = "container-artifact";
             public const string ExecutableArtifact = "executable-artifact";
             public const string DockerfileArtifact = "dockerfile-artifact";
             public const string NuGetArtifact = "nuget-artifact";
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
+            public const string HelmChartArtifact = "helm-chart-artifact";
         }
 
         public static class ArtifactTypes
@@ -68,6 +71,7 @@ namespace Bake
             public const string NuGet = "nuget";
             public const string Executable = "executable";
             public const string DocumentationSite = "documentation-site";
+            public const string HelmChart = "helm-chart";
 
             private static readonly IReadOnlyDictionary<ArtifactType, string> TypeToName = new Dictionary<ArtifactType, string>
                 {
@@ -86,21 +90,6 @@ namespace Bake
             public static bool TryGetType(string name, out ArtifactType artifactType)
             {
                 return NameToType.TryGetValue(name, out artifactType);
-            }
-
-            public static string GetName(ArtifactType artifactType)
-            {
-                if (!Enum.IsDefined(typeof(ArtifactType), artifactType) || artifactType == ArtifactType.Invalid)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(artifactType), artifactType, null);
-                }
-
-                if (!TypeToName.TryGetValue(artifactType, out var name))
-                {
-                    throw new NotImplementedException();
-                }
-
-                return name;
             }
         }
 
@@ -121,15 +110,36 @@ namespace Bake
             {
                 public const string InstallRequirements = "pip-install-requirements";
             }
-			
+
+            public static class Python
+            {
+                public const string FlaskDockerfile = "python-flask-dockerfile";
+            }
+
             public static class GitHub
             {
                 public const string Release = "github-release";
             }
 
+            public static class Helm
+            {
+                public const string Lint = "helm-lint";
+                public const string Package = "helm-package";
+            }
+
             public static class MkDocs
             {
                 public const string Release = "mkdocs-build";
+            }
+
+            public static class OctopusDeploy
+            {
+                public const string PackageRawPush = "octopus-deploy-package-raw-push";
+            }
+
+            public static class ChartMuseum
+            {
+                public const string Upload = "chart-museum-upload";
             }
 
             public static class Docker

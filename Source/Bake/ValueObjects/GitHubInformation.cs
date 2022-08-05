@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,18 +36,23 @@ namespace Bake.ValueObjects
         [YamlMember(typeof(string))]
         public Uri Url { get; [Obsolete] set; }
 
+        [YamlMember(typeof(string))]
+        public Uri ApiUrl { get; [Obsolete] set; }
+
         [Obsolete]
         public GitHubInformation() { }
 
         public GitHubInformation(
             string owner,
             string repository,
-            Uri url)
+            Uri url,
+            Uri apiUrl)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Owner = owner;
             Repository = repository;
             Url = url;
+            ApiUrl = apiUrl;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

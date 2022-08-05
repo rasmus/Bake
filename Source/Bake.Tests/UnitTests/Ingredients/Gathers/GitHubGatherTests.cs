@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +39,17 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
         [SetUp]
         public void SetUp()
         {
-            Inject<IDefaults>(new Defaults());
+            Inject<IDefaults>(new Defaults(TestEnvironmentVariables.None));
         }
 
-        [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake")]
-        [TestCase("https://github.com/rasmus/Bake", "rasmus", "Bake")]
-        public async Task Verify(string url, string expectedOwner, string expectedRepository)
+        [TestCase("https://github.com/rasmus/Bake.git", "rasmus", "Bake", "https://api.github.com/")]
+        [TestCase("https://github.com/rasmus/Bake", "rasmus", "Bake", "https://api.github.com/")]
+        [TestCase("https://github.schibsted.com/rasmus-mikkelsen/Bake", "rasmus-mikkelsen", "Bake", "https://github.schibsted.com/api/v3")]
+        public async Task Verify(
+            string url,
+            string expectedOwner,
+            string expectedRepository,
+            string expectedApiUrl)
         {
             // Arrange
             var ingredients = Bake.ValueObjects.Ingredients.New(
@@ -62,6 +67,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             // Assert
             gitHubInformation.Owner.Should().Be(expectedOwner);
             gitHubInformation.Repository.Should().Be(expectedRepository);
+            gitHubInformation.ApiUrl.Should().Be(expectedApiUrl);
         }
     }
 }

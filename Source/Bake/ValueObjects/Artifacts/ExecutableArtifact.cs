@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,23 +29,22 @@ namespace Bake.ValueObjects.Artifacts
     public class ExecutableArtifact : FileArtifact
     {
         [YamlMember]
+        public string Name { get; [Obsolete] set; }
+
+        [YamlMember]
         public Platform Platform { get; [Obsolete] set; }
 
         [Obsolete]
         public ExecutableArtifact() { }
 
         public ExecutableArtifact(
-            ArtifactKey key,
+            string name,
             string path,
             Platform platform)
-            : base(key, path)
+            : base(path)
         {
-            if (key.Type != ArtifactType.Executable)
-            {
-                throw new ArgumentException(nameof(key));
-            }
-
 #pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
             Platform = platform;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

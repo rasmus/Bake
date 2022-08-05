@@ -1,6 +1,6 @@
-// MIT License
+﻿// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,16 @@
 // SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services
 {
-    public class ArtifactKey : ValueObject
+    public interface IUploader
     {
-        public ArtifactType Type { get; [Obsolete] set; }
-        public string Name { get; [Obsolete] set; }
-
-        [Obsolete]
-        public ArtifactKey() { }
-
-        public ArtifactKey(
-            ArtifactType type,
-            string name)
-        {
-            if (!Enum.IsDefined(typeof(ArtifactType), type) || type == ArtifactType.Invalid)
-                throw new ArgumentOutOfRangeException(nameof(type));
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name));
-
-#pragma warning disable CS0612 // Type or member is obsolete
-            Type = type;
-            Name = name;
-#pragma warning restore CS0612 // Type or member is obsolete
-        }
+        Task UploadAsync(
+            string filePath,
+            Uri url,
+            CancellationToken cancellationToken);
     }
 }

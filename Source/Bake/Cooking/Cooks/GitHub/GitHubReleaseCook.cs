@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -124,6 +124,22 @@ namespace Bake.Cooking.Cooks.GitHub
                     await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
             }
 
+            var containerArtifacts = recipe.Artifacts
+                .OfType<ContainerArtifact>()
+                .ToArray();
+            if (containerArtifacts.Any())
+            {
+                stringBuilder.AppendLine("### Containers");
+                foreach (var containerArtifact in containerArtifacts)
+                {
+                    stringBuilder.AppendLine($"* `{containerArtifact.Name}`");
+                    foreach (var tag in containerArtifact.Tags)
+                    {
+                        stringBuilder.AppendLine($"  * `{tag}`");
+                    }
+                }
+            }
+
             if (releaseFiles.Any())
             {
                 stringBuilder.AppendLine("### Files");
@@ -183,7 +199,7 @@ namespace Bake.Cooking.Cooks.GitHub
         {
             var parts = new[]
                 {
-                    artifact.Key.Name,
+                    artifact.Name,
                     NamingOs[artifact.Platform.Os],
                     NamingArch[artifact.Platform.Arch]
                 };

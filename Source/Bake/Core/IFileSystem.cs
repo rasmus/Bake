@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ namespace Bake.Core
 
         Task<string> ReadAllTextAsync(
             string filePath,
-            CancellationToken _);
+            CancellationToken cancellationToken);
 
         IFile Open(string filePath);
 
@@ -47,5 +47,7 @@ namespace Bake.Core
             CompressionAlgorithm algorithm,
             IReadOnlyCollection<IFile> files,
             CancellationToken cancellationToken);
+
+        bool FileExists(string filePath);
     }
 }

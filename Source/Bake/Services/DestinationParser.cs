@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ namespace Bake.Services
         private static readonly Regex DockerHubUsernameValidator = new(
             @"^[a-z\-0-9]+$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex TypedDestination = new(
+            "^(?<type>[a-z-]+)@(?<rest>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const char Separator = '>';
 
         private readonly IDefaults _defaults;
@@ -64,7 +66,7 @@ namespace Bake.Services
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
                     {
-                        destination = new NuGetRegistryDestination(_defaults.NuGetRegistry);
+                        destination = new NuGetRegistryDestination(new Uri(_defaults.NuGetRegistry, UriKind.Absolute));
                         return true;
                     }
 
@@ -83,6 +85,32 @@ namespace Bake.Services
 
                     destination = new NuGetRegistryDestination(nugetRegistryUrl);
                     return true;
+
+
+                case Names.ArtifactTypes.HelmChart:
+                    if (parts.Length != 2)
+                    {
+                        return false;
+                    }
+
+                    var typedMatch = TypedDestination.Match(parts[1]);
+                    if (!typedMatch.Success)
+                    {
+                        return false;
+                    }
+
+                    destination = typedMatch.Groups["type"].Value switch
+                    {
+                        "octopus" => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var u1)
+                            ? new OctopusDeployDestination(u1.AbsoluteUri)
+                            : null,
+                        Names.Destinations.ChartMuseum => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var u2)
+                            ? new ChartMuseumDestination(u2.AbsoluteUri)
+                            : null,
+                        _ => null
+                    };
+
+                    return destination != null;
 
                 case Names.ArtifactTypes.Container:
                     if (string.Equals(parts[1], Names.DynamicDestinations.GitHub, StringComparison.OrdinalIgnoreCase))

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -95,6 +95,10 @@ namespace Bake.Tests.UnitTests.Core
             "1.0.0",
             "0.0.1",
             "0.1.0")]
+        [TestCase(
+            "1.0 1.0-alpha",
+            "1.0",
+            "1.0-alpha")]
         public void Compare(
             string expectedSorting,
             params string[] versions)

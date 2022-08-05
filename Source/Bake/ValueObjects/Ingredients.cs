@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -102,6 +102,20 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
+        public Description Description
+        {
+            get => _description.Task.IsCompletedSuccessfully ? _description.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _description.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public ReleaseNotes ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
@@ -128,6 +142,9 @@ namespace Bake.ValueObjects
         public Task<GitInformation> GitTask => _git.Task;
 
         [YamlIgnore]
+        public Task<Description> DescriptionTask => _description.Task;
+
+        [YamlIgnore]
         public Task<ReleaseNotes> ReleaseNotesTask => _releaseNotes.Task;
 
         [YamlIgnore]
@@ -140,6 +157,7 @@ namespace Bake.ValueObjects
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
         private readonly TaskCompletionSource<List<Commit>> _changelog = new();
+        private readonly TaskCompletionSource<Description> _description = new();
 
         [Obsolete]
         public Ingredients() { }
@@ -161,6 +179,8 @@ namespace Bake.ValueObjects
         public void FailGit() => _git.SetCanceled();
         public void FailGitHub() => _gitHub.SetCanceled();
         public void FailChangelog() => _changelog.SetCanceled();
+        public void FailDescription() => _description.SetCanceled();
+        public void FailReleaseNotes() => _releaseNotes.SetCanceled();
 
         public void FailOutstanding()
         {

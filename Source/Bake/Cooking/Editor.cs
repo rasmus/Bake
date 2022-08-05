@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,14 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
+using Bake.Extensions;
+using Bake.Services;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
@@ -37,17 +40,20 @@ namespace Bake.Cooking
     {
         private readonly ILogger<Editor> _logger;
         private readonly IYaml _yaml;
+        private readonly IComposerOrdering _composerOrdering;
         private readonly IReadOnlyCollection<IGather> _gathers;
         private readonly IReadOnlyCollection<IComposer> _composers;
 
         public Editor(
             ILogger<Editor> logger,
             IYaml yaml,
+            IComposerOrdering composerOrdering,
             IEnumerable<IGather> gathers,
             IEnumerable<IComposer> composers)
         {
             _logger = logger;
             _yaml = yaml;
+            _composerOrdering = composerOrdering;
             _gathers = gathers.ToList();
             _composers = composers.ToList();
         }
@@ -65,11 +71,22 @@ namespace Bake.Cooking
             await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, cancellationToken)));
 
             var recipes = new List<Recipe>();
+            var composers = _composerOrdering.Order(_composers);
 
-            // TODO: Really need to have a proper ordering in place that is more dynamic
-            foreach (var composer in _composers.OrderBy(c => c.Consumes.Count))
+            foreach (var composer in composers)
             {
+                var composerTypeName = composer.GetType().PrettyPrint();
+                _logger.LogInformation(
+                    "Executing composer {ComposerType}",
+                    composerTypeName);
+
+                var stopWatch = Stopwatch.StartNew();
                 var createdRecipes = await composer.ComposeAsync(context, cancellationToken);
+                _logger.LogInformation(
+                    "Composer {ComposerType} finished after {TotalSeconds}",
+                    composerTypeName,
+                    stopWatch.Elapsed.TotalSeconds);
+
                 var createdArtifacts = createdRecipes
                     .SelectMany(r => r.Artifacts ?? Artifact.Empty)
                     .ToList();

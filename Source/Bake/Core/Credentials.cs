@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -71,12 +71,14 @@ namespace Bake.Core
                     $"bake_credentials_nuget_{hostname}_apikey"
                 };
 
-            if (string.Equals(url.Host, _defaults.GitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
+            var gitHubNuGetRegistry = new Uri(_defaults.GitHubNuGetRegistry, UriKind.Absolute);
+            if (string.Equals(url.Host, gitHubNuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.AddRange(GitHubTokenPossibilities);
             }
 
-            if (string.Equals(url.Host, _defaults.NuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
+            var nuGetRegistry = new Uri(_defaults.NuGetRegistry, UriKind.Absolute);
+            if (string.Equals(url.Host, nuGetRegistry.Host, StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.Add("nuget_apikey");
             }
@@ -114,6 +116,36 @@ namespace Bake.Core
             {
                 _logger.LogInformation(
                     "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
+                    url.AbsoluteUri,
+                    string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
+            }
+
+            return value;
+        }
+
+        public async Task<string> TryGetOctopusDeployApiKeyAsync(
+            Uri url,
+            CancellationToken cancellationToken)
+        {
+            var hostname = HostnameInvalidCharacters.Replace(url.Host, "_");
+            var possibilities = new List<string>
+                {
+                    "octopus_deploy_apikey",
+                    "bake_credentials_octopusdeploy_apikey",
+                    $"bake_credentials_octopusdeploy_{hostname}_apikey"
+                };
+
+            var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
+
+            var value = possibilities
+                .Select(k => environmentVariables.TryGetValue(k, out var v) ? v : string.Empty)
+                .SkipWhile(string.IsNullOrEmpty)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                _logger.LogInformation(
+                    "Dit not find any Octopus Deploy API key for {Url} in any of the environment variables {EnvironmentVariables}",
                     url.AbsoluteUri,
                     string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
             }

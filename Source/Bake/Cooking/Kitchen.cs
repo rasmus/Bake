@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -118,7 +118,7 @@ namespace Bake.Cooking
                     : "failed";
                 var percent = cookResult.Time.TotalSeconds / totalSeconds;
                 var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
-                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-30} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-32} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
             Console.WriteLine();

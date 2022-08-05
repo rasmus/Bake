@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -45,6 +45,11 @@ namespace Bake.Core
             ILogger<FileSystem> logger)
         {
             _logger = logger;
+        }
+
+        public bool FileExists(string filePath)
+        {
+            return System.IO.File.Exists(filePath);
         }
 
         public async Task<IReadOnlyCollection<string>> FindFilesAsync(
@@ -140,7 +145,7 @@ namespace Bake.Core
 
         public async Task<string> ReadAllTextAsync(
             string filePath,
-            CancellationToken _)
+            CancellationToken cancellationToken)
         {
             await using var file = System.IO.File.Open(
                 filePath,

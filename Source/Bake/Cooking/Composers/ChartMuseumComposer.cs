@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,26 +29,21 @@ using Bake.Services;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
-using Bake.ValueObjects.Recipes.GitHub;
+using Bake.ValueObjects.Recipes.ChartMuseum;
+using Bake.ValueObjects.Recipes.OctopusDeploy;
 
 namespace Bake.Cooking.Composers
 {
-    public class ReleaseComposer : Composer
+    public class ChartMuseumComposer : Composer
     {
         private readonly IConventionInterpreter _conventionInterpreter;
 
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } = new[]
             {
-                ArtifactType.NuGet,
-                ArtifactType.Executable,
-                ArtifactType.DocumentationSite,
-            };
-        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
-            {
-                ArtifactType.Release,
+                ArtifactType.HelmChart,
             };
 
-        public ReleaseComposer(
+        public ChartMuseumComposer(
             IConventionInterpreter conventionInterpreter)
         {
             _conventionInterpreter = conventionInterpreter;
@@ -62,34 +58,30 @@ namespace Bake.Cooking.Composers
                 return Task.FromResult(EmptyRecipes);
             }
 
-            var gitHubDestination = context.Ingredients.Destinations
-                .OfType<GitHubReleaseDestination>()
+            var chartMuseumDestination = context.Ingredients.Destinations
+                .OfType<ChartMuseumDestination>()
                 .SingleOrDefault();
 
-            if (gitHubDestination == null)
+            if (chartMuseumDestination == null)
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
-            var artifacts = Enumerable.Empty<Artifact>()
-                .Concat(context.GetArtifacts<ExecutableArtifact>())
-                .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
+            var packages = Enumerable.Empty<string>()
+                .Concat(context.GetArtifacts<HelmChartArtifact>().Select(a => a.Path))
                 .ToArray();
 
-            if (!artifacts.Any())
+            if (!packages.Any())
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
-            return Task.FromResult<IReadOnlyCollection<Recipe>>(new[]
-                {
-                    new GitHubReleaseRecipe(
-                        context.Ingredients.GitHub,
-                        context.Ingredients.Version,
-                        context.Ingredients.Git.Sha,
-                        context.Ingredients.ReleaseNotes,
-                        artifacts)
-                });
+            return Task.FromResult<IReadOnlyCollection<Recipe>>(new Recipe[]
+            {
+                new ChartMuseumUploadRecipe(
+                    new Uri(chartMuseumDestination.Url, UriKind.Absolute),
+                    packages)
+            });
         }
     }
 }

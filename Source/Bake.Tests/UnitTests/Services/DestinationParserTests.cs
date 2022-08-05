@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ namespace Bake.Tests.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
-            Inject<IDefaults>(new Defaults());
+            Inject<IDefaults>(new Defaults(TestEnvironmentVariables.None));
         }
 
         [TestCase(
@@ -58,7 +58,7 @@ namespace Bake.Tests.UnitTests.Services
 
         [TestCase(
             "container>rasmus",
-            "registry.hub.docker.com/rasmus/")]
+            "rasmus/")]
         [TestCase(
             "container>localhost:5000",
             "localhost:5000/")]
@@ -74,6 +74,20 @@ namespace Bake.Tests.UnitTests.Services
 
             // Assert
             ((ContainerRegistryDestination)destination).Url.Should().Be(expectedRegistryUrl);
+        }
+
+        [TestCase(
+            "helm-chart>octopus@https://localhost:4321/",
+            "https://localhost:4321/")]
+        public void HelmChart(
+            string input,
+            string expectedRegistryUrl)
+        {
+            // Act
+            Sut.TryParse(input, out var destination).Should().BeTrue();
+
+            // Assert
+            ((OctopusDeployDestination)destination).Url.Should().Be(expectedRegistryUrl);
         }
 
         [TestCase(

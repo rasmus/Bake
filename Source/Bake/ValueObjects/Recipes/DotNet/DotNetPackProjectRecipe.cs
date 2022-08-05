@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
@@ -51,6 +52,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public SemVer Version { get; [Obsolete] set; }
 
+        [YamlMember]
+        public Dictionary<string, string> Properties { get; [Obsolete] set; }
+
         [Obsolete]
         public DotNetPackProjectRecipe() { }
 
@@ -62,6 +66,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             bool includeSource,
             string configuration,
             SemVer version,
+            Dictionary<string, string> properties,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -73,6 +78,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             IncludeSource = includeSource;
             Configuration = configuration;
             Version = version;
+            Properties = properties;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 

@@ -1,6 +1,6 @@
-﻿// MIT License
+// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,27 @@
 // SOFTWARE.
 
 using System;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.DockerfileArtifact)]
     public class DockerFileArtifact : FileArtifact
     {
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerFileArtifact() { }
 
         public DockerFileArtifact(
-            ArtifactKey key,
+            string name,
             string path)
-            : base(key, path)
+            : base(path)
         {
-            if (key.Type != ArtifactType.Dockerfile)
-            {
-                throw new ArgumentException(nameof(key));
-            }
+#pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

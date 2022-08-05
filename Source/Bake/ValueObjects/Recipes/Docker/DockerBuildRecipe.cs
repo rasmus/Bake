@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Docker
@@ -39,18 +40,25 @@ namespace Bake.ValueObjects.Recipes.Docker
         [YamlMember]
         public string[] Tags { get; [Obsolete] set; }
 
+        [YamlMember]
+        public bool Compress { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerBuildRecipe() { }
 
         public DockerBuildRecipe(
             string path,
             string name,
-            IEnumerable<string> tags)
+            IEnumerable<string> tags,
+            bool compress,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Path = path;
             Name = name;
             Tags = tags.ToArray();
+            Compress = compress;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

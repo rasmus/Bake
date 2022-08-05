@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -51,12 +50,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Assert
             returnCode.Should().Be(0);
             await AssertContainerPingsAsync(
-                expectedImage,
-                5123,
-                new Dictionary<string, string>
-                {
-                    ["URLS"] = "http://0.0.0.0:5123"
-                });
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(5123)
+                    .WithEnvironmentVariable("URLS", "http://0.0.0.0:5123")
+                    .WithReadOnlyFilesystem());
         }
     }
 }

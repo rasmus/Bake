@@ -26,6 +26,23 @@ Bake is **NOT** the right tool for you if you
 - **Release notes** are parsed and added to all applicable artifacts
 - **Tests** are automatically located and executed
 
+## Installing Bake
+
+There is a few different ways to install Bake, choose one that best suites your
+needs.
+
+* **Download binary** - Simply download a binary from the
+  [releases](https://github.com/rasmus/Bake/releases)
+  page that suites your platform and architecture
+* **Install .NET tool** - If have the .NET SDK installed, you can install
+  Bake as a .NET tool.
+  ```
+  dotnet tool install --global Bake --version [VERSION]
+  ```
+  **NOTE:** Be sure to always install a specific version to ensure that your
+  builds does not suddenly change behavior when new features are introduced
+  in new versions of Bake.
+
 
 ## Usage
 
@@ -71,7 +88,7 @@ to scan the repository for files and structures it knows how to process.
 * **[.NET](https://dot.net/)** - 
   Directories that contain [.NET](https://dot.net/) projects are
   analyzed and the application/service is built, tested and optionally
-  containerized
+  put in a non-root and readonly filesystem compatible container
 * **[Docker](https://www.docker.com/)** - 
   Directories that contain a
   [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) will get
@@ -79,8 +96,13 @@ to scan the repository for files and structures it knows how to process.
 * **[Go](https://go.dev/)** -
   Directories that contain Go projects are analyzed
   and the application/service is built, tested and optionally containerized
+* **[Helm chart](https://helm.sh/)** -
+  Helm charts are linted and packaged
 * **[MkDocs](https://www.mkdocs.org/)** -
   MkDocs documentation sites are built and prepared as artifacts
+* **[Python Flask](https://flask.palletsprojects.com/)** -
+  Directories containing a Python Flask `app.py` file, will be bundled
+  into a container
 
 Based on the selected convention (by providing e.g. `--convention=Release`)
 and the destinations for artifacts, Bake pushes/uploads/creates the built
@@ -96,18 +118,24 @@ Here are some examples of common used arguments to Bake
       destination as [Docker Hub](https://hub.docker.com/) with that username
     * `container>github` - Send containers to the GitHub package repository
       for at owner/organization of the git repository
-    * `container>localhost:5000` - Send containers to a specific container
+    * `container>registry.local:5000` - Send containers to a specific container
       registry
+  * **Helm**
+    * `helm-chart>octopus@http://octopus.local/` - Sends Helm charts to the built-in
+      repository in [Octopus Deploy][octopus-repository]. Bake looks for the API-key
+      in an environment variable named `OCTOPUS_DEPLOY_APIKEY`
+    * `helm-chart>chart-museum@http://chart-museum.local/` - Sends Helm charts to an
+      instance of [ChartMuseum](https://chartmuseum.com/)
   * **NuGet**
     * `nuget` - An unnamed destination will send NuGet packages to the central
       NuGet repository at [nuget.org](https://www.nuget.org/). Bake will look for
-      an API in an environment variables named `NUGET_APIKEY`
+      an API in an environment variable named `NUGET_APIKEY`
     * `nuget>github` - Send NuGet packages to the specific need with is owned
       by the owner of the repository of the current repository. Bake will
       automatically setup the API key for the current build using the
       `GITHUB_TOKEN` (automatically provided in GitHub actions), thus no
       additional configuration is required
-    * `nuget>http://localhost:5555/v3/index.json` - Send NuGet packages to the feed
+    * `nuget>http://nuget.local/v3/index.json` - Send NuGet packages to the feed
       specified by the URL. Bake will look for the API key in an environment
       variable named `bake_credentials_nuget_{hostname}_apikey`, in which
       `{hostname}` is the hostname of the URL with invalid characters removed
@@ -124,7 +152,7 @@ Here are some examples of common used arguments to Bake
 ```
 MIT License
 
-Copyright (c) 2021 Rasmus Mikkelsen
+Copyright (c) 2021-2022 Rasmus Mikkelsen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -144,3 +172,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+[octopus-repository]: https://octopus.com/docs/packaging-applications/package-repositories/built-in-repository

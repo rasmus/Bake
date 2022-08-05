@@ -1,6 +1,6 @@
-﻿// MIT License
+// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ namespace Bake.Cooking.Composers
             var projectType = BakeProjectType.Tool;
             var servicePort = -1;
 
-            var bakeProjectPath = Path.Combine(directoryPath, "bake.yaml");
+            var bakeProjectPath = Path.Combine(directoryPath, "bake.yaml"); // TODO: Rework to align file name
             if (System.IO.File.Exists(bakeProjectPath))
             {
                 var bakeProjectContent = await _fileSystem.ReadAllTextAsync(
@@ -136,7 +136,7 @@ namespace Bake.Cooking.Composers
                         directoryPath,
                         p,
                         new ExecutableArtifact(
-                            new ArtifactKey(ArtifactType.Executable, output),
+                            output,
                             Path.Combine(directoryPath, output),
                             p));
                 }));
@@ -154,7 +154,7 @@ namespace Bake.Cooking.Composers
                     labels,
                     linuxBuildRecipe.Output,
                     new DockerFileArtifact(
-                        new ArtifactKey(ArtifactType.Dockerfile, goModuleName.Name),
+                        goModuleName.Name,
                         Path.Combine(directoryPath, "Dockerfile"))));
             }
 

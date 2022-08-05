@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -38,7 +37,10 @@ namespace Bake.Tests.Helpers
     public abstract class TestProject : TestIt
     {
         protected string ProjectName { get; }
-        protected string WorkingDirectory => _folder.Path;
+        protected string WorkingDirectory => Path.Join(_folder.Path, ProjectName);
+        protected string RepositoryUrl => "https://github.com/rasmus/Bake";
+        protected string Sha { get; private set; }
+
         private string _previousCurrentDirectory;
 
         private Folder _folder;
@@ -56,14 +58,14 @@ namespace Bake.Tests.Helpers
 
             if (!string.IsNullOrEmpty(ProjectName))
             {
-                GitHelper.Create(_folder.Path);
+                Sha = GitHelper.Create(_folder.Path);
 
                 DirectoryCopy(
                     Path.Combine(
                         ProjectHelper.GetRoot(),
                         "TestProjects",
                         ProjectName),
-                    _folder.Path);
+                    Path.Join(_folder.Path, ProjectName));
             }
 
             _previousCurrentDirectory = Directory.GetCurrentDirectory();
@@ -103,18 +105,23 @@ namespace Bake.Tests.Helpers
             return filePath;
         }
 
-        protected static async Task AssertContainerPingsAsync(
-            string expectedImage,
-            int port,
-            IReadOnlyDictionary<string, string> environmentVariables = null)
+        protected Task<NuGetHelper.NuSpec> AssertNuGetExistsAsync(
+            params string[] path)
         {
-            var hostPort = SocketHelper.FreeTcpPort();
+            var packagePath = AssertFileExists(path);
+
+            return NuGetHelper.LoadAsync(packagePath);
+        }
+
+        protected static async Task AssertContainerPingsAsync(
+            DockerArguments arguments,
+            CancellationToken cancellationToken = default)
+        {
+            var hostPort = arguments.Ports.Single().Value;
             var url = $"http://localhost:{hostPort}/ping";
             using var _ = await DockerHelper.RunAsync(
-                expectedImage,
-                new Dictionary<int, int> { [port] = hostPort },
-                environmentVariables ?? new Dictionary<string, string>(),
-                CancellationToken.None);
+                arguments,
+                cancellationToken);
             using var httpClient = new HttpClient();
             var start = Stopwatch.StartNew();
             var success = false;
@@ -122,13 +129,13 @@ namespace Bake.Tests.Helpers
             {
                 try
                 {
-                    using var response = await httpClient.GetAsync(url);
+                    using var response = await httpClient.GetAsync(url, cancellationToken);
                     if (!response.IsSuccessStatusCode)
                     {
                         Console.WriteLine($"Status code {response.StatusCode}");
                     }
 
-                    var content = await response.Content.ReadAsStringAsync();
+                    var content = await response.Content.ReadAsStringAsync(cancellationToken);
                     Console.WriteLine($"Got content: {Environment.NewLine}{content}");
 
                     success = true;
@@ -139,7 +146,7 @@ namespace Bake.Tests.Helpers
                     Console.WriteLine($"Failed with {e.GetType().Name}: {e.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
 
             success.Should().BeTrue();

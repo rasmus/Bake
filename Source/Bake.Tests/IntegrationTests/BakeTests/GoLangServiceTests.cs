@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "win-x64",
                 "golang-service.exe");
 
-            await AssertContainerPingsAsync(expectedImage, 8080);
+            await AssertContainerPingsAsync(
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(8080));
         }
     }
 }

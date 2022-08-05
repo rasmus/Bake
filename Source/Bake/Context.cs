@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,11 @@ namespace Bake
 {
     public class Context : IContext
     {
-        public static Context New(Ingredients ingredients) => new Context(ingredients);
+        public static Context New(Ingredients ingredients) => new(ingredients);
 
         public Ingredients Ingredients { get; }
 
-        private readonly List<Artifact> _artifacts = new List<Artifact>();
+        private readonly List<Artifact> _artifacts = new();
 
         private Context(
             Ingredients ingredients)
@@ -48,9 +48,7 @@ namespace Bake
 
         public IEnumerable<T> GetArtifacts<T>() where T : Artifact
         {
-            return _artifacts
-                .Select(a => a as T)
-                .Where(a => a != null);
+            return _artifacts.OfType<T>();
         }
     }
 }
