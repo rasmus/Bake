@@ -11,10 +11,18 @@ services:
   registry:
     image: registry:2
     ports:
-      - 5000:5000
+    - 5000:5000
     environment:
-        REGISTRY_AUTH: "htpasswd"
-        REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
-        REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+      REGISTRY_AUTH: "htpasswd"
+      REGISTRY_AUTH_HTPASSWD_REALM: "Bake test registry"
+      REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
     volumes:
-      - ./Services/Registry:/auth
+    - ./Services/Registry:/auth
+
+  chart-museum:
+    image: ghcr.io/helm/chartmuseum:v0.15.0
+    ports:
+    - 5556:8080
+    environment:
+      STORAGE: local
+      STORAGE_LOCAL_ROOTDIR: /tmp
