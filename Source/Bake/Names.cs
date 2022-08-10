@@ -39,6 +39,7 @@ namespace Bake
             public const string NuGetRegistry = "nuget-registry";
             public const string Dynamic = "dynamic";
             public const string OctopusDeploy = "octopus-deploy";
+            public const string ChartMuseum = "chart-museum";
         }
 
         public static class DynamicDestinations
@@ -140,6 +141,11 @@ namespace Bake
             public static class OctopusDeploy
             {
                 public const string PackageRawPush = "octopus-deploy-package-raw-push";
+            }
+
+            public static class ChartMuseum
+            {
+                public const string Upload = "chart-museum-upload";
             }
 
             public static class Docker

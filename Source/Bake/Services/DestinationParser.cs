@@ -33,7 +33,7 @@ namespace Bake.Services
             @"^[a-z\-0-9]+$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex TypedDestination = new(
-            "^(?<type>[a-z]+)@(?<rest>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            "^(?<type>[a-z-]+)@(?<rest>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const char Separator = '>';
 
         private readonly IDefaults _defaults;
@@ -101,8 +101,11 @@ namespace Bake.Services
 
                     destination = typedMatch.Groups["type"].Value switch
                     {
-                        "octopus" => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var octopusDeployUrl)
-                            ? new OctopusDeployDestination(octopusDeployUrl.AbsoluteUri)
+                        "octopus" => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var u1)
+                            ? new OctopusDeployDestination(u1.AbsoluteUri)
+                            : null,
+                        Names.Destinations.ChartMuseum => Uri.TryCreate(typedMatch.Groups["rest"].Value, UriKind.Absolute, out var u2)
+                            ? new ChartMuseumDestination(u2.AbsoluteUri)
                             : null,
                         _ => null
                     };
