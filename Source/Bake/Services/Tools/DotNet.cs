@@ -39,7 +39,8 @@ namespace Bake.Services.Tools
         private static readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable = new ConcurrentDictionary<string, string>
             {
                 ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
-                ["DOTNET_NOLOGO"] = "true"
+                ["DOTNET_NOLOGO"] = "true",
+                ["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "true"
             };
         private readonly IRunnerFactory _runnerFactory;
         private readonly ICredentials _credentials;
