@@ -40,7 +40,8 @@ namespace Bake.Services.Tools
             {
                 ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
                 ["DOTNET_NOLOGO"] = "true",
-                ["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "true"
+                ["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "true",
+                ["NUGET_XMLDOC_MODE"] = "skip"
             };
         private readonly IRunnerFactory _runnerFactory;
         private readonly ICredentials _credentials;
