@@ -1,6 +1,8 @@
 # 0.17-beta
 
-* *Nothing yet...*
+* New: Set some sensible values to `DOTNET_NOLOGO`,
+  `DOTNET_SKIP_FIRST_TIME_EXPERIENCE`, `NUGET_XMLDOC_MODE`
+  and `NUGET_EXE_NO_PROMPT`
 
 # 0.16-beta
 
