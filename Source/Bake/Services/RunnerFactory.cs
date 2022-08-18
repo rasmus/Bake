@@ -68,7 +68,7 @@ namespace Bake.Services
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    arguments = new[] { "-c", command, }
+                    arguments = new[] { "-c", $"'{command} \"$@\"'", "bash" }
                         .Concat(arguments)
                         .ToArray();
 
