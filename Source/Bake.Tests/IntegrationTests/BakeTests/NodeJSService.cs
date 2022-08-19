@@ -46,6 +46,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
+                "--log-level=Verbose",
                 "--convention=Release",
                 "--build-version", version));
 
