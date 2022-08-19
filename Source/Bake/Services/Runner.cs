@@ -39,8 +39,8 @@ namespace Bake.Services
         private readonly string _workingDirectory;
         private readonly IReadOnlyCollection<string> _arguments;
         private readonly Process _process;
-        private readonly Subject<string> _stdOut = new Subject<string>();
-        private readonly Subject<string> _stdErr = new Subject<string>();
+        private readonly Subject<string> _stdOut = new();
+        private readonly Subject<string> _stdErr = new();
         private readonly IFile _log;
         private Stream _stream;
 
@@ -79,8 +79,9 @@ namespace Bake.Services
         {
             _stream = await _log.OpenWriteAsync(cancellationToken);
 
+            Console.WriteLine($"{_command} {string.Join(" ", _arguments)}");
             _logger.LogTrace(
-                "Executing '{Program} {Arguments}' in {Directory}",
+                "Executing {Program} {Arguments} in {Directory}",
                 _command,
                 string.Join(" ", _arguments),
                 _workingDirectory);
