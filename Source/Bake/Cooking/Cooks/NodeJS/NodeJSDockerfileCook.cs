@@ -46,7 +46,7 @@ USER node
 WORKDIR /usr/src/app
 
 # Do a clean restore first
-COPY --chown=node:node ./package*.json /usr/src/app
+COPY --chown=node:node ./package*.json /usr/src/app/
 RUN \
     {{NPMRC_MOUNT}} npm ci --only=production && \
     npm cache clean --force && \
