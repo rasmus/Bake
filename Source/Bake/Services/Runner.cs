@@ -144,13 +144,11 @@ namespace Bake.Services
             IEnumerable<string> arguments,
             IReadOnlyDictionary<string, string> environmentVariables)
         {
-            var argumentsString = string.Join(" ", arguments);
             var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                         {
                             FileName = command,
-                            Arguments = argumentsString,
                             CreateNoWindow = true,
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
@@ -159,6 +157,11 @@ namespace Bake.Services
                             WorkingDirectory = workingDirectory,
                         },
                 };
+
+            foreach (var argument in arguments)
+            {
+                process.StartInfo.ArgumentList.Add(argument);
+            }
 
             foreach (var (key, value) in environmentVariables)
             {
