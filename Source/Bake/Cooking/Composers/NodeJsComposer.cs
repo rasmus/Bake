@@ -35,7 +35,6 @@ using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.NodeJS;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using File = Bake.Core.File;
 
 namespace Bake.Cooking.Composers
 {
