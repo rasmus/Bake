@@ -53,7 +53,7 @@ RUN \
     rm -f ./package*.json
 
 # Copy service
-COPY --chown=node:node . /usr/src/app
+COPY --chown=node:node . /usr/src/app/
 
 # Add dumb-init
 ADD --chown=node:node https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/bin/dumb-init
