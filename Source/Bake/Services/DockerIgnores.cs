@@ -48,6 +48,7 @@ namespace Bake.Services
 
             "# Git",
             "**/.git*",
+            "**/.gitignore",
 
             "# GitHub",
             "**/.github",

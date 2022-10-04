@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -78,6 +79,8 @@ namespace Bake.Services
                         environmentVariables,
                         arguments);
                 }
+
+                throw new Exception($"Unable to run as shell for platform {RuntimeInformation.RuntimeIdentifier}");
             }
 
             return CreateRunner(

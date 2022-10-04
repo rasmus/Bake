@@ -23,7 +23,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects.Recipes.NodeJS;
 using File = System.IO.File;
