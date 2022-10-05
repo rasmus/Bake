@@ -32,6 +32,11 @@ namespace Bake.Services.Tools
 {
     public class Docker : IDocker
     {
+        private static IReadOnlyDictionary<string, string> EnvironmentVariables = new Dictionary<string, string>
+        {
+            ["DOCKER_BUILDKIT"] = "1",
+        };
+
         private readonly IRunnerFactory _runnerFactory;
 
         public Docker(
@@ -66,6 +71,7 @@ namespace Bake.Services.Tools
             var runner = _runnerFactory.CreateRunner(
                 "docker",
                 argument.WorkingDirectory,
+                EnvironmentVariables,
                 arguments.ToArray());
 
             var result = await runner.ExecuteAsync(cancellationToken);
@@ -86,6 +92,7 @@ namespace Bake.Services.Tools
             var runner = _runnerFactory.CreateRunner(
                 "docker",
                 Directory.GetCurrentDirectory(),
+                EnvironmentVariables,
                 arguments);
 
             var result = await runner.ExecuteAsync(cancellationToken);
