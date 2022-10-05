@@ -71,7 +71,7 @@ namespace Bake.Services.Tools
             var arguments = new[]
                 {
                     "build",
-                    "-ldflags", "\"-s -w\"",
+                    "-ldflags", "-s -w",
                     "-o", argument.Output
                 };
 
