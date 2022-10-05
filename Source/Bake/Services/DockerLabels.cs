@@ -31,7 +31,7 @@ namespace Bake.Services
 {
     public class DockerLabels : IDockerLabels
     {
-        public async Task<IReadOnlyDictionary<string, string>> FromIngredientsAsync(
+        public async Task<Dictionary<string, string>> FromIngredientsAsync(
             Ingredients ingredients,
             CancellationToken cancellationToken)
         {

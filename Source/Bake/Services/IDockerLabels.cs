@@ -29,7 +29,7 @@ namespace Bake.Services
 {
     public interface IDockerLabels
     {
-        Task<IReadOnlyDictionary<string, string>> FromIngredientsAsync(
+        Task<Dictionary<string, string>> FromIngredientsAsync(
             Ingredients ingredients,
             CancellationToken cancellationToken);
 

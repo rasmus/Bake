@@ -29,7 +29,7 @@ namespace Bake.Tests.Helpers
 {
     public class TestState
     {
-        public static TestState New(params string[] args) => new TestState(
+        public static TestState New(params string[] args) => new(
             args,
             null,
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
