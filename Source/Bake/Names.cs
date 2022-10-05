@@ -134,6 +134,12 @@ namespace Bake
                 public const string DockerFile = "mkdocs-dockerfile";
             }
 
+            public static class NodeJS
+            {
+                public const string NpmCI = "npm-ci";
+                public const string Dockerfile = "nodejs-dockerfile";
+            }
+
             public static class OctopusDeploy
             {
                 public const string PackageRawPush = "octopus-deploy-package-raw-push";

@@ -31,25 +31,57 @@ namespace Bake.Extensions
         public static IRunner CreateRunner(
             this IRunnerFactory runnerFactory,
             string command,
-            string workingDirectory,
+            string? workingDirectory,
+            params string[] arguments)
+        {
+            return runnerFactory.CreateRunner(
+                command,
+                workingDirectory,
+                false,
+                null,
+                arguments);
+        }
+
+        public static IRunner CreateRunner(
+            this IRunnerFactory runnerFactory,
+            string command,
+            string? workingDirectory,
+            IReadOnlyDictionary<string, string>? environmentVariables,
+            params string[] arguments)
+        {
+            return runnerFactory.CreateRunner(
+                command,
+                workingDirectory,
+                false,
+                environmentVariables,
+                arguments);
+        }
+
+        public static IRunner CreateRunner(
+            this IRunnerFactory runnerFactory,
+            string command,
+            string? workingDirectory,
             IEnumerable<string> arguments)
         {
             return runnerFactory.CreateRunner(
                 command,
                 workingDirectory,
+                false,
+                null,
                 arguments.ToArray());
         }
 
         public static IRunner CreateRunner(
             this IRunnerFactory runnerFactory,
             string command,
-            string workingDirectory,
-            IReadOnlyDictionary<string, string> environmentVariables,
+            string? workingDirectory,
+            IReadOnlyDictionary<string, string>? environmentVariables,
             IEnumerable<string> arguments)
         {
             return runnerFactory.CreateRunner(
                 command,
                 workingDirectory,
+                false,
                 environmentVariables,
                 arguments.ToArray());
         }

@@ -169,13 +169,32 @@ namespace Bake.Core
                 Path.GetTempFileName());
         }
 
-        private static bool ShouldBeSkipped(string directoryPath)
+        private bool ShouldBeSkipped(string directoryPath)
         {
+            var originalDirectoryPath = directoryPath;
+
             while (true)
             {
                 if (ShouldSkipCache.TryGetValue(directoryPath, out var shouldBeSkipped))
                 {
+                    if (shouldBeSkipped)
+                    {
+                        _logger.LogDebug(
+                            "Skipping {DirectoryPath} we have previously determined that it should be skipped",
+                            originalDirectoryPath);
+                    }
+
                     return shouldBeSkipped;
+                }
+
+                if (string.Equals("node_modules", Path.GetFileName(directoryPath)))
+                {
+                    _logger.LogInformation(
+                        "Skipping {DirectoryPath} as {NodeModulesDirectoryPath} is a 'node_modules' directory",
+                        originalDirectoryPath,
+                        directoryPath);
+                    ShouldSkipCache[directoryPath] = true;
+                    return true;
                 }
 
                 var hasSkipFile = Directory
@@ -184,6 +203,10 @@ namespace Bake.Core
 
                 if (hasSkipFile)
                 {
+                    _logger.LogInformation(
+                        "Skipping {DirectoryPath} as {CurrentDirectoryPath} contains a '.bake-ignore' file",
+                        originalDirectoryPath,
+                        directoryPath);
                     ShouldSkipCache[directoryPath] = true;
                     return true;
                 }

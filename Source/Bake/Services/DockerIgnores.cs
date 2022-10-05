@@ -35,11 +35,20 @@ namespace Bake.Services
     {
         private static readonly IReadOnlyCollection<string> Ignores = new[]
         {
+            "# Bake",
+            "bake.yaml",
+            ".bake-ignore",
+
+            "# Credentials",
+            "**/.aws",
+
             "# Repository stuff",
             "**/*.md",
+            "**/LICENSE",
 
             "# Git",
             "**/.git*",
+            "**/.gitignore",
 
             "# GitHub",
             "**/.github",
@@ -70,11 +79,15 @@ namespace Bake.Services
             "**/node_modules",
             "**/.bundleignore",
             "**/.bundle",
+            "**/.npmrc",
+            "**/.env",
+            "**/dist",
 
             "# Editors",
             "**/.vscode",
             "**/.idea",
             "**/.vs",
+            "**/.editorconfig",
 
             "# Specific files",
             "**/Makefile",

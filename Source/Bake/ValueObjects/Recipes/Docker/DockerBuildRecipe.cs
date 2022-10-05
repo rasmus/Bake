@@ -32,7 +32,7 @@ namespace Bake.ValueObjects.Recipes.Docker
     public class DockerBuildRecipe : Recipe
     {
         [YamlMember]
-        public string Path { get; [Obsolete] set; }
+        public string WorkingDirectory { get; [Obsolete] set; }
 
         [YamlMember]
         public string Name { get; [Obsolete] set; }
@@ -43,22 +43,27 @@ namespace Bake.ValueObjects.Recipes.Docker
         [YamlMember]
         public bool Compress { get; [Obsolete] set; }
 
+        [YamlMember]
+        public Dictionary<string, string> SecretMounts { get; [Obsolete] set; }
+
         [Obsolete]
         public DockerBuildRecipe() { }
 
         public DockerBuildRecipe(
-            string path,
+            string workingDirectory,
             string name,
             IEnumerable<string> tags,
             bool compress,
+            Dictionary<string, string> secretMounts,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Path = path;
+            WorkingDirectory = workingDirectory;
             Name = name;
             Tags = tags.ToArray();
             Compress = compress;
+            SecretMounts = secretMounts;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

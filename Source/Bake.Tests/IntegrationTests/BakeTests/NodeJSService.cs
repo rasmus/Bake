@@ -20,27 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Tests.Helpers;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bake.Services.Tools.DockerArguments
+// ReSharper disable StringLiteralTypo
+
+namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class DockerBuildArgument : Argument
+    public class NodeJSService : BakeTest
     {
-        public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
-
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        public NodeJSService() : base("NodeJS.Service")
         {
-            WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
+        }
+
+        [Test]
+        public async Task Run()
+        {
+            // Arrange
+            var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/nodejs-service:{version}";
+
+            // Act
+            var returnCode = await ExecuteAsync(TestState.New(
+                "run",
+                "--log-level=Verbose",
+                "--convention=Release",
+                "--build-version", version));
+
+            // Assert
+            returnCode.Should().Be(0);
+            await AssertContainerPingsAsync(
+                DockerArguments
+                    .With(expectedImage)
+                    .WithPort(8080)
+                    .WithEnvironmentVariable("PORT", "8080"));
         }
     }
 }

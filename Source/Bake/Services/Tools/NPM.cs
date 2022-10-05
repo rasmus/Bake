@@ -21,26 +21,45 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
-using Bake.Core;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools.NPMArguments;
 
-namespace Bake.Services.Tools.DockerArguments
+namespace Bake.Services.Tools
 {
-    public class DockerBuildArgument : Argument
+    public class NPM : INPM
     {
-        public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
+        private static readonly string Executable = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "npm.cmd" : "npm";
 
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        private readonly IRunnerFactory _runnerFactory;
+
+        public NPM(
+            IRunnerFactory runnerFactory)
         {
-            WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
+            _runnerFactory = runnerFactory;
+        }
+
+        public async Task<IToolResult> CIAsync(
+            NPMCIArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new List<string>
+            {
+                "ci",
+                "--only=production"
+            };
+
+            var runner = _runnerFactory.CreateRunner(
+                Executable,
+                argument.WorkingDirectory,
+                true,
+                null,
+                arguments.ToArray());
+
+            var runnerResult = await runner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
         }
     }
 }

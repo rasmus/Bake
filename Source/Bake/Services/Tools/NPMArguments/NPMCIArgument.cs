@@ -20,27 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Bake.Core;
-
-namespace Bake.Services.Tools.DockerArguments
+namespace Bake.Services.Tools.NPMArguments
 {
-    public class DockerBuildArgument : Argument
+    public class NPMCIArgument
     {
         public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
 
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        public NPMCIArgument(
+            string workingDirectory)
         {
             WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
         }
     }
 }

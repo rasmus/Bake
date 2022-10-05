@@ -20,27 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Bake.Core;
+using System.Threading;
+using System.Threading.Tasks;
+using Bake.Services.Tools;
+using Bake.Services.Tools.NPMArguments;
+using Bake.ValueObjects.Recipes.NodeJS;
 
-namespace Bake.Services.Tools.DockerArguments
+namespace Bake.Cooking.Cooks.NodeJS
 {
-    public class DockerBuildArgument : Argument
+    public class NpmCICook : Cook<NpmCIRecipe>
     {
-        public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
+        private readonly INPM _npm;
 
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        public NpmCICook(
+            INPM npm)
         {
-            WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
+            _npm = npm;
+        }
+
+        protected override async Task<bool> CookAsync(
+            IContext context,
+            NpmCIRecipe recipe,
+            CancellationToken cancellationToken)
+        {
+            var argument = new NPMCIArgument(
+                recipe.WorkingDirectory);
+
+            var toolResult = await _npm.CIAsync(
+                argument,
+                cancellationToken);
+
+            return toolResult.WasSuccessful;
         }
     }
 }

@@ -20,27 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Bake.Core;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services.Tools.DockerArguments
+namespace Bake.ValueObjects.Recipes.NodeJS
 {
-    public class DockerBuildArgument : Argument
+    [Recipe(Names.Recipes.NodeJS.NpmCI)]
+    public class NpmCIRecipe : Recipe
     {
-        public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
 
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        [Obsolete]
+        public NpmCIRecipe() { }
+
+        public NpmCIRecipe(
+            string workingDirectory)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

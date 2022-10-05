@@ -35,6 +35,8 @@ using Bake.ValueObjects.Recipes.Docker;
 using Microsoft.Extensions.Logging;
 using File = System.IO.File;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Cooking.Composers
 {
     public class DockerComposer : Composer
@@ -154,7 +156,7 @@ namespace Bake.Cooking.Composers
         }
         
         private IEnumerable<Recipe> CreateRecipes(
-            string path,
+            string dockerfilePath,
             string name,
             SemVer version,
             IEnumerable<string> urls)
@@ -163,16 +165,28 @@ namespace Bake.Cooking.Composers
             var tags = urls
                 .Select(u => $"{u}{slug}:{version}")
                 .ToList();
+            var secretMounts = new Dictionary<string, string>();
+            var workingDirectory = Path.GetDirectoryName(dockerfilePath);
 
             tags.Add($"bake.local/{slug}:{version}");
 
             _containerTagParser.Validate(tags);
 
+            var npmRcPath = Path.Combine(workingDirectory, ".npmrc");
+            if (File.Exists(npmRcPath))
+            {
+                _logger.LogInformation(
+                    "Found a .npmrc file at {FilePath}, parsing that as secret named 'npmrc' (note no '.' in front) to be used during build",
+                    npmRcPath);
+                secretMounts.Add("npmrc", ".npmrc");
+            }
+
             yield return new DockerBuildRecipe(
-                path,
+                workingDirectory,
                 slug,
                 tags,
                 _defaults.DockerBuildCompress,
+                secretMounts,
                 new ContainerArtifact(
                     slug,
                     tags.ToArray()));

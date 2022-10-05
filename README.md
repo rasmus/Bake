@@ -103,6 +103,9 @@ to scan the repository for files and structures it knows how to process.
 * **[Python Flask](https://flask.palletsprojects.com/)** -
   Directories containing a Python Flask `app.py` file, will be bundled
   into a container
+* **[NodeJS](https://nodejs.org/en/)** -
+  Directories containing a `package.json` file will get bundled into a
+  container with the script in the `main` property used as entrypoint
 
 Based on the selected convention (by providing e.g. `--convention=Release`)
 and the destinations for artifacts, Bake pushes/uploads/creates the built

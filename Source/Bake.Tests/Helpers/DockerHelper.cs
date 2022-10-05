@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -69,6 +70,22 @@ namespace Bake.Tests.Helpers
                 null,
                 cancellationToken);
 
+            var autoResetEvent = new AutoResetEvent(false);
+            Task.Run(async () =>
+            {
+                await Client.Containers.GetContainerLogsAsync(
+                    createContainerResponse.ID,
+                    new ContainerLogsParameters
+                    {
+                        Follow = true,
+                        ShowStderr = true,
+                        ShowStdout = true,
+                        Since = "0",
+                    },
+                    cancellationToken,
+                    new ConsoleOutProgress(arguments.Image.Split('/').Last()));
+            });
+
             return new DisposableAction(() =>
             {
                 Client.Containers.StopContainerAsync(
@@ -103,6 +120,26 @@ namespace Bake.Tests.Helpers
                 .SelectMany(i => i.RepoTags)
                 .OrderBy(t => t)
                 .ToArray();
+        }
+
+        private class ConsoleOutProgress : IProgress<string>
+        {
+            private static readonly Regex UnicodeFinder = new(
+                @"[^\t\r\n -~]",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            private readonly string _prefix;
+
+            public ConsoleOutProgress(
+                string prefix)
+            {
+                _prefix = prefix;
+            }
+
+            public void Report(string value)
+            {
+                value = UnicodeFinder.Replace(value, string.Empty);
+                Console.WriteLine($"{_prefix}: {value}");
+            }
         }
     }
 }
