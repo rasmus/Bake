@@ -45,7 +45,7 @@ namespace Bake.Services.Tools
             MkDocsBuildArgument argument,
             CancellationToken cancellationToken)
         {
-            if (Directory.Exists(argument.OutputDirectory))
+            if (!Directory.Exists(argument.OutputDirectory))
             {
                 Directory.CreateDirectory(argument.OutputDirectory);
             }
