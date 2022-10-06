@@ -25,12 +25,18 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services.Tools.DockerArguments;
 
 namespace Bake.Services.Tools
 {
     public class Docker : IDocker
     {
+        private static IReadOnlyDictionary<string, string> EnvironmentVariables = new Dictionary<string, string>
+        {
+            ["DOCKER_BUILDKIT"] = "1",
+        };
+
         private readonly IRunnerFactory _runnerFactory;
 
         public Docker(
@@ -57,11 +63,15 @@ namespace Bake.Services.Tools
                 arguments.Add("--compress");
             }
 
-            var workingDirectory = Path.GetDirectoryName(argument.Path);
+            foreach (var secretMount in argument.SecretMounts)
+            {
+                arguments.AddRange(new[]{ "--secret", $"id={secretMount.Key},src={secretMount.Value}"});   
+            }
 
             var runner = _runnerFactory.CreateRunner(
                 "docker",
-                workingDirectory,
+                argument.WorkingDirectory,
+                EnvironmentVariables,
                 arguments.ToArray());
 
             var result = await runner.ExecuteAsync(cancellationToken);
@@ -82,6 +92,7 @@ namespace Bake.Services.Tools
             var runner = _runnerFactory.CreateRunner(
                 "docker",
                 Directory.GetCurrentDirectory(),
+                EnvironmentVariables,
                 arguments);
 
             var result = await runner.ExecuteAsync(cancellationToken);

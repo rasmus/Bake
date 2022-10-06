@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,10 +38,9 @@ namespace Bake.Services
         private readonly string _workingDirectory;
         private readonly IReadOnlyCollection<string> _arguments;
         private readonly Process _process;
-        private readonly Subject<string> _stdOut = new Subject<string>();
-        private readonly Subject<string> _stdErr = new Subject<string>();
+        private readonly Subject<string> _stdOut = new();
+        private readonly Subject<string> _stdErr = new();
         private readonly IFile _log;
-        private Stream _stream;
 
         public IObservable<string> StdOut => _stdOut;
         public IObservable<string> StdErr => _stdErr;
@@ -77,10 +75,11 @@ namespace Bake.Services
 
         private async Task<IRunnerResult> InternalExecuteAsync(CancellationToken cancellationToken)
         {
-            _stream = await _log.OpenWriteAsync(cancellationToken);
+            await using var stream = await _log.OpenWriteAsync(cancellationToken);
 
+            Console.WriteLine($"{_command} {string.Join(" ", _arguments)}");
             _logger.LogTrace(
-                "Executing '{Program} {Arguments}' in {Directory}",
+                "Executing {Program} {Arguments} in {Directory}",
                 _command,
                 string.Join(" ", _arguments),
                 _workingDirectory);
@@ -88,11 +87,8 @@ namespace Bake.Services
             _process.Start();
             _process.BeginErrorReadLine();
             _process.BeginOutputReadLine();
-            _process.WaitForExit();
 
-            await _stream.FlushAsync(cancellationToken);
-            await _stream.DisposeAsync();
-            _stream = null;
+            await _process.WaitForExitAsync(cancellationToken);
 
             return new RunnerResult(
                 _process.ExitCode,
@@ -148,13 +144,11 @@ namespace Bake.Services
             IEnumerable<string> arguments,
             IReadOnlyDictionary<string, string> environmentVariables)
         {
-            var argumentsString = string.Join(" ", arguments);
             var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                         {
                             FileName = command,
-                            Arguments = argumentsString,
                             CreateNoWindow = true,
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
@@ -163,6 +157,11 @@ namespace Bake.Services
                             WorkingDirectory = workingDirectory,
                         },
                 };
+
+            foreach (var argument in arguments)
+            {
+                process.StartInfo.ArgumentList.Add(argument);
+            }
 
             foreach (var (key, value) in environmentVariables)
             {

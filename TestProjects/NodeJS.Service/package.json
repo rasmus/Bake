@@ -1,0 +1,13 @@
+{
+  "name": "nodejs-service",
+  "version": "1.0.0",
+  "description": "Crude NodeJS service",
+  "author": "Rasmus Mikkelsen <r@smus.nu>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "fastify": "^3.29.0"
+  }
+}

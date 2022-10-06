@@ -22,6 +22,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Extensions;
 using Bake.Services.Tools.PipArguments;
 
 namespace Bake.Services.Tools

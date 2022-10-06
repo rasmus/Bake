@@ -20,27 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
-using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services.Tools.DockerArguments
+namespace Bake.ValueObjects.Recipes.NodeJS
 {
-    public class DockerBuildArgument : Argument
+    [Recipe(Names.Recipes.NodeJS.Dockerfile)]
+    public class NodeJSDockerfileRecipe : Recipe
     {
-        public string WorkingDirectory { get; }
-        public IReadOnlyCollection<string> Tags { get; }
-        public bool Compress { get; }
-        public IReadOnlyDictionary<string, string> SecretMounts { get; }
+        [YamlMember]
+        public string WorkingDirectory { get; [Obsolete] set; }
 
-        public DockerBuildArgument(string workingDirectory,
-            IReadOnlyCollection<string> tags,
-            bool compress,
-            IReadOnlyDictionary<string, string> secretMounts)
+        [YamlMember]
+        public string Main { get; [Obsolete] set; }
+
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; }
+
+        [Obsolete]
+        public NodeJSDockerfileRecipe() { }
+
+        public NodeJSDockerfileRecipe(
+            string workingDirectory,
+            string main,
+            Dictionary<string, string> labels,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             WorkingDirectory = workingDirectory;
-            Tags = tags;
-            Compress = compress;
-            SecretMounts = secretMounts;
+            Main = main;
+            Labels = labels;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }
