@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/TestProjects/Python3.Flask"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/TestProjects/Dockerfile.Simple"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/TestProjects/Dockerfile.Simple"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/TestProjects/GoLang.Service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/TestProjects/NetCore.Package"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/TestProjects/NetCore.Service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/TestProjects/NodeJS.Service"
+    schedule:
+      interval: "weekly"
