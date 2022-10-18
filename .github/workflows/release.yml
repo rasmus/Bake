@@ -47,7 +47,7 @@ jobs:
       run: bake-it/bake run --convention=Release --build-version 0.17.$GITHUB_RUN_NUMBER --destination="nuget>github,nuget,release>github"
 
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: success() || failure()
       with:
         name: test-results
