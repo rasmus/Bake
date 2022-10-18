@@ -16,10 +16,6 @@ updates:
     directory: "/TestProjects/Dockerfile.Simple"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "docker"
-    directory: "/TestProjects/Dockerfile.Simple"
-    schedule:
-      interval: "weekly"
   - package-ecosystem: "gomod"
     directory: "/TestProjects/GoLang.Service"
     schedule:
