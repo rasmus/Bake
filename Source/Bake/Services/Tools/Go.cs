@@ -24,6 +24,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
 using Bake.Services.Tools.GoArguments;
 using Bake.ValueObjects;
@@ -51,13 +52,16 @@ namespace Bake.Services.Tools
 
         private readonly ILogger<Go> _logger;
         private readonly IRunnerFactory _runnerFactory;
+        private readonly IDefaults _defaults;
 
         public Go(
             ILogger<Go> logger,
-            IRunnerFactory runnerFactory)
+            IRunnerFactory runnerFactory,
+            IDefaults defaults)
         {
             _logger = logger;
             _runnerFactory = runnerFactory;
+            _defaults = defaults;
         }
 
         public async Task<IToolResult> BuildAsync(
@@ -71,7 +75,7 @@ namespace Bake.Services.Tools
             var arguments = new[]
                 {
                     "build",
-                    "-ldflags", "-s -w",
+                    "-ldflags", _defaults.GoLdFlags,
                     "-o", argument.Output
                 };
 
