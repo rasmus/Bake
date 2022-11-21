@@ -265,7 +265,7 @@ namespace Bake.Cooking.Composers
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
-                    false,
+                    true,
                     true,
                     configuration,
                     targetPlatform,
