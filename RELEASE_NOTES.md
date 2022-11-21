@@ -1,3 +1,8 @@
+# 0.18-beta
+
+*  New: Expose go ldflags via environment variable
+*  Fix: Fixed .NET warning `NETSDK1179`
+
 # 0.17-beta
 
 * New: Set some sensible values to `DOTNET_NOLOGO`,
