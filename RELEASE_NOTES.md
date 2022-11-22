@@ -1,3 +1,7 @@
+# 0.19-beta
+
+* *Nothing yet...*
+
 # 0.18-beta
 
 *  New: Expose go ldflags via environment variable
