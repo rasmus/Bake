@@ -32,6 +32,7 @@ using Bake.ValueObjects;
 using Bake.ValueObjects.Destinations;
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using File = Bake.Core.File;
 
 namespace Bake.Commands.Run
 {
@@ -68,6 +69,7 @@ namespace Bake.Commands.Run
             Destination[] destination = null,
             LogEventLevel logLevel = LogEventLevel.Information,
             bool printPlan = true,
+            string releaseNotesOutputPath = null,
             Platform[] targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
@@ -105,6 +107,19 @@ namespace Bake.Commands.Run
                 content,
                 book,
                 cancellationToken);
+
+            if (success &&
+                !string.IsNullOrEmpty(releaseNotesOutputPath) &&
+                !string.IsNullOrEmpty(content.Ingredients.ReleaseNotes?.Notes))
+            {
+                _logger.LogInformation("Writing release notes to {FilePath}", releaseNotesOutputPath);
+                var directoryPath = Path.GetDirectoryName(releaseNotesOutputPath);
+                Directory.CreateDirectory(directoryPath);
+                await System.IO.File.WriteAllTextAsync(
+                    releaseNotesOutputPath,
+                    content.Ingredients.ReleaseNotes.Notes,
+                    cancellationToken);
+            }
 
             return success
                 ? 0

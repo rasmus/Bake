@@ -30,9 +30,9 @@ using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
-    public class HelmChartTests : BakeTest
+    public class EmptyDirectory : BakeTest
     {
-        public HelmChartTests() : base("helm-chart")
+        public EmptyDirectory() : base("EmptyDirectory")
         {
         }
 
@@ -45,51 +45,11 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
-                "--convention=Release",
+                "--log-level=Verbose",
                 "--build-version", version));
 
             // Assert
-            returnCode.Should().Be(0);
-        }
-
-        [TestCase("octopus_deploy_apikey")]
-        [TestCase("bake_credentials_octopusdeploy_apikey")]
-        [TestCase("bake_credentials_octopusdeploy_localhost_apikey")]
-        public async Task PushToOctopusDeploy(
-            string environmentNamesForApiKey)
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-            using var octopusDeploy = OctopusDeployMock.Start();
-
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                "run",
-                "--convention=Release",
-                $"--destination=helm-chart>octopus@{octopusDeploy.Url}",
-                "--build-version", version)
-                .WithEnvironmentVariable(environmentNamesForApiKey, octopusDeploy.ApiKey));
-
-            // Assert
-            returnCode.Should().Be(0);
-            octopusDeploy.ReceivedPackages.Should().HaveCount(1);
-        }
-
-        [Test]
-        public async Task PushToChartMuseum()
-        {
-            // Arrange
-            var version = SemVer.Random.ToString();
-
-            // Act
-            var returnCode = await ExecuteAsync(TestState.New(
-                    "run",
-                    "--convention=Release",
-                    "--destination=helm-chart>chart-museum@http://localhost:5556",
-                    "--build-version", version));
-
-            // Assert
-            returnCode.Should().Be(0);
+            returnCode.Should().Be(3);
         }
     }
 }
