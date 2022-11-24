@@ -47,6 +47,18 @@ namespace Bake.Tests.UnitTests.Core
             231,
             132,
             "magic")]
+        [TestCase(
+            "v1.2.3",
+            1,
+            2,
+            3,
+            null)]
+        [TestCase(
+            "version 1.2.3",
+            1,
+            2,
+            3,
+            null)]
         public void ValidVersions(
             string str,
             int expectedMajor,
