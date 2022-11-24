@@ -1,6 +1,6 @@
 # 0.19-beta
 
-* *Nothing yet...*
+* New: Clean `v|version` prefix for semantic versions
 
 # 0.18-beta
 
