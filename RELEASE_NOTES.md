@@ -1,6 +1,9 @@
 # 0.19-beta
 
 * New: Clean `v|version` prefix for semantic versions
+* New: Now possible to control the container name for .NET service using
+  a `bake.yaml` file
+* Fixed: Container paths that contain `/` are now valid
 
 # 0.18-beta
 
