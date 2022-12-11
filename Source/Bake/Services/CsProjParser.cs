@@ -21,20 +21,20 @@
 // SOFTWARE.
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Bake.ValueObjects.DotNet;
+using File = System.IO.File;
 
 namespace Bake.Services
 {
     public class CsProjParser : ICsProjParser
     {
         private readonly IDotNetTfmParser _dotNetTfmParser;
-
+        
         public CsProjParser(
             IDotNetTfmParser dotNetTfmParser)
         {

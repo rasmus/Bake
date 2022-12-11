@@ -35,6 +35,7 @@ namespace Bake.Core
 
         bool DockerBuildCompress { get; }
         string GoLdFlags { get; }
+        string DotNetRollForward { get; }
 
         Task InitializeAsync(
             CancellationToken cancellationToken);

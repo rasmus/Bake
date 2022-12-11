@@ -67,6 +67,12 @@ namespace Bake.Tests.UnitTests.Services
             "",
             "image",
             "v1.2.3")]
+        [TestCase(
+            "containers.example.org/my-org/my-path/somecontainer:v1.2.3",
+            "containers.example.org",
+            "my-org/my-path",
+            "somecontainer",
+            "v1.2.3")]
         public void SuccessTryParse(
             string image,
             string expectedHostAndPort,
