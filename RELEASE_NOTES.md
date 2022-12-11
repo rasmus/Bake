@@ -3,6 +3,7 @@
 * New: Clean `v|version` prefix for semantic versions
 * New: Now possible to control the container name for .NET service using
   a `bake.yaml` file
+* New: `DOTNET_ROLL_FORWARD` now defaults to `LatestMajor`
 * Fixed: Container paths that contain `/` are now valid
 
 # 0.18-beta
