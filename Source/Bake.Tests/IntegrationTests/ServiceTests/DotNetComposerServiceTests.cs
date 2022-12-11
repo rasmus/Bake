@@ -67,7 +67,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddSingleton(TestEnvironmentVariables.None)
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
-                .AddTransient<IDockerLabels, DockerLabels>();
+                .AddTransient<IDockerLabels, DockerLabels>()
+                .AddTransient<IBakeProjectParser, BakeProjectParser>();
         }
     }
 }

@@ -275,7 +275,7 @@ namespace Bake.Cooking.Composers
                     moniker,
                     labels,
                     new DockerFileArtifact(
-                        visualStudioProject.Name,
+                        visualStudioProject.PreferredName,
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
 
