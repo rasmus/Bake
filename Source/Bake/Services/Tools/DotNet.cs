@@ -262,7 +262,11 @@ namespace Bake.Services.Tools
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
             {
-                arguments.AddRange(new []{"--runtime", argument.Platform.GetDotNetRuntimeIdentifier()});
+                arguments.AddRange(new []
+                {
+                    "--runtime", argument.Platform.GetDotNetRuntimeIdentifier(),
+                    "-p:PublishReadyToRun=true"
+                });
             }
 
             AddIf(!argument.Build, arguments, "--no-build");
