@@ -68,7 +68,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .AddTransient<IConventionInterpreter, ConventionInterpreter>()
                 .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
                 .AddTransient<IDockerLabels, DockerLabels>()
-                .AddTransient<IBakeProjectParser, BakeProjectParser>();
+                .AddTransient<IBakeProjectParser, BakeProjectParser>()
+                .AddTransient<IYaml, Yaml>();
         }
     }
 }
