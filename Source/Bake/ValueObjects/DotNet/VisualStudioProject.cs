@@ -27,7 +27,8 @@ namespace Bake.ValueObjects.DotNet
         public string Path { get; }
         public CsProj CsProj { get; }
         public string Directory { get; }
-        public string Name { get; set; }
+        public string Name { get; }
+        public string PreferredName { get; }
         public string AssemblyName => string.IsNullOrEmpty(CsProj.AssemblyName) ? Name : CsProj.AssemblyName;
 
         public bool ShouldBePacked => CsProj.IsPackable || CsProj.PackAsTool;
@@ -35,12 +36,15 @@ namespace Bake.ValueObjects.DotNet
 
         public VisualStudioProject(
             string path,
+            string name,
+            string preferredName,
             CsProj csProj)
         {
             Path = path;
             CsProj = csProj;
+            Name = name;
+            PreferredName = preferredName;
             Directory = System.IO.Path.GetDirectoryName(path);
-            Name = System.IO.Path.GetFileNameWithoutExtension(path);
         }
     }
 }

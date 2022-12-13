@@ -29,7 +29,7 @@ namespace Bake.Core
     public class SemVer : IComparable<SemVer>, IEquatable<SemVer>, IComparable
     {
         private static readonly Regex VersionParser = new(
-            @"^(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d+)){0,1}(\-(?<meta>[a-z0-9\-_]+)){0,1}$",
+            @"^(v|version){0,1}\s*(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d+)){0,1}(\-(?<meta>[a-z0-9\-_]+)){0,1}$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private static readonly Random R = new();

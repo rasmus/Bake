@@ -40,6 +40,7 @@ namespace Bake.Core
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
         public bool DockerBuildCompress { get; private set; } = true;
         public string GoLdFlags { get; private set; } = "-s -w";
+        public string DotNetRollForward { get; private set; } = "LatestMajor";
 
         public Defaults(
             IEnvironmentVariables environmentVariables)
@@ -59,6 +60,7 @@ namespace Bake.Core
             DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
             DockerBuildCompress = GetBool(e, "docker_build_compress", true);
             GoLdFlags = GetString(e, "go_ldflags", GoLdFlags);
+            DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
         }
 
         private static bool GetBool(
