@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
@@ -20,22 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System.Collections.Generic;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class PullRequestInformation
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public IReadOnlyCollection<string> Labels { get; }
 
-        Task<PullRequestInformation> GetPullRequestInformationAsync(
-            string commit,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public PullRequestInformation(
+            IReadOnlyCollection<string> labels)
+        {
+            Labels = labels;
+        }
     }
 }

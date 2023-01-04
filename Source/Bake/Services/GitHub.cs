@@ -53,14 +53,7 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
-            var token = await _credentials.TryGetGitHubTokenAsync(
-                gitHubInformation.Url,
-                cancellationToken);
-
-            var gitHubClient = await _gitHubClientFactory.CreateAsync(
-                token,
-                gitHubInformation.ApiUrl,
-                cancellationToken);
+            var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
 
             var tag = $"v{release.Version}";
 
@@ -90,6 +83,48 @@ namespace Bake.Services
                 gitHubInformation.Repository,
                 gitHubRelease.Id,
                 gitHubReleaseUpdate);
+        }
+
+        public async Task<PullRequestInformation> GetPullRequestInformationAsync(
+            string commit,
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+
+            var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(commit));
+            if (issues.Items.Count != 1)
+            {
+                _logger.LogInformation(
+                    "Found {IssueCount} for commit {Commit}, giving up on finding the correct one",
+                    issues.Items.Count,
+                    commit);
+                return null;
+            }
+
+            var issue = issues.Items.Single();
+            var pullRequest = await gitHubClient.PullRequest.Get(
+                gitHubInformation.Owner,
+                gitHubInformation.Repository,
+                issue.Number);
+
+            return new PullRequestInformation(
+                pullRequest.Labels.Select(l => l.Name).ToArray());
+        }
+
+        private async Task<IGitHubClient> CreateGitHubClientAsync(
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var token = await _credentials.TryGetGitHubTokenAsync(
+                gitHubInformation.Url,
+                cancellationToken);
+
+            var gitHubClient = await _gitHubClientFactory.CreateAsync(
+                token,
+                gitHubInformation.ApiUrl,
+                cancellationToken);
+            return gitHubClient;
         }
 
         private async Task UploadFileAsync(

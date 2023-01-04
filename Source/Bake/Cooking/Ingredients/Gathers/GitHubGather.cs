@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -40,15 +41,18 @@ namespace Bake.Cooking.Ingredients.Gathers
 
         private readonly ILogger<GitHubGather> _logger;
         private readonly IDefaults _defaults;
+        private readonly IGitHub _gitHub;
 
         public GitHubGather(
             ILogger<GitHubGather> logger,
-            IDefaults defaults)
+            IDefaults defaults,
+            IGitHub gitHub)
         {
             _logger = logger;
             _defaults = defaults;
+            _gitHub = gitHub;
         }
-
+        
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)

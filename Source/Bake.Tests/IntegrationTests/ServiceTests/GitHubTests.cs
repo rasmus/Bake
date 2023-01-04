@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
@@ -20,22 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using Bake.Core;
+using Bake.Services;
+using Bake.Tests.Helpers;
+using Moq;
+using NUnit.Framework;
 
-namespace Bake.Services
+namespace Bake.Tests.IntegrationTests.ServiceTests
 {
-    public interface IGitHub
+    [Explicit]
+    public class GitHubTests : TestFor<GitHub>
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequestInformation> GetPullRequestInformationAsync(
-            string commit,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [SetUp]
+        public void SetUp()
+        {
+            var credentials = new Mock<ICredentials>();
+            credentials
+                .Setup(m => m.TryGetGitHubTokenAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("");
+        }
     }
 }
