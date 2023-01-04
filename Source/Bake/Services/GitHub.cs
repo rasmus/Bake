@@ -92,24 +92,28 @@ namespace Bake.Services
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
 
-            var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(commit));
+            var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(commit)
+                {
+                    Type = IssueTypeQualifier.PullRequest,
+                    Repos = new RepositoryCollection
+                    {
+                        {gitHubInformation.Owner, gitHubInformation.Repository},
+                    }
+                });
             if (issues.Items.Count != 1)
             {
                 _logger.LogInformation(
-                    "Found {IssueCount} for commit {Commit}, giving up on finding the correct one",
+                    "Found {PullRequestCount} pull requests for commit {GitHubOrg}/{GitHubRepo}/{Commit}, giving up on finding the correct one",
                     issues.Items.Count,
+                    gitHubInformation.Owner,
+                    gitHubInformation.Repository,
                     commit);
                 return null;
             }
 
             var issue = issues.Items.Single();
-            var pullRequest = await gitHubClient.PullRequest.Get(
-                gitHubInformation.Owner,
-                gitHubInformation.Repository,
-                issue.Number);
-
             return new PullRequestInformation(
-                pullRequest.Labels.Select(l => l.Name).ToArray());
+                issue.Labels.Select(l => l.Name).ToArray());
         }
 
         private async Task<IGitHubClient> CreateGitHubClientAsync(
