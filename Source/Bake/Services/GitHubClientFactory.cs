@@ -41,6 +41,7 @@ namespace Bake.Services
             var gitHubClient = Create(
                 apiUrl,
                 new InMemoryCredentialStore(new Credentials(token)));
+
             return Task.FromResult(gitHubClient);
         }
 
