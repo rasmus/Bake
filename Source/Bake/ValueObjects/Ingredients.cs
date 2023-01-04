@@ -180,7 +180,7 @@ namespace Bake.ValueObjects
         public void FailGitHub() => _gitHub.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
-        public void FailPullRequestInformation() => _releaseNotes.SetCanceled();
+        public void FailPullRequestInformation() => _pullRequestInformation.SetCanceled();
 
         public void FailOutstanding()
         {
