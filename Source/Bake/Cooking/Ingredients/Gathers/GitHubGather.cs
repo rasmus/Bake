@@ -135,7 +135,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             try
             {
                 pullRequestInformation = await _gitHub.GetPullRequestInformationAsync(
-                    gitInformation.Sha,
+                    gitInformation,
                     gitHubInformation,
                     cancellationToken);
             }

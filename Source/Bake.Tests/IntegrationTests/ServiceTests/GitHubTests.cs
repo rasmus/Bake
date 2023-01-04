@@ -61,7 +61,10 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         {
             // Act
             var pullRequestInformation = await Sut.GetPullRequestInformationAsync(
-                "28fe9fb7238476731998d1fc2456cef2c417f2e7",
+                new GitInformation(
+                    "5cb8fb6fae922909bd8a44f7d029dcda377facc7",
+                    new Uri("https://github.com/rasmus/Bake"),
+                    "Merge 679f3e6 into 6ddb502"),
                 new GitHubInformation(
                     "rasmus",
                     "Bake",

@@ -33,16 +33,21 @@ namespace Bake.ValueObjects
         [YamlMember(typeof(string))]
         public Uri OriginUrl { get; [Obsolete] set; }
 
+        [YamlMember(typeof(string))]
+        public string Message { get; [Obsolete] set; }
+
         [Obsolete]
         public GitInformation() { }
 
         public GitInformation(
             string sha,
-            Uri originUrl)
+            Uri originUrl,
+            string message)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Sha = sha;
             OriginUrl = originUrl;
+            Message = message;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

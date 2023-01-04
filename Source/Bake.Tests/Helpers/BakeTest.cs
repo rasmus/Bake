@@ -127,7 +127,7 @@ namespace Bake.Tests.Helpers
             }
 
             public Task<PullRequestInformation> GetPullRequestInformationAsync(
-                string commit,
+                GitInformation gitInformation,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {

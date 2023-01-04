@@ -22,6 +22,7 @@
 
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
@@ -37,6 +38,9 @@ namespace Bake.Services
         private readonly ILogger<GitHub> _logger;
         private readonly ICredentials _credentials;
         private readonly IGitHubClientFactory _gitHubClientFactory;
+        public static readonly Regex SpecialMergeCommitMessageParser = new(
+            @"Merge\s+(?<pr>[a-f0-9]+)\s+into\s+(?<base>[a-f0-9]+)",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public GitHub(
             ILogger<GitHub> logger,
@@ -86,13 +90,15 @@ namespace Bake.Services
         }
 
         public async Task<PullRequestInformation> GetPullRequestInformationAsync(
-            string commit,
+            GitInformation gitInformation,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
 
-            var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(commit)
+            async Task<PullRequestInformation> SearchAsync(string c)
+            {
+                var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(c)
                 {
                     Type = IssueTypeQualifier.PullRequest,
                     Repos = new RepositoryCollection
@@ -100,20 +106,38 @@ namespace Bake.Services
                         {gitHubInformation.Owner, gitHubInformation.Repository},
                     }
                 });
-            if (issues.Items.Count != 1)
+                if (issues.Items.Count != 1)
+                {
+                    return null;
+                }
+
+                var issue = issues.Items.Single();
+                return new PullRequestInformation(
+                    issue.Labels.Select(l => l.Name).ToArray());
+            }
+
+            var pullRequestInformation = await SearchAsync(gitInformation.Sha);
+            if (pullRequestInformation != null)
             {
-                _logger.LogInformation(
-                    "Found {PullRequestCount} pull requests for commit {GitHubOrg}/{GitHubRepo}/{Commit}, giving up on finding the correct one",
-                    issues.Items.Count,
-                    gitHubInformation.Owner,
-                    gitHubInformation.Repository,
-                    commit);
+                return pullRequestInformation;
+            }
+
+            if (string.IsNullOrEmpty(gitInformation.Message))
+            {
                 return null;
             }
 
-            var issue = issues.Items.Single();
-            return new PullRequestInformation(
-                issue.Labels.Select(l => l.Name).ToArray());
+            var match = SpecialMergeCommitMessageParser.Match(gitInformation.Message);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            _logger.LogDebug(
+                "This commit {PreMergeCommitSha} looks like a special GitHub pre-merge commit for the actual commit {CommitSha}",
+                match.Groups["pr"].Value, match.Groups["base"].Value);
+
+            return await SearchAsync(match.Groups["pr"].Value);
         }
 
         private async Task<IGitHubClient> CreateGitHubClientAsync(

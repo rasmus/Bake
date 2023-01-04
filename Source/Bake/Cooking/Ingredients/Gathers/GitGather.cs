@@ -97,10 +97,12 @@ namespace Bake.Cooking.Ingredients.Gathers
 
             var originUrl = GetRemote(repository);
             var sha = repository.Head?.Tip?.Sha;
+            var message = repository.Head?.Tip?.Message;
 
             return new GitInformation(
                 sha,
-                originUrl);
+                originUrl,
+                message);
         }
 
         private Uri GetRemote(Repository repository)
