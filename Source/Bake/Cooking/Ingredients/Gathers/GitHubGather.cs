@@ -66,6 +66,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 _logger.LogInformation("No git information, thus failed to get any GitHub information");
                 ingredients.FailGitHub();
+                ingredients.FailPullRequestInformation();
                 return;
             }
 
@@ -100,6 +101,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine public nor enterprise GitHub URL from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequestInformation();
                 return;
             }
 
@@ -110,6 +112,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine GitHub owner and repository from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequestInformation();
                 return;
             }
 
@@ -121,11 +124,38 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
 
             var url = new Uri($"{gitHubUrl.Scheme}://{gitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
-            ingredients.GitHub = new GitHubInformation(
+            var gitHubInformation = new GitHubInformation(
                 match.Groups["owner"].Value,
                 repo,
                 url,
                 apiUrl);
+            ingredients.GitHub = gitHubInformation;
+
+            PullRequestInformation pullRequestInformation;
+            try
+            {
+                pullRequestInformation = await _gitHub.GetPullRequestInformationAsync(
+                    gitInformation.Sha,
+                    gitHubInformation,
+                    cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailPullRequestInformation();
+                _logger.LogError(e, "Failed fetching pull request information");
+                return;
+            }
+
+            if (pullRequestInformation == null)
+            {
+                ingredients.FailPullRequestInformation();
+                return;
+            }
+
+            _logger.LogInformation(
+                "Fetched pull request information {{ labels:{Labels} }}",
+                pullRequestInformation.Labels);
+            ingredients.PullRequestInformation = pullRequestInformation;
         }
     }
 }

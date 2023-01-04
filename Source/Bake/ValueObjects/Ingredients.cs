@@ -88,6 +88,20 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
+        public PullRequestInformation PullRequestInformation
+        {
+            get => _pullRequestInformation.Task.IsCompletedSuccessfully ? _pullRequestInformation.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _pullRequestInformation.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public Description Description
         {
             get => _description.Task.IsCompletedSuccessfully ? _description.Task.Result : null;
@@ -136,10 +150,14 @@ namespace Bake.ValueObjects
         [YamlIgnore]
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
+        [YamlIgnore]
+        public Task<PullRequestInformation> PullRequestInformationTask => _pullRequestInformation.Task;
+
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
         private readonly TaskCompletionSource<Description> _description = new();
+        private readonly TaskCompletionSource<PullRequestInformation> _pullRequestInformation = new();
 
         [Obsolete]
         public Ingredients() { }
@@ -162,6 +180,7 @@ namespace Bake.ValueObjects
         public void FailGitHub() => _gitHub.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
+        public void FailPullRequestInformation() => _releaseNotes.SetCanceled();
 
         public void FailOutstanding()
         {
