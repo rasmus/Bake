@@ -255,7 +255,7 @@ namespace Bake.Services.Tools
             var arguments = new List<string>
                 {
                     "publish",
-                    "*.csproj",
+                    argument.FilePath,
                     "--configuration", argument.Configuration,
                     "--nologo",
                     "--output", argument.Output
