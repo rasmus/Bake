@@ -117,6 +117,7 @@ namespace Bake.Services.Tools
                 {
                     ["GOOS"] = OsMap[os],
                     ["GOARCH"] = ArchMap[arch],
+                    ["CGO_ENABLED"] = "0"
                 };
         }
     }
