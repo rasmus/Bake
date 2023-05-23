@@ -88,16 +88,16 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
-        public PullRequestInformation PullRequestInformation
+        public PullRequestInformation PullRequest
         {
-            get => _pullRequestInformation.Task.IsCompletedSuccessfully ? _pullRequestInformation.Task.Result : null;
+            get => _pullRequest.Task.IsCompletedSuccessfully ? _pullRequest.Task.Result : null;
             set
             {
                 if (value == null)
                 {
                     return;
                 }
-                _pullRequestInformation.SetResult(value);
+                _pullRequest.SetResult(value);
             }
         }
 
@@ -151,13 +151,13 @@ namespace Bake.ValueObjects
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
         [YamlIgnore]
-        public Task<PullRequestInformation> PullRequestInformationTask => _pullRequestInformation.Task;
+        public Task<PullRequestInformation> PullRequestTask => _pullRequest.Task;
 
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
         private readonly TaskCompletionSource<Description> _description = new();
-        private readonly TaskCompletionSource<PullRequestInformation> _pullRequestInformation = new();
+        private readonly TaskCompletionSource<PullRequestInformation> _pullRequest = new();
 
         [Obsolete]
         public Ingredients() { }
@@ -180,7 +180,7 @@ namespace Bake.ValueObjects
         public void FailGitHub() => _gitHub.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
-        public void FailPullRequestInformation() => _pullRequestInformation.SetCanceled();
+        public void FailPullRequest() => _pullRequest.SetCanceled();
 
         public void FailOutstanding()
         {
@@ -192,6 +192,11 @@ namespace Bake.ValueObjects
             if (!_gitHub.Task.IsCompleted)
             {
                 _gitHub.SetCanceled();
+            }
+
+            if (!_pullRequest.Task.IsCompleted)
+            {
+                _pullRequest.SetCanceled();
             }
         }
     }

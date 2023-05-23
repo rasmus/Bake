@@ -66,7 +66,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 _logger.LogInformation("No git information, thus failed to get any GitHub information");
                 ingredients.FailGitHub();
-                ingredients.FailPullRequestInformation();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine public nor enterprise GitHub URL from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
-                ingredients.FailPullRequestInformation();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine GitHub owner and repository from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
-                ingredients.FailPullRequestInformation();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -145,21 +145,21 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
             catch (Exception e)
             {
-                ingredients.FailPullRequestInformation();
+                ingredients.FailPullRequest();
                 _logger.LogError(e, "Failed fetching pull request information");
                 return;
             }
 
             if (pullRequestInformation == null)
             {
-                ingredients.FailPullRequestInformation();
+                ingredients.FailPullRequest();
                 return;
             }
 
             _logger.LogInformation(
                 "Fetched pull request information {{ labels:{Labels} }}",
                 pullRequestInformation.Labels);
-            ingredients.PullRequestInformation = pullRequestInformation;
+            ingredients.PullRequest = pullRequestInformation;
         }
     }
 }
