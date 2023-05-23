@@ -3,32 +3,32 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "pip"
     directory: "/TestProjects/Python3.Flask"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "docker"
     directory: "/TestProjects/Dockerfile.Simple"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "gomod"
     directory: "/TestProjects/GoLang.Service"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "nuget"
     directory: "/TestProjects/NetCore.Package"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "nuget"
     directory: "/TestProjects/NetCore.Service"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "npm"
     directory: "/TestProjects/NodeJS.Service"
     schedule:
-      interval: "weekly"
+      interval: "daily"

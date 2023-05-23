@@ -1,6 +1,10 @@
+# 0.21-beta
+
+* Fixed: GitHub URL information was wrong for GHE
+
 # 0.20-beta
 
-* *Nothing yet...*
+* Fixed: When publishing, `csproj` file is needed after 7.0.200
 
 # 0.19-beta
 
