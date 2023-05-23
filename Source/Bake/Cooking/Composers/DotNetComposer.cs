@@ -72,6 +72,7 @@ namespace Bake.Cooking.Composers
         private readonly IDefaults _defaults;
         private readonly IDockerLabels _dockerLabels;
         private readonly IDescriptionLimiter _descriptionLimiter;
+        private readonly IBakeProjectParser _bakeProjectParser;
 
         public DotNetComposer(
             ILogger<DotNetComposer> logger,
@@ -80,7 +81,8 @@ namespace Bake.Cooking.Composers
             IConventionInterpreter conventionInterpreter,
             IDefaults defaults,
             IDockerLabels dockerLabels,
-            IDescriptionLimiter descriptionLimiter)
+            IDescriptionLimiter descriptionLimiter,
+            IBakeProjectParser bakeProjectParser)
         {
             _logger = logger;
             _fileSystem = fileSystem;
@@ -89,6 +91,7 @@ namespace Bake.Cooking.Composers
             _defaults = defaults;
             _dockerLabels = dockerLabels;
             _descriptionLimiter = descriptionLimiter;
+            _bakeProjectParser = bakeProjectParser;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -145,8 +148,31 @@ namespace Bake.Cooking.Composers
                 projectPath,
                 cancellationToken);
 
+            var bakeProjectFilePath = Path.Combine(
+                Path.GetDirectoryName(projectPath)!,
+                "bake.yaml");
+            string preferredName = null;
+
+            if (_fileSystem.FileExists(bakeProjectFilePath))
+            {
+                var yaml = await _fileSystem.ReadAllTextAsync(bakeProjectFilePath, cancellationToken);
+                var bakeProject = await _bakeProjectParser.ParseAsync(yaml, cancellationToken);
+                if (!string.IsNullOrEmpty(bakeProject.Name))
+                {
+                    preferredName = bakeProject.Name;
+                }
+            }
+
+            var name = Path.GetFileNameWithoutExtension(projectPath);
+            if (string.IsNullOrEmpty(preferredName))
+            {
+                preferredName = name;
+            }
+
             return new VisualStudioProject(
                 projectPath,
+                name,
+                preferredName,
                 csProj);
         }
 
@@ -249,7 +275,7 @@ namespace Bake.Cooking.Composers
                     moniker,
                     labels,
                     new DockerFileArtifact(
-                        visualStudioProject.Name,
+                        visualStudioProject.PreferredName,
                         Path.Combine(visualStudioProject.Directory, "Dockerfile")));
             }
 
@@ -265,7 +291,7 @@ namespace Bake.Cooking.Composers
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
-                    false,
+                    true,
                     true,
                     configuration,
                     targetPlatform,

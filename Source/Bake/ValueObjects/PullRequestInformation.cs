@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2022 Rasmus Mikkelsen
 // 
@@ -20,35 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using YamlDotNet.Serialization;
+using System.Collections.Generic;
 
 namespace Bake.ValueObjects
 {
-    public class GitInformation
+    public class PullRequestInformation
     {
-        [YamlMember]
-        public string Sha { get; [Obsolete] set; }
+        public IReadOnlyCollection<string> Labels { get; }
 
-        [YamlMember(typeof(string))]
-        public Uri OriginUrl { get; [Obsolete] set; }
-
-        [YamlMember(typeof(string))]
-        public string Message { get; [Obsolete] set; }
-
-        [Obsolete]
-        public GitInformation() { }
-
-        public GitInformation(
-            string sha,
-            Uri originUrl,
-            string message)
+        public PullRequestInformation(
+            IReadOnlyCollection<string> labels)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Sha = sha;
-            OriginUrl = originUrl;
-            Message = message;
-#pragma warning restore CS0612 // Type or member is obsolete
+            Labels = labels;
         }
     }
 }

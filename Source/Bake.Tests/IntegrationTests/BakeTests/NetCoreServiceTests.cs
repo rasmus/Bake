@@ -40,7 +40,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/netcore-service:{version}";
+            var expectedImage = $"bake.local/awesome-net-core-service:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(
