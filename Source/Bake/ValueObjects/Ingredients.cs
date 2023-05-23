@@ -63,7 +63,7 @@ namespace Bake.ValueObjects
         public GitInformation Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -77,7 +77,7 @@ namespace Bake.ValueObjects
         public GitHubInformation GitHub
         {
             get => _gitHub.Task.IsCompletedSuccessfully ? _gitHub.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -91,7 +91,7 @@ namespace Bake.ValueObjects
         public PullRequestInformation PullRequest
         {
             get => _pullRequest.Task.IsCompletedSuccessfully ? _pullRequest.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -105,7 +105,7 @@ namespace Bake.ValueObjects
         public Description Description
         {
             get => _description.Task.IsCompletedSuccessfully ? _description.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -119,7 +119,7 @@ namespace Bake.ValueObjects
         public ReleaseNotes ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
