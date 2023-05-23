@@ -44,7 +44,7 @@ jobs:
       run: dotnet publish -o bake-it Source/Bake
 
     - name: Run Bake
-      run: bake-it/bake run --build-version 0.20.$GITHUB_RUN_NUMBER
+      run: bake-it/bake run --build-version 0.21.$GITHUB_RUN_NUMBER
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
