@@ -85,6 +85,10 @@ namespace Bake.Cooking.Ingredients.Gathers
                         Scheme = "https",
                         Path = "/api/v3"
                     }.Uri;
+                gitHubUrl = new UriBuilder(gitInformation.OriginUrl)
+                    {
+                        Scheme = "https",
+                    }.Uri;
                 _logger.LogInformation(
                     "The first part of the URL {Url} is 'github', thus we expect that its GitHub Enterprise. Setting API URL to {ApiUrl}",
                     gitInformation.OriginUrl,
