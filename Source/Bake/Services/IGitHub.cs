@@ -32,5 +32,10 @@ namespace Bake.Services
             Release release,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
+
+        Task<PullRequestInformation> GetPullRequestInformationAsync(
+            GitInformation gitInformation,
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken);
     }
 }

@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -40,15 +41,18 @@ namespace Bake.Cooking.Ingredients.Gathers
 
         private readonly ILogger<GitHubGather> _logger;
         private readonly IDefaults _defaults;
+        private readonly IGitHub _gitHub;
 
         public GitHubGather(
             ILogger<GitHubGather> logger,
-            IDefaults defaults)
+            IDefaults defaults,
+            IGitHub gitHub)
         {
             _logger = logger;
             _defaults = defaults;
+            _gitHub = gitHub;
         }
-
+        
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
@@ -62,6 +66,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 _logger.LogInformation("No git information, thus failed to get any GitHub information");
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -100,6 +105,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine public nor enterprise GitHub URL from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -110,6 +116,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine GitHub owner and repository from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -121,11 +128,38 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
 
             var url = new Uri($"{gitHubUrl.Scheme}://{gitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
-            ingredients.GitHub = new GitHubInformation(
+            var gitHubInformation = new GitHubInformation(
                 match.Groups["owner"].Value,
                 repo,
                 url,
                 apiUrl);
+            ingredients.GitHub = gitHubInformation;
+
+            PullRequestInformation pullRequestInformation;
+            try
+            {
+                pullRequestInformation = await _gitHub.GetPullRequestInformationAsync(
+                    gitInformation,
+                    gitHubInformation,
+                    cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailPullRequest();
+                _logger.LogError(e, "Failed fetching pull request information");
+                return;
+            }
+
+            if (pullRequestInformation == null)
+            {
+                ingredients.FailPullRequest();
+                return;
+            }
+
+            _logger.LogInformation(
+                "Fetched pull request information {{ labels:{Labels} }}",
+                pullRequestInformation.Labels);
+            ingredients.PullRequest = pullRequestInformation;
         }
     }
 }

@@ -61,7 +61,8 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             var gather = Sut.GatherAsync(ingredients, CancellationToken.None);
             ingredients.Git = new GitInformation(
                 "sha",
-                new Uri(url));
+                new Uri(url),
+                A<string>());
             await gather;
             var gitHubInformation = await ingredients.GitHubTask;
 

@@ -125,6 +125,14 @@ namespace Bake.Tests.Helpers
                 _releases.Add(release);
                 return Task.CompletedTask;
             }
+
+            public Task<PullRequestInformation> GetPullRequestInformationAsync(
+                GitInformation gitInformation,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                return Task.FromResult<PullRequestInformation>(null);
+            }
         }
     }
 }
