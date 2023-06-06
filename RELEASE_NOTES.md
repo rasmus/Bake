@@ -1,5 +1,7 @@
 # 0.21-beta
 
+* New: `GOPRIVATE` should be `direct` to ensure that removed
+  dependencies are spottet and reduce information leackage
 * Fixed: GitHub URL information was wrong for GHE
 
 # 0.20-beta
