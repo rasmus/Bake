@@ -29,12 +29,16 @@ namespace Bake.Core
     {
         string GitHubUrl { get; }
         string GitHubNuGetRegistry { get; }
-        string NuGetRegistry { get; }
-        string DockerHubUserRegistry { get; }
         string GitHubUserRegistry { get; }
 
+        string NuGetRegistry { get; }
+
+        string DockerHubUserRegistry { get; }
         bool DockerBuildCompress { get; }
+
         string GoLdFlags { get; }
+        string GoEnvPrivate { get; }
+        
         string DotNetRollForward { get; }
 
         Task InitializeAsync(
