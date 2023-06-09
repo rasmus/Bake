@@ -113,13 +113,23 @@ namespace Bake.Cooking
             }
 
             var groupedArtifacts = cookResults
-                .SelectMany(r => r.Artifacts)
-                .GroupBy(a => a.GetType().GetCustomAttribute<ArtifactAttribute>()!.Name);
+                .SelectMany(r => r.Artifacts ?? Enumerable.Empty<Artifact>())
+                .GroupBy(a =>
+                {
+                    var type = a.GetType();
+                    var attribute = type.GetCustomAttribute<ArtifactAttribute>();
+                    return attribute == null
+                        ? throw new InvalidOperationException(
+                            $"Artifact type '{type.PrettyPrint()}' is missing the required attribute")
+                        : attribute.Name;
+                });
 
+            Console.WriteLine();
+            Console.WriteLine("Artifacts");
             foreach (var artifactGroup in groupedArtifacts)
             {
                 Console.WriteLine(artifactGroup.Key);
-                foreach (var prettyName in artifactGroup.Select(a => a.PrettyNames()).OrderBy(s => s))
+                foreach (var prettyName in artifactGroup.SelectMany(a => a.PrettyNames()).OrderBy(s => s))
                 {
                     Console.WriteLine($"  {prettyName}");
                 }
