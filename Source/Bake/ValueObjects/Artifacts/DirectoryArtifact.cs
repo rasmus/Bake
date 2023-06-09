@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -51,6 +52,11 @@ namespace Bake.ValueObjects.Artifacts
             {
                 yield return $"Directory {Path} does not exist";
             }
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Enumerable.Empty<string>();
         }
     }
 }

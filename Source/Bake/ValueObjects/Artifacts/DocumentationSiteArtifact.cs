@@ -52,5 +52,10 @@ namespace Bake.ValueObjects.Artifacts
                 yield return $"Directory {Path} does not exist";
             }
         }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            yield return Path;
+        }
     }
 }

@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using Bake.ValueObjects.Artifacts;
 
 namespace Bake.ValueObjects
 {
@@ -29,15 +31,18 @@ namespace Bake.ValueObjects
         public string Name { get; }
         public TimeSpan Time { get; }
         public bool Success { get; }
+        public IReadOnlyCollection<Artifact> Artifacts { get; }
 
         public CookResult(
             string name,
             TimeSpan time,
-            bool success)
+            bool success,
+            IReadOnlyCollection<Artifact> artifacts)
         {
             Name = name;
             Time = time;
             Success = success;
+            Artifacts = artifacts;
         }
     }
 }

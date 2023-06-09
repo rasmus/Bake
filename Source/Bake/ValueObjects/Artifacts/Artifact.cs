@@ -35,5 +35,7 @@ namespace Bake.ValueObjects.Artifacts
 
         public abstract IAsyncEnumerable<string> ValidateAsync(
             CancellationToken cancellationToken);
+
+        public abstract IEnumerable<string> PrettyNames();
     }
 }

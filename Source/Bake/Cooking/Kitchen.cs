@@ -24,11 +24,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Cooks;
 using Bake.Extensions;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking
@@ -98,7 +100,8 @@ namespace Bake.Cooking
                 cookResults.Add(new CookResult(
                     recipeName,
                     stopwatch.Elapsed,
-                    success));
+                    success,
+                    recipe.Artifacts));
 
                 if (success)
                 {
@@ -107,6 +110,19 @@ namespace Bake.Cooking
 
                 successful = false;
                 break;
+            }
+
+            var groupedArtifacts = cookResults
+                .SelectMany(r => r.Artifacts)
+                .GroupBy(a => a.GetType().GetCustomAttribute<ArtifactAttribute>()!.Name);
+
+            foreach (var artifactGroup in groupedArtifacts)
+            {
+                Console.WriteLine(artifactGroup.Key);
+                foreach (var prettyName in artifactGroup.Select(a => a.PrettyNames()).OrderBy(s => s))
+                {
+                    Console.WriteLine($"  {prettyName}");
+                }
             }
 
             Console.WriteLine();
