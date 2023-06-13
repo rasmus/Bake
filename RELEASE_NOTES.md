@@ -2,6 +2,7 @@
 
 * New: `GOPRIVATE` should be `direct` to ensure that removed
   dependencies are spottet and reduce information leackage
+* New: Prints produced artifacts when done
 * Fixed: GitHub URL information was wrong for GHE
 
 # 0.20-beta

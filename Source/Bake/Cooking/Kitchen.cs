@@ -112,6 +112,40 @@ namespace Bake.Cooking
                 break;
             }
 
+            void PrintHeader(string header)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 70 - header.Length)}");
+            }
+
+            PrintHeader("artifacts");
+            PrintArtifacts(cookResults);
+            PrintHeader("timings");
+            PrintTimings(cookResults);
+            Console.WriteLine();
+
+            return successful;
+        }
+
+        private static void PrintTimings(List<CookResult> cookResults)
+        {
+            var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
+            foreach (var cookResult in cookResults)
+            {
+                var status = cookResult.Success
+                    ? "success"
+                    : "failed";
+                var percent = cookResult.Time.TotalSeconds / totalSeconds;
+                var barWidth = (int) Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
+                Console.WriteLine(
+                    $"[{new string('#', barWidth),BarWidth}] {percent * 100.0,5:0.0}%  {cookResult.Name,-32} {status,7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+            }
+
+            Console.WriteLine($"total {totalSeconds:0.##} seconds");
+        }
+
+        private static void PrintArtifacts(IEnumerable<CookResult> cookResults)
+        {
             var groupedArtifacts = cookResults
                 .SelectMany(r => r.Artifacts ?? Enumerable.Empty<Artifact>())
                 .GroupBy(a =>
@@ -124,8 +158,6 @@ namespace Bake.Cooking
                         : attribute.Name;
                 });
 
-            Console.WriteLine();
-            Console.WriteLine("Artifacts");
             foreach (var artifactGroup in groupedArtifacts)
             {
                 Console.WriteLine(artifactGroup.Key);
@@ -134,22 +166,6 @@ namespace Bake.Cooking
                     Console.WriteLine($"  {prettyName}");
                 }
             }
-
-            Console.WriteLine();
-            var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
-            foreach (var cookResult in cookResults)
-            {
-                var status = cookResult.Success
-                    ? "success"
-                    : "failed";
-                var percent = cookResult.Time.TotalSeconds / totalSeconds;
-                var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
-                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-32} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
-            }
-            Console.WriteLine($"total {totalSeconds:0.##} seconds");
-            Console.WriteLine();
-
-            return successful;
         }
     }
 }
