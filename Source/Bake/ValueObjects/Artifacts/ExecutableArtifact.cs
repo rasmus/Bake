@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -47,6 +48,11 @@ namespace Bake.ValueObjects.Artifacts
             Name = name;
             Platform = platform;
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            yield return $"{Name} ({Platform})";
         }
     }
 }

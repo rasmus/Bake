@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -42,6 +44,11 @@ namespace Bake.ValueObjects.Artifacts
 #pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Enumerable.Empty<string>();
         }
     }
 }

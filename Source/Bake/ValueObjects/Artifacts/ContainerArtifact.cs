@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using YamlDotNet.Serialization;
@@ -54,6 +55,12 @@ namespace Bake.ValueObjects.Artifacts
             [EnumeratorCancellation] CancellationToken _)
         {
             yield break;
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Tags
+                .Select(t => $"{Name}:{t}");
         }
     }
 }

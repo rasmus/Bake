@@ -90,7 +90,7 @@ namespace Bake.ValueObjects
 
         public override string ToString()
         {
-            return $"{Os}/{Any}";
+            return $"{Os}/{Arch}";
         }
     }
 }

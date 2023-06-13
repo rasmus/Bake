@@ -87,6 +87,11 @@ namespace Bake
             private static readonly IReadOnlyDictionary<string, ArtifactType> NameToType = TypeToName
                 .ToDictionary(kv => kv.Value, kv => kv.Key);
 
+            public static bool IsValidName(string name)
+            {
+                return NameToType.ContainsKey(name);
+            }
+
             public static bool TryGetType(string name, out ArtifactType artifactType)
             {
                 return NameToType.TryGetValue(name, out artifactType);

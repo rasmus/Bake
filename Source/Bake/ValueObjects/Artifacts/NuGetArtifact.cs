@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace Bake.ValueObjects.Artifacts
 {
@@ -34,6 +35,11 @@ namespace Bake.ValueObjects.Artifacts
             string path)
             : base(path)
         {
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            yield return System.IO.Path.GetFileName(Path);
         }
     }
 }
