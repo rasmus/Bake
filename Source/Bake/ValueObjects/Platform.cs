@@ -90,7 +90,7 @@ namespace Bake.ValueObjects
 
         public override string ToString()
         {
-            return $"{Os}/{Arch}";
+            return GetDotNetRuntimeIdentifier();
         }
     }
 }
