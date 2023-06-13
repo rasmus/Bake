@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Bake.ValueObjects.Artifacts
 {
@@ -39,7 +40,12 @@ namespace Bake.ValueObjects.Artifacts
 
         public override IEnumerable<string> PrettyNames()
         {
-            yield return System.IO.Path.GetFileName(Path);
+            var relativePath = System.IO.Path.GetRelativePath(
+                Directory.GetCurrentDirectory(),
+                Path);
+            var filename = System.IO.Path.GetFileName(Path);
+
+            yield return $"{filename} ({relativePath})";
         }
     }
 }
