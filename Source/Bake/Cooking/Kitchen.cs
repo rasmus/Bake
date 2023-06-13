@@ -112,12 +112,6 @@ namespace Bake.Cooking
                 break;
             }
 
-            void PrintHeader(string header)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 79 - header.Length)}");
-            }
-
             PrintHeader("artifacts");
             PrintArtifacts(cookResults);
             PrintHeader("timings");
@@ -125,6 +119,12 @@ namespace Bake.Cooking
             Console.WriteLine();
 
             return successful;
+        }
+
+        private static void PrintHeader(string header)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 79 - header.Length)}");
         }
 
         private static void PrintTimings(List<CookResult> cookResults)
@@ -160,8 +160,18 @@ namespace Bake.Cooking
 
             foreach (var artifactGroup in groupedArtifacts)
             {
+                var prettyNames = artifactGroup
+                    .SelectMany(a => a.PrettyNames())
+                    .OrderBy(s => s)
+                    .ToArray();
+
+                if (!prettyNames.Any())
+                {
+                    continue;
+                }
+
                 Console.WriteLine(artifactGroup.Key);
-                foreach (var prettyName in artifactGroup.SelectMany(a => a.PrettyNames()).OrderBy(s => s))
+                foreach (var prettyName in prettyNames)
                 {
                     Console.WriteLine($"  {prettyName}");
                 }
