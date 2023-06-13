@@ -115,7 +115,7 @@ namespace Bake.Cooking
             void PrintHeader(string header)
             {
                 Console.WriteLine();
-                Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 70 - header.Length)}");
+                Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 79 - header.Length)}");
             }
 
             PrintHeader("artifacts");
