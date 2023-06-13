@@ -162,6 +162,7 @@ namespace Bake.Cooking
             {
                 var prettyNames = artifactGroup
                     .SelectMany(a => a.PrettyNames())
+                    .Distinct()
                     .OrderBy(s => s)
                     .ToArray();
 
