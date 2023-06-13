@@ -1,3 +1,7 @@
+# 0.22-beta
+
+* Fixed: Cleanup of the artifact post run report
+
 # 0.21-beta
 
 * New: `GOPRIVATE` should be `direct` to ensure that removed
