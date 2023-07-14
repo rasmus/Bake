@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using YamlDotNet.Serialization;
@@ -54,6 +55,12 @@ namespace Bake.ValueObjects.Artifacts
             [EnumeratorCancellation] CancellationToken _)
         {
             yield break;
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Tags
+                .Select(t => $"{Name}:{t}");
         }
     }
 }

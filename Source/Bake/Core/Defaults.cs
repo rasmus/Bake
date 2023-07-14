@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ namespace Bake.Core
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
         public bool DockerBuildCompress { get; private set; } = true;
         public string GoLdFlags { get; private set; } = "-s -w";
+        public string GoEnvPrivate { get; private set; } = "direct";
         public string DotNetRollForward { get; private set; } = "LatestMajor";
 
         public Defaults(
@@ -60,6 +61,7 @@ namespace Bake.Core
             DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
             DockerBuildCompress = GetBool(e, "docker_build_compress", true);
             GoLdFlags = GetString(e, "go_ldflags", GoLdFlags);
+            GoEnvPrivate = GetString(e, "go_env_goprivate", GoEnvPrivate);
             DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
         }
 

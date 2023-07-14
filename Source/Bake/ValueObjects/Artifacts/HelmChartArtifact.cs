@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Bake.ValueObjects.Artifacts
 {
@@ -34,6 +36,16 @@ namespace Bake.ValueObjects.Artifacts
             string path)
             : base(path)
         {
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            var relativePath = System.IO.Path.GetRelativePath(
+                Directory.GetCurrentDirectory(),
+                Path);
+            var filename = System.IO.Path.GetFileName(Path);
+
+            yield return $"{filename} ({relativePath})";
         }
     }
 }

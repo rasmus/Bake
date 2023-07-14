@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -109,7 +109,7 @@ namespace Bake.Services.Tools
             return new ToolResult(runnerResult);
         }
 
-        private static IReadOnlyDictionary<string, string> SetupEnvironment(
+        private IReadOnlyDictionary<string, string> SetupEnvironment(
             ExecutableOperatingSystem os,
             ExecutableArchitecture arch)
         {
@@ -117,7 +117,8 @@ namespace Bake.Services.Tools
                 {
                     ["GOOS"] = OsMap[os],
                     ["GOARCH"] = ArchMap[arch],
-                    ["CGO_ENABLED"] = "0"
+                    ["CGO_ENABLED"] = "0",
+                    ["GOPRIVATE"] = _defaults.GoEnvPrivate,
                 };
         }
     }
