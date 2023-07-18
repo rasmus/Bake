@@ -8,6 +8,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^4.19.2"
+    "fastify": "^4.20.0"
   }
 }
