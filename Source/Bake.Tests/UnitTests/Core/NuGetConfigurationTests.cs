@@ -27,7 +27,7 @@ using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Core
@@ -44,8 +44,8 @@ namespace Bake.Tests.UnitTests.Core
                 };
             var credentialsMock = InjectMock<ICredentials>();
             credentialsMock
-                .Setup(m => m.TryGetNuGetApiKeyAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync("IllNeverTell");
+                .TryGetNuGetApiKeyAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult("IllNeverTell"));
 
             // Act
             var xml = await Sut.GenerateAsync(nuGetSources, CancellationToken.None);

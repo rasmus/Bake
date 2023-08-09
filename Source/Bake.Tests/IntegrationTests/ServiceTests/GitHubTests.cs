@@ -29,7 +29,7 @@ using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
@@ -47,12 +47,12 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .FirstOrDefault(t => !string.IsNullOrEmpty(t));
 
             testToken.Should().NotBeNullOrEmpty();
-            var credentials = new Mock<ICredentials>();
+            var credentials = Substitute.For<ICredentials>();
             credentials
-                .Setup(m => m.TryGetGitHubTokenAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(testToken);
+                .TryGetGitHubTokenAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(testToken));
 
-            Inject(credentials.Object);
+            Inject(credentials);
             Inject<IGitHubClientFactory>(new GitHubClientFactory());
         }
 
