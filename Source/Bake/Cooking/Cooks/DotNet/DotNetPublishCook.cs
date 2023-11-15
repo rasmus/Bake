@@ -50,8 +50,7 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Build,
                 recipe.Configuration,
                 recipe.Platform,
-                recipe.Output,
-                recipe.Properties);
+                recipe.Output);
 
             using var toolResult = await _dotNet.PublishAsync(
                 argument,

@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using Bake.ValueObjects;
-using System.Collections.Generic;
 
 namespace Bake.Services.Tools.DotNetArguments
 {
@@ -33,7 +32,6 @@ namespace Bake.Services.Tools.DotNetArguments
         public string Configuration { get; }
         public Platform Platform { get; }
         public string Output { get; }
-        public Dictionary<string, string> Properties { get; }
 
         public DotNetPublishArgument(
             string filePath,
@@ -42,8 +40,7 @@ namespace Bake.Services.Tools.DotNetArguments
             bool build,
             string configuration,
             Platform platform,
-            string output,
-            Dictionary<string, string> properties)
+            string output)
             : base(filePath)
         {
             PublishSingleFile = publishSingleFile;

@@ -258,7 +258,8 @@ namespace Bake.Services.Tools
                     argument.FilePath,
                     "--configuration", argument.Configuration,
                     "--nologo",
-                    "--output", argument.Output
+                    "--output", argument.Output,
+                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
@@ -267,11 +268,6 @@ namespace Bake.Services.Tools
                     {
                         "--runtime", argument.Platform.GetDotNetRuntimeIdentifier()
                     });
-            }
-
-            foreach (var (property, value) in argument.Properties)
-            {
-                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
             }
 
             AddIf(!argument.Build, arguments, "--no-build");

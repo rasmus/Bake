@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -51,9 +50,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string Output { get; [Obsolete] set; }
 
-        [YamlMember]
-        public Dictionary<string, string> Properties { get; [Obsolete] set; }
-
         [Obsolete]
         public DotNetPublishRecipe() { }
 
@@ -65,7 +61,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string configuration,
             Platform platform,
             string output,
-            Dictionary<string, string> properties,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -77,7 +72,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Configuration = configuration;
             Platform = platform;
             Output = output;
-            Properties = properties;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }
