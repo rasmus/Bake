@@ -20,14 +20,13 @@ jobs:
     - name: Start Docker services
       run: docker-compose up -d --force-recreate
       
-    - name: Setup .NET Core 3.1.x
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 3.1.x
-    - name: Setup .NET Core 6.0.x
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+          3.1.x
+          6.0.x
+          8.0.x
     - name: Setup Go 1.17.2
       uses: actions/setup-go@v4
       with:
