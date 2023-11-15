@@ -26,6 +26,8 @@ using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
     public class NetV8ServiceTests : BakeTest
@@ -40,7 +42,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/awesome-net-v8-service:{version}";
+            var expectedImage = $"bake.local/netv8-service:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(
