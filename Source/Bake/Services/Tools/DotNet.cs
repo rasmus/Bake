@@ -269,6 +269,11 @@ namespace Bake.Services.Tools
                     });
             }
 
+            foreach (var (property, value) in argument.Properties)
+            {
+                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
+            }
+
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");

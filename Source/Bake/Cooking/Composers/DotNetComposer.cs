@@ -256,6 +256,7 @@ namespace Bake.Cooking.Composers
                     configuration,
                     Platform.Any,
                     path,
+                    properties,
                     new DirectoryArtifact(
                         Path.Combine(visualStudioProject.Directory, path)));
 
@@ -296,6 +297,7 @@ namespace Bake.Cooking.Composers
                     configuration,
                     targetPlatform,
                     path,
+                    properties,
                     new ExecutableArtifact(
                         visualStudioProject.CsProj.ToolCommandName,
                         Path.Combine(
