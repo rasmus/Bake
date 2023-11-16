@@ -258,7 +258,8 @@ namespace Bake.Services.Tools
                     argument.FilePath,
                     "--configuration", argument.Configuration,
                     "--nologo",
-                    "--output", argument.Output
+                    "--output", argument.Output,
+                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
