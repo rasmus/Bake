@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ namespace Bake.Services
         private static readonly Regex ImageParser = new(
             @"^
                 (?<hostAndPort>[a-z\-0-9\.]+(:[0-9]+){0,1}/){0,1}
-                (?<path>[a-z\-0-9]+/){0,1}
+                (?<path>[a-z\-0-9/]+/){0,1}
                 (?<name>[a-z\-0-9]+)
                 (:(?<label>[a-z\-0-9\.]+)){0,1}
             $",

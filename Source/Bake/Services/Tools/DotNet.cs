@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,23 +36,28 @@ namespace Bake.Services.Tools
 {
     public class DotNet : IDotNet
     {
-        private static readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable = new ConcurrentDictionary<string, string>
-            {
-                ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
-                ["DOTNET_NOLOGO"] = "true",
-                ["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "true",
-                ["NUGET_XMLDOC_MODE"] = "skip",
-                ["NUGET_EXE_NO_PROMPT"] = "true"
-            };
+        private readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable;
         private readonly IRunnerFactory _runnerFactory;
         private readonly ICredentials _credentials;
 
         public DotNet(
             IRunnerFactory runnerFactory,
-            ICredentials credentials)
+            ICredentials credentials,
+            IDefaults defaults)
         {
             _runnerFactory = runnerFactory;
             _credentials = credentials;
+
+            DotNetEnvironmentVariable = new ConcurrentDictionary<string, string>
+            {
+                ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
+                ["DOTNET_NOLOGO"] = "true",
+                ["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "true",
+                ["NUGET_XMLDOC_MODE"] = "skip",
+                ["NUGET_EXE_NO_PROMPT"] = "true",
+
+                ["DOTNET_ROLL_FORWARD"] = defaults.DotNetRollForward,
+            };
         }
 
         public async Task<IToolResult> ClearNuGetLocalsAsync(
@@ -250,14 +255,19 @@ namespace Bake.Services.Tools
             var arguments = new List<string>
                 {
                     "publish",
+                    argument.FilePath,
                     "--configuration", argument.Configuration,
                     "--nologo",
-                    "--output", argument.Output
+                    "--output", argument.Output,
+                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
             {
-                arguments.AddRange(new []{"--runtime", argument.Platform.GetDotNetRuntimeIdentifier()});
+                arguments.AddRange(new []
+                    {
+                        "--runtime", argument.Platform.GetDotNetRuntimeIdentifier()
+                    });
             }
 
             AddIf(!argument.Build, arguments, "--no-build");

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -40,15 +41,18 @@ namespace Bake.Cooking.Ingredients.Gathers
 
         private readonly ILogger<GitHubGather> _logger;
         private readonly IDefaults _defaults;
+        private readonly IGitHub _gitHub;
 
         public GitHubGather(
             ILogger<GitHubGather> logger,
-            IDefaults defaults)
+            IDefaults defaults,
+            IGitHub gitHub)
         {
             _logger = logger;
             _defaults = defaults;
+            _gitHub = gitHub;
         }
-
+        
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
@@ -62,6 +66,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             {
                 _logger.LogInformation("No git information, thus failed to get any GitHub information");
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -85,6 +90,10 @@ namespace Bake.Cooking.Ingredients.Gathers
                         Scheme = "https",
                         Path = "/api/v3"
                     }.Uri;
+                gitHubUrl = new UriBuilder(gitInformation.OriginUrl)
+                    {
+                        Scheme = "https",
+                    }.Uri;
                 _logger.LogInformation(
                     "The first part of the URL {Url} is 'github', thus we expect that its GitHub Enterprise. Setting API URL to {ApiUrl}",
                     gitInformation.OriginUrl,
@@ -96,6 +105,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine public nor enterprise GitHub URL from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -106,6 +116,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                     "Could not determine GitHub owner and repository from {RemoteUrl}",
                     gitInformation.OriginUrl);
                 ingredients.FailGitHub();
+                ingredients.FailPullRequest();
                 return;
             }
 
@@ -117,11 +128,38 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
 
             var url = new Uri($"{gitHubUrl.Scheme}://{gitHubUrl.Host}/{match.Groups["owner"].Value}/{repo}");
-            ingredients.GitHub = new GitHubInformation(
+            var gitHubInformation = new GitHubInformation(
                 match.Groups["owner"].Value,
                 repo,
                 url,
                 apiUrl);
+            ingredients.GitHub = gitHubInformation;
+
+            PullRequestInformation pullRequestInformation;
+            try
+            {
+                pullRequestInformation = await _gitHub.GetPullRequestInformationAsync(
+                    gitInformation,
+                    gitHubInformation,
+                    cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailPullRequest();
+                _logger.LogError(e, "Failed fetching pull request information");
+                return;
+            }
+
+            if (pullRequestInformation == null)
+            {
+                ingredients.FailPullRequest();
+                return;
+            }
+
+            _logger.LogInformation(
+                "Fetched pull request information {{ labels:{Labels} }}",
+                pullRequestInformation.Labels);
+            ingredients.PullRequest = pullRequestInformation;
         }
     }
 }

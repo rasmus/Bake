@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -55,12 +55,14 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             var ingredients = Bake.ValueObjects.Ingredients.New(
                 SemVer.Random,
                 string.Empty);
+            var expectedGitHubUrl = url.Replace(".git", string.Empty);
 
             // Act
             var gather = Sut.GatherAsync(ingredients, CancellationToken.None);
             ingredients.Git = new GitInformation(
                 "sha",
-                new Uri(url));
+                new Uri(url),
+                A<string>());
             await gather;
             var gitHubInformation = await ingredients.GitHubTask;
 
@@ -68,6 +70,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             gitHubInformation.Owner.Should().Be(expectedOwner);
             gitHubInformation.Repository.Should().Be(expectedRepository);
             gitHubInformation.ApiUrl.Should().Be(expectedApiUrl);
+            gitHubInformation.Url.Should().Be(expectedGitHubUrl);
         }
     }
 }

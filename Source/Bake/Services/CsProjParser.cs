@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,20 @@
 // SOFTWARE.
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Bake.ValueObjects.DotNet;
+using File = System.IO.File;
 
 namespace Bake.Services
 {
     public class CsProjParser : ICsProjParser
     {
         private readonly IDotNetTfmParser _dotNetTfmParser;
-
+        
         public CsProjParser(
             IDotNetTfmParser dotNetTfmParser)
         {

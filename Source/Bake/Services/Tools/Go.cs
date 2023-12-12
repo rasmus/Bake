@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Bake.Core;
 using Bake.Extensions;
 using Bake.Services.Tools.GoArguments;
 using Bake.ValueObjects;
@@ -51,13 +52,16 @@ namespace Bake.Services.Tools
 
         private readonly ILogger<Go> _logger;
         private readonly IRunnerFactory _runnerFactory;
+        private readonly IDefaults _defaults;
 
         public Go(
             ILogger<Go> logger,
-            IRunnerFactory runnerFactory)
+            IRunnerFactory runnerFactory,
+            IDefaults defaults)
         {
             _logger = logger;
             _runnerFactory = runnerFactory;
+            _defaults = defaults;
         }
 
         public async Task<IToolResult> BuildAsync(
@@ -71,7 +75,7 @@ namespace Bake.Services.Tools
             var arguments = new[]
                 {
                     "build",
-                    "-ldflags", "-s -w",
+                    "-ldflags", _defaults.GoLdFlags,
                     "-o", argument.Output
                 };
 
@@ -105,7 +109,7 @@ namespace Bake.Services.Tools
             return new ToolResult(runnerResult);
         }
 
-        private static IReadOnlyDictionary<string, string> SetupEnvironment(
+        private IReadOnlyDictionary<string, string> SetupEnvironment(
             ExecutableOperatingSystem os,
             ExecutableArchitecture arch)
         {
@@ -113,6 +117,8 @@ namespace Bake.Services.Tools
                 {
                     ["GOOS"] = OsMap[os],
                     ["GOARCH"] = ArchMap[arch],
+                    ["CGO_ENABLED"] = "0",
+                    ["GOPRIVATE"] = _defaults.GoEnvPrivate,
                 };
         }
     }

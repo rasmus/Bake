@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
-using AutoFixture.AutoMoq;
-using Bake.Core;
-using Moq;
+using AutoFixture.AutoNSubstitute;
+using NSubstitute;
 using NUnit.Framework;
 
 // ReSharper disable AssignNullToNotNullAttribute
@@ -46,7 +45,7 @@ namespace Bake.Tests.Helpers
         {
             _filesToDelete = new List<string>();
 
-            Fixture = new Fixture().Customize(new AutoMoqCustomization());
+            Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
         }
 
         [TearDown]
@@ -74,7 +73,7 @@ namespace Bake.Tests.Helpers
         protected T Mock<T>()
             where T : class
         {
-            return new Mock<T>().Object;
+            return Substitute.For<T>();
         }
 
         protected T Inject<T>(T instance)
@@ -84,11 +83,11 @@ namespace Bake.Tests.Helpers
             return instance;
         }
 
-        protected Mock<T> InjectMock<T>(params object[] args)
+        protected T InjectMock<T>(params object[] args)
             where T : class
         {
-            var mock = new Mock<T>(args);
-            Fixture.Inject(mock.Object);
+            var mock = Substitute.For<T>(args);
+            Fixture.Inject(mock);
             return mock;
         }
 

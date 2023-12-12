@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,17 @@ namespace Bake.Core
     {
         string GitHubUrl { get; }
         string GitHubNuGetRegistry { get; }
-        string NuGetRegistry { get; }
-        string DockerHubUserRegistry { get; }
         string GitHubUserRegistry { get; }
 
+        string NuGetRegistry { get; }
+
+        string DockerHubUserRegistry { get; }
         bool DockerBuildCompress { get; }
+
+        string GoLdFlags { get; }
+        string GoEnvPrivate { get; }
+        
+        string DotNetRollForward { get; }
 
         Task InitializeAsync(
             CancellationToken cancellationToken);

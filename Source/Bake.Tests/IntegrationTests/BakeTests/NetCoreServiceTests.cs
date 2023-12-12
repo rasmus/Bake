@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/netcore-service:{version}";
+            var expectedImage = $"bake.local/awesome-net-core-service:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(

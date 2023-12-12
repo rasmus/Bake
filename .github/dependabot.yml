@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/TestProjects/Python3.Flask"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/TestProjects/Dockerfile.Simple"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gomod"
+    directory: "/TestProjects/GoLang.Service"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget"
+    directory: "/TestProjects/NetCore.Package"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget"
+    directory: "/TestProjects/NetCore.Service"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/TestProjects/NodeJS.Service"
+    schedule:
+      interval: "daily"

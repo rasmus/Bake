@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ namespace Bake.ValueObjects
         public GitInformation Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -91,7 +91,7 @@ namespace Bake.ValueObjects
         public GitHubInformation GitHub
         {
             get => _gitHub.Task.IsCompletedSuccessfully ? _gitHub.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -102,10 +102,24 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
+        public PullRequestInformation PullRequest
+        {
+            get => _pullRequest.Task.IsCompletedSuccessfully ? _pullRequest.Task.Result : null;
+            [Obsolete] set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _pullRequest.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public Description Description
         {
             get => _description.Task.IsCompletedSuccessfully ? _description.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -119,7 +133,7 @@ namespace Bake.ValueObjects
         public ReleaseNotes ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
-            set
+            [Obsolete] set
             {
                 if (value == null)
                 {
@@ -151,13 +165,17 @@ namespace Bake.ValueObjects
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
         [YamlIgnore]
-        public Task<List<Commit>> ChangelogTask => _changelog.Task;
-
+		public Task<List<Commit>> ChangelogTask => _changelog.Task;
+		
+        [YamlIgnore]
+        public Task<PullRequestInformation> PullRequestTask => _pullRequest.Task;
+		
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
         private readonly TaskCompletionSource<List<Commit>> _changelog = new();
         private readonly TaskCompletionSource<Description> _description = new();
+        private readonly TaskCompletionSource<PullRequestInformation> _pullRequest = new();
 
         [Obsolete]
         public Ingredients() { }
@@ -181,6 +199,7 @@ namespace Bake.ValueObjects
         public void FailChangelog() => _changelog.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
+        public void FailPullRequest() => _pullRequest.SetCanceled();
 
         public void FailOutstanding()
         {
@@ -192,6 +211,11 @@ namespace Bake.ValueObjects
             if (!_gitHub.Task.IsCompleted)
             {
                 _gitHub.SetCanceled();
+            }
+
+            if (!_pullRequest.Task.IsCompleted)
+            {
+                _pullRequest.SetCanceled();
             }
 
             if (!_changelog.Task.IsCompleted)

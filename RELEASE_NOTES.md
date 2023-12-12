@@ -1,3 +1,31 @@
+# 0.22-beta
+
+* Fixed: Cleanup of the artifact post run report
+
+# 0.21-beta
+
+* New: `GOPRIVATE` should be `direct` to ensure that removed
+  dependencies are spottet and reduce information leackage
+* New: Prints produced artifacts when done
+* Fixed: GitHub URL information was wrong for GHE
+
+# 0.20-beta
+
+* Fixed: When publishing, `csproj` file is needed after 7.0.200
+
+# 0.19-beta
+
+* New: Clean `v|version` prefix for semantic versions
+* New: Now possible to control the container name for .NET service using
+  a `bake.yaml` file
+* New: `DOTNET_ROLL_FORWARD` now defaults to `LatestMajor`
+* Fixed: Container paths that contain `/` are now valid
+
+# 0.18-beta
+
+*  New: Expose go ldflags via environment variable
+*  Fix: Fixed .NET warning `NETSDK1179`
+
 # 0.17-beta
 
 * New: Set some sensible values to `DOTNET_NOLOGO`,

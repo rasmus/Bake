@@ -48,7 +48,8 @@ namespace Bake.Tests.ExplicitTests
                 new GitHubInformation(
                     "rasmus",
                     "Bake",
-                    new Uri("https://github.com/rasmus/Bake")),
+                    new Uri("https://github.com/rasmus/Bake"),
+                    new Uri("https://api.github.com/")),
                 CancellationToken.None);
         }
 
