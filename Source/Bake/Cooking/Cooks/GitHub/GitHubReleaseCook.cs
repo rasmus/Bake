@@ -97,7 +97,7 @@ namespace Bake.Cooking.Cooks.GitHub
             {
                 foreach (var commit in context.Ingredients.Changelog)
                 {
-                    stringBuilder.AppendLine($"* {commit.Message}");
+                    stringBuilder.AppendLine($"* {commit.Text}");
                 }
 
                 stringBuilder.AppendLine();

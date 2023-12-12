@@ -44,7 +44,7 @@ namespace Bake.Tests.ExplicitTests
         public async Task T()
         {
             var commits = await Sut.CompareAsync(
-                "c2dbe6e",
+                "662965e",
                 new GitHubInformation(
                     "rasmus",
                     "Bake",
@@ -57,7 +57,7 @@ namespace Bake.Tests.ExplicitTests
         {
             return new ConfigurationBuilder()
                 .AddUserSecrets<GitHubReleaseCookTests>()
-                .Build()["github.token"];
+                .Build()["github:token"];
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)

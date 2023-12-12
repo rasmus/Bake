@@ -25,40 +25,20 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
 {
-    public class Commit
+    public class Change
     {
         [YamlMember]
-        public string Message { get; [Obsolete] set; }
-
-        [YamlMember]
-        public string Sha { get; [Obsolete] set; }
-
-        [YamlMember]
-        public Author Author { get; [Obsolete] set; }
-
-        [YamlMember]
-        public DateTimeOffset Time { get; [Obsolete] set; }
+        public string Text { get; [Obsolete] set; }
 
         [Obsolete]
-        public Commit() { }
+        public Change() { }
 
-        public Commit(
-            string message,
-            string sha,
-            DateTimeOffset time,
-            Author author)
+        public Change(
+            string text)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Message = message ?? string.Empty;
-            Sha = sha ?? string.Empty;
-            Author = author;
-            Time = time;
+            Text = text;
 #pragma warning restore CS0612 // Type or member is obsolete
-        }
-
-        public override string ToString()
-        {
-            return $"{Sha[..5]}: {Message}";
         }
     }
 }

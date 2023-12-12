@@ -22,6 +22,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
@@ -31,6 +32,10 @@ namespace Bake.Cooking.Ingredients.Gathers
 {
     public class ChangelogGather : IGather
     {
+        private static readonly Regex IsMergeCommit = new(
+            @"^Merge\s+pull\s+request\s+\#(?<pr>[0-9]+)\s+.*",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly IGitHub _gitHub;
 
         public ChangelogGather(
@@ -57,11 +62,20 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
-            ingredients.Changelog = (await _gitHub.CompareAsync(
+            var commits = await _gitHub.CompareAsync(
                 gitInformation.Sha,
                 gitHubInformation,
-                cancellationToken))
-                .ToList();
+                cancellationToken);
+
+            var pullRequestMerges = commits
+                .Select(c => new
+                {
+                    match = IsMergeCommit.Match(c.Message),
+                    commit = c
+                })
+                .Where(a => a.match.Success);
+
+            // TODO: 
         }
     }
 }

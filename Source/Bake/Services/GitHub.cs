@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -38,8 +39,6 @@ namespace Bake.Services
 {
     public class GitHub : IGitHub
     {
-        private static readonly IReadOnlyCollection<Commit> EmptyCommits = new Commit[] { };
-
         private readonly ILogger<GitHub> _logger;
         private readonly ICredentials _credentials;
         private readonly IGitHubClientFactory _gitHubClientFactory;
@@ -169,6 +168,11 @@ namespace Bake.Services
                 gitHubInformation.Url,
                 cancellationToken);
 
+            if (string.IsNullOrEmpty(token))
+            {
+                return Array.Empty<Commit>();
+            }
+
             var gitHubClient = await _gitHubClientFactory.CreateAsync(
                 token,
                 gitHubInformation.ApiUrl,
@@ -178,11 +182,11 @@ namespace Bake.Services
                 gitHubInformation.Owner,
                 gitHubInformation.Repository);
 
-            // TODO: Allow better selection
+            // TODO: Use tags instead and find best tag closest to current version
             var releaseBranch = branches.SingleOrDefault(b => string.Equals(b.Name, "release"));
             if (releaseBranch == null)
             {
-                return EmptyCommits;
+                return Array.Empty<Commit>();
             }
 
             var compareResult = await gitHubClient.Repository.Commit.Compare(
@@ -192,13 +196,13 @@ namespace Bake.Services
                 sha);
             if (compareResult.AheadBy <= 0)
             {
-                return EmptyCommits;
+                return Array.Empty<Commit>();
             }
 
             return compareResult.Commits
                 .Select(c => new Commit(
                     c.Commit.Message,
-                    c.Commit.Sha,
+                    c.Sha,
                     c.Commit.Author.Date,
                     new Author(
                         c.Commit.Author.Name,

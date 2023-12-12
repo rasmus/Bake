@@ -60,7 +60,7 @@ namespace Bake.ValueObjects
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
 
         [YamlMember]
-        public List<Commit> Changelog
+        public List<Change> Changelog
         {
             get => _changelog.Task.IsCompletedSuccessfully ? _changelog.Task.Result : null;
             set
@@ -165,7 +165,7 @@ namespace Bake.ValueObjects
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
         [YamlIgnore]
-		public Task<List<Commit>> ChangelogTask => _changelog.Task;
+		public Task<List<Change>> ChangelogTask => _changelog.Task;
 		
         [YamlIgnore]
         public Task<PullRequestInformation> PullRequestTask => _pullRequest.Task;
@@ -173,7 +173,7 @@ namespace Bake.ValueObjects
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
-        private readonly TaskCompletionSource<List<Commit>> _changelog = new();
+        private readonly TaskCompletionSource<List<Change>> _changelog = new();
         private readonly TaskCompletionSource<Description> _description = new();
         private readonly TaskCompletionSource<PullRequestInformation> _pullRequest = new();
 
