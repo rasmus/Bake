@@ -24,11 +24,22 @@ using System.Collections.Generic;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
+using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
 {
     public class ChangeLogBuilderTests : TestFor<ChangeLogBuilder>
     {
+        [Test]
+        public void T()
+        {
+            // Arrange
+            var pullRequests = Get();
+
+            // Act
+            var changes = Sut.Build(pullRequests);
+        }
+
         private static IReadOnlyCollection<PullRequest> Get()
         {
             return new PullRequest[]

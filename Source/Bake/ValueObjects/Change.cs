@@ -45,5 +45,10 @@ namespace Bake.ValueObjects
             Text = text;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
+
+        public override string ToString()
+        {
+            return $"{Type}: {Text}";
+        }
     }
 }
