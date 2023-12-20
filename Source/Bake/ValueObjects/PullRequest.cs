@@ -1,6 +1,6 @@
-// MIT License
+﻿// MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,38 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class PullRequest
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public int Number { get; }
+        public string Title { get; }
 
-        Task<PullRequestInformation> GetPullRequestInformationAsync(
-            GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
-            string sha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
-            string sha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
+        public PullRequest(
             int number,
-            CancellationToken cancellationToken);
+            string title)
+        {
+            Number = number;
+            Title = title;
+        }
+
+        public override string ToString()
+        {
+            return $"#{Number}: {Title}";
+        }
     }
 }

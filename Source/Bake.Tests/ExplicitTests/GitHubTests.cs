@@ -29,6 +29,7 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -41,9 +42,9 @@ namespace Bake.Tests.ExplicitTests
         public GitHubTests() : base(null) { }
 
         [Test]
-        public async Task T()
+        public async Task GetCommits()
         {
-            var commits = await Sut.CompareAsync(
+            var commits = await Sut.GetCommitsAsync(
                 "662965e",
                 new GitHubInformation(
                     "rasmus",
@@ -51,6 +52,41 @@ namespace Bake.Tests.ExplicitTests
                     new Uri("https://github.com/rasmus/Bake"),
                     new Uri("https://api.github.com/")),
                 CancellationToken.None);
+        }
+
+        [Test]
+        public async Task GetPullRequests()
+        {
+            var pullRequests = await Sut.GetPullRequestsAsync(
+                "662965e",
+                new GitHubInformation(
+                    "rasmus",
+                    "Bake",
+                    new Uri("https://github.com/rasmus/Bake"),
+                    new Uri("https://api.github.com/")),
+                CancellationToken.None);
+
+            foreach (var pullRequest in pullRequests)
+            {
+                Console.WriteLine($"{pullRequest.Title}");
+            }
+        }
+
+        [Test]
+        public async Task GetPullRequest_NonExisting()
+        {
+            // Act
+            var pullRequest = await Sut.GetPullRequestAsync(
+                new GitHubInformation(
+                    "rasmus",
+                    "Bake",
+                    new Uri("https://github.com/rasmus/Bake"),
+                    new Uri("https://api.github.com/")),
+                int.MaxValue,
+                CancellationToken.None);
+
+            // Assert
+            pullRequest.Should().BeNull();
         }
 
         private static string GetToken()

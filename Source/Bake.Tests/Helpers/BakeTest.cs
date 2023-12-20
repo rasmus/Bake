@@ -127,8 +127,8 @@ namespace Bake.Tests.Helpers
                 _releases.Add(release);
                 return Task.CompletedTask;
             }
-			
-			public Task<PullRequestInformation> GetPullRequestInformationAsync(
+
+            public Task<PullRequestInformation> GetPullRequestInformationAsync(
                 GitInformation gitInformation,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
@@ -136,7 +136,7 @@ namespace Bake.Tests.Helpers
                 return Task.FromResult<PullRequestInformation>(null);
             }
 
-            public Task<IReadOnlyCollection<Commit>> CompareAsync(
+            public Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
                 string sha,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
@@ -150,6 +150,21 @@ namespace Bake.Tests.Helpers
                 return Task.FromResult<IReadOnlyCollection<Commit>>(commits);
             }
 
+            public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
+                string sha,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<PullRequest> GetPullRequestAsync(
+                GitHubInformation gitHubInformation,
+                int number,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

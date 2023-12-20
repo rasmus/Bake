@@ -32,10 +32,6 @@ namespace Bake.Cooking.Ingredients.Gathers
 {
     public class ChangelogGather : IGather
     {
-        private static readonly Regex IsMergeCommit = new(
-            @"^Merge\s+pull\s+request\s+\#(?<pr>[0-9]+)\s+.*",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
         private readonly IGitHub _gitHub;
 
         public ChangelogGather(
@@ -62,18 +58,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
-            var commits = await _gitHub.CompareAsync(
-                gitInformation.Sha,
-                gitHubInformation,
-                cancellationToken);
 
-            var pullRequestMerges = commits
-                .Select(c => new
-                {
-                    match = IsMergeCommit.Match(c.Message),
-                    commit = c
-                })
-                .Where(a => a.match.Success);
 
             // TODO: 
         }

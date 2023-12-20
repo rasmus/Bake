@@ -33,6 +33,7 @@ using Microsoft.Extensions.Logging;
 using Octokit;
 using Author = Bake.ValueObjects.Author;
 using Commit = Bake.ValueObjects.Commit;
+using PullRequest = Bake.ValueObjects.PullRequest;
 using Release = Bake.ValueObjects.Release;
 
 namespace Bake.Services
@@ -44,6 +45,9 @@ namespace Bake.Services
         private readonly IGitHubClientFactory _gitHubClientFactory;
         public static readonly Regex SpecialMergeCommitMessageParser = new(
             @"Merge\s+(?<pr>[a-f0-9]+)\s+into\s+(?<base>[a-f0-9]+)",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex IsMergeCommit = new(
+            @"^Merge\s+pull\s+request\s+\#(?<pr>[0-9]+)\s+.*",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public GitHub(
@@ -159,7 +163,7 @@ namespace Bake.Services
             return gitHubClient;
         }
 
-        public async Task<IReadOnlyCollection<Commit>> CompareAsync(
+        public async Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
             string sha,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
@@ -208,6 +212,71 @@ namespace Bake.Services
                         c.Commit.Author.Name,
                         c.Commit.Author.Email)))
                 .ToList();
+        }
+
+        public async Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
+            string sha,
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var commits = await GetCommitsAsync(
+                sha,
+                gitHubInformation,
+                cancellationToken);
+
+            var pullRequestTasks = commits
+                .Select(c => IsMergeCommit.Match(c.Message))
+                .Where(m => m.Success)
+                .Select(m => GetPullRequestAsync(gitHubInformation, int.Parse(m.Groups["pr"].Value), cancellationToken));
+
+            var pullRequests = await Task.WhenAll(pullRequestTasks);
+
+            return pullRequests
+                .Where(pr => pr != null)
+                .ToArray();
+        }
+
+        public async Task<PullRequest?> GetPullRequestAsync(
+            GitHubInformation gitHubInformation,
+            int number,
+            CancellationToken cancellationToken)
+        {
+            var token = await _credentials.TryGetGitHubTokenAsync(
+                gitHubInformation.Url,
+                cancellationToken);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
+
+            var gitHubClient = await _gitHubClientFactory.CreateAsync(
+                token,
+                gitHubInformation.ApiUrl,
+                cancellationToken);
+
+            try
+            {
+                var pullRequest = await gitHubClient.PullRequest.Get(
+                    gitHubInformation.Owner,
+                    gitHubInformation.Repository,
+                    number);
+
+                return new PullRequest(
+                    pullRequest.Number,
+                    pullRequest.Title);
+            }
+            catch (NotFoundException e)
+            {
+                // Puke! (why throw exception for something that is likely to happen)
+
+                _logger.LogDebug(
+                    e, "Could not find pull request #{Number} in {Owner}/{Repository}",
+                    number,
+                    gitHubInformation.Owner,
+                    gitHubInformation.Repository);
+                return null;
+            }
         }
 
         private async Task UploadFileAsync(
