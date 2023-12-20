@@ -35,6 +35,11 @@ namespace Bake.ValueObjects
             Title = title;
         }
 
+        public Change ToChange()
+        {
+            return new Change(ChangeType.Other, $"{Title} (#{Number})");
+        }
+
         public override string ToString()
         {
             return $"#{Number}: {Title}";

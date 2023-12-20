@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,12 +31,13 @@ namespace Bake.Services
     public class ChangeLogBuilder : IChangeLogBuilder
     {
         private static readonly Regex DependencyDetector = new(
-            @"Bump (?<name>[^s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( (?<project>[a-z\-\.0-9/\\]+)){0,1}",
+            @"Bump (?<name>[^s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[a-z\-\.0-9\/\\]+)){0,1}",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public IReadOnlyCollection<Change> Build(IReadOnlyCollection<PullRequest> pullRequests)
         {
             var dependencyChanges =
+                (
                 from pr in pullRequests
                 let m = DependencyDetector.Match(pr.Title)
                 where m.Success
@@ -53,16 +53,27 @@ namespace Bake.Services
                 group a by new {a.dependency, a.project}
                 into g
                 orderby g.Key.project, g.Key.dependency
-
                 select new DependencyChange(
                     g.Key.dependency,
                     g.Key.project,
                     g.Select(x => x.pr.Number).OrderBy(i => i).ToArray(),
                     g.Min(x => x.fromVersion),
-                    g.Max(x => x.to));
+                    g.Max(x => x.to))
+                ).ToArray();
 
-            return dependencyChanges
-                .Select(d => d.ToChange())
+            var dependencyPRs = new HashSet<int>(dependencyChanges.SelectMany(d => d.PullRequests));
+
+            var otherChanges = pullRequests
+                .Where(pr => !dependencyPRs.Contains(pr.Number))
+                .OrderBy(pr => pr.Number)
+                .Select(pr => pr.ToChange())
+                .ToArray();
+
+            // TODO: Use dictionary instead
+
+            return Enumerable.Empty<Change>()
+                .Concat(dependencyChanges.Select(d => d.ToChange()))
+                .Concat(otherChanges)
                 .ToArray();
         }
 
