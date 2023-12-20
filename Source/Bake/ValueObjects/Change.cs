@@ -1,6 +1,6 @@
-﻿// MIT License
+// MIT License
 // 
-// Copyright (c) 2021 Rasmus Mikkelsen
+// Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,15 +28,20 @@ namespace Bake.ValueObjects
     public class Change
     {
         [YamlMember]
+        public ChangeType Type { get; [Obsolete] set; }
+
+        [YamlMember]
         public string Text { get; [Obsolete] set; }
 
         [Obsolete]
         public Change() { }
 
         public Change(
+            ChangeType type,
             string text)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
+            Type = type;
             Text = text;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

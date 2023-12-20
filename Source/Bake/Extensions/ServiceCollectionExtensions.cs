@@ -57,6 +57,7 @@ namespace Bake.Extensions
                 .AddSingleton<IExecutor, Executor>()
                 .AddTransient<IEditor, Editor>()
                 .AddTransient<IKitchen, Kitchen>()
+                .AddSingleton<IChangeLogBuilder, ChangeLogBuilder>()
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
                 .AddTransient<ICsProjParser, CsProjParser>()

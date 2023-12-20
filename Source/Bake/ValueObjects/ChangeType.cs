@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
-
-app.MapGet("/ping", () => "Pong!");
-
-Console.WriteLine("Hello, World!");
-
-app.Run();
+namespace Bake.ValueObjects
+{
+    public enum ChangeType
+    {
+        Other = 0,
+        Dependency = 1,
+    }
+}

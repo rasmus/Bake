@@ -20,11 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Bake.ValueObjects;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.Services
+{
+    public class ChangeLogBuilder : IChangeLogBuilder
+    {
+        private static readonly Regex DependencyDetector = new(
+            @"Bump (?<name>[^s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( (?<project>[a-z\-\.0-9])){0,1}",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-Console.WriteLine("Hello, World!");
-
-app.Run();
+        public IReadOnlyCollection<Change> Build(IReadOnlyCollection<PullRequest> pullRequests)
+        {
+            return ArraySegment<Change>.Empty;
+        }
+    }
+}
