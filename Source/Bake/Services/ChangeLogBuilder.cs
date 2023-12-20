@@ -22,7 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Bake.Core;
 using Bake.ValueObjects;
 
 namespace Bake.Services
@@ -35,6 +37,33 @@ namespace Bake.Services
 
         public IReadOnlyCollection<Change> Build(IReadOnlyCollection<PullRequest> pullRequests)
         {
+            var dependencies = pullRequests
+                .Select(pr => new
+                {
+                    match = DependencyDetector.Match(pr.Title),
+                    pullRequest = pr,
+                })
+                .Where(a => a.match.Success)
+                .Select(a => new
+                {
+                    from = SemVer.Parse(a.match.Groups["from"].Value),
+                    to = SemVer.Parse(a.match.Groups["to"].Value),
+                    dependency = a.match.Groups["name"].Value,
+                    project = a.match.Groups["project"].Value,
+                    pullRequestNumber = a.pullRequest.Number,
+                })
+                .GroupBy(a => new { a.dependency, a.project })
+                .Select(g => new
+                {
+                    from = g.Min(a => a.from),
+                    to = g.Max(a => a.to),
+                    g.Key.dependency,
+                    g.Key.project,
+                    pullRequestNumbers = g.Select(a => a.pullRequestNumber).ToArray(),
+                })
+                .OrderBy(a => a.project)
+                .ThenBy(a => a.dependency);
+
             return ArraySegment<Change>.Empty;
         }
     }
