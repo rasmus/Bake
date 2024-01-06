@@ -34,7 +34,7 @@ namespace Bake.Services
             @"Bump (?<name>[^\s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[^\s]+)){0,1}",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public IReadOnlyCollection<Change> Build(IReadOnlyCollection<PullRequest> pullRequests)
+        public IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>> Build(IReadOnlyCollection<PullRequest> pullRequests)
         {
             var dependencyChanges =
                 (
@@ -59,7 +59,9 @@ namespace Bake.Services
                         g.Select(x => x.pr.Number).OrderBy(i => i).ToArray(),
                         g.Min(x => x.fromVersion),
                         g.Max(x => x.to))
-                ).ToArray();
+                )
+                .OrderBy(c => c.Name)
+                .ToArray();
 
             var dependencyPRs = new HashSet<int>(dependencyChanges.SelectMany(d => d.PullRequests));
 
@@ -69,12 +71,11 @@ namespace Bake.Services
                 .Select(pr => pr.ToChange())
                 .ToArray();
 
-            // TODO: Use dictionary instead
-
-            return Enumerable.Empty<Change>()
-                .Concat(dependencyChanges.Select(d => d.ToChange()))
-                //.Concat(otherChanges)
-                .ToArray();
+            return new Dictionary<ChangeType, IReadOnlyCollection<Change>>
+                {
+                    [ChangeType.Other] = otherChanges,
+                    [ChangeType.Dependency] = dependencyChanges.Select(d => d.ToChange()).ToArray(),
+                };
         }
 
         private class DependencyChange
