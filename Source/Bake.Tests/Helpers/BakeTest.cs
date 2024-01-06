@@ -136,8 +136,7 @@ namespace Bake.Tests.Helpers
                 return Task.FromResult<PullRequestInformation>(null);
             }
 
-            public Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
-                string sha,
+            public Task<IReadOnlyCollection<Commit>> GetCommitsAsync(string baseSha, string headSha,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
@@ -150,8 +149,8 @@ namespace Bake.Tests.Helpers
                 return Task.FromResult<IReadOnlyCollection<Commit>>(commits);
             }
 
-            public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
-                string sha,
+            public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
+                string headSha,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
@@ -164,6 +163,13 @@ namespace Bake.Tests.Helpers
                 CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
+            }
+
+            public Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                return Task.FromResult<IReadOnlyCollection<Tag>>(Array.Empty<Tag>());
             }
         }
     }

@@ -95,9 +95,22 @@ namespace Bake.Cooking.Cooks.GitHub
 
             if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Any())
             {
-                foreach (var commit in context.Ingredients.Changelog)
+                foreach (var (changeType, title) in new Dictionary<ChangeType, string>
+                         {
+                             [ChangeType.Dependency] = "Updated dependencies",
+                             [ChangeType.Other] = "Other changes",
+                         })
                 {
-                    stringBuilder.AppendLine($"* {commit.Text}");
+                    stringBuilder
+                        .AppendLine($"#### {title}")
+                        .AppendLine();
+
+                    foreach (var change in context.Ingredients.Changelog[changeType])
+                    {
+                        stringBuilder.AppendLine($"* {change.Text}");
+                    }
+
+                    stringBuilder.AppendLine();
                 }
 
                 stringBuilder.AppendLine();

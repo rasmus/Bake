@@ -22,7 +22,6 @@
 
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
@@ -33,11 +32,14 @@ namespace Bake.Cooking.Ingredients.Gathers
     public class ChangelogGather : IGather
     {
         private readonly IGitHub _gitHub;
+        private readonly IChangeLogBuilder _changeLogBuilder;
 
         public ChangelogGather(
-            IGitHub gitHub)
+            IGitHub gitHub,
+            IChangeLogBuilder changeLogBuilder)
         {
             _gitHub = gitHub;
+            _changeLogBuilder = changeLogBuilder;
         }
 
         public async Task GatherAsync(
@@ -58,9 +60,26 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
+            var tags = await _gitHub.GetTagsAsync(
+                gitHubInformation,
+                cancellationToken);
 
+            var tag = tags
+                .Where(t => t.Version.LegacyVersion < ingredients.Version.LegacyVersion)
+                .MaxBy(t => t.Version);
 
-            // TODO: 
+            if (tag == null)
+            {
+                ingredients.FailChangelog();
+                return;
+            }
+
+            var pullRequests = await _gitHub.GetPullRequestsAsync(
+                tag.Sha,
+                gitInformation.Sha,
+                gitHubInformation, cancellationToken);
+
+            ingredients.Changelog = _changeLogBuilder.Build(pullRequests);
         }
     }
 }

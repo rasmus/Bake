@@ -39,19 +39,22 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
-            string sha,
+        Task<IReadOnlyCollection<Commit>> GetCommitsAsync(string baseSha, string headSha,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
-            string sha,
+        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
+            string headSha,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
         Task<PullRequest> GetPullRequestAsync(
             GitHubInformation gitHubInformation,
             int number,
+            CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+            GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
     }
 }

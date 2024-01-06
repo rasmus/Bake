@@ -45,7 +45,8 @@ namespace Bake.Tests.ExplicitTests
         public async Task GetCommits()
         {
             var commits = await Sut.GetCommitsAsync(
-                "662965e",
+                "e1b486d",
+                "c54a03b",
                 new GitHubInformation(
                     "rasmus",
                     "Bake",
@@ -58,7 +59,8 @@ namespace Bake.Tests.ExplicitTests
         public async Task GetPullRequests()
         {
             var pullRequests = await Sut.GetPullRequestsAsync(
-                "662965e",
+                "e1b486d",
+                "c54a03b",
                 new GitHubInformation(
                     "rasmus",
                     "Bake",

@@ -97,6 +97,27 @@ namespace Bake.Services
                 gitHubReleaseUpdate);
         }
 
+        public async Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+
+            var releases = await gitHubClient.Repository.GetAllTags(
+                gitHubInformation.Owner,
+                gitHubInformation.Repository);
+
+            return releases
+                .Select(t => new
+                {
+                    version = SemVer.TryParse(t.Name, out var v, true) ? v : null,
+                    tag = t,
+                })
+                .Where(a => a.version != null)
+                .Select(a => new Tag(a.version, a.tag.Commit.Sha))
+                .ToArray();
+        }
+
         public async Task<PullRequestInformation> GetPullRequestInformationAsync(
             GitInformation gitInformation,
             GitHubInformation gitHubInformation,
@@ -164,7 +185,8 @@ namespace Bake.Services
         }
 
         public async Task<IReadOnlyCollection<Commit>> GetCommitsAsync(
-            string sha,
+            string baseSha,
+            string headSha,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
@@ -182,22 +204,11 @@ namespace Bake.Services
                 gitHubInformation.ApiUrl,
                 cancellationToken);
 
-            var branches = await gitHubClient.Repository.Branch.GetAll(
-                gitHubInformation.Owner,
-                gitHubInformation.Repository);
-
-            // TODO: Use tags instead and find best tag closest to current version
-            var releaseBranch = branches.SingleOrDefault(b => string.Equals(b.Name, "release"));
-            if (releaseBranch == null)
-            {
-                return Array.Empty<Commit>();
-            }
-
             var compareResult = await gitHubClient.Repository.Commit.Compare(
                 gitHubInformation.Owner,
                 gitHubInformation.Repository,
-                releaseBranch.Commit.Sha,
-                sha);
+                baseSha,
+                headSha);
             if (compareResult.AheadBy <= 0)
             {
                 return Array.Empty<Commit>();
@@ -215,12 +226,14 @@ namespace Bake.Services
         }
 
         public async Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(
-            string sha,
+            string baseSha,
+            string headSha,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
             var commits = await GetCommitsAsync(
-                sha,
+                baseSha,
+                headSha,
                 gitHubInformation,
                 cancellationToken);
 

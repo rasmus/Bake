@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
@@ -20,25 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using Bake.Core;
 
 namespace Bake.ValueObjects
 {
-    public class Release : Tag
+    public class Tag
     {
-        public string Body { get; }
-        public IReadOnlyCollection<ReleaseFile> Files { get; }
+        public SemVer Version { get; }
+        public string Sha { get; }
 
-        public Release(
+        public Tag(
             SemVer version,
-            string sha,
-            string body,
-            IReadOnlyCollection<ReleaseFile> files)
-            : base(version, sha)
+            string sha)
         {
-            Body = body;
-            Files = files;
+            Version = version;
+            Sha = sha;
+        }
+
+        public override string ToString()
+        {
+            return $"{Version}: {Sha}";
         }
     }
 }
