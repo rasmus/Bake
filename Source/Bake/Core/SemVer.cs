@@ -180,7 +180,7 @@ namespace Bake.Core
             if (ReferenceEquals(null, other)) return 1;
             var majorComparison = Major.CompareTo(other.Major);
             if (majorComparison != 0) return majorComparison;
-            var minorComparison = Minor.GetValueOrDefault().CompareTo(other.Patch.GetValueOrDefault());
+            var minorComparison = Minor.GetValueOrDefault().CompareTo(other.Minor.GetValueOrDefault());
             if (minorComparison != 0) return minorComparison;
             var patchComparison = Patch.GetValueOrDefault().CompareTo(other.Patch.GetValueOrDefault());
             if (patchComparison != 0) return patchComparison;
@@ -211,7 +211,7 @@ namespace Bake.Core
         {
             return HashCode.Combine(
                 Major,
-                Minor,
+                Minor.GetValueOrDefault(),
                 Patch.GetValueOrDefault(),
                 Meta);
         }
