@@ -31,34 +31,34 @@ namespace Bake.Services
     public class ChangeLogBuilder : IChangeLogBuilder
     {
         private static readonly Regex DependencyDetector = new(
-            @"Bump (?<name>[^s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[a-z\-\.0-9\/\\]+)){0,1}",
+            @"Bump (?<name>[^\s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[^\s]+)){0,1}",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public IReadOnlyCollection<Change> Build(IReadOnlyCollection<PullRequest> pullRequests)
         {
             var dependencyChanges =
                 (
-                from pr in pullRequests
-                let m = DependencyDetector.Match(pr.Title)
-                where m.Success
-                let p = m.Groups["project"]
-                let a = new
-                {
-                    fromVersion = SemVer.Parse(m.Groups["from"].Value),
-                    to = SemVer.Parse(m.Groups["to"].Value),
-                    dependency = m.Groups["name"].Value,
-                    project = p.Success ? p.Value : string.Empty,
-                    pr,
-                }
-                group a by new {a.dependency, a.project}
-                into g
-                orderby g.Key.project, g.Key.dependency
-                select new DependencyChange(
-                    g.Key.dependency,
-                    g.Key.project,
-                    g.Select(x => x.pr.Number).OrderBy(i => i).ToArray(),
-                    g.Min(x => x.fromVersion),
-                    g.Max(x => x.to))
+                    from pr in pullRequests
+                    let m = DependencyDetector.Match(pr.Title)
+                    where m.Success
+                    let p = m.Groups["project"]
+                    let a = new
+                    {
+                        fromVersion = SemVer.Parse(m.Groups["from"].Value, true),
+                        to = SemVer.Parse(m.Groups["to"].Value, true),
+                        dependency = m.Groups["name"].Value,
+                        project = p.Success ? p.Value : string.Empty,
+                        pr,
+                    }
+                    group a by new { a.dependency, a.project }
+                    into g
+                    orderby g.Key.project, g.Key.dependency
+                    select new DependencyChange(
+                        g.Key.dependency,
+                        g.Key.project,
+                        g.Select(x => x.pr.Number).OrderBy(i => i).ToArray(),
+                        g.Min(x => x.fromVersion),
+                        g.Max(x => x.to))
                 ).ToArray();
 
             var dependencyPRs = new HashSet<int>(dependencyChanges.SelectMany(d => d.PullRequests));
@@ -73,7 +73,7 @@ namespace Bake.Services
 
             return Enumerable.Empty<Change>()
                 .Concat(dependencyChanges.Select(d => d.ToChange()))
-                .Concat(otherChanges)
+                //.Concat(otherChanges)
                 .ToArray();
         }
 
@@ -101,9 +101,11 @@ namespace Bake.Services
 
             public Change ToChange()
             {
-                return new Change(
-                    ChangeType.Dependency,
-                    $"Bump {Name} {From} to {To} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))})");
+                var message = string.IsNullOrEmpty(Project)
+                    ? $"Bump {Name} {From} to {To} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))})"
+                    : $"Bump {Name} {From} to {To} in {Project} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))})";
+
+                return new Change(ChangeType.Dependency, message);
             }
         }
     }
