@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bake.Cooking.Cooks.GitHub;
@@ -70,7 +71,7 @@ namespace Bake.Tests.ExplicitTests
 
             foreach (var pullRequest in pullRequests)
             {
-                Console.WriteLine($"new ({pullRequest.Number}, \"{pullRequest.Title}\"),");
+                Console.WriteLine($"new ({pullRequest.Number}, \"{pullRequest.Title}\", new []{{\"{pullRequest.Authors.Single()}\"}}),");
             }
         }
 

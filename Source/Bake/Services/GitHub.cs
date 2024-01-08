@@ -275,9 +275,17 @@ namespace Bake.Services
                     gitHubInformation.Repository,
                     number);
 
+                var author = pullRequest.User.Login;
+                var i = author.IndexOf('[');
+                var length = i < 0 ? author.Length : i;
+
                 return new PullRequest(
                     pullRequest.Number,
-                    pullRequest.Title);
+                    pullRequest.Title,
+                    new []
+                    {
+                        author[..length],
+                    });
             }
             catch (NotFoundException e)
             {

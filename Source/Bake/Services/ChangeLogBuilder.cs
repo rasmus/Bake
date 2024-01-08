@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -56,9 +57,17 @@ namespace Bake.Services
                     select new DependencyChange(
                         g.Key.dependency,
                         g.Key.project,
-                        g.Select(x => x.pr.Number).OrderBy(i => i).ToArray(),
+                        g
+                            .Select(x => x.pr.Number)
+                            .OrderBy(i => i)
+                            .ToArray(),
                         g.Min(x => x.fromVersion),
-                        g.Max(x => x.to))
+                        g.Max(x => x.to),
+                        g
+                            .SelectMany(x => x.pr.Authors)
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .OrderBy(x => x)
+                            .ToArray())
                 )
                 .OrderBy(c => c.Name)
                 .ToArray();
@@ -85,26 +94,29 @@ namespace Bake.Services
             public int[] PullRequests { get; }
             public SemVer From { get; }
             public SemVer To { get; }
+            public IReadOnlyCollection<string> Authors { get; }
 
             public DependencyChange(
                 string name,
                 string project,
                 int[] pullRequests,
                 SemVer from,
-                SemVer to)
+                SemVer to,
+                IReadOnlyCollection<string> authors)
             {
                 Name = name;
                 Project = project;
                 PullRequests = pullRequests;
                 From = from;
                 To = to;
+                Authors = authors;
             }
 
             public Change ToChange()
             {
                 var message = string.IsNullOrEmpty(Project)
-                    ? $"Bump {Name} {From} to {To} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))})"
-                    : $"Bump {Name} {From} to {To} in {Project} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))})";
+                    ? $"Bump {Name} {From} to {To} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))}, by {string.Join(", ", Authors.Select(a => $"@{a}"))})"
+                    : $"Bump {Name} {From} to {To} in {Project} ({string.Join(", ", PullRequests.Select(pr => $"#{pr}"))}, by {string.Join(", ", Authors.Select(a => $"@{a}"))})";
 
                 return new Change(ChangeType.Dependency, message);
             }

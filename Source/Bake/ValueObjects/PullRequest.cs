@@ -20,29 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Bake.ValueObjects
 {
     public class PullRequest
     {
         public int Number { get; }
         public string Title { get; }
+        public IReadOnlyCollection<string> Authors { get; }
 
         public PullRequest(
             int number,
-            string title)
+            string title,
+            string[] authors)
         {
             Number = number;
             Title = title;
+            Authors = authors;
         }
 
         public Change ToChange()
         {
-            return new Change(ChangeType.Other, $"{Title} (#{Number})");
+            return new Change(ChangeType.Other, $"{Title} (#{Number}, by {string.Join(", ", Authors.Select(a => $"@{a}"))})");
         }
 
         public override string ToString()
         {
-            return $"#{Number}: {Title}";
+            return $"#{Number}: {Title} by {string.Join(", ", Authors)}";
         }
     }
 }
