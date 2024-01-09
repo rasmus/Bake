@@ -21,9 +21,11 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Services
@@ -31,13 +33,18 @@ namespace Bake.Tests.UnitTests.Services
     public class ChangeLogBuilderTests : TestFor<ChangeLogBuilder>
     {
         [Test]
-        public void T()
+        public void Build()
         {
             // Arrange
             var pullRequests = Get();
 
             // Act
             var changes = Sut.Build(pullRequests);
+
+            // Assert
+            changes.Should().HaveCount(2);
+            changes[ChangeType.Dependency].Should().HaveCount(21);
+            changes[ChangeType.Dependency].Select(d => d.Text).Should().Contain("Bump flask 2.3.2 to 3.0.0 in /TestProjects/Python3.Flask (#265, #282, by @dependabot)");
         }
 
         private static IReadOnlyCollection<PullRequest> Get()
