@@ -60,6 +60,20 @@ namespace Bake.ValueObjects
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
 
         [YamlMember]
+        public IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>> Changelog
+        {
+            get => _changelog.Task.IsCompletedSuccessfully ? _changelog.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _changelog.SetResult(value);
+            }
+        }
+
+        [YamlMember]
         public GitInformation Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
@@ -151,11 +165,15 @@ namespace Bake.ValueObjects
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
         [YamlIgnore]
+		public Task<IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>>> ChangelogTask => _changelog.Task;
+		
+        [YamlIgnore]
         public Task<PullRequestInformation> PullRequestTask => _pullRequest.Task;
-
+		
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
+        private readonly TaskCompletionSource<IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>>> _changelog = new();
         private readonly TaskCompletionSource<Description> _description = new();
         private readonly TaskCompletionSource<PullRequestInformation> _pullRequest = new();
 
@@ -178,6 +196,7 @@ namespace Bake.ValueObjects
 
         public void FailGit() => _git.SetCanceled();
         public void FailGitHub() => _gitHub.SetCanceled();
+        public void FailChangelog() => _changelog.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
         public void FailPullRequest() => _pullRequest.SetCanceled();
@@ -197,6 +216,11 @@ namespace Bake.ValueObjects
             if (!_pullRequest.Task.IsCompleted)
             {
                 _pullRequest.SetCanceled();
+            }
+
+            if (!_changelog.Task.IsCompleted)
+            {
+                _changelog.SetCanceled();
             }
         }
     }

@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using Bake.Core;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class Tag
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
 
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(
-			GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
-            string headSha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public Tag(){}
 
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
-            int number,
-            CancellationToken cancellationToken);
+        public Tag(
+            SemVer version,
+            string sha)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Version = version;
+            Sha = sha;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
 
-        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public override string ToString()
+        {
+            return $"{Version}: {Sha}";
+        }
     }
 }

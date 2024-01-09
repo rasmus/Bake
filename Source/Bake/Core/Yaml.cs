@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -74,6 +75,7 @@ namespace Bake.Core
                 new DeserializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithTypeConverter(new DateTimeOffsetTypeConverter())
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .IgnoreUnmatchedProperties()
                 .Build();
@@ -82,6 +84,7 @@ namespace Bake.Core
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
+                .WithTypeConverter(new DateTimeOffsetTypeConverter())
                 .DisableAliases()
                 .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
                 .Build();
@@ -122,6 +125,42 @@ namespace Bake.Core
                 eventInfo.Style = ScalarStyle.DoubleQuoted;
 
                 base.Emit(eventInfo, emitter);
+            }
+        }
+
+        private class DateTimeOffsetTypeConverter : IYamlTypeConverter
+        {
+            private static readonly IValueDeserializer ValueDeserializer = new DeserializerBuilder()
+                .BuildValueDeserializer();
+
+            private static readonly IValueSerializer ValueSerializer = new SerializerBuilder()
+                .WithEventEmitter(n => new QuoteSurroundingEventEmitter(n))
+                .BuildValueSerializer();
+
+            public bool Accepts(Type type) => typeof(DateTimeOffset) == type;
+
+            public object? ReadYaml(IParser parser, Type type)
+            {
+                var value = (string)ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer);
+                if (!DateTimeOffset.TryParseExact(value, "O", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dateTimeOffset))
+                {
+                    throw new FormatException($"'{value}' is not a valid DateTimeOffset");
+                }
+
+                return dateTimeOffset;
+            }
+
+            public void WriteYaml(IEmitter emitter, object? value, Type type)
+            {
+                if (value == null)
+                {
+                    ValueSerializer.SerializeValue(emitter, null, typeof(string));
+                }
+                else
+                {
+                    var dateTimeOffset = (DateTimeOffset)value;
+                    ValueSerializer.SerializeValue(emitter, dateTimeOffset.ToString("O"), typeof(string));
+                }
             }
         }
 

@@ -20,37 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class Commit
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Message { get; [Obsolete] set; }
 
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(
-			GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
-            string headSha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public Author Author { get; [Obsolete] set; }
 
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
-            int number,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public DateTimeOffset Time { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public Commit() { }
+
+        public Commit(
+            string message,
+            string sha,
+            DateTimeOffset time,
+            Author author)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Message = message ?? string.Empty;
+            Sha = sha ?? string.Empty;
+            Author = author;
+            Time = time;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Sha[..5]}: {Message}";
+        }
     }
 }

@@ -25,10 +25,8 @@ using Bake.Core;
 
 namespace Bake.ValueObjects
 {
-    public class Release
+    public class Release : Tag
     {
-        public SemVer Version { get; }
-        public string Sha { get; }
         public string Body { get; }
         public IReadOnlyCollection<ReleaseFile> Files { get; }
 
@@ -37,9 +35,8 @@ namespace Bake.ValueObjects
             string sha,
             string body,
             IReadOnlyCollection<ReleaseFile> files)
+            : base(version, sha)
         {
-            Version = version;
-            Sha = sha;
             Body = body;
             Files = files;
         }

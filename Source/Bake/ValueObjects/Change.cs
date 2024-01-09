@@ -20,37 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System;
+using YamlDotNet.Serialization;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class Change
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public ChangeType Type { get; [Obsolete] set; }
 
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(
-			GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Text { get; [Obsolete] set; }
 
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
-            string headSha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public Change() { }
 
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
-            int number,
-            CancellationToken cancellationToken);
+        public Change(
+            ChangeType type,
+            string text)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Type = type;
+            Text = text;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
 
-        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public override string ToString()
+        {
+            return $"{Type}: {Text}";
+        }
     }
 }

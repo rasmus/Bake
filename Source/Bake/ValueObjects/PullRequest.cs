@@ -21,36 +21,34 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using System.Linq;
 
-namespace Bake.Services
+namespace Bake.ValueObjects
 {
-    public interface IGitHub
+    public class PullRequest
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public int Number { get; }
+        public string Title { get; }
+        public IReadOnlyCollection<string> Authors { get; }
 
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(
-			GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
-            string headSha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
+        public PullRequest(
             int number,
-            CancellationToken cancellationToken);
+            string title,
+            string[] authors)
+        {
+            Number = number;
+            Title = title;
+            Authors = authors;
+        }
 
-        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public Change ToChange()
+        {
+            return new Change(ChangeType.Other, $"{Title} (#{Number}, by {string.Join(", ", Authors.Select(a => $"@{a}"))})");
+        }
+
+        public override string ToString()
+        {
+            return $"#{Number}: {Title} by {string.Join(", ", Authors)}";
+        }
     }
 }

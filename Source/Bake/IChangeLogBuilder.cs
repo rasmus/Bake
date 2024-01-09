@@ -21,36 +21,12 @@
 // SOFTWARE.
 
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 
-namespace Bake.Services
+namespace Bake
 {
-    public interface IGitHub
+    public interface IChangeLogBuilder
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(
-			GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
-            string headSha,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequest> GetPullRequestAsync(
-            GitHubInformation gitHubInformation,
-            int number,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<Tag>> GetTagsAsync(
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>> Build(IReadOnlyCollection<PullRequest> pullRequests);
     }
 }
