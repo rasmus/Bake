@@ -93,6 +93,29 @@ namespace Bake.Cooking.Cooks.GitHub
                     .AppendLine();
             }
 
+            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Any())
+            {
+                foreach (var (changeType, title) in new Dictionary<ChangeType, string>
+                         {
+                             [ChangeType.Dependency] = "Updated dependencies",
+                             [ChangeType.Other] = "Other changes",
+                         })
+                {
+                    stringBuilder
+                        .AppendLine($"#### {title}")
+                        .AppendLine();
+
+                    foreach (var change in context.Ingredients.Changelog[changeType])
+                    {
+                        stringBuilder.AppendLine($"* {change.Text}");
+                    }
+
+                    stringBuilder.AppendLine();
+                }
+
+                stringBuilder.AppendLine();
+            }
+
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
 
             var documentationSite = recipe.Artifacts

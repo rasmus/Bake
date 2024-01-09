@@ -20,11 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System.Collections.Generic;
+using System.Linq;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.ValueObjects
+{
+    public class PullRequest
+    {
+        public int Number { get; }
+        public string Title { get; }
+        public IReadOnlyCollection<string> Authors { get; }
 
-Console.WriteLine("Hello, World!");
+        public PullRequest(
+            int number,
+            string title,
+            string[] authors)
+        {
+            Number = number;
+            Title = title;
+            Authors = authors;
+        }
 
-app.Run();
+        public Change ToChange()
+        {
+            return new Change(ChangeType.Other, $"{Title} (#{Number}, by {string.Join(", ", Authors.Select(a => $"@{a}"))})");
+        }
+
+        public override string ToString()
+        {
+            return $"#{Number}: {Title} by {string.Join(", ", Authors)}";
+        }
+    }
+}

@@ -20,11 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System;
+using YamlDotNet.Serialization;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.ValueObjects
+{
+    public class Commit
+    {
+        [YamlMember]
+        public string Message { get; [Obsolete] set; }
 
-Console.WriteLine("Hello, World!");
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-app.Run();
+        [YamlMember]
+        public Author Author { get; [Obsolete] set; }
+
+        [YamlMember]
+        public DateTimeOffset Time { get; [Obsolete] set; }
+
+        [Obsolete]
+        public Commit() { }
+
+        public Commit(
+            string message,
+            string sha,
+            DateTimeOffset time,
+            Author author)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Message = message ?? string.Empty;
+            Sha = sha ?? string.Empty;
+            Author = author;
+            Time = time;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Sha[..5]}: {Message}";
+        }
+    }
+}

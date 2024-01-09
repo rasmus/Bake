@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
@@ -20,11 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System;
+using Bake.Core;
+using YamlDotNet.Serialization;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.ValueObjects
+{
+    public class Tag
+    {
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
 
-Console.WriteLine("Hello, World!");
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
 
-app.Run();
+        [Obsolete]
+        public Tag(){}
+
+        public Tag(
+            SemVer version,
+            string sha)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Version = version;
+            Sha = sha;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Version}: {Sha}";
+        }
+    }
+}

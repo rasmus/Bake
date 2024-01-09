@@ -20,11 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System.Collections.Generic;
+using Bake.ValueObjects;
 
-app.MapGet("/ping", () => "Pong!");
-
-Console.WriteLine("Hello, World!");
-
-app.Run();
+namespace Bake
+{
+    public interface IChangeLogBuilder
+    {
+        IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>> Build(IReadOnlyCollection<PullRequest> pullRequests);
+    }
+}

@@ -20,11 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System;
+using YamlDotNet.Serialization;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.ValueObjects
+{
+    public class Author
+    {
+        [YamlMember]
+        public string Name { get; [Obsolete] set; }
 
-Console.WriteLine("Hello, World!");
+        [YamlMember]
+        public string Email { get; [Obsolete] set; }
 
-app.Run();
+        [Obsolete]
+        public Author() { }
+
+        public Author(
+            string name,
+            string email)
+        {
+            Name = name;
+            Email = email;
+        }
+    }
+}

@@ -20,11 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using System;
+using YamlDotNet.Serialization;
 
-app.MapGet("/ping", () => "Pong!");
+namespace Bake.ValueObjects
+{
+    public class Change
+    {
+        [YamlMember]
+        public ChangeType Type { get; [Obsolete] set; }
 
-Console.WriteLine("Hello, World!");
+        [YamlMember]
+        public string Text { get; [Obsolete] set; }
 
-app.Run();
+        [Obsolete]
+        public Change() { }
+
+        public Change(
+            ChangeType type,
+            string text)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Type = type;
+            Text = text;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override string ToString()
+        {
+            return $"{Type}: {Text}";
+        }
+    }
+}

@@ -36,6 +36,12 @@ namespace Bake.Tests.UnitTests.Core
             null,
             null)]
         [TestCase(
+            "3",
+            3,
+            null,
+            null,
+            null)]
+        [TestCase(
             "1.2.3-meta",
             1,
             2,
@@ -62,12 +68,12 @@ namespace Bake.Tests.UnitTests.Core
         public void ValidVersions(
             string str,
             int expectedMajor,
-            int expectedMinor,
+            int? expectedMinor,
             int? expectedPatch,
             string expectedMeta)
         {
             // Act
-            var version = SemVer.Parse(str);
+            var version = SemVer.Parse(str, true);
 
             // Assert
             version.Major.Should().Be(expectedMajor);
@@ -117,7 +123,7 @@ namespace Bake.Tests.UnitTests.Core
         {
             // Act
             var list = versions
-                .Select(SemVer.Parse)
+                .Select(s => SemVer.Parse(s))
                 .OrderBy(v => v);
 
             // Assert

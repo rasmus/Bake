@@ -32,6 +32,8 @@ using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
@@ -126,12 +128,47 @@ namespace Bake.Tests.Helpers
                 return Task.CompletedTask;
             }
 
-            public Task<PullRequestInformation> GetPullRequestInformationAsync(
-                GitInformation gitInformation,
+            public Task<PullRequestInformation?> GetPullRequestInformationAsync(GitInformation gitInformation,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
                 return Task.FromResult<PullRequestInformation>(null);
+            }
+
+            public Task<IReadOnlyCollection<Commit>> GetCommitsAsync(string baseSha, string headSha,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                var commits = new List<Commit>
+                    {
+                        new("Wrote some awesome tests", "c2dbe6e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu")),
+                        new("Got it working", "4d79e4e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu"))
+                    };
+
+                return Task.FromResult<IReadOnlyCollection<Commit>>(commits);
+            }
+
+            public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
+                string headSha,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<PullRequest> GetPullRequestAsync(
+                GitHubInformation gitHubInformation,
+                int number,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                return Task.FromResult<IReadOnlyCollection<Tag>>(Array.Empty<Tag>());
             }
         }
     }
