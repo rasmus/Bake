@@ -102,6 +102,10 @@ namespace Bake.Services
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+            if (gitHubClient == null)
+            {
+                return Array.Empty<Tag>();
+            }
 
             var releases = await gitHubClient.Repository.GetAllTags(
                 gitHubInformation.Owner,
@@ -124,25 +128,9 @@ namespace Bake.Services
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
-
-            async Task<PullRequestInformation> SearchAsync(string c)
+            if (gitHubClient == null)
             {
-                var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(c)
-                {
-                    Type = IssueTypeQualifier.PullRequest,
-                    Repos = new RepositoryCollection
-                    {
-                        {gitHubInformation.Owner, gitHubInformation.Repository},
-                    }
-                });
-                if (issues.Items.Count != 1)
-                {
-                    return null;
-                }
-
-                var issue = issues.Items.Single();
-                return new PullRequestInformation(
-                    issue.Labels.Select(l => l.Name).ToArray());
+                return null;
             }
 
             var pullRequestInformation = await SearchAsync(gitInformation.Sha);
@@ -167,20 +155,45 @@ namespace Bake.Services
                 match.Groups["pr"].Value, match.Groups["base"].Value);
 
             return await SearchAsync(match.Groups["pr"].Value);
+
+            async Task<PullRequestInformation?> SearchAsync(string c)
+            {
+                var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(c)
+                {
+                    Type = IssueTypeQualifier.PullRequest,
+                    Repos = new RepositoryCollection
+                    {
+                        {gitHubInformation.Owner, gitHubInformation.Repository},
+                    }
+                });
+                if (issues.Items.Count != 1)
+                {
+                    return null;
+                }
+
+                var issue = issues.Items.Single();
+                return new PullRequestInformation(
+                    issue.Labels.Select(l => l.Name).ToArray());
+            }
         }
 
-        private async Task<IGitHubClient> CreateGitHubClientAsync(
+        private async Task<IGitHubClient?> CreateGitHubClientAsync(
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
             var token = await _credentials.TryGetGitHubTokenAsync(
                 gitHubInformation.Url,
                 cancellationToken);
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
 
             var gitHubClient = await _gitHubClientFactory.CreateAsync(
                 token,
                 gitHubInformation.ApiUrl,
                 cancellationToken);
+
             return gitHubClient;
         }
 
@@ -190,19 +203,14 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
-            var token = await _credentials.TryGetGitHubTokenAsync(
-                gitHubInformation.Url,
+            var gitHubClient = await CreateGitHubClientAsync(
+                gitHubInformation,
                 cancellationToken);
 
-            if (string.IsNullOrEmpty(token))
+            if (gitHubClient == null)
             {
                 return Array.Empty<Commit>();
             }
-
-            var gitHubClient = await _gitHubClientFactory.CreateAsync(
-                token,
-                gitHubInformation.ApiUrl,
-                cancellationToken);
 
             var compareResult = await gitHubClient.Repository.Commit.Compare(
                 gitHubInformation.Owner,

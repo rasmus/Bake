@@ -20,21 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using Bake.Core;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
 {
     public class Tag
     {
-        public SemVer Version { get; }
-        public string Sha { get; }
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; }
+
+        [YamlMember]
+        public string Sha { get; [Obsolete] set; }
+
+        [Obsolete]
+        public Tag(){}
 
         public Tag(
             SemVer version,
             string sha)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             Sha = sha;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public override string ToString()

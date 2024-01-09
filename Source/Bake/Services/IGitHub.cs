@@ -34,8 +34,7 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<PullRequestInformation> GetPullRequestInformationAsync(
-            GitInformation gitInformation,
+        Task<PullRequestInformation?> GetPullRequestInformationAsync(GitInformation gitInformation,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 

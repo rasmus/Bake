@@ -26,18 +26,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bake.Services;
 using Bake.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
 {
     public class ChangelogGather : IGather
     {
+        private readonly ILogger<ChangelogGather> _logger;
         private readonly IGitHub _gitHub;
         private readonly IChangeLogBuilder _changeLogBuilder;
 
         public ChangelogGather(
+            ILogger<ChangelogGather> logger,
             IGitHub gitHub,
             IChangeLogBuilder changeLogBuilder)
         {
+            _logger = logger;
             _gitHub = gitHub;
             _changeLogBuilder = changeLogBuilder;
         }
@@ -64,12 +68,20 @@ namespace Bake.Cooking.Ingredients.Gathers
                 gitHubInformation,
                 cancellationToken);
 
+            if (tags.Count == 0)
+            {
+                _logger.LogInformation("Did not find any release tags");
+                ingredients.FailChangelog();
+                return;
+            }
+
             var tag = tags
                 .Where(t => t.Version.LegacyVersion < ingredients.Version.LegacyVersion)
                 .MaxBy(t => t.Version);
 
             if (tag == null)
             {
+                _logger.LogInformation("Could not find a su");
                 ingredients.FailChangelog();
                 return;
             }
