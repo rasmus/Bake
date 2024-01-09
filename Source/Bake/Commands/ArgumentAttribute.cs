@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace Bake.Commands
 {
     public class ArgumentAttribute : Attribute
@@ -31,10 +29,10 @@ namespace Bake.Commands
 
         public ArgumentAttribute(
             string description,
-            string defaultValue = null)
+            string? defaultValue = null)
         {
             Description = description;
-            DefaultValue = defaultValue;
+            DefaultValue = defaultValue ?? string.Empty;
         }
     }
 }

@@ -21,11 +21,9 @@
 // SOFTWARE.
 
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Exceptions;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Octokit;
@@ -58,6 +56,11 @@ namespace Bake.Services
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+            if (gitHubClient == null)
+            {
+                throw new BuildFailedException(
+                    "Could not create a GitHub release due to missing credentials");
+            }
 
             var tag = $"v{release.Version}";
 
@@ -73,7 +76,7 @@ namespace Bake.Services
                     Name = $"v{release.Version}",
                 });
 
-            if (release.Files.Any())
+            if (release.Files.Count == 0)
             {
                 var uploadTasks = release.Files
                     .Select(f => UploadFileAsync(f, gitHubRelease, gitHubClient, cancellationToken));
@@ -89,31 +92,15 @@ namespace Bake.Services
                 gitHubReleaseUpdate);
         }
 
-        public async Task<PullRequestInformation> GetPullRequestInformationAsync(
+        public async Task<PullRequestInformation?> GetPullRequestInformationAsync(
             GitInformation gitInformation,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
-
-            async Task<PullRequestInformation> SearchAsync(string c)
+            if (gitHubClient == null)
             {
-                var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(c)
-                {
-                    Type = IssueTypeQualifier.PullRequest,
-                    Repos = new RepositoryCollection
-                    {
-                        {gitHubInformation.Owner, gitHubInformation.Repository},
-                    }
-                });
-                if (issues.Items.Count != 1)
-                {
-                    return null;
-                }
-
-                var issue = issues.Items.Single();
-                return new PullRequestInformation(
-                    issue.Labels.Select(l => l.Name).ToArray());
+                return null;
             }
 
             var pullRequestInformation = await SearchAsync(gitInformation.Sha);
@@ -138,15 +125,40 @@ namespace Bake.Services
                 match.Groups["pr"].Value, match.Groups["base"].Value);
 
             return await SearchAsync(match.Groups["pr"].Value);
+
+            async Task<PullRequestInformation?> SearchAsync(string c)
+            {
+                var issues = await gitHubClient.Search.SearchIssues(new SearchIssuesRequest(c)
+                {
+                    Type = IssueTypeQualifier.PullRequest,
+                    Repos = new RepositoryCollection
+                    {
+                        {gitHubInformation.Owner, gitHubInformation.Repository},
+                    }
+                });
+                if (issues.Items.Count != 1)
+                {
+                    return null;
+                }
+
+                var issue = issues.Items.Single();
+                return new PullRequestInformation(
+                    issue.Labels.Select(l => l.Name).ToArray());
+            }
         }
 
-        private async Task<IGitHubClient> CreateGitHubClientAsync(
+        private async Task<IGitHubClient?> CreateGitHubClientAsync(
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
             var token = await _credentials.TryGetGitHubTokenAsync(
                 gitHubInformation.Url,
                 cancellationToken);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
 
             var gitHubClient = await _gitHubClientFactory.CreateAsync(
                 token,

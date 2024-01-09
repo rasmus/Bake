@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2023 Rasmus Mikkelsen
 // 
@@ -20,21 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-
-namespace Bake.Services
+namespace Bake.Exceptions
 {
-    public interface IGitHub
+    public class BuildFailedException : Exception
     {
-        Task CreateReleaseAsync(
-            Release release,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
+        public BuildFailedException(
+            string message)
+            : base(message)
+        {
+        }
     }
 }
