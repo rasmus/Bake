@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -32,10 +31,10 @@ namespace Bake.ValueObjects.Recipes
         public Artifact[] Artifacts { get; [Obsolete] set; }
 
         protected Recipe(
-            Artifact[] artifacts = null)
+            Artifact[]? artifacts = null)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Artifacts = artifacts;
+            Artifacts = artifacts ?? Array.Empty<Artifact>();
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

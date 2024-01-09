@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -37,7 +36,9 @@ namespace Bake.ValueObjects
         public string Message { get; [Obsolete] set; }
 
         [Obsolete]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public GitInformation() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public GitInformation(
             string sha,

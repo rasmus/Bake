@@ -20,12 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
@@ -75,7 +69,7 @@ namespace Bake.Cooking.Composers
 
             return (await Task.WhenAll(
                     goModFilePaths
-                        .Select(Path.GetDirectoryName)
+                        .Select(d => Path.GetDirectoryName(d)!)
                         .Select(p => CreateRecipesAsync(p, context, labels, cancellationToken))))
                 .SelectMany(l => l)
                 .ToArray();

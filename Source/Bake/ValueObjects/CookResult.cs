@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using Bake.ValueObjects.Artifacts;
 
 namespace Bake.ValueObjects
@@ -37,12 +35,12 @@ namespace Bake.ValueObjects
             string name,
             TimeSpan time,
             bool success,
-            IReadOnlyCollection<Artifact> artifacts)
+            IReadOnlyCollection<Artifact>? artifacts)
         {
             Name = name;
             Time = time;
             Success = success;
-            Artifacts = artifacts;
+            Artifacts = artifacts ?? Array.Empty<Artifact>();
         }
     }
 }

@@ -20,11 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
@@ -32,11 +28,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
 {
-    public class GitHubGather : IGather
+    public partial class GitHubGather : IGather
     {
-        private static readonly Regex GitHubUrlExtractor = new(
-            @"^/(?<owner>[^/]+)/(?<repo>.+)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        [GeneratedRegex("^/(?<owner>[^/]+)/(?<repo>.+)", RegexOptions.IgnoreCase)]
+        private static partial Regex GitHubUrlExtractor();
         public static readonly Uri GitHubApiUrl = new("https://api.github.com/", UriKind.Absolute);
 
         private readonly ILogger<GitHubGather> _logger;
@@ -109,7 +104,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
-            var match = GitHubUrlExtractor.Match(gitInformation.OriginUrl.LocalPath);
+            var match = GitHubUrlExtractor().Match(gitInformation.OriginUrl.LocalPath);
             if (!match.Success)
             {
                 _logger.LogWarning(
@@ -135,7 +130,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 apiUrl);
             ingredients.GitHub = gitHubInformation;
 
-            PullRequestInformation pullRequestInformation;
+            PullRequestInformation? pullRequestInformation;
             try
             {
                 pullRequestInformation = await _gitHub.GetPullRequestInformationAsync(

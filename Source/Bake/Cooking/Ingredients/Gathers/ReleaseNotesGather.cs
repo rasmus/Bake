@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -98,7 +93,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                 releaseNotes);
         }
 
-        private ReleaseNotes PickReleaseNotes(
+        private ReleaseNotes? PickReleaseNotes(
             SemVer version,
             IReadOnlyCollection<ReleaseNotes> releaseNotes)
         {

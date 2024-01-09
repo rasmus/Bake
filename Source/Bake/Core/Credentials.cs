@@ -153,7 +153,7 @@ namespace Bake.Core
             return value;
         }
 
-        public async Task<DockerLogin> TryGetDockerLoginAsync(
+        public async Task<DockerLogin?> TryGetDockerLoginAsync(
             ContainerTag containerTag,
             CancellationToken cancellationToken)
         {

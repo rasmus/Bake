@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace Bake.ValueObjects.Credentials
 {
     public class DockerLogin : ValueObject
@@ -33,7 +31,7 @@ namespace Bake.ValueObjects.Credentials
         public DockerLogin(
             string username,
             string password,
-            string server)
+            string? server)
         {
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));

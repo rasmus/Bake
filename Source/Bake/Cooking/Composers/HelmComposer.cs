@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
@@ -80,9 +75,9 @@ namespace Bake.Cooking.Composers
                 yaml,
                 cancellationToken);
 
-            var chartDirectory = Path.GetDirectoryName(chartFilePath);
+            var chartDirectory = Path.GetDirectoryName(chartFilePath)!;
             var chartFileName = $"{chart.Name}-{ingredients.Version}.tgz";
-            var parentDirectory = Path.GetDirectoryName(chartDirectory);
+            var parentDirectory = Path.GetDirectoryName(chartDirectory)!;
 
             recipes.Add(new HelmLintRecipe(
                 chartDirectory));

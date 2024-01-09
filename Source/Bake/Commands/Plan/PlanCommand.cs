@@ -20,11 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
@@ -63,9 +59,9 @@ namespace Bake.Commands.Plan
             CancellationToken cancellationToken,
             bool force = false,
             Convention convention = Convention.Default,
-            Destination[] destination = null,
+            Destination[]? destination = null,
             LogEventLevel logLevel = LogEventLevel.Information,
-            Platform[] targetPlatform = null)
+            Platform[]? targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
 
@@ -81,7 +77,7 @@ namespace Bake.Commands.Plan
                 _logger.LogInformation(
                     "No directory located at {DirectoryPath}, creating it",
                     directoryPath);
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(directoryPath!);
             }
 
             if (System.IO.File.Exists(planPath))

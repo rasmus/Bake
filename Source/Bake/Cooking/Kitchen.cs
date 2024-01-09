@@ -20,13 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking.Cooks;
 using Bake.Extensions;
 using Bake.ValueObjects;
@@ -101,7 +96,7 @@ namespace Bake.Cooking
                     recipeName,
                     stopwatch.Elapsed,
                     success,
-                    recipe.Artifacts));
+                    recipe.Artifacts!));
 
                 if (success)
                 {
@@ -147,7 +142,7 @@ namespace Bake.Cooking
         private static void PrintArtifacts(IEnumerable<CookResult> cookResults)
         {
             var groupedArtifacts = cookResults
-                .SelectMany(r => r.Artifacts ?? Enumerable.Empty<Artifact>())
+                .SelectMany(r => r.Artifacts)
                 .GroupBy(a =>
                 {
                     var type = a.GetType();

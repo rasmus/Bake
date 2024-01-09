@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 
 namespace Bake.Services
@@ -44,7 +41,7 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<PullRequest> GetPullRequestAsync(
+        Task<PullRequest?> GetPullRequestAsync(
             GitHubInformation gitHubInformation,
             int number,
             CancellationToken cancellationToken);

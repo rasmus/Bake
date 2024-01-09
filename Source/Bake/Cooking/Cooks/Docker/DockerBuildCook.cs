@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DockerArguments;
@@ -36,8 +32,6 @@ namespace Bake.Cooking.Cooks.Docker
 {
     public class DockerBuildCook : Cook<DockerBuildRecipe>
     {
-        private static readonly IReadOnlyDictionary<string, string> Empty = new Dictionary<string, string>();
-
         private readonly ILogger<DockerBuildCook> _logger;
         private readonly IDockerIgnores _dockerIgnores;
         private readonly IDocker _docker;
@@ -57,7 +51,7 @@ namespace Bake.Cooking.Cooks.Docker
             DockerBuildRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var directoryPath = Path.GetDirectoryName(recipe.WorkingDirectory);
+            var directoryPath = Path.GetDirectoryName(recipe.WorkingDirectory)!;
             var dockerIgnoreFilePath = Path.Join(directoryPath, ".dockerignore");
             if (!File.Exists(dockerIgnoreFilePath))
             {

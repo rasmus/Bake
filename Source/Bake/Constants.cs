@@ -24,6 +24,6 @@ namespace Bake
 {
     public static class Constants
     {
-        public static readonly string Version = typeof(Constants).Assembly.GetName().Version?.ToString();
+        public static readonly string Version = typeof(Constants).Assembly.GetName().Version!.ToString();
     }
 }

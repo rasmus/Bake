@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Credentials;
 
@@ -34,7 +31,7 @@ namespace Bake.Core
             Uri url,
             CancellationToken cancellationToken);
 
-        Task<DockerLogin> TryGetDockerLoginAsync(
+        Task<DockerLogin?> TryGetDockerLoginAsync(
             ContainerTag containerTag,
             CancellationToken cancellationToken);
 

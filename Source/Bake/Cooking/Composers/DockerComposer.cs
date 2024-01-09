@@ -97,7 +97,7 @@ namespace Bake.Cooking.Composers
                     dockerFilePaths);
 
                 var containerName = await GetContainerNameAsync(
-                    Path.GetDirectoryName(dockerFilePath),
+                    Path.GetDirectoryName(dockerFilePath)!,
                     cancellationToken);
 
                 recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, urls));
@@ -172,7 +172,7 @@ namespace Bake.Cooking.Composers
 
             _containerTagParser.Validate(tags);
 
-            var npmRcPath = Path.Combine(workingDirectory, ".npmrc");
+            var npmRcPath = Path.Combine(workingDirectory!, ".npmrc");
             if (File.Exists(npmRcPath))
             {
                 _logger.LogInformation(
@@ -182,7 +182,7 @@ namespace Bake.Cooking.Composers
             }
 
             yield return new DockerBuildRecipe(
-                workingDirectory,
+                workingDirectory!,
                 slug,
                 tags,
                 _defaults.DockerBuildCompress,

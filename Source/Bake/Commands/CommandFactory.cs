@@ -35,11 +35,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Bake.Commands
 {
-    public class CommandFactory : ICommandFactory
+    public partial class CommandFactory : ICommandFactory
     {
         private const string MethodName = "ExecuteAsync";
-        private static readonly Regex UpperReplacer = new(
-            "(?<char>[A-Z])", RegexOptions.Compiled);
+
+        [GeneratedRegex("(?<char>[A-Z])")]
+        private static partial Regex UpperReplacer();
 
         private readonly ILogger<CommandFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -210,7 +211,7 @@ https://github.com/rasmus/Bake";
                         }
 
                         var argumentAttribute = parameterInfo.GetCustomAttribute<ArgumentAttribute>();
-                        var argumentName = UpperReplacer.Replace(parameterInfo.Name!, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
+                        var argumentName = UpperReplacer().Replace(parameterInfo.Name!, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
 
                         string? defaultValue = null;
                         if (parameterInfo.HasDefaultValue)
@@ -226,7 +227,7 @@ https://github.com/rasmus/Bake";
                         }
 
                         var option = cmd.Option(
-                            $"--{argumentName} <{parameterInfo.Name.ToUpperInvariant()}>",
+                            $"--{argumentName} <{parameterInfo.Name!.ToUpperInvariant()}>",
                             argumentAttribute?.Description ?? string.Empty,
                             parameterInfo.HasDefaultValue
                                 ? CommandOptionType.SingleOrNoValue

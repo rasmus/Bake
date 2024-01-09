@@ -20,18 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-
 namespace Bake.Core
 {
     public sealed class DisposableAction : IDisposable
     {
-        public static readonly DisposableAction Empty = new DisposableAction(null);
+        public static readonly DisposableAction Empty = new(null);
 
-        private Action _disposeAction;
+        private Action? _disposeAction;
 
-        public DisposableAction(Action disposeAction)
+        public DisposableAction(Action? disposeAction)
         {
             _disposeAction = disposeAction;
         }

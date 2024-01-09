@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -74,7 +69,7 @@ namespace Bake.Cooking.Composers
             string appFilePath,
             Dictionary<string, string> labels)
         {
-            var directory = Path.GetDirectoryName(appFilePath);
+            var directory = Path.GetDirectoryName(appFilePath)!;
             var dockerfilePath = Path.Combine(directory, "Dockerfile");
             var name = Path.GetFileName(directory).ToSlug();
 

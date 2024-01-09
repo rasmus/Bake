@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Bake.Core
 {
-    public class SemVer : IComparable<SemVer>, IEquatable<SemVer>, IComparable
+    public partial class SemVer : IComparable<SemVer>, IEquatable<SemVer>, IComparable
     {
-        private static readonly Regex VersionParser = new(
+        [GeneratedRegex(
             @"^(v|version){0,1}\s*(?<major>\d+)(\.(?<minor>\d+)(\.(?<patch>\d+)){0,1}){0,1}(\-(?<meta>[a-z0-9\-_]+)){0,1}$",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            RegexOptions.IgnoreCase)]
+        private static partial Regex VersionParser();
 
         private static readonly Random R = new();
 
@@ -50,17 +50,17 @@ namespace Bake.Core
                 throw exception;
             }
 
-            return version;
+            return version!;
         }
 
-        public static bool TryParse(string str, out SemVer version, bool allowNoMinor = false)
+        public static bool TryParse(string str, out SemVer? version, bool allowNoMinor = false)
         {
             return InternalTryParse(str, out version, allowNoMinor) == null;
         }
 
-        public static Exception InternalTryParse(
+        public static Exception? InternalTryParse(
             string str,
-            out SemVer version,
+            out SemVer? version,
             bool allowNoMinor)
         {
             version = null;
@@ -69,7 +69,7 @@ namespace Bake.Core
                 return new ArgumentNullException(nameof(str));
             }
 
-            var match = VersionParser.Match(str);
+            var match = VersionParser().Match(str);
             if (!match.Success)
             {
                 return new ArgumentException($"'{str}' is not a valid version string");
@@ -105,7 +105,7 @@ namespace Bake.Core
             int major,
             int? minor = 0,
             int? patch = 0,
-            string meta = null)
+            string? meta = null)
         {
             return new SemVer(major, minor, patch, meta);
         }
@@ -123,7 +123,7 @@ namespace Bake.Core
             int major,
             int? minor,
             int? patch ,
-            string meta)
+            string? meta)
         {
             Major = major;
             Minor = minor;
@@ -161,7 +161,7 @@ namespace Bake.Core
             return CompareTo(obj as SemVer);
         }
 
-        public bool IsSubset(SemVer other)
+        public bool IsSubset(SemVer? other)
         {
             if (other == null)
             {
@@ -174,7 +174,7 @@ namespace Bake.Core
                   Minor == other.Minor;
         }
 
-        public int CompareTo(SemVer other)
+        public int CompareTo(SemVer? other)
         {
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
@@ -187,7 +187,7 @@ namespace Bake.Core
             return string.Compare(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
         }
 
-        public bool Equals(SemVer other)
+        public bool Equals(SemVer? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -199,7 +199,7 @@ namespace Bake.Core
                 string.Equals(Meta, other.Meta, StringComparison.OrdinalIgnoreCase);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -216,12 +216,12 @@ namespace Bake.Core
                 Meta);
         }
 
-        public static bool operator ==(SemVer lhs, SemVer rhs)
+        public static bool operator ==(SemVer? lhs, SemVer? rhs)
         {
             if (lhs is { }) return lhs.Equals(rhs);
             return rhs is null;
         }
 
-        public static bool operator !=(SemVer lhs, SemVer rhs) => !(lhs == rhs);
+        public static bool operator !=(SemVer? lhs, SemVer? rhs) => !(lhs == rhs);
     }
 }

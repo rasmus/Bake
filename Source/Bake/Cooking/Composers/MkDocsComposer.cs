@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
@@ -68,7 +63,7 @@ namespace Bake.Cooking.Composers
         private static IEnumerable<Recipe> CreateRecipes(
             string mkDocsFilePath)
         {
-            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath);
+            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath)!;
             var requirementsFilePath = Path.Combine(
                 workingDirectory,
                 "requirements.txt");

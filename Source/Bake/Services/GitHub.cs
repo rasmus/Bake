@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Bake.Core;
@@ -98,6 +96,31 @@ namespace Bake.Services
                 gitHubInformation.Repository,
                 gitHubRelease.Id,
                 gitHubReleaseUpdate);
+        }
+
+        public async Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+            GitHubInformation gitHubInformation,
+            CancellationToken cancellationToken)
+        {
+            var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+            if (gitHubClient == null)
+            {
+                return Array.Empty<Tag>();
+            }
+
+            var releases = await gitHubClient.Repository.GetAllTags(
+                gitHubInformation.Owner,
+                gitHubInformation.Repository);
+
+            return releases
+                .Select(t => new
+                {
+                    version = SemVer.TryParse(t.Name, out var v, true) ? v : null,
+                    tag = t,
+                })
+                .Where(a => !ReferenceEquals(a.version, null))
+                .Select(a => new Tag(a.version!, a.tag.Commit.Sha))
+                .ToArray();
         }
 
         public async Task<PullRequestInformation?> GetPullRequestInformationAsync(
@@ -224,6 +247,11 @@ namespace Bake.Services
                 gitHubInformation,
                 cancellationToken);
 
+            if (commits.Count == 0)
+            {
+                return Array.Empty<PullRequest>();
+            }
+
             var pullRequestTasks = commits
                 .Select(c => IsMergeCommit.Match(c.Message))
                 .Where(m => m.Success)
@@ -233,7 +261,7 @@ namespace Bake.Services
 
             return pullRequests
                 .Where(pr => pr != null)
-                .ToArray();
+                .ToArray()!;
         }
 
         public async Task<PullRequest?> GetPullRequestAsync(

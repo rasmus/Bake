@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services;
 using Bake.ValueObjects.Recipes.DotNet;
 
@@ -79,7 +76,7 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
                 return false;
             }
 
-            var directoryPath = Path.GetDirectoryName(recipe.ProjectPath);
+            var directoryPath = Path.GetDirectoryName(recipe.ProjectPath)!;
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
             var labels = _dockerLabels.Serialize(recipe.Labels);
             

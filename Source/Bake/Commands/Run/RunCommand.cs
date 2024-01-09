@@ -20,12 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking;
 using Bake.Core;
 using Bake.ValueObjects;
@@ -65,10 +60,10 @@ namespace Bake.Commands.Run
             SemVer buildVersion,
             CancellationToken cancellationToken,
             Convention convention = Convention.Default,
-            Destination[] destination = null,
+            Destination[]? destination = null,
             LogEventLevel logLevel = LogEventLevel.Information,
             bool printPlan = true,
-            Platform[] targetPlatform = null)
+            Platform[]? targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
 

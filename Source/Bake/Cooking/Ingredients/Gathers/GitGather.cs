@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects;
 using LibGit2Sharp;
@@ -44,10 +39,11 @@ namespace Bake.Cooking.Ingredients.Gathers
             _logger = logger;
         }
 
-        public async Task GatherAsync(ValueObjects.Ingredients ingredients,
+        public async Task GatherAsync(
+            ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
-            GitInformation gitInformation = null;
+            GitInformation? gitInformation = null;
 
             await Task.Factory.StartNew(
                 () => gitInformation = Gather(
@@ -67,11 +63,11 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
         }
 
-        private GitInformation Gather(
+        private GitInformation? Gather(
             string workingDirectory,
             CancellationToken _)
         {
-            static string Get(string d)
+            static string? Get(string d)
             {
                 while (true)
                 {
@@ -86,26 +82,32 @@ namespace Bake.Cooking.Ingredients.Gathers
                 }
             }
 
-            workingDirectory = Get(workingDirectory);
-            if (string.IsNullOrEmpty(workingDirectory))
+            var projectRoot = Get(workingDirectory);
+            if (string.IsNullOrEmpty(projectRoot))
             {
                 _logger.LogWarning("No git repository found");
                 return null;
             }
 
-            using var repository = new Repository(workingDirectory);
+            using var repository = new Repository(projectRoot);
 
             var originUrl = GetRemote(repository);
             var sha = repository.Head?.Tip?.Sha;
             var message = repository.Head?.Tip?.Message;
 
+            if (originUrl == null ||
+                string.IsNullOrEmpty(sha))
+            {
+                return null;
+            }
+
             return new GitInformation(
                 sha,
                 originUrl,
-                message);
+                message ?? string.Empty);
         }
 
-        private Uri GetRemote(Repository repository)
+        private Uri? GetRemote(Repository repository)
         {
             var remote = repository.Network.Remotes.FirstOrDefault(
                 r => string.Equals(r.Name, Origin, StringComparison.OrdinalIgnoreCase));

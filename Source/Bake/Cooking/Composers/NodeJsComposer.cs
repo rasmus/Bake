@@ -20,12 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -89,7 +83,7 @@ namespace Bake.Cooking.Composers
             string packageJsonPath,
             CancellationToken cancellationToken)
         {
-            var workingDirectory = Path.GetDirectoryName(packageJsonPath);
+            var workingDirectory = Path.GetDirectoryName(packageJsonPath)!;
             var packageJson = JsonConvert.DeserializeObject<PackageJson>(
                 await System.IO.File.ReadAllTextAsync(packageJsonPath, cancellationToken));
 

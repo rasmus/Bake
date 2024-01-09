@@ -20,15 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -73,7 +67,7 @@ namespace Bake.Core
 
             foreach (var filePath in filePaths)
             {
-                if (ShouldBeSkipped(Path.GetDirectoryName(filePath)))
+                if (ShouldBeSkipped(Path.GetDirectoryName(filePath)!))
                 {
                     skippedPaths.Add(filePath);
                 }
