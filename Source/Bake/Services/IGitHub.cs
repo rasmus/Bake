@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 
 namespace Bake.Services
@@ -34,11 +31,8 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<PullRequestInformation?> GetPullRequestInformationAsync(GitInformation gitInformation,
-            GitHubInformation gitHubInformation,
-            CancellationToken cancellationToken);
-
-        Task<IReadOnlyCollection<Commit>> GetCommitsAsync(string baseSha, string headSha,
+        Task<PullRequestInformation?> GetPullRequestInformationAsync(
+			GitInformation gitInformation,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
@@ -47,7 +41,7 @@ namespace Bake.Services
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 
-        Task<PullRequest> GetPullRequestAsync(
+        Task<PullRequest?> GetPullRequestAsync(
             GitHubInformation gitHubInformation,
             int number,
             CancellationToken cancellationToken);

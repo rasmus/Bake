@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Exceptions;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Octokit;
@@ -66,6 +62,11 @@ namespace Bake.Services
             CancellationToken cancellationToken)
         {
             var gitHubClient = await CreateGitHubClientAsync(gitHubInformation, cancellationToken);
+            if (gitHubClient == null)
+            {
+                throw new BuildFailedException(
+                    "Could not create a GitHub release due to missing credentials");
+            }
 
             var tag = $"v{release.Version}";
 
@@ -81,7 +82,7 @@ namespace Bake.Services
                     Name = $"v{release.Version}",
                 });
 
-            if (release.Files.Any())
+            if (release.Files.Count == 0)
             {
                 var uploadTasks = release.Files
                     .Select(f => UploadFileAsync(f, gitHubRelease, gitHubClient, cancellationToken));
@@ -117,12 +118,12 @@ namespace Bake.Services
                     version = SemVer.TryParse(t.Name, out var v, true) ? v : null,
                     tag = t,
                 })
-                .Where(a => a.version != null)
-                .Select(a => new Tag(a.version, a.tag.Commit.Sha))
+                .Where(a => !ReferenceEquals(a.version, null))
+                .Select(a => new Tag(a.version!, a.tag.Commit.Sha))
                 .ToArray();
         }
 
-        public async Task<PullRequestInformation> GetPullRequestInformationAsync(
+        public async Task<PullRequestInformation?> GetPullRequestInformationAsync(
             GitInformation gitInformation,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
@@ -184,6 +185,7 @@ namespace Bake.Services
             var token = await _credentials.TryGetGitHubTokenAsync(
                 gitHubInformation.Url,
                 cancellationToken);
+
             if (string.IsNullOrEmpty(token))
             {
                 return null;
@@ -245,6 +247,11 @@ namespace Bake.Services
                 gitHubInformation,
                 cancellationToken);
 
+            if (commits.Count == 0)
+            {
+                return Array.Empty<PullRequest>();
+            }
+
             var pullRequestTasks = commits
                 .Select(c => IsMergeCommit.Match(c.Message))
                 .Where(m => m.Success)
@@ -254,7 +261,7 @@ namespace Bake.Services
 
             return pullRequests
                 .Where(pr => pr != null)
-                .ToArray();
+                .ToArray()!;
         }
 
         public async Task<PullRequest?> GetPullRequestAsync(

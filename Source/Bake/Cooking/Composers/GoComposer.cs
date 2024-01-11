@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
@@ -75,7 +69,7 @@ namespace Bake.Cooking.Composers
 
             return (await Task.WhenAll(
                     goModFilePaths
-                        .Select(Path.GetDirectoryName)
+                        .Select(d => Path.GetDirectoryName(d)!)
                         .Select(p => CreateRecipesAsync(p, context, labels, cancellationToken))))
                 .SelectMany(l => l)
                 .ToArray();
@@ -115,7 +109,7 @@ namespace Bake.Cooking.Composers
                 throw new InvalidOperationException($"Invalid content of '{goModPath}':{Environment.NewLine}{goModContent}");
             }
 
-            var windowsOutput = $"{goModuleName.Name}.exe";
+            var windowsOutput = $"{goModuleName!.Name}.exe";
 
             var recipes = new List<Recipe>
                 {

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bake.Tests.Helpers
@@ -35,12 +32,12 @@ namespace Bake.Tests.Helpers
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
         public string[] Arguments { get; }
-        public Action<IServiceCollection> Overrides { get; }
+        public Action<IServiceCollection>? Overrides { get; }
         public IReadOnlyDictionary<string, string> EnvironmentVariables { get; }
 
         private TestState(
             string[] arguments,
-            Action<IServiceCollection> overrides,
+            Action<IServiceCollection>? overrides,
             IReadOnlyDictionary<string, string> environmentVariables)
         {
             Arguments = arguments;

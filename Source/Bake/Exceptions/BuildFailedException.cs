@@ -20,25 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Recipes.NodeJS
+namespace Bake.Exceptions
 {
-    [Recipe(Names.Recipes.NodeJS.NpmCI)]
-    public class NpmCIRecipe : Recipe
+    public class BuildFailedException : Exception
     {
-        [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public NpmCIRecipe() { }
-
-        public NpmCIRecipe(
-            string workingDirectory)
+        public BuildFailedException(
+            string message)
+            : base(message)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            WorkingDirectory = workingDirectory;
-#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

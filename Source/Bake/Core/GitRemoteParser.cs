@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Text.RegularExpressions;
 
 namespace Bake.Core
 {
-    public static class GitRemoteParser
+    public static partial class GitRemoteParser
     {
-        private static readonly Regex Parser = new Regex(
+        [GeneratedRegex(
             "^(?<scheme>(http|https)://){0,1}[^@]*?(?<hostname>[^:/]+)(:|/)(?<path>.*)$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            RegexOptions.IgnoreCase)]
+        private static partial Regex Parser();
 
-        public static bool TryParse(string str, out Uri url)
+        public static bool TryParse(string str, out Uri? url)
         {
-            var match = Parser.Match(str);
+            var match = Parser().Match(str);
             if (!match.Success)
             {
                 url = null;

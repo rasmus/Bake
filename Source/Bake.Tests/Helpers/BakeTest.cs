@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -38,9 +33,9 @@ namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
     {
-        private CancellationTokenSource _timeout;
+        private CancellationTokenSource? _timeout;
 
-        private List<Release> _releases;
+        private List<Release> _releases = null!;
         protected IReadOnlyCollection<Release> Releases => _releases;
 
         protected BakeTest(string projectName) : base(projectName)
@@ -57,7 +52,7 @@ namespace Bake.Tests.Helpers
         [TearDown]
         public void TearDownBakeTest()
         {
-            _timeout.Dispose();
+            _timeout?.Dispose();
             _timeout = null;
         }
 
@@ -132,20 +127,7 @@ namespace Bake.Tests.Helpers
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
-                return Task.FromResult<PullRequestInformation>(null);
-            }
-
-            public Task<IReadOnlyCollection<Commit>> GetCommitsAsync(string baseSha, string headSha,
-                GitHubInformation gitHubInformation,
-                CancellationToken cancellationToken)
-            {
-                var commits = new List<Commit>
-                    {
-                        new("Wrote some awesome tests", "c2dbe6e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu")),
-                        new("Got it working", "4d79e4e", DateTimeOffset.Now, new Author("Rasmus Mikkelsen", "r@smus.nu"))
-                    };
-
-                return Task.FromResult<IReadOnlyCollection<Commit>>(commits);
+                return Task.FromResult<PullRequestInformation?>(null);
             }
 
             public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
@@ -156,7 +138,7 @@ namespace Bake.Tests.Helpers
                 throw new NotImplementedException();
             }
 
-            public Task<PullRequest> GetPullRequestAsync(
+            public Task<PullRequest?> GetPullRequestAsync(
                 GitHubInformation gitHubInformation,
                 int number,
                 CancellationToken cancellationToken)

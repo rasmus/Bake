@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
@@ -36,9 +31,9 @@ namespace Bake.Tests.Helpers
 {
     public abstract class TestIt
     {
-        private List<string> _filesToDelete;
+        private List<string> _filesToDelete = null!;
 
-        protected IFixture Fixture { get; private set; }
+        protected IFixture Fixture { get; private set; } = null!;
 
         [SetUp]
         public void SetUpTestIt()
@@ -53,9 +48,9 @@ namespace Bake.Tests.Helpers
         {
             foreach (var file in _filesToDelete)
             {
-                if (System.IO.File.Exists(file))
+                if (File.Exists(file))
                 {
-                    System.IO.File.Delete(file);
+                    File.Delete(file);
                 }
             }
         }
@@ -100,7 +95,7 @@ namespace Bake.Tests.Helpers
                 .ToList();
             var resourceName = resourceNames.Single(n => n.EndsWith(fileEnding, StringComparison.OrdinalIgnoreCase));
             await using var stream = assembly.GetManifestResourceStream(resourceName);
-            using var streamReader = new StreamReader(stream);
+            using var streamReader = new StreamReader(stream!);
             return await streamReader.ReadToEndAsync();
         }
 

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -29,17 +28,17 @@ namespace Bake.ValueObjects.Recipes.DotNet
     public class DotNetNuGetPushRecipe : Recipe
     {
         [YamlMember]
-        public string FilePath { get; [Obsolete] set; }
+        public string FilePath { get; [Obsolete] set; } = null!;
 
         [YamlMember(typeof(string))]
-        public Uri Source { get; [Obsolete] set; }
+        public Uri? Source { get; [Obsolete] set; }
 
         [Obsolete]
         public DotNetNuGetPushRecipe() { }
 
         public DotNetNuGetPushRecipe(
             string filePath,
-            Uri source = null)
+            Uri? source = null)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             FilePath = filePath;

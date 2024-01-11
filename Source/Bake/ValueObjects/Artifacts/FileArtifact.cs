@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
-
 namespace Bake.ValueObjects.Artifacts
 {
     public abstract class FileArtifact : Artifact
     {
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         protected FileArtifact() { }
@@ -43,13 +37,12 @@ namespace Bake.ValueObjects.Artifacts
         }
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
+        public override IAsyncEnumerable<string> ValidateAsync(
+            /*[EnumeratorCancellation]*/ CancellationToken _)
         {
-            if (!File.Exists(Path))
-            {
-                yield return $"File {Path} does not exist";
-            }
+            return !File.Exists(Path)
+                ? AsyncEnumerable.Repeat($"File {Path} does not exist", 0)
+                : AsyncEnumerable.Empty<string>();
         }
     }
 }
