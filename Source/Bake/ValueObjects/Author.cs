@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -28,10 +27,10 @@ namespace Bake.ValueObjects
     public class Author
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Email { get; [Obsolete] set; }
+        public string Email { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public Author() { }
@@ -40,8 +39,10 @@ namespace Bake.ValueObjects
             string name,
             string email)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
             Email = email;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

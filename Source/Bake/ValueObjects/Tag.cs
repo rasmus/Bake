@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.Core;
 using YamlDotNet.Serialization;
 
@@ -29,10 +28,10 @@ namespace Bake.ValueObjects
     public class Tag
     {
         [YamlMember]
-        public SemVer Version { get; [Obsolete] set; }
+        public SemVer Version { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Sha { get; [Obsolete] set; }
+        public string Sha { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public Tag(){}

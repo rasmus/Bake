@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
@@ -29,7 +28,7 @@ namespace Bake.ValueObjects.Destinations
     public class OctopusDeployDestination : Destination
     {
         [YamlMember(typeof(string))]
-        public string Url { get; [Obsolete] set; }
+        public string Url { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public OctopusDeployDestination() { }

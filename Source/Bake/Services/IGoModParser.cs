@@ -26,6 +26,6 @@ namespace Bake.Services
 {
     public interface IGoModParser
     {
-        bool TryParse(string str, out GoModuleName goModuleName);
+        bool TryParse(string str, out GoModuleName? goModuleName);
     }
 }

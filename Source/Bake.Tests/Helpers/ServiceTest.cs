@@ -38,7 +38,7 @@ namespace Bake.Tests.Helpers
         protected T Sut => _lazySut.Value;
         protected IServiceProvider ServiceProvider => _serviceProvider;
 
-        protected ServiceTest(string projectName) : base(projectName)
+        protected ServiceTest(string? projectName) : base(projectName)
         {
         }
 

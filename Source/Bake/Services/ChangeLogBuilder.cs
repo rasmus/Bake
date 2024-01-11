@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Bake.Core;
 using Bake.ValueObjects;
@@ -46,7 +43,7 @@ namespace Bake.Services
                     let a = new
                     {
                         fromVersion = SemVer.Parse(m.Groups["from"].Value, true),
-                        to = SemVer.Parse(m.Groups["to"].Value, true),
+                        toVersion = SemVer.Parse(m.Groups["to"].Value, true),
                         dependency = m.Groups["name"].Value,
                         project = p.Success ? p.Value : string.Empty,
                         pr,
@@ -61,8 +58,8 @@ namespace Bake.Services
                             .Select(x => x.pr.Number)
                             .OrderBy(i => i)
                             .ToArray(),
-                        g.Min(x => x.fromVersion),
-                        g.Max(x => x.to),
+                        g.Min(x => x.fromVersion)!,
+                        g.Max(x => x.toVersion)!,
                         g
                             .SelectMany(x => x.pr.Authors)
                             .Distinct(StringComparer.OrdinalIgnoreCase)

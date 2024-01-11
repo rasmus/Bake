@@ -20,12 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Microsoft.Extensions.Logging;
 
@@ -131,10 +127,9 @@ namespace Bake.Services
             _stdErr.OnNext(output);
         }
 
-        private static string CleanupOutput(string str)
+        private static string CleanupOutput(string? str)
         {
-            return (str ?? string.Empty)
-                .Trim('\n', '\r');
+            return (str ?? string.Empty).Trim('\n', '\r');
         }
 
         private static Process CreateProcess(

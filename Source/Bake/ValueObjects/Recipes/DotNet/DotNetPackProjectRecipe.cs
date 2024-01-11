@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
@@ -32,7 +30,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
     public class DotNetPackProjectRecipe : Recipe
     {
         [YamlMember]
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
         [YamlMember]
         public bool Restore { get; [Obsolete] set; }
@@ -47,13 +45,13 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public bool IncludeSource { get; [Obsolete] set; }
 
         [YamlMember]
-        public string Configuration { get; [Obsolete] set; }
+        public string Configuration { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public SemVer Version { get; [Obsolete] set; }
+        public SemVer Version { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Dictionary<string, string> Properties { get; [Obsolete] set; }
+        public Dictionary<string, string> Properties { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DotNetPackProjectRecipe() { }

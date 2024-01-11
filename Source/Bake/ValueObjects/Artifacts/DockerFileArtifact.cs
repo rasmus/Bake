@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -31,7 +28,7 @@ namespace Bake.ValueObjects.Artifacts
     public class DockerFileArtifact : FileArtifact
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DockerFileArtifact() { }

@@ -57,7 +57,7 @@ namespace Bake.Cooking.Cooks.DotNet
             }
 
             var argument = new DotNetNuGetPushArgument(
-                recipe.Source,
+                recipe.Source!,
                 recipe.FilePath);
 
             using var toolResult = await _dotNet.NuGetPushAsync(

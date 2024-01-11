@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 
 namespace Bake.Services
@@ -35,7 +30,7 @@ namespace Bake.Services
             Ingredients ingredients,
             CancellationToken cancellationToken)
         {
-            async Task<T> GetAsync<T>(Func<Task<T>> getter)
+            async Task<T?> GetAsync<T>(Func<Task<T>> getter)
                 where T : class
             {
                 try

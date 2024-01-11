@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
 using Bake.Core;
 
 namespace Bake.Services.Tools.DotNetArguments
@@ -33,7 +32,7 @@ namespace Bake.Services.Tools.DotNetArguments
         protected DotNetArgument(string filePath)
         {
             FilePath = Path.GetFullPath(filePath);
-            WorkingDirectory = Path.GetDirectoryName(filePath);
+            WorkingDirectory = Path.GetDirectoryName(filePath)!;
         }
     }
 }

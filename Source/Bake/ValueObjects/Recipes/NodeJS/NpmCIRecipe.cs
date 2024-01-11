@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.NodeJS
@@ -29,7 +28,7 @@ namespace Bake.ValueObjects.Recipes.NodeJS
     public class NpmCIRecipe : Recipe
     {
         [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
+        public string WorkingDirectory { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public NpmCIRecipe() { }

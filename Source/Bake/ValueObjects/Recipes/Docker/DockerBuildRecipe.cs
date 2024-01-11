@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -32,19 +29,19 @@ namespace Bake.ValueObjects.Recipes.Docker
     public class DockerBuildRecipe : Recipe
     {
         [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
+        public string WorkingDirectory { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string[] Tags { get; [Obsolete] set; }
+        public string[] Tags { get; [Obsolete] set; } = null!;
 
         [YamlMember]
         public bool Compress { get; [Obsolete] set; }
 
         [YamlMember]
-        public Dictionary<string, string> SecretMounts { get; [Obsolete] set; }
+        public Dictionary<string, string> SecretMounts { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DockerBuildRecipe() { }

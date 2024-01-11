@@ -109,7 +109,7 @@ namespace Bake.Cooking.Composers
                 throw new InvalidOperationException($"Invalid content of '{goModPath}':{Environment.NewLine}{goModContent}");
             }
 
-            var windowsOutput = $"{goModuleName.Name}.exe";
+            var windowsOutput = $"{goModuleName!.Name}.exe";
 
             var recipes = new List<Recipe>
                 {

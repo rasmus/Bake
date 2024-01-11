@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -30,7 +29,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
     public class DotNetPublishRecipe : Recipe
     {
         [YamlMember]
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
         [YamlMember]
         public bool PublishSingleFile { get; [Obsolete] set; }
@@ -42,13 +41,13 @@ namespace Bake.ValueObjects.Recipes.DotNet
         public bool Build { get; [Obsolete] set; }
 
         [YamlMember]
-        public string Configuration { get; [Obsolete] set; }
+        public string Configuration { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Platform Platform { get; [Obsolete] set; }
+        public Platform Platform { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Output { get; [Obsolete] set; }
+        public string Output { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DotNetPublishRecipe() { }

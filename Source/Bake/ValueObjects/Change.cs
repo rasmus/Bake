@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -31,7 +30,7 @@ namespace Bake.ValueObjects
         public ChangeType Type { get; [Obsolete] set; }
 
         [YamlMember]
-        public string Text { get; [Obsolete] set; }
+        public string Text { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public Change() { }

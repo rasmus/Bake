@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -30,7 +29,7 @@ namespace Bake.ValueObjects.Recipes.MkDocs
     public class MkDocsBuildRecipe : Recipe
     {
         [YamlMember]
-        public string WorkingDirectory { get; [Obsolete] set; }
+        public string WorkingDirectory { get; [Obsolete] set; } = null!;
 
         [YamlMember]
         public bool UseDirectoryUrls { get; [Obsolete] set; }
@@ -39,7 +38,7 @@ namespace Bake.ValueObjects.Recipes.MkDocs
         public bool Strict { get; [Obsolete] set; }
 
         [YamlMember]
-        public string OutputDirectory { get; }
+        public string OutputDirectory { get; } = null!;
 
         [Obsolete]
         public MkDocsBuildRecipe() {}

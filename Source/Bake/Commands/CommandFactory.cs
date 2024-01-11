@@ -76,7 +76,7 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid SemVer value for argument '{argName}'");
                     }
 
-                    return version;
+                    return version!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Destination),
@@ -92,7 +92,7 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid Destination value for argument '{argName}'");
                     }
 
-                    return destination;
+                    return destination!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Destination[]),
@@ -125,7 +125,7 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid Platform value for argument '{argName}'");
                     }
 
-                    return platform;
+                    return platform!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Platform[]),

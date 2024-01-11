@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -31,10 +28,10 @@ namespace Bake.ValueObjects.Artifacts
     public class ExecutableArtifact : FileArtifact
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Platform Platform { get; [Obsolete] set; }
+        public Platform Platform { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public ExecutableArtifact() { }

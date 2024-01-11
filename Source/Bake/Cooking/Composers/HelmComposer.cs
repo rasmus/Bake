@@ -94,7 +94,7 @@ namespace Bake.Cooking.Composers
         private class HelmChart
         {
             [YamlMember(Alias = "name")]
-            public string Name { get; set; }
+            public string Name { get; set; } = null!;
         }
     }
 }

@@ -33,6 +33,6 @@ namespace Bake.ValueObjects.BakeProjects
         public BakeProjectType Type { get; set; }
 
         [YamlMember]
-        public BakeProjectService Service { get; set; }
+        public BakeProjectService Service { get; set; } = null!;
     }
 }

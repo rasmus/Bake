@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Octokit;
 using Octokit.Internal;
 using Credentials = Octokit.Credentials;
@@ -31,7 +28,7 @@ namespace Bake.Services
 {
     public class GitHubClientFactory : IGitHubClientFactory
     {
-        private static readonly Version Version = typeof(GitHubClientFactory).Assembly.GetName().Version;
+        private static readonly Version Version = typeof(GitHubClientFactory).Assembly.GetName().Version!;
 
         public Task<IGitHubClient> CreateAsync(
             string token,

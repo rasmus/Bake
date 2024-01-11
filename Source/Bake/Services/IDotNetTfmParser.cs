@@ -26,6 +26,6 @@ namespace Bake.Services
 {
     public interface IDotNetTfmParser
     {
-        bool TryParse(string moniker, out TargetFrameworkVersion targetFrameworkVersion);
+        bool TryParse(string moniker, out TargetFrameworkVersion? targetFrameworkVersion);
     }
 }

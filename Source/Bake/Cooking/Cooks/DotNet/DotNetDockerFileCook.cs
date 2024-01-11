@@ -83,7 +83,7 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
-                .Replace("{{VERSION}}", $"{targetFrameworkVersion.Version.Major}.{targetFrameworkVersion.Version.Minor}")
+                .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
                 .Replace("{{LABELS}}", labels);
 
             await File.WriteAllTextAsync(

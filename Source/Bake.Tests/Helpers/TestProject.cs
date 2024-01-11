@@ -20,13 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using FluentAssertions;
@@ -36,17 +30,17 @@ namespace Bake.Tests.Helpers
 {
     public abstract class TestProject : TestIt
     {
-        protected string ProjectName { get; }
+        protected string? ProjectName { get; }
         protected string WorkingDirectory => Path.Join(_folder.Path, ProjectName);
         protected string RepositoryUrl => "https://github.com/rasmus/Bake";
-        protected string Sha { get; private set; }
+        protected string Sha { get; private set; } = null!;
 
-        private string _previousCurrentDirectory;
+        private string _previousCurrentDirectory = null!;
 
-        private Folder _folder;
+        private Folder _folder = null!;
 
         protected TestProject(
-            string projectName)
+            string? projectName)
         {
             ProjectName = projectName;
         }

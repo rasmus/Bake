@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
@@ -29,7 +28,7 @@ namespace Bake.ValueObjects.Destinations
     public class NuGetRegistryDestination : Destination
     {
         [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public Uri Url { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public NuGetRegistryDestination() { }

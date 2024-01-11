@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.ValueObjects.Recipes;
 using YamlDotNet.Serialization;
 
@@ -29,10 +28,10 @@ namespace Bake.ValueObjects
     public class Book
     {
         [YamlMember]
-        public Ingredients Ingredients { get; [Obsolete] set; }
+        public Ingredients Ingredients { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Recipe[] Recipes { get; [Obsolete] set; }
+        public Recipe[] Recipes { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public Book() { }

@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Text.RegularExpressions;
 using Bake.Core;
 using Bake.ValueObjects.Destinations;
@@ -44,7 +43,7 @@ namespace Bake.Services
             _defaults = defaults;
         }
 
-        public bool TryParse(string str, out Destination destination)
+        public bool TryParse(string str, out Destination? destination)
         {
             destination = null;
 

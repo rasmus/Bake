@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Bake.Extensions;
 using Bake.ValueObjects;
@@ -54,7 +51,7 @@ namespace Bake.Services
         }
 
         public bool TryParse(string tag,
-            out ContainerTag containerTag)
+            out ContainerTag? containerTag)
         {
             containerTag = null;
             if (string.IsNullOrEmpty(tag))
@@ -73,6 +70,7 @@ namespace Bake.Services
                 match.GetIfThere("path"),
                 match.GetIfThere("name"),
                 match.GetIfThere("label"));
+
             return true;
         }
     }

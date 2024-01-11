@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Bake.ValueObjects;
 
 // ReSharper disable StringLiteralTypo
@@ -50,7 +48,7 @@ namespace Bake.Services
                 ["macosx"] = ExecutableOperatingSystem.MacOSX,
             };
 
-        public bool TryParse(string str, out Platform platform)
+        public bool TryParse(string str, out Platform? platform)
         {
             platform = null;
 

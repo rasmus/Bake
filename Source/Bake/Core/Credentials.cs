@@ -20,12 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Credentials;
 using Microsoft.Extensions.Logging;
@@ -60,7 +55,7 @@ namespace Bake.Core
             _environmentVariables = environmentVariables;
         }
 
-        public async Task<string> TryGetNuGetApiKeyAsync(
+        public async Task<string?> TryGetNuGetApiKeyAsync(
             Uri url,
             CancellationToken cancellationToken)
         {
@@ -96,6 +91,7 @@ namespace Bake.Core
                     "Dit not find any NuGet credentials for {Url} in any of the environment variables {EnvironmentVariables}",
                     url.AbsoluteUri,
                     string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
+                return null;
             }
 
             return value;
@@ -120,7 +116,7 @@ namespace Bake.Core
                     string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
             }
 
-            return value;
+            return value!;
         }
 
         public async Task<string> TryGetOctopusDeployApiKeyAsync(
@@ -150,7 +146,7 @@ namespace Bake.Core
                     string.Join(", ", environmentVariables.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)));
             }
 
-            return value;
+            return value!;
         }
 
         public async Task<DockerLogin?> TryGetDockerLoginAsync(
@@ -181,7 +177,7 @@ namespace Bake.Core
                 possibilities.Add(($"bake_credentials_docker_{cleanedHostname}", containerTag.HostAndPort));
             }
 
-            DockerLogin Get((string, string) t)
+            DockerLogin? Get((string, string) t)
             {
                 var (e, s) = t;
                 var username = environmentVariables.TryGetValue($"{e}_username", out var u) ? u : string.Empty;

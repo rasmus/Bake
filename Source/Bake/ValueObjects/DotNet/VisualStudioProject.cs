@@ -44,7 +44,7 @@ namespace Bake.ValueObjects.DotNet
             CsProj = csProj;
             Name = name;
             PreferredName = preferredName;
-            Directory = System.IO.Path.GetDirectoryName(path);
+            Directory = System.IO.Path.GetDirectoryName(path)!;
         }
     }
 }

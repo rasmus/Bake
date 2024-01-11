@@ -26,6 +26,6 @@ namespace Bake.Services
 {
     public interface IPlatformParser
     {
-        bool TryParse(string str, out Platform platform);
+        bool TryParse(string str, out Platform? platform);
     }
 }

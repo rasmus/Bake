@@ -27,8 +27,7 @@ namespace Bake.Core
 {
     public interface ICredentials
     {
-        Task<string> TryGetNuGetApiKeyAsync(
-            Uri url,
+        Task<string?> TryGetNuGetApiKeyAsync(Uri url,
             CancellationToken cancellationToken);
 
         Task<DockerLogin?> TryGetDockerLoginAsync(

@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Helm
@@ -29,7 +28,7 @@ namespace Bake.ValueObjects.Recipes.Helm
     public class HelmLintRecipe : Recipe
     {
         [YamlMember]
-        public string ChartDirectory { get; [Obsolete] set; }
+        public string ChartDirectory { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public HelmLintRecipe() { }

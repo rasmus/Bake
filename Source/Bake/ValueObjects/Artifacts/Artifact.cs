@@ -20,18 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace Bake.ValueObjects.Artifacts
 {
     public abstract class Artifact : ValueObject
     {
         public static IReadOnlyCollection<Artifact> Empty { get; } = new Artifact[] { };
-
-        [Obsolete]
-        protected Artifact() { }
 
         public abstract IAsyncEnumerable<string> ValidateAsync(
             CancellationToken cancellationToken);

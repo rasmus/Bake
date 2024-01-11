@@ -20,18 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
-
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.DocumentationSiteArtifact)]
     public class DocumentationSiteArtifact : Artifact
     {
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
 #pragma warning disable CS0612 // Type or member is obsolete
         public DocumentationSiteArtifact(
@@ -44,13 +38,12 @@ namespace Bake.ValueObjects.Artifacts
         [Obsolete]
         public DocumentationSiteArtifact() { }
 
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
+        public override IAsyncEnumerable<string> ValidateAsync(
+            /*[EnumeratorCancellation]*/ CancellationToken _)
         {
-            if (!Directory.Exists(Path))
-            {
-                yield return $"Directory {Path} does not exist";
-            }
+            return !Directory.Exists(Path)
+                ? AsyncEnumerable.Repeat($"Directory {Path} does not exist", 0)
+                : AsyncEnumerable.Empty<string>();
         }
 
         public override IEnumerable<string> PrettyNames()

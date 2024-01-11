@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Destinations
@@ -29,10 +28,10 @@ namespace Bake.ValueObjects.Destinations
     public class GitHubReleaseDestination : Destination
     {
         [YamlMember(typeof(string))]
-        public string Owner { get; [Obsolete] set; }
+        public string Owner { get; [Obsolete] set; } = null!;
 
         [YamlMember(typeof(string))]
-        public string Repository { get; [Obsolete] set; }
+        public string Repository { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public GitHubReleaseDestination() { }

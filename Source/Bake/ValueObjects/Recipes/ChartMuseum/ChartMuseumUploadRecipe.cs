@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.ChartMuseum
@@ -29,10 +28,10 @@ namespace Bake.ValueObjects.Recipes.ChartMuseum
     public class ChartMuseumUploadRecipe : Recipe
     {
         [YamlMember(SerializeAs = typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public Uri Url { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string[] Packages { get; [Obsolete] set; }
+        public string[] Packages { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public ChartMuseumUploadRecipe() { }

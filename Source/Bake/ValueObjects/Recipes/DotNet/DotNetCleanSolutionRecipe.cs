@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.DotNet
@@ -29,10 +28,10 @@ namespace Bake.ValueObjects.Recipes.DotNet
     public class DotNetCleanSolutionRecipe : Recipe
     {
         [YamlMember]
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Configuration { get; [Obsolete] set; }
+        public string Configuration { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DotNetCleanSolutionRecipe() { }

@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -28,13 +27,13 @@ namespace Bake.ValueObjects
     public class Commit
     {
         [YamlMember]
-        public string Message { get; [Obsolete] set; }
+        public string Message { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Sha { get; [Obsolete] set; }
+        public string Sha { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Author Author { get; [Obsolete] set; }
+        public Author Author { get; [Obsolete] set; } = null!;
 
         [YamlMember]
         public DateTimeOffset Time { get; [Obsolete] set; }

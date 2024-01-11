@@ -58,8 +58,8 @@ namespace Bake.Services
 
         private IEnumerable<ReleaseNotes> ParseLines(IEnumerable<string> lines)
         {
-            List<string> releaseNotes = null;
-            SemVer version = null;
+            List<string>? releaseNotes = null;
+            SemVer? version = null;
 
             foreach (var line in lines)
             {
@@ -72,7 +72,7 @@ namespace Bake.Services
                 {
                     if (releaseNotes != null)
                     {
-                        yield return Create(version, releaseNotes);
+                        yield return Create(version!, releaseNotes);
                         releaseNotes = null;
                     }
 
@@ -97,7 +97,7 @@ namespace Bake.Services
 
             if (releaseNotes != null)
             {
-                yield return Create(version, releaseNotes);
+                yield return Create(version!, releaseNotes);
             }
         }
 

@@ -63,7 +63,7 @@ namespace Bake.Cooking.Cooks.Docker
                     return false;
                 }
 
-                containerTags.Add(containerTag);
+                containerTags.Add(containerTag!);
             }
 
             var dockerLogins = (await Task.WhenAll(containerTags
