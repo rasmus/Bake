@@ -77,7 +77,7 @@ namespace Bake.Tests.UnitTests.Services
 
             // Assert
             targetFrameworkVersion.Should().NotBeNull();
-            targetFrameworkVersion.Moniker.Should().Be(moniker);
+            targetFrameworkVersion!.Moniker.Should().Be(moniker);
             targetFrameworkVersion.Version.ToString().Should().Be(expectedVersion);
             targetFrameworkVersion.Framework.Should().Be(expectedTargetFramework);
         }

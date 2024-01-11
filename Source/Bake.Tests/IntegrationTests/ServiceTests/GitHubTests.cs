@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
@@ -50,7 +46,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
             var credentials = Substitute.For<ICredentials>();
             credentials
                 .TryGetGitHubTokenAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult(testToken));
+                .Returns(Task.FromResult(testToken!));
 
             Inject(credentials);
             Inject<IGitHubClientFactory>(new GitHubClientFactory());
@@ -74,7 +70,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
 
             // Assert
             pullRequestInformation.Should().NotBeNull();
-            pullRequestInformation.Labels.Should().NotBeEmpty();
+            pullRequestInformation!.Labels.Should().NotBeEmpty();
         }
     }
 }

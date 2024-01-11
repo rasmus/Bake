@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
@@ -44,7 +41,7 @@ namespace Bake.Tests.UnitTests.Core
                 };
             var credentialsMock = InjectMock<ICredentials>();
             credentialsMock
-                .TryGetNuGetApiKeyAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
+                .TryGetNuGetApiKeyAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())!
                 .Returns(Task.FromResult("IllNeverTell"));
 
             // Act

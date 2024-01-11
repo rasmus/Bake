@@ -70,8 +70,8 @@ namespace Bake.Tests.Helpers
                 null,
                 cancellationToken);
 
-            var autoResetEvent = new AutoResetEvent(false);
-            Task.Run(async () =>
+            // TODO: What to do here?
+            var _ = Task.Run(async () =>
             {
                 await Client.Containers.GetContainerLogsAsync(
                     createContainerResponse.ID,

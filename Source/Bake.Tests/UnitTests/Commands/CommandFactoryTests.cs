@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Core;
 using Bake.Services;
@@ -52,7 +49,7 @@ namespace Bake.Tests.UnitTests.Commands
                 int exitCode = 42,
                 bool throwException = false,
                 CancellationToken cancellationToken = default,
-                Destination[] destination = null)
+                Destination[]? destination = null)
             {
                 if (throwException) throw new Exception();
 

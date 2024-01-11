@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoFixture.Kernel;
 using Bake.Cooking;
 using Bake.Services;
@@ -66,7 +62,7 @@ namespace Bake.Tests.UnitTests.Services
                 .ToList();
 
             // Act
-            IReadOnlyCollection<IComposer> ordered = null;
+            IReadOnlyCollection<IComposer>? ordered = null;
             Assert.DoesNotThrow(() => ordered = Sut.Order(composers));
             ordered.Should().NotBeNull();
             ordered.Should().HaveCount(composers.Count);

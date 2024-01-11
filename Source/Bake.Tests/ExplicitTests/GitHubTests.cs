@@ -96,7 +96,7 @@ namespace Bake.Tests.ExplicitTests
         {
             return new ConfigurationBuilder()
                 .AddUserSecrets<GitHubReleaseCookTests>()
-                .Build()["github:token"];
+                .Build()["github:token"]!;
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)

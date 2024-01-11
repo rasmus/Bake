@@ -41,7 +41,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(str, out var targetPlatform).Should().BeTrue();
 
             // Assert
-            targetPlatform.Os.Should().Be(executableOs);
+            targetPlatform!.Os.Should().Be(executableOs);
             targetPlatform.Arch.Should().Be(expectedArch);
         }
     }

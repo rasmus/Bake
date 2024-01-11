@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Core
             GitRemoteParser.TryParse(input, out var url).Should().BeTrue();
 
             // Assert
-            url.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
+            url!.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
             url.Host.Should().Be(expectedHost, url.AbsoluteUri);
             url.PathAndQuery.Should().Be(expectedPath, url.AbsoluteUri);
         }

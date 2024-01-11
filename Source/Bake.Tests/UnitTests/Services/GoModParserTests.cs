@@ -69,7 +69,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(str, out var goModuleName).Should().BeTrue();
 
             // Assert
-            goModuleName.Name.Should().Be(expectedName);
+            goModuleName!.Name.Should().Be(expectedName);
             goModuleName.Version.Should().Be(expectedVersion);
         }
     }

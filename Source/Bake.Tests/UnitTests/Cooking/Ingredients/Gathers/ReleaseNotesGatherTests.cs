@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
@@ -38,8 +33,8 @@ namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
 {
     public class ReleaseNotesGatherTests : TestFor<ReleaseNotesGather>
     {
-        private IReleaseNotesParser _releaseNotesParserMock;
-        private IFileSystem _fileSystemMock;
+        private IReleaseNotesParser _releaseNotesParserMock = null!;
+        private IFileSystem _fileSystemMock = null!;
 
         [SetUp]
         public void SetUp()
@@ -85,7 +80,7 @@ namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
             await Sut.GatherAsync(ingredients, CancellationToken.None);
 
             // Assert
-            ingredients.ReleaseNotes.Version.ToString().Should().Be(expectedVersion);
+            ingredients.ReleaseNotes!.Version.ToString().Should().Be(expectedVersion);
         }
     }
 }

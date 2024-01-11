@@ -84,7 +84,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(image, out var containerImage).Should().BeTrue();
 
             // Assert
-            containerImage.HostAndPort.Should().Be(expectedHostAndPort);
+            containerImage!.HostAndPort.Should().Be(expectedHostAndPort);
             containerImage.Path.Should().Be(expectedPath);
             containerImage.Name.Should().Be(expectedName);
             containerImage.Label.Should().Be(expectedTag);

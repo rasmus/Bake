@@ -35,7 +35,7 @@ namespace Bake.Tests.Helpers
             {
                 var ipEndPoint = new IPEndPoint(IPAddress.Loopback, 0);
                 socket.Bind(ipEndPoint);
-                ipEndPoint = (IPEndPoint)socket.LocalEndPoint;
+                ipEndPoint = (IPEndPoint)socket.LocalEndPoint!;
                 port = ipEndPoint.Port;
             }
             finally

@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using FluentAssertions;
@@ -64,7 +60,7 @@ namespace Bake.Tests.UnitTests.Core
                 foreach (var file in files)
                 {
                     var filePath = Path.Combine(folder.Path, Path.Combine(file.Split('/')));
-                    var directoryPath = Path.GetDirectoryName(filePath);
+                    var directoryPath = Path.GetDirectoryName(filePath)!;
                     if (!Directory.Exists(directoryPath))
                     {
                         Directory.CreateDirectory(directoryPath);
