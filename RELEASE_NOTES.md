@@ -1,6 +1,6 @@
 # 0.23-beta
 
-* *Nothing yet...*
+* Feature: Output a container for hosting mkdocs documentation
 
 # 0.22-beta
 
