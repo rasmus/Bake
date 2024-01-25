@@ -48,11 +48,16 @@ namespace Bake.Services
             var version = ingredients.Version;
             var now = DateTimeOffset.Now;
 
+            // https://github.com/opencontainers/image-spec/blob/main/annotations.md
+
             var labels = new Dictionary<string, string>
                 {
                     ["version"] = version.ToString(),
                     ["build.time"] = now.ToString("O"),
                     ["build.timestamp"] = now.ToUnixTimeSeconds().ToString(),
+
+                    ["org.opencontainers.image.created"] = now.ToString("O"),
+                    ["org.opencontainers.image.version"] = version.ToString(),
                 };
 
             if (git != null)
@@ -66,6 +71,8 @@ namespace Bake.Services
                 labels["github.owner"] = gitHub.Owner;
                 labels["github.repository"] = gitHub.Repository;
                 labels["github.url"] = gitHub.Url.AbsoluteUri;
+
+                labels["org.opencontainers.image.source"] = gitHub.Url.AbsoluteUri;
             }
 
             return labels;
