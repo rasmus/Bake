@@ -48,8 +48,9 @@ ENV COMPlus_EnableDiagnostics=0
 WORKDIR /app
 COPY ./{{PATH}} .
 
+# Configure user and group
 RUN \
-    addgroup -S -g 2000 app_group && \
+    addgroup -S -g 1000 app_group && \
     adduser \  
         -S \
         -s /sbin/nologin \
@@ -57,9 +58,15 @@ RUN \
         app_user && \
     chown app_user:app_group /app
 
+# Add dumb-init
+ADD --chown=app_user:app_group https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/bin/dumb-init
+RUN chmod +x /usr/bin/dumb-init
+
 USER app_user:app_group
 
-ENTRYPOINT [""dotnet"", ""{{NAME}}""]
+ENTRYPOINT [""/usr/bin/dumb-init"", ""--""]
+
+CMD [""dotnet"", ""{{NAME}}""]
 ";
 
         public DotNetDockerFileCook(
@@ -88,6 +95,7 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
                 .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
+                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
                 .Replace("{{LABELS}}", labels);
 
             await File.WriteAllTextAsync(

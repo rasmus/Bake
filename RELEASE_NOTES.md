@@ -2,6 +2,8 @@
 
 * Feature: Output a container for hosting mkdocs documentation
 * Feature: Add standard labels from the Open Containers Initiative
+* Feature: Add dumb-init to .NET containers to ensure that the process
+  and all child-processes are correctly terminated
 
 # 0.22-beta
 
