@@ -39,7 +39,7 @@ namespace Bake.ValueObjects.Recipes.GitHub
         public string Sha { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public ReleaseNotes ReleaseNotes { get; [Obsolete] set; } = null!;
+        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
 
         [Obsolete]
         public GitHubReleaseRecipe() { }
@@ -48,7 +48,7 @@ namespace Bake.ValueObjects.Recipes.GitHub
             GitHubInformation gitHubInformation,
             SemVer version,
             string sha,
-            ReleaseNotes releaseNotes,
+            ReleaseNotes? releaseNotes,
             Artifact[] artifacts)
             : base(artifacts)
         {
