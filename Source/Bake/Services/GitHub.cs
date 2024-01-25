@@ -82,7 +82,7 @@ namespace Bake.Services
                     Name = $"v{release.Version}",
                 });
 
-            if (release.Files.Count == 0)
+            if (release.Files.Count != 0)
             {
                 var uploadTasks = release.Files
                     .Select(f => UploadFileAsync(f, gitHubRelease, gitHubClient, cancellationToken));
