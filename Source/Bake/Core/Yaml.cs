@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
@@ -74,6 +70,7 @@ namespace Bake.Core
                 new DeserializerBuilder(),
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithTypeConverter(new DateTimeOffsetTypeConverter())
                 .WithTypeConverter(new SemVerYamlTypeConverter())
                 .IgnoreUnmatchedProperties()
                 .Build();
@@ -82,6 +79,7 @@ namespace Bake.Core
                 (b, a) => b.WithTagMapping(a.tag, a.type))
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new SemVerYamlTypeConverter())
+                .WithTypeConverter(new DateTimeOffsetTypeConverter())
                 .DisableAliases()
                 .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
                 .Build();
@@ -103,7 +101,7 @@ namespace Bake.Core
             CancellationToken cancellationToken)
         {
             return await Task.Factory.StartNew(
-                () => (T) Deserializer.Deserialize(yaml, typeof(T)),
+                () => (T) Deserializer.Deserialize(yaml, typeof(T))!,
                 cancellationToken,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
@@ -125,6 +123,42 @@ namespace Bake.Core
             }
         }
 
+        private class DateTimeOffsetTypeConverter : IYamlTypeConverter
+        {
+            private static readonly IValueDeserializer ValueDeserializer = new DeserializerBuilder()
+                .BuildValueDeserializer();
+
+            private static readonly IValueSerializer ValueSerializer = new SerializerBuilder()
+                .WithEventEmitter(n => new QuoteSurroundingEventEmitter(n))
+                .BuildValueSerializer();
+
+            public bool Accepts(Type type) => typeof(DateTimeOffset) == type;
+
+            public object? ReadYaml(IParser parser, Type type)
+            {
+                var value = (string)ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer)!;
+                if (!DateTimeOffset.TryParseExact(value, "O", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dateTimeOffset))
+                {
+                    throw new FormatException($"'{value}' is not a valid DateTimeOffset");
+                }
+
+                return dateTimeOffset;
+            }
+
+            public void WriteYaml(IEmitter emitter, object? value, Type type)
+            {
+                if (value == null)
+                {
+                    ValueSerializer.SerializeValue(emitter, null, typeof(string));
+                }
+                else
+                {
+                    var dateTimeOffset = (DateTimeOffset)value;
+                    ValueSerializer.SerializeValue(emitter, dateTimeOffset.ToString("O"), typeof(string));
+                }
+            }
+        }
+
         private class SemVerYamlTypeConverter : IYamlTypeConverter
         {
             private static readonly IValueDeserializer ValueDeserializer = new DeserializerBuilder()
@@ -138,7 +172,7 @@ namespace Bake.Core
 
             public object? ReadYaml(IParser parser, Type type)
             {
-                var value = (string) ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer);
+                var value = (string) ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer)!;
                 if (!SemVer.TryParse(value, out var semVer))
                 {
                     throw new FormatException($"'{value}' is not a valid SemVer");
@@ -149,7 +183,7 @@ namespace Bake.Core
 
             public void WriteYaml(IEmitter emitter, object? value, Type type)
             {
-                var semVer = (SemVer) value;
+                var semVer = (SemVer) value!;
                 ValueSerializer.SerializeValue(emitter, semVer?.ToString(), typeof(string));
             }
         }

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Microsoft.Extensions.Logging;
 
@@ -77,7 +73,6 @@ namespace Bake.Services
         {
             await using var stream = await _log.OpenWriteAsync(cancellationToken);
 
-            Console.WriteLine($"{_command} {string.Join(" ", _arguments)}");
             _logger.LogTrace(
                 "Executing {Program} {Arguments} in {Directory}",
                 _command,
@@ -132,10 +127,9 @@ namespace Bake.Services
             _stdErr.OnNext(output);
         }
 
-        private static string CleanupOutput(string str)
+        private static string CleanupOutput(string? str)
         {
-            return (str ?? string.Empty)
-                .Trim('\n', '\r');
+            return (str ?? string.Empty).Trim('\n', '\r');
         }
 
         private static Process CreateProcess(

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
@@ -31,16 +30,16 @@ namespace Bake.ValueObjects.Recipes.GitHub
     public class GitHubReleaseRecipe : Recipe
     {
         [YamlMember]
-        public GitHubInformation GitHubInformation { get; [Obsolete] set; }
+        public GitHubInformation GitHubInformation { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public SemVer Version { get; [Obsolete] set; }
+        public SemVer Version { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Sha { get; [Obsolete] set; }
+        public string Sha { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public ReleaseNotes ReleaseNotes { get; [Obsolete] set; }
+        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
 
         [Obsolete]
         public GitHubReleaseRecipe() { }
@@ -49,7 +48,7 @@ namespace Bake.ValueObjects.Recipes.GitHub
             GitHubInformation gitHubInformation,
             SemVer version,
             string sha,
-            ReleaseNotes releaseNotes,
+            ReleaseNotes? releaseNotes,
             Artifact[] artifacts)
             : base(artifacts)
         {

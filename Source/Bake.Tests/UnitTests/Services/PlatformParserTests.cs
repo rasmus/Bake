@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(str, out var targetPlatform).Should().BeTrue();
 
             // Assert
-            targetPlatform.Os.Should().Be(executableOs);
+            targetPlatform!.Os.Should().Be(executableOs);
             targetPlatform.Arch.Should().Be(expectedArch);
         }
     }

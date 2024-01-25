@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -97,7 +97,7 @@ namespace Bake.Cooking.Composers
                     dockerFilePaths);
 
                 var containerName = await GetContainerNameAsync(
-                    Path.GetDirectoryName(dockerFilePath),
+                    Path.GetDirectoryName(dockerFilePath)!,
                     cancellationToken);
 
                 recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, urls));
@@ -172,7 +172,7 @@ namespace Bake.Cooking.Composers
 
             _containerTagParser.Validate(tags);
 
-            var npmRcPath = Path.Combine(workingDirectory, ".npmrc");
+            var npmRcPath = Path.Combine(workingDirectory!, ".npmrc");
             if (File.Exists(npmRcPath))
             {
                 _logger.LogInformation(
@@ -182,7 +182,7 @@ namespace Bake.Cooking.Composers
             }
 
             yield return new DockerBuildRecipe(
-                workingDirectory,
+                workingDirectory!,
                 slug,
                 tags,
                 _defaults.DockerBuildCompress,

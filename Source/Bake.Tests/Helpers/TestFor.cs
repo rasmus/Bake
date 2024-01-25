@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using AutoFixture;
 using Bake.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,9 +32,9 @@ namespace Bake.Tests.Helpers
 {
     public class TestFor<T> : TestIt
     {
-        private Lazy<T> _lazySut;
-        private ServiceProvider _serviceProvider;
-        private Logger _logger;
+        private Lazy<T> _lazySut = null!;
+        private ServiceProvider _serviceProvider = null!;
+        private Logger _logger = null!;
         protected T Sut => _lazySut.Value;
         
         [SetUp]

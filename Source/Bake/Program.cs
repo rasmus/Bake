@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Commands;
 using Bake.Core;
 using Bake.Extensions;
@@ -46,7 +42,7 @@ namespace Bake
 
         public static async Task<int> EntryAsync(
             string[] args,
-            Action<IServiceCollection> overrides,
+            Action<IServiceCollection>? overrides,
             CancellationToken cancellationToken)
         {
             using var exit = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -73,7 +69,7 @@ namespace Bake
             var executor = serviceProvider.GetRequiredService<IExecutor>();
             var returnCode = await executor.ExecuteAsync(
                 args,
-                commandTypes,
+                commandTypes!,
                 cancellationToken);
 
             return returnCode;

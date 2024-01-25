@@ -1,5 +1,11 @@
+# 0.23-beta
+
+* *Nothing yet...*
+
 # 0.22-beta
 
+* New: GitHub releases now have a description that contains the a summary
+  of all pull requests and issues that are part of the release
 * Fixed: Cleanup of the artifact post run report
 
 # 0.21-beta

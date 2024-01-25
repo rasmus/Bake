@@ -78,9 +78,10 @@ regarding the environment its executed within.
 * **GitHub Action** - When Bake is executed from within a GitHub action, it
   automatically recognizes the token and uses that when publishing artifacts
   and releases
-* **Release notes** - If the repository contains a `RELEASE_NOTES.md` file,
-  the content as well as the version information is used to further enrich
-  any release artifacts
+* **Release notes** - Pull requests merged since latest release are summarized,
+  similar grouped together, used as release notes. In addition, if the repository
+  contains a `RELEASE_NOTES.md` file, the content as well as the version information
+  is used to further enrich any release artifacts
 
 After the initial environment information gathering is completed, Bake starts
 to scan the repository for files and structures it knows how to process.
@@ -155,7 +156,7 @@ Here are some examples of common used arguments to Bake
 ```
 MIT License
 
-Copyright (c) 2021-2023 Rasmus Mikkelsen
+Copyright (c) 2021-2024 Rasmus Mikkelsen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

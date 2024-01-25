@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking.Cooks.GitHub;
 using Bake.Core;
 using Bake.Services;
@@ -67,7 +62,7 @@ namespace Bake.Tests.ExplicitTests
 
             // Arrange
             var result = await Sut.CookAsync(
-                null,
+                null!,
                 recipe,
                 CancellationToken.None);
 
@@ -79,7 +74,7 @@ namespace Bake.Tests.ExplicitTests
         {
             return new ConfigurationBuilder()
                 .AddUserSecrets<GitHubReleaseCookTests>()
-                .Build()["github.token"];
+                .Build()["github.token"]!;
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)

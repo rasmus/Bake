@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
@@ -52,6 +47,7 @@ namespace Bake.Services
 
             "# GitHub",
             "**/.github",
+            "**/.dev-container",
 
             "# Python",
             "**/env",
@@ -59,6 +55,12 @@ namespace Bake.Services
             "**/.cache",
             "**/.coverage",
             "**/.pytest_cache",
+
+            "# Ruby",
+            "**/Gemfile.lock",
+            "**/.ruby-version",
+            "**/.bundle",
+            "**/.rspec",
 
             "# .NET",
             "**/obj",
@@ -88,6 +90,8 @@ namespace Bake.Services
             "**/.idea",
             "**/.vs",
             "**/.editorconfig",
+            "**/.project",
+            "**/.settings",
 
             "# Specific files",
             "**/Makefile",
@@ -101,13 +105,13 @@ namespace Bake.Services
             "**/charts",
 
             "# Others",
-            "**/.env",
+            "**/.env*",
             "**/*~",
             "**/*.log",
             "**/.settings",
             "**/.toolstarget",
             "**/tmp",
-            "**/.rspec",
+            "**/.history",
         };
 
         private const string FileName = ".dockerignore";

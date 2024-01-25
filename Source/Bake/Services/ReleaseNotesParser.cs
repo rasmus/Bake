@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -58,8 +58,8 @@ namespace Bake.Services
 
         private IEnumerable<ReleaseNotes> ParseLines(IEnumerable<string> lines)
         {
-            List<string> releaseNotes = null;
-            SemVer version = null;
+            List<string>? releaseNotes = null;
+            SemVer? version = null;
 
             foreach (var line in lines)
             {
@@ -72,7 +72,7 @@ namespace Bake.Services
                 {
                     if (releaseNotes != null)
                     {
-                        yield return Create(version, releaseNotes);
+                        yield return Create(version!, releaseNotes);
                         releaseNotes = null;
                     }
 
@@ -97,7 +97,7 @@ namespace Bake.Services
 
             if (releaseNotes != null)
             {
-                yield return Create(version, releaseNotes);
+                yield return Create(version!, releaseNotes);
             }
         }
 

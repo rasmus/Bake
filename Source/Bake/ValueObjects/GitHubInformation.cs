@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -28,16 +27,16 @@ namespace Bake.ValueObjects
     public class GitHubInformation
     {
         [YamlMember]
-        public string Owner { get; [Obsolete] set; }
+        public string Owner { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Repository { get; [Obsolete] set; }
+        public string Repository { get; [Obsolete] set; } = null!;
 
         [YamlMember(typeof(string))]
-        public Uri Url { get; [Obsolete] set; }
+        public Uri Url { get; [Obsolete] set; } = null!;
 
         [YamlMember(typeof(string))]
-        public Uri ApiUrl { get; [Obsolete] set; }
+        public Uri ApiUrl { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public GitHubInformation() { }

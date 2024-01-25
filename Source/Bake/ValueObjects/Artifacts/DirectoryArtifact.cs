@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,19 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.DirectoryArtifact)]
     public class DirectoryArtifact : Artifact
     {
-        public string Path { get; [Obsolete] set; }
+        public string Path { get; [Obsolete] set; } = null!;
 
         public DirectoryArtifact(
             string path)
@@ -45,13 +38,12 @@ namespace Bake.ValueObjects.Artifacts
         [Obsolete]
         public DirectoryArtifact() { }
 
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
+        public override IAsyncEnumerable<string> ValidateAsync(
+            /*[EnumeratorCancellation]*/ CancellationToken _)
         {
-            if (!Directory.Exists(Path))
-            {
-                yield return $"Directory {Path} does not exist";
-            }
+            return !Directory.Exists(Path)
+                ? AsyncEnumerable.Repeat($"Directory {Path} does not exist", 1)
+                : AsyncEnumerable.Empty<string>();
         }
 
         public override IEnumerable<string> PrettyNames()

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -32,13 +27,15 @@ using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
     {
-        private CancellationTokenSource _timeout;
+        private CancellationTokenSource? _timeout;
 
-        private List<Release> _releases;
+        private List<Release> _releases = null!;
         protected IReadOnlyCollection<Release> Releases => _releases;
 
         protected BakeTest(string projectName) : base(projectName)
@@ -55,7 +52,7 @@ namespace Bake.Tests.Helpers
         [TearDown]
         public void TearDownBakeTest()
         {
-            _timeout.Dispose();
+            _timeout?.Dispose();
             _timeout = null;
         }
 
@@ -126,12 +123,34 @@ namespace Bake.Tests.Helpers
                 return Task.CompletedTask;
             }
 
-            public Task<PullRequestInformation> GetPullRequestInformationAsync(
-                GitInformation gitInformation,
+            public Task<PullRequestInformation?> GetPullRequestInformationAsync(GitInformation gitInformation,
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
-                return Task.FromResult<PullRequestInformation>(null);
+                return Task.FromResult<PullRequestInformation?>(null);
+            }
+
+            public Task<IReadOnlyCollection<PullRequest>> GetPullRequestsAsync(string baseSha,
+                string headSha,
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<PullRequest?> GetPullRequestAsync(
+                GitHubInformation gitHubInformation,
+                int number,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IReadOnlyCollection<Tag>> GetTagsAsync(
+                GitHubInformation gitHubInformation,
+                CancellationToken cancellationToken)
+            {
+                return Task.FromResult<IReadOnlyCollection<Tag>>(Array.Empty<Tag>());
             }
         }
     }

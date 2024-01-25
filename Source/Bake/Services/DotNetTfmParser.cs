@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Bake.Core;
 using Bake.ValueObjects.DotNet;
@@ -37,7 +35,7 @@ namespace Bake.Services
             @"^net(?<framework>standard|coreapp|)(?<version>[0-9\.]+)(-(?<platform>[a-z]+)){0,1}$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public bool TryParse(string moniker, out TargetFrameworkVersion targetFrameworkVersion)
+        public bool TryParse(string moniker, out TargetFrameworkVersion? targetFrameworkVersion)
         {
             targetFrameworkVersion = null;
             if (string.IsNullOrEmpty(moniker))
@@ -69,6 +67,7 @@ namespace Bake.Services
                         GetPositionOrZero(version, 1),
                         GetPositionOrZero(version, 2)),
                     TargetFramework.NetFramework);
+
                 return true;
             }
 

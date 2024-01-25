@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2023 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
@@ -47,12 +43,12 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 .FirstOrDefault(t => !string.IsNullOrEmpty(t));
 
             testToken.Should().NotBeNullOrEmpty();
-            var credentials = new Mock<ICredentials>();
+            var credentials = Substitute.For<ICredentials>();
             credentials
-                .Setup(m => m.TryGetGitHubTokenAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(testToken);
+                .TryGetGitHubTokenAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(testToken!));
 
-            Inject(credentials.Object);
+            Inject(credentials);
             Inject<IGitHubClientFactory>(new GitHubClientFactory());
         }
 
@@ -74,7 +70,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
 
             // Assert
             pullRequestInformation.Should().NotBeNull();
-            pullRequestInformation.Labels.Should().NotBeEmpty();
+            pullRequestInformation!.Labels.Should().NotBeEmpty();
         }
     }
 }
