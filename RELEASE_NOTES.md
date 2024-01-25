@@ -1,6 +1,6 @@
 # 0.23-beta
 
-* *Nothing yet...*
+* Feature: Add standard labels from the Open Containers Initiative
 
 # 0.22-beta
 
