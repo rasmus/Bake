@@ -1,6 +1,7 @@
 # 0.23-beta
 
 * Feature: Output a container for hosting mkdocs documentation
+* Feature: Add standard labels from the Open Containers Initiative
 
 # 0.22-beta
 

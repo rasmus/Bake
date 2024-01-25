@@ -87,10 +87,8 @@ namespace Bake.Cooking.Cooks.GitHub
                     .AppendLine();
             }
 
-            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Any())
+            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Changes.Any())
             {
-
-
                 foreach (var a in new[]
                      {
                          new {changeType = ChangeType.Other, title = "Changes"},
@@ -101,7 +99,7 @@ namespace Bake.Cooking.Cooks.GitHub
                         .AppendLine($"#### {a.title}")
                         .AppendLine();
 
-                    foreach (var change in context.Ingredients.Changelog[a.changeType])
+                    foreach (var change in context.Ingredients.Changelog.Changes[a.changeType])
                     {
                         stringBuilder.AppendLine($"* {change.Text}");
                     }
@@ -110,6 +108,12 @@ namespace Bake.Cooking.Cooks.GitHub
                 }
 
                 stringBuilder.AppendLine();
+
+                if (context.Ingredients.GitHub != null)
+                {
+                    stringBuilder.AppendLine(
+                        $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
+                }
             }
 
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
@@ -201,8 +205,6 @@ namespace Bake.Cooking.Cooks.GitHub
                         sha256);
                 }));
         }
-
-
 
         private static string CalculateArtifactFileName(ExecutableArtifact artifact)
         {

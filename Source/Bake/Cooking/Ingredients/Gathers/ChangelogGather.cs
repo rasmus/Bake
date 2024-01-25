@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -75,11 +71,11 @@ namespace Bake.Cooking.Ingredients.Gathers
                 return;
             }
 
-            var tag = tags
+            var previousReleaseTag = tags
                 .Where(t => t.Version.LegacyVersion < ingredients.Version.LegacyVersion)
                 .MaxBy(t => t.Version);
 
-            if (tag == null)
+            if (previousReleaseTag == null)
             {
                 _logger.LogInformation("Could not find a su");
                 ingredients.FailChangelog();
@@ -87,11 +83,14 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
 
             var pullRequests = await _gitHub.GetPullRequestsAsync(
-                tag.Sha,
+                previousReleaseTag.Sha,
                 gitInformation.Sha,
                 gitHubInformation, cancellationToken);
 
-            ingredients.Changelog = _changeLogBuilder.Build(pullRequests);
+            var changes = _changeLogBuilder.Build(pullRequests);
+            ingredients.Changelog = new ChangeLog(
+                previousReleaseTag,
+                changes);
         }
     }
 }
