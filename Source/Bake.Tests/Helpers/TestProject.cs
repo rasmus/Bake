@@ -107,12 +107,26 @@ namespace Bake.Tests.Helpers
             return NuGetHelper.LoadAsync(packagePath);
         }
 
-        protected static async Task AssertContainerPingsAsync(
+        protected static Task AssertContainerPingsAsync(
             DockerArguments arguments,
             CancellationToken cancellationToken = default)
         {
+            return AssertContainerPingsAsync(
+                arguments,
+                null,
+                cancellationToken);
+        }
+
+        protected static async Task AssertContainerPingsAsync(
+            DockerArguments arguments,
+            string? path,
+            CancellationToken cancellationToken = default)
+        {
+            path = string.IsNullOrEmpty(path)
+                ? "ping"
+                : path.TrimStart('/');
             var hostPort = arguments.Ports.Single().Value;
-            var url = $"http://localhost:{hostPort}/ping";
+            var url = $"http://localhost:{hostPort}/{path}";
             using var _ = await DockerHelper.RunAsync(
                 arguments,
                 cancellationToken);
@@ -124,16 +138,18 @@ namespace Bake.Tests.Helpers
                 try
                 {
                     using var response = await httpClient.GetAsync(url, cancellationToken);
+                    var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                    Console.WriteLine($"Got content: {Environment.NewLine}{content}");
+
                     if (!response.IsSuccessStatusCode)
                     {
                         Console.WriteLine($"Status code {response.StatusCode}");
                     }
-
-                    var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    Console.WriteLine($"Got content: {Environment.NewLine}{content}");
-
-                    success = true;
-                    break;
+                    else
+                    {
+                        success = true;
+                        break;
+                    }
                 }
                 catch (Exception e)
                 {

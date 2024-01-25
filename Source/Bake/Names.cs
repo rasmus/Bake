@@ -34,6 +34,7 @@ namespace Bake
         /// </summary>
         public static class Destinations
         {
+            public const string Container = "container";
             public const string ContainerRegistry = "container-registry";
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
@@ -135,6 +136,7 @@ namespace Bake
             public static class MkDocs
             {
                 public const string Release = "mkdocs-build";
+                public const string DockerFile = "mkdocs-dockerfile";
             }
 
             public static class NodeJS
