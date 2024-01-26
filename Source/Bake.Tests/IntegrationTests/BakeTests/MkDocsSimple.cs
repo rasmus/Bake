@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
@@ -41,16 +42,29 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
+            var expectedImage = $"bake.local/docs:{version}";
 
             // Act
             var returnCode = await ExecuteAsync(TestState.New(
                 "run",
                 "--convention=Release",
-                "--destination=release>github",
+                "--destination=release>github,documentation-site>container",
                 "--build-version", version));
 
             // Assert
             returnCode.Should().Be(0);
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // thttpd is very picky about file permissions, which makes the container
+                // impossible to test on Windows :(
+                // http://acme.com/software/thttpd/thttpd_man.html#PERMISSIONS
+
+                await AssertContainerPingsAsync(
+                    DockerArguments.With(expectedImage)
+                        .WithPort(8080),
+                    "index.html");
+            }
         }
     }
 }

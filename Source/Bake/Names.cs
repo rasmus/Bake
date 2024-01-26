@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ namespace Bake
         /// </summary>
         public static class Destinations
         {
+            public const string Container = "container";
             public const string ContainerRegistry = "container-registry";
             public const string GitHubReleases = "github-releases";
             public const string NuGetRegistry = "nuget-registry";
@@ -87,6 +88,11 @@ namespace Bake
             private static readonly IReadOnlyDictionary<string, ArtifactType> NameToType = TypeToName
                 .ToDictionary(kv => kv.Value, kv => kv.Key);
 
+            public static bool IsValidName(string name)
+            {
+                return NameToType.ContainsKey(name);
+            }
+
             public static bool TryGetType(string name, out ArtifactType artifactType)
             {
                 return NameToType.TryGetValue(name, out artifactType);
@@ -130,6 +136,7 @@ namespace Bake
             public static class MkDocs
             {
                 public const string Release = "mkdocs-build";
+                public const string DockerFile = "mkdocs-dockerfile";
             }
 
             public static class NodeJS

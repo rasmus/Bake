@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ namespace Bake.Services
             @"^\s*module\s+([a-z0-9\-\./]+?/){0,1}?(?<name>[a-z0-9\-_\.]+)(/v(?<version>[0-9\.]+)){0,1}\s*$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 
-        public bool TryParse(string str, out GoModuleName goModuleName)
+        public bool TryParse(string str, out GoModuleName? goModuleName)
         {
             goModuleName = null;
             if (string.IsNullOrEmpty(str))
@@ -49,6 +49,7 @@ namespace Bake.Services
             goModuleName = new GoModuleName(
                 match.Groups["name"].Value,
                 match.GetIfThere("version"));
+
             return true;
         }
     }

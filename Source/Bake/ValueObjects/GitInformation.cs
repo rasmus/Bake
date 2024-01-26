@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects
@@ -33,16 +32,23 @@ namespace Bake.ValueObjects
         [YamlMember(typeof(string))]
         public Uri OriginUrl { get; [Obsolete] set; }
 
+        [YamlMember(typeof(string))]
+        public string Message { get; [Obsolete] set; }
+
         [Obsolete]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public GitInformation() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public GitInformation(
             string sha,
-            Uri originUrl)
+            Uri originUrl,
+            string message)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Sha = sha;
             OriginUrl = originUrl;
+            Message = message;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
@@ -93,6 +87,35 @@ namespace Bake.Cooking.Cooks.GitHub
                     .AppendLine();
             }
 
+            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Changes.Any())
+            {
+                foreach (var a in new[]
+                     {
+                         new {changeType = ChangeType.Other, title = "Changes"},
+                         new {changeType = ChangeType.Dependency, title = "Updated dependencies"},
+                     })
+                {
+                    stringBuilder
+                        .AppendLine($"#### {a.title}")
+                        .AppendLine();
+
+                    foreach (var change in context.Ingredients.Changelog.Changes[a.changeType])
+                    {
+                        stringBuilder.AppendLine($"* {change.Text}");
+                    }
+
+                    stringBuilder.AppendLine();
+                }
+
+                stringBuilder.AppendLine();
+
+                if (context.Ingredients.GitHub != null)
+                {
+                    stringBuilder.AppendLine(
+                        $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
+                }
+            }
+
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
 
             var documentationSite = recipe.Artifacts
@@ -105,7 +128,7 @@ namespace Bake.Cooking.Cooks.GitHub
                     Path.GetTempPath(),
                     Guid.NewGuid().ToString("N"),
                     "documentation.zip");
-                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath));
+                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath)!);
                 ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
                 var file = _fileSystem.Open(documentationZipFilePath);
                 releaseFiles.Add(new ReleaseFile(
@@ -182,8 +205,6 @@ namespace Bake.Cooking.Cooks.GitHub
                         sha256);
                 }));
         }
-
-
 
         private static string CalculateArtifactFileName(ExecutableArtifact artifact)
         {

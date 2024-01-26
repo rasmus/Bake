@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,16 @@ namespace Bake.ValueObjects.Artifacts
 
         public ArtifactAttribute(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+            }
+
+            if (Names.ArtifactTypes.IsValidName(name))
+            {
+                throw new ArgumentOutOfRangeException(nameof(name), name, "Name is not valid");
+            }
+
             Name = name;
         }
     }

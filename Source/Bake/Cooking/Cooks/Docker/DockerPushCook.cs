@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.Services.Tools;
@@ -67,18 +63,17 @@ namespace Bake.Cooking.Cooks.Docker
                     return false;
                 }
 
-                containerTags.Add(containerTag);
+                containerTags.Add(containerTag!);
             }
 
             var dockerLogins = (await Task.WhenAll(containerTags
                 .Select(t => _credentials.TryGetDockerLoginAsync(t, cancellationToken))))
                 .Where(l => l != null)
-                .Distinct()
-                .ToArray();
+                .Distinct();
 
             foreach (var dockerLogin in dockerLogins)
             {
-                var argument = new DockerLoginArgument(dockerLogin);
+                var argument = new DockerLoginArgument(dockerLogin!);
                 using var toolResult = await _docker.LoginAsync(
                     argument,
                     cancellationToken);

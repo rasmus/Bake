@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.ValueObjects.Destinations;
 using YamlDotNet.Serialization;
@@ -35,7 +31,7 @@ namespace Bake.ValueObjects
         public static Ingredients New(
             SemVer version,
             string workingDirectory,
-            IReadOnlyCollection<Platform> targetPlatforms = null,
+            IReadOnlyCollection<Platform>? targetPlatforms = null,
             Convention convention = Convention.Default) => new(
                 version,
                 workingDirectory,
@@ -60,7 +56,21 @@ namespace Bake.ValueObjects
         public List<Destination> Destinations { get; [Obsolete] set; } = new();
 
         [YamlMember]
-        public GitInformation Git
+        public ChangeLog? Changelog
+        {
+            get => _changelog.Task.IsCompletedSuccessfully ? _changelog.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _changelog.SetResult(value);
+            }
+        }
+
+        [YamlMember]
+        public GitInformation? Git
         {
             get => _git.Task.IsCompletedSuccessfully ? _git.Task.Result : null;
             set
@@ -74,7 +84,7 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
-        public GitHubInformation GitHub
+        public GitHubInformation? GitHub
         {
             get => _gitHub.Task.IsCompletedSuccessfully ? _gitHub.Task.Result : null;
             set
@@ -88,7 +98,21 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
-        public Description Description
+        public PullRequestInformation? PullRequest
+        {
+            get => _pullRequest.Task.IsCompletedSuccessfully ? _pullRequest.Task.Result : null;
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+                _pullRequest.SetResult(value);
+            }
+        }
+
+        [YamlMember]
+        public Description? Description
         {
             get => _description.Task.IsCompletedSuccessfully ? _description.Task.Result : null;
             set
@@ -102,7 +126,7 @@ namespace Bake.ValueObjects
         }
 
         [YamlMember]
-        public ReleaseNotes ReleaseNotes
+        public ReleaseNotes? ReleaseNotes
         {
             get => _releaseNotes.Task.IsCompletedSuccessfully ? _releaseNotes.Task.Result : null;
             set
@@ -136,13 +160,23 @@ namespace Bake.ValueObjects
         [YamlIgnore]
         public Task<GitHubInformation> GitHubTask => _gitHub.Task;
 
+        [YamlIgnore]
+		public Task<ChangeLog> ChangelogTask => _changelog.Task;
+		
+        [YamlIgnore]
+        public Task<PullRequestInformation> PullRequestTask => _pullRequest.Task;
+		
         private readonly TaskCompletionSource<GitInformation> _git = new();
         private readonly TaskCompletionSource<ReleaseNotes> _releaseNotes = new();
         private readonly TaskCompletionSource<GitHubInformation> _gitHub = new();
+        private readonly TaskCompletionSource<ChangeLog> _changelog = new();
         private readonly TaskCompletionSource<Description> _description = new();
+        private readonly TaskCompletionSource<PullRequestInformation> _pullRequest = new();
 
         [Obsolete]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Ingredients() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public Ingredients(
             SemVer version,
@@ -160,8 +194,10 @@ namespace Bake.ValueObjects
 
         public void FailGit() => _git.SetCanceled();
         public void FailGitHub() => _gitHub.SetCanceled();
+        public void FailChangelog() => _changelog.SetCanceled();
         public void FailDescription() => _description.SetCanceled();
         public void FailReleaseNotes() => _releaseNotes.SetCanceled();
+        public void FailPullRequest() => _pullRequest.SetCanceled();
 
         public void FailOutstanding()
         {
@@ -173,6 +209,16 @@ namespace Bake.ValueObjects
             if (!_gitHub.Task.IsCompleted)
             {
                 _gitHub.SetCanceled();
+            }
+
+            if (!_pullRequest.Task.IsCompleted)
+            {
+                _pullRequest.SetCanceled();
+            }
+
+            if (!_changelog.Task.IsCompleted)
+            {
+                _changelog.SetCanceled();
             }
         }
     }

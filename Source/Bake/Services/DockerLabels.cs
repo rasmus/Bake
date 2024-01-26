@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.ValueObjects;
 
 namespace Bake.Services
@@ -35,7 +30,7 @@ namespace Bake.Services
             Ingredients ingredients,
             CancellationToken cancellationToken)
         {
-            async Task<T> GetAsync<T>(Func<Task<T>> getter)
+            async Task<T?> GetAsync<T>(Func<Task<T>> getter)
                 where T : class
             {
                 try
@@ -53,11 +48,16 @@ namespace Bake.Services
             var version = ingredients.Version;
             var now = DateTimeOffset.Now;
 
+            // https://github.com/opencontainers/image-spec/blob/main/annotations.md
+
             var labels = new Dictionary<string, string>
                 {
                     ["version"] = version.ToString(),
                     ["build.time"] = now.ToString("O"),
                     ["build.timestamp"] = now.ToUnixTimeSeconds().ToString(),
+
+                    ["org.opencontainers.image.created"] = now.ToString("O"),
+                    ["org.opencontainers.image.version"] = version.ToString(),
                 };
 
             if (git != null)
@@ -71,6 +71,8 @@ namespace Bake.Services
                 labels["github.owner"] = gitHub.Owner;
                 labels["github.repository"] = gitHub.Repository;
                 labels["github.url"] = gitHub.Url.AbsoluteUri;
+
+                labels["org.opencontainers.image.source"] = gitHub.Url.AbsoluteUri;
             }
 
             return labels;

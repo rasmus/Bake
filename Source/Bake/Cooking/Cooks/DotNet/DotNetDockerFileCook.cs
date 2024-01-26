@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services;
 using Bake.ValueObjects.Recipes.DotNet;
 
@@ -40,6 +37,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_EnableDiagnostics=0
+ENV DOTNET_NOLOGO=1
+ENV DOTNET_GENERATE_ASPNET_CERTIFICATE=0
+ENV DOTNET_gcServer=0
 
 # OPT OUT OF Diagnostic pipeline so we can run readonly.
 ENV COMPlus_EnableDiagnostics=0
@@ -47,8 +48,9 @@ ENV COMPlus_EnableDiagnostics=0
 WORKDIR /app
 COPY ./{{PATH}} .
 
+# Configure user and group
 RUN \
-    addgroup -S -g 2000 app_group && \
+    addgroup -S -g 1000 app_group && \
     adduser \  
         -S \
         -s /sbin/nologin \
@@ -56,9 +58,15 @@ RUN \
         app_user && \
     chown app_user:app_group /app
 
+# Add dumb-init
+ADD --chown=app_user:app_group https://github.com/Yelp/dumb-init/releases/download/v{{DUMB_INIT_VERSION}}/dumb-init_{{DUMB_INIT_VERSION}}_x86_64 /usr/bin/dumb-init
+RUN chmod +x /usr/bin/dumb-init
+
 USER app_user:app_group
 
-ENTRYPOINT [""dotnet"", ""{{NAME}}""]
+ENTRYPOINT [""/usr/bin/dumb-init"", ""--""]
+
+CMD [""dotnet"", ""{{NAME}}""]
 ";
 
         public DotNetDockerFileCook(
@@ -79,14 +87,15 @@ ENTRYPOINT [""dotnet"", ""{{NAME}}""]
                 return false;
             }
 
-            var directoryPath = Path.GetDirectoryName(recipe.ProjectPath);
+            var directoryPath = Path.GetDirectoryName(recipe.ProjectPath)!;
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
             var labels = _dockerLabels.Serialize(recipe.Labels);
             
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
-                .Replace("{{VERSION}}", $"{targetFrameworkVersion.Version.Major}.{targetFrameworkVersion.Version.Minor}")
+                .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
+                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
                 .Replace("{{LABELS}}", labels);
 
             await File.WriteAllTextAsync(

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,8 @@
 // SOFTWARE.
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Exceptions;
 using Bake.Extensions;
 using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects;
@@ -229,6 +226,11 @@ namespace Bake.Services.Tools
                 argument.Source,
                 cancellationToken);
 
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new BuildFailedException($"No NuGet API key found for {argument.Source.Host}");
+            }
+
             var arguments = new List<string>
                 {
                     "nuget", "push",
@@ -255,9 +257,11 @@ namespace Bake.Services.Tools
             var arguments = new List<string>
                 {
                     "publish",
+                    argument.FilePath,
                     "--configuration", argument.Configuration,
                     "--nologo",
-                    "--output", argument.Output
+                    "--output", argument.Output,
+                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)

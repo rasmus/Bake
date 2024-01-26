@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(input, out var destination).Should().BeTrue();
 
             // Assert
-            ((NuGetRegistryDestination) destination).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+            ((NuGetRegistryDestination) destination!).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -73,7 +73,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(input, out var destination).Should().BeTrue();
 
             // Assert
-            ((ContainerRegistryDestination)destination).Url.Should().Be(expectedRegistryUrl);
+            ((ContainerRegistryDestination)destination!).Url.Should().Be(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -87,7 +87,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(input, out var destination).Should().BeTrue();
 
             // Assert
-            ((OctopusDeployDestination)destination).Url.Should().Be(expectedRegistryUrl);
+            ((OctopusDeployDestination)destination!).Url.Should().Be(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -111,7 +111,7 @@ namespace Bake.Tests.UnitTests.Services
             Sut.TryParse(input, out var destination).Should().BeTrue();
 
             // Assert
-            var dynamicDestination = (DynamicDestination)destination;
+            var dynamicDestination = (DynamicDestination)destination!;
             dynamicDestination.ArtifactType.Should().Be(expectedArtifactType);
             dynamicDestination.Destination.Should().Be(expectedDestination);
         }

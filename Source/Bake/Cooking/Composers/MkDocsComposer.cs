@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.MkDocs;
 using Bake.ValueObjects.Recipes.Pip;
@@ -39,6 +36,7 @@ namespace Bake.Cooking.Composers
     public class MkDocsComposer : Composer
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IDockerLabels _dockerLabels;
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
             {
@@ -46,9 +44,11 @@ namespace Bake.Cooking.Composers
             };
 
         public MkDocsComposer(
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            IDockerLabels dockerLabels)
         {
             _fileSystem = fileSystem;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -60,15 +60,23 @@ namespace Bake.Cooking.Composers
                 "mkdocs.yml",
                 cancellationToken);
 
+            var labels = await _dockerLabels.FromIngredientsAsync(
+                context.Ingredients,
+                cancellationToken);
+            var buildContainer = context.Ingredients.Destinations
+                .OfType<ContainerDestination>()
+                .Any(d => d.ArtifactType == ArtifactType.DocumentationSite);
+
             return mkDocsFilePaths
-                .SelectMany(CreateRecipes)
+                .SelectMany(p => CreateRecipes(p, labels, buildContainer))
                 .ToArray();
         }
 
-        private static IEnumerable<Recipe> CreateRecipes(
-            string mkDocsFilePath)
+        private static IEnumerable<Recipe> CreateRecipes(string mkDocsFilePath,
+            Dictionary<string, string> labels,
+            bool buildContainer)
         {
-            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath);
+            var workingDirectory = Path.GetDirectoryName(mkDocsFilePath)!;
             var requirementsFilePath = Path.Combine(
                 workingDirectory,
                 "requirements.txt");
@@ -80,7 +88,7 @@ namespace Bake.Cooking.Composers
                     workingDirectory);
             }
 
-            var outputDirectory = Path.Combine(workingDirectory, "site");
+            var outputDirectory = $"bake-site-{DateTimeOffset.Now:yyyy-MM-dd-HHmmss-fff}";
 
             yield return new MkDocsBuildRecipe(
                 workingDirectory,
@@ -89,6 +97,20 @@ namespace Bake.Cooking.Composers
                 outputDirectory,
                 new DocumentationSiteArtifact(
                     outputDirectory));
+
+            var dockerFilePath = Path.Combine(
+                workingDirectory,
+                "Dockerfile");
+
+            if (buildContainer)
+            {
+                yield return new MkDocsDockerFileRecipe(
+                    outputDirectory,
+                    labels,
+                    new DockerFileArtifact(
+                        "docs",
+                        dockerFilePath));
+            }
         }
     }
 }

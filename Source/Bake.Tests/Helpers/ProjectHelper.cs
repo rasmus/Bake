@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
-using System.Linq;
-
 namespace Bake.Tests.Helpers
 {
     public static class ProjectHelper
     {
         public static string GetRoot()
         {
-            var uri = new Uri(typeof(LicenseHeader).Assembly.CodeBase);
+            var uri = new Uri(typeof(LicenseHeader).Assembly.Location);
             var directory = Path.GetDirectoryName(uri.LocalPath);
 
             while (true)
             {
                 if (string.IsNullOrEmpty(directory))
                 {
-                    throw new Exception($"Could not find repository root from '{typeof(LicenseHeader).Assembly.CodeBase}'");
+                    throw new Exception($"Could not find repository root from '{typeof(LicenseHeader).Assembly.Location}'");
                 }
 
                 var isRepositoryRoot = Directory.GetFiles(directory)

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Recipes;
@@ -84,7 +82,7 @@ namespace Bake.Tests.UnitTests.Services
             // Assert
             var dotNetRestore = recipe as DotNetRestoreSolutionRecipe;
             dotNetRestore.Should().NotBeNull();
-            dotNetRestore.Path.Should().Be("/tmp");
+            dotNetRestore!.Path.Should().Be("/tmp");
             dotNetRestore.ClearLocalHttpCache.Should().BeTrue();
         }
     }

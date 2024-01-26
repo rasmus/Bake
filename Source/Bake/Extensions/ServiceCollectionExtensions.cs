@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -57,6 +57,7 @@ namespace Bake.Extensions
                 .AddSingleton<IExecutor, Executor>()
                 .AddTransient<IEditor, Editor>()
                 .AddTransient<IKitchen, Kitchen>()
+                .AddSingleton<IChangeLogBuilder, ChangeLogBuilder>()
                 .AddSingleton<ICommandFactory, CommandFactory>()
                 .AddSingleton<IRunnerFactory, RunnerFactory>()
                 .AddTransient<ICsProjParser, CsProjParser>()
@@ -91,6 +92,7 @@ namespace Bake.Extensions
                 .AddTransient<IGather, GitHubGather>()
                 .AddTransient<IGather, ReleaseNotesGather>()
                 .AddTransient<IGather, DynamicDestinationGather>()
+                .AddTransient<IGather, ChangelogGather>()
                 .AddTransient<IGather, DescriptionGather>()
 
                 // CLI wrappers
@@ -143,6 +145,7 @@ namespace Bake.Extensions
                 .AddTransient<ICook, NodeJSDockerfileCook>()
                 // Cooks - MkDocs
                 .AddTransient<ICook, MkDocsBuildCook>()
+                .AddTransient<ICook, MkDocsDockerFileCook>()
                 // Cooks - Octopus Deploy
                 .AddTransient<ICook, OctopusDeployPackagePushCook>()
 

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Threading;
 using Bake.Core;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -32,13 +30,13 @@ namespace Bake.Tests.Helpers
     public abstract class ServiceTest<T> : TestProject
         where T : class
     {
-        private Lazy<T> _lazySut;
-        private ServiceProvider _serviceProvider;
+        private Lazy<T>? _lazySut;
+        private ServiceProvider? _serviceProvider;
 
-        protected T Sut => _lazySut.Value;
-        protected IServiceProvider ServiceProvider => _serviceProvider;
+        protected T Sut => _lazySut!.Value;
+        protected IServiceProvider ServiceProvider => _serviceProvider!;
 
-        protected ServiceTest(string projectName) : base(projectName)
+        protected ServiceTest(string? projectName) : base(projectName)
         {
         }
 
@@ -51,7 +49,7 @@ namespace Bake.Tests.Helpers
         [TearDown]
         public void TearDownServiceTest()
         {
-            _serviceProvider.Dispose();
+            _serviceProvider?.Dispose();
             _serviceProvider = null;
         }
 

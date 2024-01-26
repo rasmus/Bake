@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Core
             GitRemoteParser.TryParse(input, out var url).Should().BeTrue();
 
             // Assert
-            url.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
+            url!.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
             url.Host.Should().Be(expectedHost, url.AbsoluteUri);
             url.PathAndQuery.Should().Be(expectedPath, url.AbsoluteUri);
         }

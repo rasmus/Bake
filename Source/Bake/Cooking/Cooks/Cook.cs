@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.ValueObjects.Recipes;
 
@@ -32,7 +29,7 @@ namespace Bake.Cooking.Cooks
     public abstract class Cook<T> : ICook
         where T : Recipe
     {
-        protected static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))).Name;
+        protected static readonly string Name = ((RecipeAttribute) typeof(T).GetCustomAttribute(typeof(RecipeAttribute))!).Name;
 
         public Type CanCook { get; } = typeof(T);
 

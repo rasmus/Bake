@@ -1,6 +1,26 @@
+# 0.23-beta
+
+* Feature: Output a container for hosting mkdocs documentation
+* Feature: Add standard labels from the Open Containers Initiative
+* Feature: Add dumb-init to .NET containers to ensure that the process
+  and all child-processes are correctly terminated
+
+# 0.22-beta
+
+* New: GitHub releases now have a description that contains the a summary
+  of all pull requests and issues that are part of the release
+* Fixed: Cleanup of the artifact post run report
+
+# 0.21-beta
+
+* New: `GOPRIVATE` should be `direct` to ensure that removed
+  dependencies are spottet and reduce information leackage
+* New: Prints produced artifacts when done
+* Fixed: GitHub URL information was wrong for GHE
+
 # 0.20-beta
 
-* *Nothing yet...*
+* Fixed: When publishing, `csproj` file is needed after 7.0.200
 
 # 0.19-beta
 

@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -29,7 +28,7 @@ namespace Bake.ValueObjects.Artifacts
     public class DockerFileArtifact : FileArtifact
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DockerFileArtifact() { }
@@ -42,6 +41,11 @@ namespace Bake.ValueObjects.Artifacts
 #pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Enumerable.Empty<string>();
         }
     }
 }

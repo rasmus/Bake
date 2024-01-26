@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
@@ -40,11 +35,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Bake.Commands
 {
-    public class CommandFactory : ICommandFactory
+    public partial class CommandFactory : ICommandFactory
     {
         private const string MethodName = "ExecuteAsync";
-        private static readonly Regex UpperReplacer = new(
-            "(?<char>[A-Z])", RegexOptions.Compiled);
+
+        [GeneratedRegex("(?<char>[A-Z])")]
+        private static partial Regex UpperReplacer();
 
         private readonly ILogger<CommandFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -80,7 +76,7 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid SemVer value for argument '{argName}'");
                     }
 
-                    return version;
+                    return version!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Destination),
@@ -88,7 +84,7 @@ namespace Bake.Commands
                 {
                     if (value == null)
                     {
-                        return null;
+                        return null!;
                     }
 
                     if (!_destinationParser.TryParse(value, out var destination))
@@ -96,7 +92,7 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid Destination value for argument '{argName}'");
                     }
 
-                    return destination;
+                    return destination!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Destination[]),
@@ -113,7 +109,7 @@ namespace Bake.Commands
 
                             return destination;
                         })
-                        .ToArray();
+                        .ToArray() ?? Array.Empty<Destination>();
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Platform),
@@ -121,7 +117,7 @@ namespace Bake.Commands
                 {
                     if (value == null)
                     {
-                        return null;
+                        return null!;
                     }
 
                     if (!_platformParser.TryParse(value, out var platform))
@@ -129,13 +125,14 @@ namespace Bake.Commands
                         throw new FormatException($"'{value}' is an invalid Platform value for argument '{argName}'");
                     }
 
-                    return platform;
+                    return platform!;
                 }));
             app.ValueParsers.Add(ValueParser.Create(
                 typeof(Platform[]),
                 (argName, value, _) =>
                 {
-                    return value?.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    return value?
+                        .Split(",", StringSplitOptions.RemoveEmptyEntries)
                         .Select(v =>
                         {
                             if (!_platformParser.TryParse(v, out var platform))
@@ -146,7 +143,7 @@ namespace Bake.Commands
 
                             return platform;
                         })
-                        .ToArray();
+                        .ToArray() ?? Array.Empty<Platform>();
                 }));
 
 
@@ -204,7 +201,7 @@ https://github.com/rasmus/Bake";
 
                 var command = app.Command(commandAttribute.Name, cmd =>
                 {
-                    var options = new List<(CommandOption, Type)>();
+                    var options = new List<(CommandOption?, Type)>();
                     foreach (var parameterInfo in methodInfo.GetParameters())
                     {
                         if (parameterInfo.ParameterType == cancellationTokenType)
@@ -214,9 +211,9 @@ https://github.com/rasmus/Bake";
                         }
 
                         var argumentAttribute = parameterInfo.GetCustomAttribute<ArgumentAttribute>();
-                        var argumentName = UpperReplacer.Replace(parameterInfo.Name, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
+                        var argumentName = UpperReplacer().Replace(parameterInfo.Name!, m => $"-{m.Groups["char"].Value.ToLowerInvariant()}");
 
-                        string defaultValue = null;
+                        string? defaultValue = null;
                         if (parameterInfo.HasDefaultValue)
                         {
                             if (parameterInfo.DefaultValue != null)
@@ -230,7 +227,7 @@ https://github.com/rasmus/Bake";
                         }
 
                         var option = cmd.Option(
-                            $"--{argumentName} <{parameterInfo.Name.ToUpperInvariant()}>",
+                            $"--{argumentName} <{parameterInfo.Name!.ToUpperInvariant()}>",
                             argumentAttribute?.Description ?? string.Empty,
                             parameterInfo.HasDefaultValue
                                 ? CommandOptionType.SingleOrNoValue
@@ -247,13 +244,13 @@ https://github.com/rasmus/Bake";
                         var values = options
                             .Select(t => t.Item2 == cancellationTokenType
                                 ? c
-                                : Parse(t.Item1, GetParser(app.ValueParsers, t.Item2)))
+                                : Parse(t.Item1!, GetParser(app.ValueParsers, t.Item2)))
                             .ToArray();
 
 
                         try
                         {
-                            return await (Task<int>) methodInfo.Invoke(command, values);
+                            return await (Task<int>) methodInfo.Invoke(command, values)!;
                         }
                         catch (Exception e)
                         {
@@ -274,7 +271,7 @@ https://github.com/rasmus/Bake";
 
         private static string GetVersion()
         {
-            return typeof(CommandFactory).Assembly.GetName().Version.ToString();
+            return typeof(CommandFactory).Assembly.GetName().Version!.ToString();
         }
 
         private static IValueParser GetParser(
@@ -291,7 +288,7 @@ https://github.com/rasmus/Bake";
             return valueParser;
         }
 
-        private static object Parse(
+        private static object? Parse(
             CommandOption option,
             IValueParser valueParser)
         {

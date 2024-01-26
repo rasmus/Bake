@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Text.RegularExpressions;
 using Bake.Core;
+using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 
 namespace Bake.Services
@@ -44,7 +44,7 @@ namespace Bake.Services
             _defaults = defaults;
         }
 
-        public bool TryParse(string str, out Destination destination)
+        public bool TryParse(string str, out Destination? destination)
         {
             destination = null;
 
@@ -60,8 +60,7 @@ namespace Bake.Services
                             Names.DynamicDestinations.GitHub);
                         return true;
                     }
-
-                    return false;
+                    break;
 
                 case Names.ArtifactTypes.NuGet:
                     if (parts.Length == 1)
@@ -131,9 +130,16 @@ namespace Bake.Services
                     destination = new ContainerRegistryDestination($"{parts[1].TrimEnd('/')}/");
                     return true;
 
-                default:
-                    return false;
+                case Names.ArtifactTypes.DocumentationSite:
+                    if (string.Equals(parts[1], Names.Destinations.Container))
+                    {
+                        destination = new ContainerDestination(ArtifactType.DocumentationSite);
+                        return true;
+                    }
+                    break;
             }
+
+            return false;
         }
     }
 }

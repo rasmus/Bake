@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
-using AutoFixture.AutoMoq;
-using Bake.Core;
-using Moq;
+using AutoFixture.AutoNSubstitute;
+using NSubstitute;
 using NUnit.Framework;
 
 // ReSharper disable AssignNullToNotNullAttribute
@@ -37,16 +31,16 @@ namespace Bake.Tests.Helpers
 {
     public abstract class TestIt
     {
-        private List<string> _filesToDelete;
+        private List<string> _filesToDelete = null!;
 
-        protected IFixture Fixture { get; private set; }
+        protected IFixture Fixture { get; private set; } = null!;
 
         [SetUp]
         public void SetUpTestIt()
         {
             _filesToDelete = new List<string>();
 
-            Fixture = new Fixture().Customize(new AutoMoqCustomization());
+            Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
         }
 
         [TearDown]
@@ -54,9 +48,9 @@ namespace Bake.Tests.Helpers
         {
             foreach (var file in _filesToDelete)
             {
-                if (System.IO.File.Exists(file))
+                if (File.Exists(file))
                 {
-                    System.IO.File.Delete(file);
+                    File.Delete(file);
                 }
             }
         }
@@ -74,7 +68,7 @@ namespace Bake.Tests.Helpers
         protected T Mock<T>()
             where T : class
         {
-            return new Mock<T>().Object;
+            return Substitute.For<T>();
         }
 
         protected T Inject<T>(T instance)
@@ -84,11 +78,11 @@ namespace Bake.Tests.Helpers
             return instance;
         }
 
-        protected Mock<T> InjectMock<T>(params object[] args)
+        protected T InjectMock<T>(params object[] args)
             where T : class
         {
-            var mock = new Mock<T>(args);
-            Fixture.Inject(mock.Object);
+            var mock = Substitute.For<T>(args);
+            Fixture.Inject(mock);
             return mock;
         }
 
@@ -101,7 +95,7 @@ namespace Bake.Tests.Helpers
                 .ToList();
             var resourceName = resourceNames.Single(n => n.EndsWith(fileEnding, StringComparison.OrdinalIgnoreCase));
             await using var stream = assembly.GetManifestResourceStream(resourceName);
-            using var streamReader = new StreamReader(stream);
+            using var streamReader = new StreamReader(stream!);
             return await streamReader.ReadToEndAsync();
         }
 

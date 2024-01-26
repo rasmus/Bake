@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reflection;
 using Bake.Cooking.Cooks;
 using Bake.Extensions;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
 using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking
@@ -98,7 +95,8 @@ namespace Bake.Cooking
                 cookResults.Add(new CookResult(
                     recipeName,
                     stopwatch.Elapsed,
-                    success));
+                    success,
+                    recipe.Artifacts!));
 
                 if (success)
                 {
@@ -109,7 +107,23 @@ namespace Bake.Cooking
                 break;
             }
 
+            PrintHeader("artifacts");
+            PrintArtifacts(cookResults);
+            PrintHeader("timings");
+            PrintTimings(cookResults);
             Console.WriteLine();
+
+            return successful;
+        }
+
+        private static void PrintHeader(string header)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"{header.ToUpperInvariant()} {new string('=', 79 - header.Length)}");
+        }
+
+        private static void PrintTimings(List<CookResult> cookResults)
+        {
             var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
             foreach (var cookResult in cookResults)
             {
@@ -117,13 +131,47 @@ namespace Bake.Cooking
                     ? "success"
                     : "failed";
                 var percent = cookResult.Time.TotalSeconds / totalSeconds;
-                var barWidth = (int)Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
-                Console.WriteLine($"[{new string('#', barWidth),BarWidth}] {percent*100.0,5:0.0}%  {cookResult.Name,-32} {status, 7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                var barWidth = (int) Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
+                Console.WriteLine(
+                    $"[{new string('#', barWidth),BarWidth}] {percent * 100.0,5:0.0}%  {cookResult.Name,-32} {status,7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
-            Console.WriteLine($"total {totalSeconds:0.##} seconds");
-            Console.WriteLine();
 
-            return successful;
+            Console.WriteLine($"total {totalSeconds:0.##} seconds");
+        }
+
+        private static void PrintArtifacts(IEnumerable<CookResult> cookResults)
+        {
+            var groupedArtifacts = cookResults
+                .SelectMany(r => r.Artifacts)
+                .GroupBy(a =>
+                {
+                    var type = a.GetType();
+                    var attribute = type.GetCustomAttribute<ArtifactAttribute>();
+                    return attribute == null
+                        ? throw new InvalidOperationException(
+                            $"Artifact type '{type.PrettyPrint()}' is missing the required attribute")
+                        : attribute.Name;
+                });
+
+            foreach (var artifactGroup in groupedArtifacts)
+            {
+                var prettyNames = artifactGroup
+                    .SelectMany(a => a.PrettyNames())
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToArray();
+
+                if (!prettyNames.Any())
+                {
+                    continue;
+                }
+
+                Console.WriteLine(artifactGroup.Key);
+                foreach (var prettyName in prettyNames)
+                {
+                    Console.WriteLine($"  {prettyName}");
+                }
+            }
         }
     }
 }

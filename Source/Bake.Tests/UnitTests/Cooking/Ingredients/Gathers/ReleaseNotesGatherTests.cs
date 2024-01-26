@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
 {
     public class ReleaseNotesGatherTests : TestFor<ReleaseNotesGather>
     {
-        private Mock<IReleaseNotesParser> _releaseNotesParserMock;
-        private Mock<IFileSystem> _fileSystemMock;
+        private IReleaseNotesParser _releaseNotesParserMock = null!;
+        private IFileSystem _fileSystemMock = null!;
 
         [SetUp]
         public void SetUp()
@@ -75,17 +70,17 @@ namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
                 SemVer.Parse(version),
                 A<string>());
             _fileSystemMock
-                .Setup(m => m.FileExists(It.IsAny<string>()))
+                .FileExists(Arg.Any<string>())
                 .Returns(true);
             _releaseNotesParserMock
-                .Setup(m => m.ParseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(releaseNotes);
+                .ParseAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(releaseNotes));
 
             // Act
             await Sut.GatherAsync(ingredients, CancellationToken.None);
 
             // Assert
-            ingredients.ReleaseNotes.Version.ToString().Should().Be(expectedVersion);
+            ingredients.ReleaseNotes!.Version.ToString().Should().Be(expectedVersion);
         }
     }
 }

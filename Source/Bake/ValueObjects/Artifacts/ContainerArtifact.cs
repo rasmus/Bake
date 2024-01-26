@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -32,10 +28,10 @@ namespace Bake.ValueObjects.Artifacts
     public class ContainerArtifact : Artifact
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; }
+        public string Name { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string[] Tags { get; [Obsolete] set; }
+        public string[] Tags { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public ContainerArtifact() { }
@@ -50,10 +46,16 @@ namespace Bake.ValueObjects.Artifacts
         }
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        public override async IAsyncEnumerable<string> ValidateAsync(
-            [EnumeratorCancellation] CancellationToken _)
+        public override IAsyncEnumerable<string> ValidateAsync(
+            /*[EnumeratorCancellation]*/ CancellationToken _)
         {
-            yield break;
+            return AsyncEnumerable.Empty<string>();
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Tags
+                .Select(t => $"{Name}:{t}");
         }
     }
 }

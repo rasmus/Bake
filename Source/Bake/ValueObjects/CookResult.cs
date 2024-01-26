@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2022 Rasmus Mikkelsen
+// Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using Bake.ValueObjects.Artifacts;
 
 namespace Bake.ValueObjects
 {
@@ -29,15 +29,18 @@ namespace Bake.ValueObjects
         public string Name { get; }
         public TimeSpan Time { get; }
         public bool Success { get; }
+        public IReadOnlyCollection<Artifact> Artifacts { get; }
 
         public CookResult(
             string name,
             TimeSpan time,
-            bool success)
+            bool success,
+            IReadOnlyCollection<Artifact>? artifacts)
         {
             Name = name;
             Time = time;
             Success = success;
+            Artifacts = artifacts ?? Array.Empty<Artifact>();
         }
     }
 }
