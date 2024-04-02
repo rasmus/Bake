@@ -81,7 +81,7 @@ namespace Bake.Cooking.Composers
 
             var urls = ingredients.Destinations
                 .OfType<ContainerRegistryDestination>()
-                .Select(d => d.Url)
+                .Select(d => d.Url.Trim('/'))
                 .Concat(new[]{"bake.local"})
                 .Distinct()
                 .ToArray();
@@ -175,7 +175,8 @@ namespace Bake.Cooking.Composers
             var tags = (
                 from u in urls
                 from v in versions
-                select $"{u}{slug}:{v}"
+                let url = string.IsNullOrEmpty(u) ? slug : $"{u}/{slug}"
+                select $"{url}:{v}"
                 ).ToArray();
 
             var secretMounts = new Dictionary<string, string>();
