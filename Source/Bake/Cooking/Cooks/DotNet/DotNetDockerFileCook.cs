@@ -44,6 +44,7 @@ ENV DOTNET_gcServer=0
 
 # OPT OUT OF Diagnostic pipeline so we can run readonly.
 ENV COMPlus_EnableDiagnostics=0
+ENV DOTNET_EnableDiagnostics=0
 
 WORKDIR /app
 COPY ./{{PATH}} .
