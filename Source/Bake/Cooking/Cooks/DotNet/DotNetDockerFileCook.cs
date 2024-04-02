@@ -37,13 +37,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENV DOTNET_EnableDiagnostics=0
 ENV DOTNET_NOLOGO=1
 ENV DOTNET_GENERATE_ASPNET_CERTIFICATE=0
-ENV DOTNET_gcServer=0
 
 # OPT OUT OF Diagnostic pipeline so we can run readonly.
 ENV COMPlus_EnableDiagnostics=0
+ENV DOTNET_EnableDiagnostics=0
 
 WORKDIR /app
 COPY ./{{PATH}} .
