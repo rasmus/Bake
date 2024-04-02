@@ -102,7 +102,7 @@ namespace Bake.Cooking.Composers
                     ? Path.GetFileName(directoryPath)
                     : bakeProject.Name;
 
-                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, false, urls));
+                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, ingredients.PushContainerLatest, urls));
             }
 
             var dockerfileArtifacts = context
@@ -115,7 +115,7 @@ namespace Bake.Cooking.Composers
                     dockerfileArtifacts.Select(a => a.Path).ToList());
                 foreach (var dockerfileArtifact in dockerfileArtifacts)
                 {
-                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, false, urls));
+                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, ingredients.PushContainerLatest, urls));
                 }
             }
 
