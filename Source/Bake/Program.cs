@@ -23,6 +23,7 @@
 using Bake.Commands;
 using Bake.Core;
 using Bake.Extensions;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -67,12 +68,24 @@ namespace Bake
             await using var serviceProvider = serviceCollection.BuildServiceProvider(true);
 
             var executor = serviceProvider.GetRequiredService<IExecutor>();
-            var returnCode = await executor.ExecuteAsync(
-                args,
-                commandTypes!,
-                cancellationToken);
 
-            return returnCode;
+            try
+            {
+                return await executor.ExecuteAsync(
+                    args,
+                    commandTypes!,
+                    cancellationToken);
+            }
+            catch (UnrecognizedCommandParsingException e)
+            {
+                await Console.Error.WriteLineAsync(e.Message);
+                return -1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return -2;
+            }
         }
     }
 }
