@@ -1,6 +1,7 @@
 # 0.25-beta
 
-* *Nothing notable yet...*
+* Feature: `osx-arm64` now built by default for .NET projects
+* Fix: `arm64` and `arm` are now valid target platforms and correctly parsed
 
 # 0.24-beta
 

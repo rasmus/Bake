@@ -23,6 +23,8 @@
 using System.Collections.Concurrent;
 using YamlDotNet.Serialization;
 
+// https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids
+
 namespace Bake.ValueObjects
 {
     public class Platform
@@ -32,6 +34,7 @@ namespace Bake.ValueObjects
                 new(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
                 new(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
                 new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64),
             };
         public static Platform Any { get; } = new(ExecutableOperatingSystem.Any, ExecutableArchitecture.Any);
 
@@ -44,8 +47,9 @@ namespace Bake.ValueObjects
         private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> DotNetArchMoniker = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
                 [ExecutableArchitecture.Intel64] = "x64",
+                [ExecutableArchitecture.Arm32] = "arm",
+                [ExecutableArchitecture.Arm64] = "arm64",
             };
-
 
         [YamlMember]
         public ExecutableOperatingSystem Os { get; [Obsolete] set; }
