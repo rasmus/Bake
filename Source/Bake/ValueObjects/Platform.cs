@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using YamlDotNet.Serialization;
 
 // https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids
@@ -29,13 +30,7 @@ namespace Bake.ValueObjects
 {
     public class Platform
     {
-        public static Platform[] Defaults { get; } = 
-            {
-                new(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
-                new(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
-                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
-                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64),
-            };
+        public static Platform[] Defaults { get; }
         public static Platform Any { get; } = new(ExecutableOperatingSystem.Any, ExecutableArchitecture.Any);
 
         private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> DotNetOsMoniker = new ConcurrentDictionary<ExecutableOperatingSystem, string>
@@ -50,6 +45,23 @@ namespace Bake.ValueObjects
                 [ExecutableArchitecture.Arm32] = "arm",
                 [ExecutableArchitecture.Arm64] = "arm64",
             };
+
+        static Platform()
+        {
+            var platforms = new List<Platform>
+            {
+                new(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
+            };
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                platforms.Add(new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64));
+            }
+
+            Defaults = platforms.ToArray();
+        }
 
         [YamlMember]
         public ExecutableOperatingSystem Os { get; [Obsolete] set; }
