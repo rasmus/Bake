@@ -1,3 +1,7 @@
+# 0.24-beta
+
+* Fix: Don't try to be clever and override default .NET GC settings
+
 # 0.23-beta
 
 * Feature: Output a container for hosting mkdocs documentation
