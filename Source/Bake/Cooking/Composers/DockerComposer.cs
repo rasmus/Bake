@@ -20,15 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.BakeProjects;
 using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Docker;
@@ -85,7 +81,8 @@ namespace Bake.Cooking.Composers
 
             var urls = ingredients.Destinations
                 .OfType<ContainerRegistryDestination>()
-                .Select(d => d.Url)
+                .Select(d => d.Url.Trim('/'))
+                .Concat(new[]{"bake.local"})
                 .Distinct()
                 .ToArray();
             var recipes = new List<Recipe>();
@@ -96,11 +93,16 @@ namespace Bake.Cooking.Composers
                     "Located Dockerfile at these locations, scheduling build: {DockerFiles}",
                     dockerFilePaths);
 
-                var containerName = await GetContainerNameAsync(
-                    Path.GetDirectoryName(dockerFilePath)!,
+                var directoryPath = Path.GetDirectoryName(dockerFilePath)!; // Is actual full path, terrible name for a method
+                var bakeProject = await GetProjectAsync(
+                    directoryPath,
                     cancellationToken);
 
-                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, urls));
+                var containerName = string.IsNullOrEmpty(bakeProject?.Name)
+                    ? Path.GetFileName(directoryPath)
+                    : bakeProject.Name;
+
+                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, ingredients.PushContainerLatestTag, urls));
             }
 
             var dockerfileArtifacts = context
@@ -113,13 +115,13 @@ namespace Bake.Cooking.Composers
                     dockerfileArtifacts.Select(a => a.Path).ToList());
                 foreach (var dockerfileArtifact in dockerfileArtifacts)
                 {
-                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, urls));
+                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, ingredients.PushContainerLatestTag, urls));
                 }
             }
 
             if (!recipes.Any())
             {
-                return new Recipe[] { };
+                return [];
             }
 
             if (_conventionInterpreter.ShouldArtifactsBePublished(ingredients.Convention))
@@ -134,7 +136,7 @@ namespace Bake.Cooking.Composers
             return recipes;
         }
 
-        private async Task<string> GetContainerNameAsync(
+        private async Task<BakeProject?> GetProjectAsync(
             string directory,
             CancellationToken cancellationToken)
         {
@@ -142,33 +144,43 @@ namespace Bake.Cooking.Composers
                 directory,
                 "bake.yaml"); // TODO: Rework to align file name
 
-            if (File.Exists(projectFilePath))
+            if (!File.Exists(projectFilePath))
             {
-                var fileContent = await File.ReadAllTextAsync(projectFilePath, cancellationToken);
-                var bakeProject = await _bakeProjectParser.ParseAsync(fileContent, cancellationToken);
-                if (!string.IsNullOrEmpty(bakeProject.Name))
-                {
-                    return bakeProject.Name;
-                }
+                return null;
             }
 
-            return Path.GetFileName(directory);
+            var fileContent = await File.ReadAllTextAsync(projectFilePath, cancellationToken);
+            return await _bakeProjectParser.ParseAsync(fileContent, cancellationToken);
         }
         
         private IEnumerable<Recipe> CreateRecipes(
             string dockerfilePath,
             string name,
             SemVer version,
+            bool pushLatest,
             IEnumerable<string> urls)
         {
+            var versions = new List<string>
+                {
+                    version.ToString(),
+                };
+
+            if (pushLatest)
+            {
+                versions.Add("latest");
+            }
+
             var slug = name.ToSlug();
-            var tags = urls
-                .Select(u => $"{u}{slug}:{version}")
-                .ToList();
+
+            var tags = (
+                from u in urls
+                from v in versions
+                let url = string.IsNullOrEmpty(u) ? slug : $"{u}/{slug}"
+                select $"{url}:{v}"
+                ).ToArray();
+
             var secretMounts = new Dictionary<string, string>();
             var workingDirectory = Path.GetDirectoryName(dockerfilePath);
-
-            tags.Add($"bake.local/{slug}:{version}");
 
             _containerTagParser.Validate(tags);
 
