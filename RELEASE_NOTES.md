@@ -1,3 +1,7 @@
+# 0.25-beta
+
+* *Nothing notable yet...*
+
 # 0.24-beta
 
 * Fix: Don't try to be clever and override default .NET GC settings
