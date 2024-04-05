@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using FluentAssertions;
@@ -40,18 +39,22 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         {
             // Arrange
             var version = SemVer.Random.ToString();
-            var expectedImage = $"bake.local/awesome-net-core-service:{version}";
+            var expectedImageVersioned = $"bake.local/awesome-net-core-service:{version}";
+            var expectedImageLatest = "bake.local/awesome-net-core-service:latest";
 
             // Act
             var returnCode = await ExecuteAsync(
                 "run",
-                "--build-version", version);
+                "--build-version", version,
+                "--push-container-latest-tag=true");
 
             // Assert
             returnCode.Should().Be(0);
+            var images = await DockerHelper.ListImagesAsync(Timeout);
+            images.Should().Contain(new[] {expectedImageVersioned, expectedImageLatest});
             await AssertContainerPingsAsync(
                 DockerArguments
-                    .With(expectedImage)
+                    .With(expectedImageVersioned)
                     .WithPort(5123)
                     .WithEnvironmentVariable("URLS", "http://0.0.0.0:5123")
                     .WithReadOnlyFilesystem());

@@ -37,6 +37,7 @@ namespace Bake.Tests.Helpers
 
         private List<Release> _releases = null!;
         protected IReadOnlyCollection<Release> Releases => _releases;
+        protected CancellationToken Timeout => _timeout!.Token;
 
         protected BakeTest(string projectName) : base(projectName)
         {
