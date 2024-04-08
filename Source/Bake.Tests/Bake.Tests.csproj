@@ -22,7 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-    <PackageReference Include="WireMock.Net" Version="1.5.51" />
+    <PackageReference Include="WireMock.Net" Version="1.5.52" />
   </ItemGroup>
 
   <ItemGroup>
