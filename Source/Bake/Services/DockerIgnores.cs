@@ -65,6 +65,7 @@ namespace Bake.Services
             "# .NET",
             "**/obj",
             "**/*.*proj.user",
+            "**/appsetting.Development.json",
 
             "# Java",
             "**/.classpath",
