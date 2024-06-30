@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services;
 using Bake.ValueObjects.Recipes.Go;
 using Microsoft.Extensions.Logging;
 
@@ -32,12 +28,9 @@ namespace Bake.Cooking.Cooks.Go
     public class GoDockerFileCook : Cook<GoDockerFileRecipe>
     {
         private readonly ILogger<GoDockerFileCook> _logger;
-        private readonly IDockerLabels _dockerLabels;
 
         private const string Dockerfile = @"
 FROM gcr.io/distroless/base-debian10
-
-{{LABELS}}
 
 WORKDIR /
 COPY {{SRC}} /{{DST}}
@@ -49,11 +42,9 @@ ENTRYPOINT [""/{{DST}}""]
 ";
 
         public GoDockerFileCook(
-            ILogger<GoDockerFileCook> logger,
-            IDockerLabels dockerLabels)
+            ILogger<GoDockerFileCook> logger)
         {
             _logger = logger;
-            _dockerLabels = dockerLabels;
         }
 
         protected override async Task<bool> CookAsync(
@@ -62,13 +53,11 @@ ENTRYPOINT [""/{{DST}}""]
             CancellationToken cancellationToken)
         {
             var dockerFilePath = Path.Combine(recipe.ProjectPath, "Dockerfile");
-            var dockerLabels = _dockerLabels.Serialize(recipe.Labels);
             
             var dockerfileContent = Dockerfile
                 .Replace("{{SRC}}", recipe.Output.Replace("\\", "/"))
                 .Replace("{{DST}}", Path.GetFileName(recipe.Output))
-                .Replace("{{PORT}}", recipe.Port.ToString())
-                .Replace("{{LABELS}}", dockerLabels);
+                .Replace("{{PORT}}", recipe.Port.ToString());
 
             _logger.LogInformation(
                 "Creating Dockerfile for Go service at {FilePath} with content {DockerfileContent}",

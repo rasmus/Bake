@@ -38,9 +38,6 @@ namespace Bake.ValueObjects.Recipes.Go
         public string ProjectPath { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public Dictionary<string, string> Labels { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
         public string Output { get; [Obsolete] set; } = null!;
 
         [Obsolete]
@@ -50,7 +47,6 @@ namespace Bake.ValueObjects.Recipes.Go
             string name,
             int port,
             string projectPath,
-            Dictionary<string, string> labels,
             string output,
             params Artifact[] artifacts)
             : base(artifacts)
@@ -59,7 +55,6 @@ namespace Bake.ValueObjects.Recipes.Go
             Name = name;
             Port = port;
             ProjectPath = projectPath;
-            Labels = labels;
             Output = output;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

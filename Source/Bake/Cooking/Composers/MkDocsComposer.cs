@@ -106,10 +106,10 @@ namespace Bake.Cooking.Composers
             {
                 yield return new MkDocsDockerFileRecipe(
                     outputDirectory,
-                    labels,
                     new DockerFileArtifact(
                         "docs",
-                        dockerFilePath));
+                        dockerFilePath,
+                        labels));
             }
         }
     }

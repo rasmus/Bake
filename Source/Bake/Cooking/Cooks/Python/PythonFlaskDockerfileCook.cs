@@ -20,22 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services;
 using Bake.ValueObjects.Recipes.Python;
 
 namespace Bake.Cooking.Cooks.Python
 {
     public class PythonFlaskDockerfileCook : Cook<PythonFlaskDockerfileRecipe>
     {
-        private readonly IDockerLabels _dockerLabels;
-
         private const string Dockerfile = @"
 FROM python:3.9-alpine
-
-{{LABELS}}
 
 WORKDIR /app
 COPY ./ .
@@ -48,26 +40,16 @@ USER appuser
 CMD [ ""python"", ""-m"", ""flask"", ""run"", ""--host=0.0.0.0"" ]
 ";
 
-        public PythonFlaskDockerfileCook(
-            IDockerLabels dockerLabels)
-        {
-            _dockerLabels = dockerLabels;
-        }
-
         protected override async Task<bool> CookAsync(
             IContext context,
             PythonFlaskDockerfileRecipe recipe,
             CancellationToken cancellationToken)
         {
             var dockerFilePath = Path.Combine(recipe.Directory, "Dockerfile");
-            var labels = _dockerLabels.Serialize(recipe.Labels);
-
-            var dockerfileContent = Dockerfile
-                .Replace("{{LABELS}}", labels);
 
             await File.WriteAllTextAsync(
                 dockerFilePath,
-                dockerfileContent,
+                Dockerfile,
                 cancellationToken);
 
             return true;

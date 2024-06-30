@@ -30,16 +30,21 @@ namespace Bake.ValueObjects.Artifacts
         [YamlMember]
         public string Name { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public DockerFileArtifact() { }
 
         public DockerFileArtifact(
             string name,
-            string path)
+            string path,
+            Dictionary<string, string> labels)
             : base(path)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
+            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 

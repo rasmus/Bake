@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Commands
                 CancellationToken cancellationToken = default,
                 Destination[]? destination = null)
             {
-                if (throwException) throw new Exception();
+                if (throwException) throw new Exception("This is an expected exception!");
 
                 return Task.FromResult(exitCode);
             }

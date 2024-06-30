@@ -29,7 +29,5 @@ namespace Bake.Services
         Task<Dictionary<string, string>> FromIngredientsAsync(
             Ingredients ingredients,
             CancellationToken cancellationToken);
-
-        string Serialize(IReadOnlyDictionary<string, string> labels);
     }
 }

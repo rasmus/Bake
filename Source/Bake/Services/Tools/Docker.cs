@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.Services.Tools.DockerArguments;
 
@@ -32,7 +27,7 @@ namespace Bake.Services.Tools
 {
     public class Docker : IDocker
     {
-        private static IReadOnlyDictionary<string, string> EnvironmentVariables = new Dictionary<string, string>
+        private static readonly IReadOnlyDictionary<string, string> EnvironmentVariables = new Dictionary<string, string>
         {
             ["DOCKER_BUILDKIT"] = "1",
         };
@@ -65,7 +60,12 @@ namespace Bake.Services.Tools
 
             foreach (var secretMount in argument.SecretMounts)
             {
-                arguments.AddRange(new[]{ "--secret", $"id={secretMount.Key},src={secretMount.Value}"});   
+                arguments.AddRange(new[]{"--secret", $"id={secretMount.Key},src={secretMount.Value}"});   
+            }
+
+            foreach (var label in argument.Labels)
+            {
+                arguments.AddRange(new[]{"--label", $"\"{label.Key}={label.Value}\""});
             }
 
             var runner = _runnerFactory.CreateRunner(
