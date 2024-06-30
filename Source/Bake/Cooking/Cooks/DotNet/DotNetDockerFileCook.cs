@@ -31,7 +31,7 @@ namespace Bake.Cooking.Cooks.DotNet
         private readonly IDockerLabels _dockerLabels;
 
         private const string Dockerfile = @"
-FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-jammy-chiseled-extra
+FROM {{BASE_IMAGE}}
 
 {{LABELS}}
 
@@ -73,6 +73,14 @@ CMD [""dotnet"", ""{{NAME}}""]
                 return false;
             }
 
+            // TODO: Rework this to allow control from composer (and Bake project configuration)
+            var version = $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}";
+            var baseImage = targetFrameworkVersion!.Version.Major switch
+            {
+                6 or 8 => $"mcr.microsoft.com/dotnet/aspnet:{version}-jammy-chiseled-extra",
+                _ => $"mcr.microsoft.com/dotnet/aspnet:{version}-alpine"
+            };
+
             var directoryPath = Path.GetDirectoryName(recipe.ProjectPath)!;
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
             var labels = _dockerLabels.Serialize(recipe.Labels);
@@ -80,7 +88,7 @@ CMD [""dotnet"", ""{{NAME}}""]
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
-                .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
+                .Replace("{{BASE_IMAGE}}", baseImage)
                 .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
                 .Replace("{{LABELS}}", labels);
 
