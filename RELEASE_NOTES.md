@@ -1,6 +1,8 @@
 # 0.25-beta
 
-* *Nothing notable yet...*
+* Feature: Switch .NET 6 and 8 to use Ubuntu chiseled
+* Feature: Rework container labels to also be added on regular `Dockerfile` builds
+* Fix: `appsettings.Development.json` is now ignored by default when building .NET containers
 
 # 0.24-beta
 
