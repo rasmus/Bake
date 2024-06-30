@@ -1,3 +1,7 @@
+# 0.26-beta
+
+* *Nothing yet...*
+
 # 0.25-beta
 
 * Feature: Switch .NET 6 and 8 to use Ubuntu chiseled
