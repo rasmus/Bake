@@ -27,14 +27,12 @@ using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.NodeJS;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Bake.Cooking.Composers
 {
     public class NodeJsComposer : Composer
     {
-        private readonly ILogger<NodeJsComposer> _logger;
         private readonly IFileSystem _fileSystem;
         private readonly IDockerLabels _dockerLabels;
 
@@ -44,11 +42,9 @@ namespace Bake.Cooking.Composers
             };
 
         public NodeJsComposer(
-            ILogger<NodeJsComposer> logger,
             IFileSystem fileSystem,
             IDockerLabels dockerLabels)
         {
-            _logger = logger;
             _fileSystem = fileSystem;
             _dockerLabels = dockerLabels;
         }
@@ -108,10 +104,10 @@ namespace Bake.Cooking.Composers
             recipes.Add(new NodeJSDockerfileRecipe(
                 workingDirectory,
                 packageJson.Main,
-                labels,
                 new DockerFileArtifact(
                     name.ToSlug(),
-                    Path.Combine(workingDirectory, "Dockerfile"))));
+                    Path.Combine(workingDirectory, "Dockerfile"),
+                    labels)));
 
             return recipes;
         }

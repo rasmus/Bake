@@ -88,14 +88,12 @@ CMD [""dotnet"", ""{{NAME}}""]
 
             var directoryPath = Path.GetDirectoryName(recipe.ProjectPath)!;
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
-            var labels = _dockerLabels.Serialize(recipe.Labels);
             
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
                 .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
-                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
-                .Replace("{{LABELS}}", labels);
+                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5");
 
             await File.WriteAllTextAsync(
                 dockerFilePath,

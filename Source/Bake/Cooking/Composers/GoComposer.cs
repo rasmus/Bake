@@ -144,11 +144,11 @@ namespace Bake.Cooking.Composers
                     goModuleName.Name,
                     servicePort,
                     directoryPath,
-                    labels,
                     linuxBuildRecipe.Output,
                     new DockerFileArtifact(
                         goModuleName.Name,
-                        Path.Combine(directoryPath, "Dockerfile"))));
+                        Path.Combine(directoryPath, "Dockerfile"),
+                        labels)));
             }
 
             return recipes;

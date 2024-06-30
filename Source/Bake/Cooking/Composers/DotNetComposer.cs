@@ -267,10 +267,10 @@ namespace Bake.Cooking.Composers
                     path.Replace("\\", "/"),
                     $"{visualStudioProject.AssemblyName}.dll",
                     moniker,
-                    labels,
                     new DockerFileArtifact(
                         visualStudioProject.PreferredName,
-                        Path.Combine(visualStudioProject.Directory, "Dockerfile")));
+                        Path.Combine(visualStudioProject.Directory, "Dockerfile"),
+                        labels));
             }
 
             foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.PackAsTool))

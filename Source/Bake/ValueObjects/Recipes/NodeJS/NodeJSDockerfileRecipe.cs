@@ -34,23 +34,18 @@ namespace Bake.ValueObjects.Recipes.NodeJS
         [YamlMember]
         public string Main { get; [Obsolete] set; } = null!;
 
-        [YamlMember]
-        public Dictionary<string, string> Labels { get; [Obsolete] set; } = null!;
-
         [Obsolete]
         public NodeJSDockerfileRecipe() { }
 
         public NodeJSDockerfileRecipe(
             string workingDirectory,
             string main,
-            Dictionary<string, string> labels,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             WorkingDirectory = workingDirectory;
             Main = main;
-            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

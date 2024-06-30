@@ -40,9 +40,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string Moniker { get; [Obsolete] set; } = null!;
 
-        [YamlMember]
-        public Dictionary<string, string> Labels { get; [Obsolete] set; } = null!;
-
         [Obsolete]
         public DotNetDockerFileRecipe() { }
 
@@ -51,7 +48,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string servicePath,
             string entryPoint,
             string moniker,
-            Dictionary<string, string> labels,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -60,7 +56,6 @@ namespace Bake.ValueObjects.Recipes.DotNet
             ServicePath = servicePath;
             EntryPoint = entryPoint;
             Moniker = moniker;
-            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }
