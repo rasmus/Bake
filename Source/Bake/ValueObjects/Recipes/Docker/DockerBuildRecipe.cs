@@ -43,6 +43,9 @@ namespace Bake.ValueObjects.Recipes.Docker
         [YamlMember]
         public Dictionary<string, string> SecretMounts { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public Dictionary<string, string> Labels { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public DockerBuildRecipe() { }
 
@@ -52,6 +55,7 @@ namespace Bake.ValueObjects.Recipes.Docker
             IEnumerable<string> tags,
             bool compress,
             Dictionary<string, string> secretMounts,
+            Dictionary<string, string> labels,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -61,6 +65,7 @@ namespace Bake.ValueObjects.Recipes.Docker
             Tags = tags.ToArray();
             Compress = compress;
             SecretMounts = secretMounts;
+            Labels = labels;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

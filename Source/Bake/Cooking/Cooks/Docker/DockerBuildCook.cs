@@ -67,7 +67,8 @@ namespace Bake.Cooking.Cooks.Docker
                 recipe.WorkingDirectory,
                 recipe.Tags,
                 recipe.Compress,
-                recipe.SecretMounts);
+                recipe.SecretMounts,
+                recipe.Labels);
 
             using var toolResult = await _docker.BuildAsync(
                 argument,

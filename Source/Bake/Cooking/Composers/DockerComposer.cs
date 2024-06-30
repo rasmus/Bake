@@ -52,6 +52,7 @@ namespace Bake.Cooking.Composers
         private readonly IContainerTagParser _containerTagParser;
         private readonly IConventionInterpreter _conventionInterpreter;
         private readonly IBakeProjectParser _bakeProjectParser;
+        private readonly IDockerLabels _dockerLabels;
 
         public DockerComposer(
             ILogger<DockerComposer> logger,
@@ -59,7 +60,8 @@ namespace Bake.Cooking.Composers
             IFileSystem fileSystem,
             IContainerTagParser containerTagParser,
             IConventionInterpreter conventionInterpreter,
-            IBakeProjectParser bakeProjectParser)
+            IBakeProjectParser bakeProjectParser,
+            IDockerLabels dockerLabels)
         {
             _logger = logger;
             _defaults = defaults;
@@ -67,6 +69,7 @@ namespace Bake.Cooking.Composers
             _containerTagParser = containerTagParser;
             _conventionInterpreter = conventionInterpreter;
             _bakeProjectParser = bakeProjectParser;
+            _dockerLabels = dockerLabels;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -102,7 +105,17 @@ namespace Bake.Cooking.Composers
                     ? Path.GetFileName(directoryPath)
                     : bakeProject.Name;
 
-                recipes.AddRange(CreateRecipes(dockerFilePath, containerName, ingredients.Version, ingredients.PushContainerLatestTag, urls));
+                var labels = await _dockerLabels.FromIngredientsAsync(
+                    ingredients,
+                    cancellationToken);
+
+                recipes.AddRange(CreateRecipes(
+                    dockerFilePath,
+                    containerName,
+                    ingredients.Version,
+                    ingredients.PushContainerLatestTag,
+                    urls,
+                    labels));
             }
 
             var dockerfileArtifacts = context
@@ -115,7 +128,13 @@ namespace Bake.Cooking.Composers
                     dockerfileArtifacts.Select(a => a.Path).ToList());
                 foreach (var dockerfileArtifact in dockerfileArtifacts)
                 {
-                    recipes.AddRange(CreateRecipes(dockerfileArtifact.Path, dockerfileArtifact.Name, ingredients.Version, ingredients.PushContainerLatestTag, urls));
+                    recipes.AddRange(CreateRecipes(
+                        dockerfileArtifact.Path,
+                        dockerfileArtifact.Name,
+                        ingredients.Version,
+                        ingredients.PushContainerLatestTag,
+                        urls,
+                        dockerfileArtifact.Labels));
                 }
             }
 
@@ -158,7 +177,8 @@ namespace Bake.Cooking.Composers
             string name,
             SemVer version,
             bool pushLatest,
-            IEnumerable<string> urls)
+            IEnumerable<string> urls,
+            Dictionary<string, string> labels)
         {
             var versions = new List<string>
                 {
@@ -199,6 +219,7 @@ namespace Bake.Cooking.Composers
                 tags,
                 _defaults.DockerBuildCompress,
                 secretMounts,
+                labels,
                 new ContainerArtifact(
                     slug,
                     tags.ToArray()));

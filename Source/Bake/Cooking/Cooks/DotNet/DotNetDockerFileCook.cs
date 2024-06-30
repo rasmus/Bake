@@ -28,12 +28,9 @@ namespace Bake.Cooking.Cooks.DotNet
     public class DotNetDockerFileCook : Cook<DotNetDockerFileRecipe>
     {
         private readonly IDotNetTfmParser _dotNetTfmParser;
-        private readonly IDockerLabels _dockerLabels;
 
         private const string Dockerfile = @"
 FROM mcr.microsoft.com/dotnet/aspnet:{{VERSION}}-alpine
-
-{{LABELS}}
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -69,11 +66,9 @@ CMD [""dotnet"", ""{{NAME}}""]
 ";
 
         public DotNetDockerFileCook(
-            IDotNetTfmParser dotNetTfmParser,
-            IDockerLabels dockerLabels)
+            IDotNetTfmParser dotNetTfmParser)
         {
             _dotNetTfmParser = dotNetTfmParser;
-            _dockerLabels = dockerLabels;
         }
 
         protected override async Task<bool> CookAsync(
@@ -88,14 +83,12 @@ CMD [""dotnet"", ""{{NAME}}""]
 
             var directoryPath = Path.GetDirectoryName(recipe.ProjectPath)!;
             var dockerFilePath = Path.Combine(directoryPath, "Dockerfile");
-            var labels = _dockerLabels.Serialize(recipe.Labels);
             
             var dockerfileContent = Dockerfile
                 .Replace("{{PATH}}", recipe.ServicePath)
                 .Replace("{{NAME}}", recipe.EntryPoint)
                 .Replace("{{VERSION}}", $"{targetFrameworkVersion!.Version.Major}.{targetFrameworkVersion.Version.Minor}")
-                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5")
-                .Replace("{{LABELS}}", labels);
+                .Replace("{{DUMB_INIT_VERSION}}", "1.2.5");
 
             await File.WriteAllTextAsync(
                 dockerFilePath,

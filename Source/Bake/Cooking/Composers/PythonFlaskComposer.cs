@@ -75,8 +75,7 @@ namespace Bake.Cooking.Composers
 
             yield return new PythonFlaskDockerfileRecipe(
                 directory,
-                labels,
-                new DockerFileArtifact(name, dockerfilePath));
+                new DockerFileArtifact(name, dockerfilePath, labels));
         }
     }
 }

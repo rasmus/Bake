@@ -77,12 +77,5 @@ namespace Bake.Services
 
             return labels;
         }
-
-        public string Serialize(IReadOnlyDictionary<string, string> labels)
-        {
-            var lines = labels
-                .Select(kv => $"LABEL \"{kv.Key}\"=\"{kv.Value}\"");
-            return string.Join(Environment.NewLine, lines);
-        }
     }
 }

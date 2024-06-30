@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.Services;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.MkDocs;
 
@@ -32,8 +27,6 @@ namespace Bake.Cooking.Cooks.MkDocs
 {
     public class MkDocsDockerFileCook : Cook<MkDocsDockerFileRecipe>
     {
-        private readonly IDockerLabels _dockerLabels;
-
         private const string Dockerfile = @"
 FROM alpine:3.13.2 AS builder
 
@@ -51,8 +44,6 @@ RUN \
 
 FROM scratch
 
-{{LABELS}}
-
 EXPOSE 8080
 
 COPY --from=builder /etc/passwd /etc/passwd
@@ -66,12 +57,6 @@ COPY {{PATH}} .
 CMD [""/thttpd"", ""-D"", ""-h"", ""0.0.0.0"", ""-p"", ""8080"", ""-d"", ""/home/static"", ""-u"", ""static"", ""-l"", ""-"", ""-M"", ""60""]
 ";
 
-        public MkDocsDockerFileCook(
-            IDockerLabels dockerLabels)
-        {
-            _dockerLabels = dockerLabels;
-        }
-
         protected override async Task<bool> CookAsync(
             IContext context,
             MkDocsDockerFileRecipe recipe,
@@ -80,12 +65,10 @@ CMD [""/thttpd"", ""-D"", ""-h"", ""0.0.0.0"", ""-p"", ""8080"", ""-d"", ""/home
             var dockerFilePath = recipe.Artifacts
                 .OfType<DockerFileArtifact>()
                 .Single()
-                .Path;
-            var labels = _dockerLabels.Serialize(recipe.Labels);
+                .Path;;
 
             var dockerfileContent = Dockerfile
-                .Replace("{{PATH}}", recipe.Directory)
-                .Replace("{{LABELS}}", labels);
+                .Replace("{{PATH}}", recipe.Directory);
 
             await File.WriteAllTextAsync(
                 dockerFilePath,
