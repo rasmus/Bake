@@ -134,7 +134,7 @@ namespace Bake.Core
 
             public bool Accepts(Type type) => typeof(DateTimeOffset) == type;
 
-            public object? ReadYaml(IParser parser, Type type)
+            public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
             {
                 var value = (string)ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer)!;
                 if (!DateTimeOffset.TryParseExact(value, "O", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dateTimeOffset))
@@ -145,7 +145,7 @@ namespace Bake.Core
                 return dateTimeOffset;
             }
 
-            public void WriteYaml(IEmitter emitter, object? value, Type type)
+            public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
             {
                 if (value == null)
                 {
@@ -170,7 +170,7 @@ namespace Bake.Core
 
             public bool Accepts(Type type) => typeof(SemVer) == type;
 
-            public object? ReadYaml(IParser parser, Type type)
+            public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
             {
                 var value = (string) ValueDeserializer.DeserializeValue(parser, typeof(string), new SerializerState(), ValueDeserializer)!;
                 if (!SemVer.TryParse(value, out var semVer))
@@ -181,7 +181,7 @@ namespace Bake.Core
                 return semVer;
             }
 
-            public void WriteYaml(IEmitter emitter, object? value, Type type)
+            public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
             {
                 var semVer = (SemVer) value!;
                 ValueSerializer.SerializeValue(emitter, semVer?.ToString(), typeof(string));
