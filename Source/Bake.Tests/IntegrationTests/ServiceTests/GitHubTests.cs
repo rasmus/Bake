@@ -53,7 +53,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         }
 
         [Test]
-        public async Task T()
+        public async Task GetPullRequestInformationAsync()
         {
             // Act
             var pullRequestInformation = await Sut.GetPullRequestInformationAsync(
