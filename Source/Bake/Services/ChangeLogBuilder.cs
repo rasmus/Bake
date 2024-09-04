@@ -29,7 +29,7 @@ namespace Bake.Services
     public class ChangeLogBuilder : IChangeLogBuilder
     {
         private static readonly Regex DependencyDetector = new(
-            @"Bump (?<name>[^\s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[^\s]+)){0,1}",
+            @"((?<type>[a-z0-9\-]+)\s*(\({0,1}\s*(?<scope>[a-z0-9\-]+)\s*\){0,1}){0,1}\s*:){0,1}\s*Bump (?<name>[^\s]+) from (?<from>[0-9\.\-a-z]+) to (?<to>[0-9\.\-a-z]+)( in (?<project>[^\s]+)){0,1}",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public IReadOnlyDictionary<ChangeType, IReadOnlyCollection<Change>> Build(IReadOnlyCollection<PullRequest> pullRequests)
