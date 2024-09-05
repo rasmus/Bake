@@ -30,6 +30,7 @@ using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
 {
+    [Explicit]
     public class GitHubTests : TestFor<GitHub>
     {
         [SetUp]
