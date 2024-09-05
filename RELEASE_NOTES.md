@@ -1,6 +1,7 @@
 # 0.26-beta
 
-* *Nothing yet...*
+* Fix: `docker-compose` vs. `docker compose`
+* Fix: Correct parsing of GitHub dependabots new PR titles
 
 # 0.25-beta
 
