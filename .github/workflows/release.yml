@@ -43,7 +43,7 @@ jobs:
       run: dotnet publish -o bake-it Source/Bake
 
     - name: Run Bake
-      run: bake-it/bake run --convention=Release --build-version 0.26.$GITHUB_RUN_NUMBER --destination="nuget>github,nuget,release>github"
+      run: bake-it/bake run --convention=Release --build-version 0.27.$GITHUB_RUN_NUMBER --destination="nuget>github,nuget,release>github"
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
