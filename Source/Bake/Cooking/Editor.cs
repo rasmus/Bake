@@ -20,17 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Services;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Microsoft.Extensions.Logging;
 
@@ -68,32 +63,9 @@ namespace Bake.Cooking
                 context.Ingredients.WorkingDirectory,
                 context.Ingredients.Version);
 
-            await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, cancellationToken)));
+            await ExecuteGatherersAsync(context, cancellationToken);
 
-            var recipes = new List<Recipe>();
-            var composers = _composerOrdering.Order(_composers);
-
-            foreach (var composer in composers)
-            {
-                var composerTypeName = composer.GetType().PrettyPrint();
-                _logger.LogInformation(
-                    "Executing composer {ComposerType}",
-                    composerTypeName);
-
-                var stopWatch = Stopwatch.StartNew();
-                var createdRecipes = await composer.ComposeAsync(context, cancellationToken);
-                _logger.LogInformation(
-                    "Composer {ComposerType} finished after {TotalSeconds}",
-                    composerTypeName,
-                    stopWatch.Elapsed.TotalSeconds);
-
-                var createdArtifacts = createdRecipes
-                    .SelectMany(r => r.Artifacts ?? Artifact.Empty)
-                    .ToList();
-
-                recipes.AddRange(createdRecipes);
-                context.AddArtifacts(createdArtifacts);
-            }
+            var recipes = await ExecuteComposersAsync(context, cancellationToken);
 
             var book = new Book(
                 context.Ingredients,
@@ -106,6 +78,55 @@ namespace Bake.Cooking
             }
 
             return book;
+        }
+
+        private async Task ExecuteGatherersAsync(Context context, CancellationToken cancellationToken)
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromMinutes(5));
+
+            try
+            {
+                await Task.WhenAll(_gathers.Select(g => g.GatherAsync(context.Ingredients, timeout.Token)));
+            }
+            catch (Exception e) when (e is TaskCanceledException or OperationCanceledException && timeout.IsCancellationRequested)
+            {
+                Console.WriteLine("Gathering repository meta data took too long! Aborting :(");
+                throw;
+            }
+        }
+
+        private async Task<List<Recipe>> ExecuteComposersAsync(Context context, CancellationToken cancellationToken)
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromMinutes(5));
+
+            var recipes = new List<Recipe>();
+            var composers = _composerOrdering.Order(_composers);
+
+            foreach (var composer in composers)
+            {
+                var composerTypeName = composer.GetType().PrettyPrint();
+                _logger.LogInformation(
+                    "Executing composer {ComposerType}",
+                    composerTypeName);
+
+                var stopWatch = Stopwatch.StartNew();
+                var createdRecipes = await composer.ComposeAsync(context, timeout.Token);
+                _logger.LogInformation(
+                    "Composer {ComposerType} finished after {TotalSeconds}",
+                    composerTypeName,
+                    stopWatch.Elapsed.TotalSeconds);
+
+                var createdArtifacts = createdRecipes
+                    .SelectMany(r => r.Artifacts)
+                    .ToList();
+
+                recipes.AddRange(createdRecipes);
+                context.AddArtifacts(createdArtifacts);
+            }
+
+            return recipes;
         }
     }
 }
