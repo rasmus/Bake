@@ -83,7 +83,7 @@ namespace Bake.Cooking
         private async Task ExecuteGatherersAsync(Context context, CancellationToken cancellationToken)
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeout.CancelAfter(TimeSpan.FromMinutes(1));
+            timeout.CancelAfter(TimeSpan.FromMinutes(5));
 
             try
             {
