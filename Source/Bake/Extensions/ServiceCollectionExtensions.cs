@@ -81,6 +81,7 @@ namespace Bake.Extensions
                 .AddSingleton<IGitHubClientFactory, GitHubClientFactory>()
                 .AddTransient<IPlatformParser, PlatformParser>()
                 .AddTransient<IMkDocs, MkDocs>()
+                .AddSingleton<ISoftwareInstaller, SoftwareInstaller>()
                 .AddTransient<IComposerOrdering, ComposerOrdering>()
                 .AddTransient<IHelm, Helm>()
                 .AddTransient<INPM, NPM>()

@@ -122,7 +122,7 @@ namespace Bake.Core
         private SemVer(
             int major,
             int? minor,
-            int? patch ,
+            int? patch,
             string? meta)
         {
             Major = major;
