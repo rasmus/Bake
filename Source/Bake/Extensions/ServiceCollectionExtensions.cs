@@ -103,16 +103,17 @@ namespace Bake.Extensions
                 .AddTransient<IPip, Pip>()
 
                 // Composers
-                .AddTransient<IComposer, DotNetComposer>()
-                .AddTransient<IComposer, DockerComposer>()
-                .AddTransient<IComposer, GoComposer>()
-                .AddTransient<IComposer, MkDocsComposer>()
-                .AddTransient<IComposer, HelmComposer>()
-                .AddTransient<IComposer, OctopusDeployPackageComposer>()
-                .AddTransient<IComposer, GitHubReleaseComposer>()
-                .AddTransient<IComposer, PythonFlaskComposer>()
-                .AddTransient<IComposer, NodeJsComposer>()
                 .AddTransient<IComposer, ChartMuseumComposer>()
+                .AddTransient<IComposer, ContainerSignComposer>()
+                .AddTransient<IComposer, DockerComposer>()
+                .AddTransient<IComposer, DotNetComposer>()
+                .AddTransient<IComposer, GitHubReleaseComposer>()
+                .AddTransient<IComposer, GoComposer>()
+                .AddTransient<IComposer, HelmComposer>()
+                .AddTransient<IComposer, MkDocsComposer>()
+                .AddTransient<IComposer, NodeJsComposer>()
+                .AddTransient<IComposer, OctopusDeployPackageComposer>()
+                .AddTransient<IComposer, PythonFlaskComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()

@@ -29,5 +29,8 @@ namespace Bake.Services
         Task<InstalledSoftware> InstallAsync(
             Software software,
             CancellationToken cancellationToken);
+
+        void Install(
+            Software software);
     }
 }

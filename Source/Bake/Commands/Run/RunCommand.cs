@@ -64,6 +64,7 @@ namespace Bake.Commands.Run
             LogEventLevel logLevel = LogEventLevel.Information,
             bool printPlan = true,
             bool pushContainerLatestTag = false,
+            bool signArtifacts = false,
             Platform[]? targetPlatform = null)
         {
             _logCollector.LogLevel = logLevel;
@@ -74,7 +75,8 @@ namespace Bake.Commands.Run
                     Directory.GetCurrentDirectory(),
                     targetPlatform,
                     convention,
-                    pushContainerLatestTag));
+                    pushContainerLatestTag,
+                    signArtifacts));
 
             content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 

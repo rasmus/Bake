@@ -22,8 +22,10 @@
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using Bake.Core;
 using Bake.ValueObjects;
 using Microsoft.Extensions.Logging;
+using File = System.IO.File;
 
 namespace Bake.Services
 {
@@ -31,14 +33,33 @@ namespace Bake.Services
     {
         private readonly ILogger<SoftwareInstaller> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IDefaults _defaults;
         private readonly ConcurrentDictionary<string, Lazy<Task<InstalledSoftware>>> _alreadyInstalledSoftware = new();
 
         public SoftwareInstaller(
             ILogger<SoftwareInstaller> logger,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            IDefaults defaults)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _defaults = defaults;
+        }
+
+        public void Install(
+            Software software)
+        {
+            if (!_defaults.InstallSoftwareInBackground)
+            {
+                _logger.LogInformation(
+                    "Installing software in the background disabled, waiting to install {Name} version {Version} to when needed",
+                    software.Name,
+                    software.Version);
+                return;
+            }
+
+            // Installs in the background to have software ready when needed
+            Task.Run(() => InstallAsync(software, CancellationToken.None));
         }
 
         public Task<InstalledSoftware> InstallAsync(
