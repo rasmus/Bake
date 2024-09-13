@@ -20,15 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
 {
     public class SoftwareInstallerTests : ServiceTest<SoftwareInstaller>
     {
+        private readonly IDefaults _defaults = Substitute.For<IDefaults>();
+
         public SoftwareInstallerTests() : base(null) {}
 
         [Test]
@@ -44,6 +48,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
         {
             return base.Configure(serviceCollection)
+                .AddSingleton(_defaults)
                 .AddHttpClient();
         }
     }
