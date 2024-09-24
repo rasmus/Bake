@@ -87,8 +87,14 @@ namespace Bake.Tests.IntegrationTests.BakeTests
 
             // Assert
             returnCode.Should().Be(0);
-            AssertSuccessfulArtifacts();
             Releases.Should().HaveCount(1);
+
+            AssertFileExists(
+                50L.MB(),
+                "bin", "Release", "publish", "linux-x64", "NetCore.Console");
+            AssertFileExists(
+                50L.MB(),
+                "bin", "Release", "publish", "linux-arm64", "NetCore.Console.exe");
         }
 
         [TestCase(LogEventLevel.Verbose)]
