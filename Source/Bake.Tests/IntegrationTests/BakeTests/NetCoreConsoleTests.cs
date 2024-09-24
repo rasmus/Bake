@@ -53,6 +53,25 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
 
         [Test]
+        public async Task ARM()
+        {
+            // Arrange
+            var testState = TestState.New(
+                "run",
+                "--convention=Release",
+                "--target-platform=linux/x86,linux/arm64",
+                "--build-version", SemVer.Random.ToString());
+
+            // Act
+            var returnCode = await ExecuteAsync(testState);
+
+            // Assert
+            returnCode.Should().Be(0);
+            AssertSuccessfulArtifacts();
+            Releases.Should().HaveCount(1);
+        }
+
+        [Test]
         public async Task Run()
         {
             // Arrange
