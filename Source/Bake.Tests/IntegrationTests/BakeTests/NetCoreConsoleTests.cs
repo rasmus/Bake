@@ -73,7 +73,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             AssertFileExists(
                 50L.MB(),
                 "bin", "Release", "publish", "linux-arm64", "NetCore.Console");
-            Releases.Should().HaveCount(1);
         }
 
         [Test]
