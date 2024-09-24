@@ -53,6 +53,29 @@ namespace Bake.Tests.IntegrationTests.BakeTests
         }
 
         [Test]
+        public async Task ARM()
+        {
+            // Arrange
+            var testState = TestState.New(
+                "run",
+                "--convention=Release",
+                "--target-platform=linux/x64,linux/arm64",
+                "--build-version", SemVer.Random.ToString());
+
+            // Act
+            var returnCode = await ExecuteAsync(testState);
+
+            // Assert
+            returnCode.Should().Be(0);
+            AssertFileExists(
+                50L.MB(),
+                "bin", "Release", "publish", "linux-x64", "NetCore.Console");
+            AssertFileExists(
+                50L.MB(),
+                "bin", "Release", "publish", "linux-arm64", "NetCore.Console");
+        }
+
+        [Test]
         public async Task Run()
         {
             // Arrange

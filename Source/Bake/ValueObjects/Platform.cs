@@ -43,9 +43,11 @@ namespace Bake.ValueObjects
             };
         private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> DotNetArchMoniker = new ConcurrentDictionary<ExecutableArchitecture, string>
             {
+                [ExecutableArchitecture.Intel32] = "x86",
                 [ExecutableArchitecture.Intel64] = "x64",
+                [ExecutableArchitecture.Arm32] = "arm",
+                [ExecutableArchitecture.Arm64] = "arm64",
             };
-
 
         [YamlMember]
         public ExecutableOperatingSystem Os { get; [Obsolete] set; }
