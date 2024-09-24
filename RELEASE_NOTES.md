@@ -1,6 +1,6 @@
 # 0.27-beta
 
-* *Nothing yet...*
+* Fix: ARM can now correct be selected as a platform for .NET 
 
 # 0.26-beta
 
@@ -19,7 +19,7 @@
 
 # 0.23-beta
 
-* Feature: Output a container for hosting mkdocs documentation
+* Feature: Output a container for hosting `mkdocs` documentation
 * Feature: Add standard labels from the Open Containers Initiative
 * Feature: Add dumb-init to .NET containers to ensure that the process
   and all child-processes are correctly terminated
@@ -33,7 +33,7 @@
 # 0.21-beta
 
 * New: `GOPRIVATE` should be `direct` to ensure that removed
-  dependencies are spottet and reduce information leackage
+  dependencies are spotted and reduce information leakage
 * New: Prints produced artifacts when done
 * Fixed: GitHub URL information was wrong for GHE
 
@@ -51,7 +51,7 @@
 
 # 0.18-beta
 
-*  New: Expose go ldflags via environment variable
+*  New: Expose `go` `ldflags` via environment variable
 *  Fix: Fixed .NET warning `NETSDK1179`
 
 # 0.17-beta
@@ -132,7 +132,7 @@
       - all
   ```
   * New: Now possible to change Bake internal defaults via environment
-    variables. More of these will be exposed in upcomming releases
+    variables. More of these will be exposed in upcoming releases
   * Fixed: Docker Hub push URL should just be the username
 
 # 0.6-beta
@@ -148,7 +148,7 @@
   them as part of the release process
 * Fixed: Windows tool ZIP files now excludes the ".exe" in the filename
 * Fixed: GitHub Enterprise usage should be detected in most cases now
-* Fixed: Made sure that composers are do in an order that statisfies their
+* Fixed: Made sure that composers are do in an order that satisfies their
   needs
 
 # 0.4-beta
