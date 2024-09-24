@@ -62,7 +62,8 @@ namespace Bake.Commands.Plan
             Destination[]? destination = null,
             LogEventLevel logLevel = LogEventLevel.Information,
             Platform[]? targetPlatform = null,
-            bool pushContainerLatest = false)
+            bool pushContainerLatest = false,
+            bool signArtifacts = false)
         {
             _logCollector.LogLevel = logLevel;
 
@@ -105,7 +106,8 @@ namespace Bake.Commands.Plan
                     Directory.GetCurrentDirectory(),
                     targetPlatform,
                     convention,
-                    pushContainerLatest));
+                    pushContainerLatest,
+                    signArtifacts));
             content.Ingredients.Destinations.AddRange(destination ?? Enumerable.Empty<Destination>());
 
             var book = await _editor.ComposeAsync(

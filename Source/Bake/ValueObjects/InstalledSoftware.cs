@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,27 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Core
+namespace Bake.ValueObjects
 {
-    public interface IDefaults
+    public class InstalledSoftware
     {
-        string GitHubUrl { get; }
-        string GitHubNuGetRegistry { get; }
-        string GitHubUserRegistry { get; }
+        public Software Software { get; }
+        public string Path { get; }
 
-        string NuGetRegistry { get; }
-
-        string DockerHubUserRegistry { get; }
-        bool DockerBuildCompress { get; }
-
-        string GoLdFlags { get; }
-        string GoEnvPrivate { get; }
-        
-        string DotNetRollForward { get; }
-
-        bool InstallSoftwareInBackground { get; }
-
-        Task InitializeAsync(
-            CancellationToken cancellationToken);
+        public InstalledSoftware(
+            Software software,
+            string path)
+        {
+            Software = software;
+            Path = path;
+        }
     }
 }

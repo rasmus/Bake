@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,27 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Core
+using Bake.Core;
+using Bake.ValueObjects;
+
+namespace Bake
 {
-    public interface IDefaults
+    public static class KnownSoftware
     {
-        string GitHubUrl { get; }
-        string GitHubNuGetRegistry { get; }
-        string GitHubUserRegistry { get; }
-
-        string NuGetRegistry { get; }
-
-        string DockerHubUserRegistry { get; }
-        bool DockerBuildCompress { get; }
-
-        string GoLdFlags { get; }
-        string GoEnvPrivate { get; }
-        
-        string DotNetRollForward { get; }
-
-        bool InstallSoftwareInBackground { get; }
-
-        Task InitializeAsync(
-            CancellationToken cancellationToken);
+        public static readonly Software cosign = new(
+            "cosign",
+            SemVer.With(2, 4),
+            new Dictionary<SoftwareDownloadArchitecture, Uri>
+            {
+                [SoftwareDownloadArchitecture.LinuxX86] = new ("https://github.com/sigstore/cosign/releases/download/v2.4.0/cosign-linux-amd64"),
+                [SoftwareDownloadArchitecture.WindowsX86] = new("https://github.com/sigstore/cosign/releases/download/v2.4.0/cosign-windows-amd64.exe"),
+            });
     }
 }

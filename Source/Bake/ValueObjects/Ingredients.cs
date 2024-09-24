@@ -33,14 +33,16 @@ namespace Bake.ValueObjects
             string workingDirectory,
             IReadOnlyCollection<Platform>? targetPlatforms = null,
             Convention convention = Convention.Default,
-            bool pushContainerLatestTag = false) => new(
+            bool pushContainerLatestTag = false,
+            bool signArtifacts = false) => new(
                 version,
                 workingDirectory,
                 targetPlatforms != null && targetPlatforms.Any()
                     ? targetPlatforms.ToArray()
                     : Platform.Defaults,
                 convention,
-                pushContainerLatestTag);
+                pushContainerLatestTag,
+                signArtifacts);
 
         [YamlMember]
         public SemVer Version { get; [Obsolete] set; }
@@ -52,7 +54,10 @@ namespace Bake.ValueObjects
         public Convention Convention { get; [Obsolete] set; }
 
         [YamlMember]
-        public bool PushContainerLatestTag { get; }
+        public bool PushContainerLatestTag { get; [Obsolete] set; }
+
+        [YamlMember]
+        public bool SignArtifacts { get; [Obsolete] set; }
 
         [YamlMember]
         public Platform[] Platforms { get; [Obsolete] set; }
@@ -188,7 +193,8 @@ namespace Bake.ValueObjects
             string workingDirectory,
             Platform[] platforms,
             Convention convention,
-            bool pushContainerLatestTag)
+            bool pushContainerLatestTag,
+            bool signArtifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
@@ -196,6 +202,7 @@ namespace Bake.ValueObjects
             Platforms = platforms;
             Convention = convention;
             PushContainerLatestTag = pushContainerLatestTag;
+            SignArtifacts = signArtifacts;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 

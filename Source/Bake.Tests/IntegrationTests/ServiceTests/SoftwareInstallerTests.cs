@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,27 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Bake.Core
+using Bake.Core;
+using Bake.Services;
+using Bake.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using NUnit.Framework;
+
+namespace Bake.Tests.IntegrationTests.ServiceTests
 {
-    public interface IDefaults
+    public class SoftwareInstallerTests : ServiceTest<SoftwareInstaller>
     {
-        string GitHubUrl { get; }
-        string GitHubNuGetRegistry { get; }
-        string GitHubUserRegistry { get; }
+        private readonly IDefaults _defaults = Substitute.For<IDefaults>();
 
-        string NuGetRegistry { get; }
+        public SoftwareInstallerTests() : base(null) {}
 
-        string DockerHubUserRegistry { get; }
-        bool DockerBuildCompress { get; }
+        [Test]
+        public async Task Install()
+        {
+            // Arrange
+            using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
 
-        string GoLdFlags { get; }
-        string GoEnvPrivate { get; }
-        
-        string DotNetRollForward { get; }
+            // Act
+            await Sut.InstallAsync(KnownSoftware.cosign, timeout.Token);
+        }
 
-        bool InstallSoftwareInBackground { get; }
-
-        Task InitializeAsync(
-            CancellationToken cancellationToken);
+        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
+        {
+            return base.Configure(serviceCollection)
+                .AddSingleton(_defaults)
+                .AddHttpClient();
+        }
     }
 }
