@@ -59,7 +59,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var testState = TestState.New(
                 "run",
                 "--convention=Release",
-                "--target-platform=linux/x86,linux/arm64",
+                "--target-platform=linux/x64,linux/arm64",
                 "--build-version", SemVer.Random.ToString());
 
             // Act
