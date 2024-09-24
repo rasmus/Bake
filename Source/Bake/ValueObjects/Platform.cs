@@ -32,6 +32,7 @@ namespace Bake.ValueObjects
                 new(ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel64),
                 new(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64),
                 new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Intel64),
+                new(ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64),
             };
         public static Platform Any { get; } = new(ExecutableOperatingSystem.Any, ExecutableArchitecture.Any);
 
