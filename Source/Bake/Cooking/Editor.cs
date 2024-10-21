@@ -36,6 +36,7 @@ namespace Bake.Cooking
         private readonly ILogger<Editor> _logger;
         private readonly IYaml _yaml;
         private readonly IComposerOrdering _composerOrdering;
+        private readonly IDefaults _defaults;
         private readonly IReadOnlyCollection<IGather> _gathers;
         private readonly IReadOnlyCollection<IComposer> _composers;
 
@@ -43,12 +44,14 @@ namespace Bake.Cooking
             ILogger<Editor> logger,
             IYaml yaml,
             IComposerOrdering composerOrdering,
+            IDefaults defaults,
             IEnumerable<IGather> gathers,
             IEnumerable<IComposer> composers)
         {
             _logger = logger;
             _yaml = yaml;
             _composerOrdering = composerOrdering;
+            _defaults = defaults;
             _gathers = gathers.ToList();
             _composers = composers.ToList();
         }
@@ -58,13 +61,15 @@ namespace Bake.Cooking
             CancellationToken cancellationToken)
         {
             _logger.LogInformation(
+                "Starting ingredients gathering in {WorkingDirectory}",
+                context.Ingredients.WorkingDirectory);
+            await ExecuteGatherersAsync(context, cancellationToken);
+
+            _logger.LogInformation(
                 "Starting compose for {Convention} run in {WorkingDirectory} with initial version as {Version}",
                 context.Ingredients.Convention,
                 context.Ingredients.WorkingDirectory,
                 context.Ingredients.Version);
-
-            await ExecuteGatherersAsync(context, cancellationToken);
-
             var recipes = await ExecuteComposersAsync(context, cancellationToken);
 
             var book = new Book(
@@ -83,7 +88,7 @@ namespace Bake.Cooking
         private async Task ExecuteGatherersAsync(Context context, CancellationToken cancellationToken)
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeout.CancelAfter(TimeSpan.FromMinutes(5));
+            timeout.CancelAfter(_defaults.BakeIngredientsGatherTimeout);
 
             try
             {
@@ -99,7 +104,7 @@ namespace Bake.Cooking
         private async Task<List<Recipe>> ExecuteComposersAsync(Context context, CancellationToken cancellationToken)
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeout.CancelAfter(TimeSpan.FromMinutes(5));
+            timeout.CancelAfter(_defaults.BakeComposeTimeout);
 
             var recipes = new List<Recipe>();
             var composers = _composerOrdering.Order(_composers);

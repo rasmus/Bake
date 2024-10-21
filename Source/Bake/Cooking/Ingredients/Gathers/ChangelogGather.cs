@@ -46,6 +46,21 @@ namespace Bake.Cooking.Ingredients.Gathers
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
+            try
+            {
+                await InternalGatherAsync(ingredients, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to gather changelog information");
+                ingredients.FailChangelog();
+            }
+        }
+
+        private async Task InternalGatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
             GitInformation gitInformation;
             GitHubInformation gitHubInformation;
 
@@ -77,7 +92,7 @@ namespace Bake.Cooking.Ingredients.Gathers
 
             if (previousReleaseTag == null)
             {
-                _logger.LogInformation("Could not find a su");
+                _logger.LogInformation("Could not find a suitable version to use as a baseline for fetching pull-request data");
                 ingredients.FailChangelog();
                 return;
             }

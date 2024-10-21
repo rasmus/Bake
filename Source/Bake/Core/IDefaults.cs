@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Bake.Core
 {
     public interface IDefaults
@@ -40,6 +37,9 @@ namespace Bake.Core
         string GoEnvPrivate { get; }
         
         string DotNetRollForward { get; }
+
+        TimeSpan BakeIngredientsGatherTimeout { get; }
+        TimeSpan BakeComposeTimeout { get; }
 
         Task InitializeAsync(
             CancellationToken cancellationToken);
