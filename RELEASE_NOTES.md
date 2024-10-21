@@ -1,6 +1,7 @@
 # 0.28-beta
 
-* *Nothing yet...*
+* Feature: Allow setting timeouts for both ingredient gathering as well as composing
+* Fix: Improve information provided when gathering ingredients for a release
 
 # 0.27-beta
 
