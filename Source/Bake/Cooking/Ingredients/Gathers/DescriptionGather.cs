@@ -21,25 +21,57 @@
 // SOFTWARE.
 
 using Bake.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Ingredients.Gathers
 {
     public class DescriptionGather : IGather
     {
+        private readonly ILogger<DescriptionGather> _logger;
+
         private static readonly IReadOnlySet<string> PossibleReadMeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "readme",
             "readme.md",
+            "read-me",
             "read-me.md",
         };
+
+        public DescriptionGather(
+            ILogger<DescriptionGather> logger)
+        {
+            _logger = logger;
+        }
 
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
+            try
+            {
+                await InternalGatherAsync(ingredients, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailDescription();
+                _logger.LogError(e, "Failed to gather description information");
+            }
+        }
+
+        private async Task InternalGatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+                "Searching for a know file containing project description, starting from directory {WorkingDirectory}: {Files}",
+                ingredients.WorkingDirectory,
+                PossibleReadMeNames.ToArray());
+
             var readMeFilePath = await Task.Run(() => GetPath(ingredients.WorkingDirectory), cancellationToken);
             if (string.IsNullOrEmpty(readMeFilePath))
             {
                 ingredients.FailDescription();
+                _logger.LogInformation("Did not find any files containing a project description. Consider adding a README.md to the project root");
                 return;
             }
 
@@ -50,12 +82,13 @@ namespace Bake.Cooking.Ingredients.Gathers
             ingredients.Description = new Description(content);
         }
 
-        private static string? GetPath(string directoryPath)
+        private string? GetPath(string directoryPath)
         {
             while (true)
             {
-                var readMeFilePath = Directory
-                    .GetFiles(directoryPath)
+                _logger.LogInformation("Searching for a suitable file in {DirectoryPath}", directoryPath);
+
+                var readMeFilePath = Directory.GetFiles(directoryPath)
                     .FirstOrDefault(p => PossibleReadMeNames.Contains(Path.GetFileName(p)));
                 if (!string.IsNullOrEmpty(readMeFilePath))
                 {

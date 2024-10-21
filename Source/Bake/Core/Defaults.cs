@@ -20,12 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 // ReSharper disable StringLiteralTypo
+
+using System.Globalization;
 
 namespace Bake.Core
 {
@@ -42,6 +39,8 @@ namespace Bake.Core
         public string GoLdFlags { get; private set; } = "-s -w";
         public string GoEnvPrivate { get; private set; } = "direct";
         public string DotNetRollForward { get; private set; } = "LatestMajor";
+        public TimeSpan BakeIngredientsGatherTimeout { get; private set; } = TimeSpan.FromMinutes(5);
+        public TimeSpan BakeComposeTimeout { get; private set; } = TimeSpan.FromMinutes(5);
 
         public Defaults(
             IEnvironmentVariables environmentVariables)
@@ -63,6 +62,8 @@ namespace Bake.Core
             GoLdFlags = GetString(e, "go_ldflags", GoLdFlags);
             GoEnvPrivate = GetString(e, "go_env_goprivate", GoEnvPrivate);
             DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
+            BakeIngredientsGatherTimeout = TimeSpan.FromSeconds(GetDouble(e, "bake_ingredients_gather_timeout_seconds", BakeIngredientsGatherTimeout.TotalSeconds));
+            BakeComposeTimeout = TimeSpan.FromSeconds(GetDouble(e, "bake_compose_timeout_seconds", BakeComposeTimeout.TotalSeconds));
         }
 
         private static bool GetBool(
@@ -78,6 +79,21 @@ namespace Bake.Core
             }
 
             return b;
+        }
+
+        private static double GetDouble(
+            IReadOnlyDictionary<string, string> environmentVariables,
+            string name,
+            double defaultValue)
+        {
+            var value = GetString(environmentVariables, name, defaultValue.ToString(CultureInfo.InvariantCulture));
+            if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var d))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot parse value '{value}' to double for key '{name}'");
+            }
+
+            return d;
         }
 
         private static string GetString(

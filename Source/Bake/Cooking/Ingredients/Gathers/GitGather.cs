@@ -43,6 +43,21 @@ namespace Bake.Cooking.Ingredients.Gathers
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
+            try
+            {
+                await InternalGatherAsync(ingredients, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailGit();
+                _logger.LogError(e, "Failed to gather git information");
+            }
+        }
+
+        private async Task InternalGatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
             GitInformation? gitInformation = null;
 
             await Task.Factory.StartNew(
@@ -85,7 +100,7 @@ namespace Bake.Cooking.Ingredients.Gathers
             var projectRoot = Get(workingDirectory);
             if (string.IsNullOrEmpty(projectRoot))
             {
-                _logger.LogWarning("No git repository found");
+                _logger.LogWarning("No .git repository found");
                 return null;
             }
 

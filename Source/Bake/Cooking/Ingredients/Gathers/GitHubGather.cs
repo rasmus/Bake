@@ -47,8 +47,27 @@ namespace Bake.Cooking.Ingredients.Gathers
             _defaults = defaults;
             _gitHub = gitHub;
         }
-        
+
         public async Task GatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await InternalGatherAsync(ingredients, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                if (ingredients.GitHub == null)
+                {
+                    ingredients.FailGitHub();
+                }
+                ingredients.FailPullRequest();
+                _logger.LogError(e, "Failed to gather GitHub information");
+            }
+        }
+
+        private async Task InternalGatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {

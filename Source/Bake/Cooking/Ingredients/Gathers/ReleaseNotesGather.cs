@@ -48,6 +48,21 @@ namespace Bake.Cooking.Ingredients.Gathers
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
+            try
+            {
+                await InternalGatherAsync(ingredients, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                ingredients.FailReleaseNotes();
+                _logger.LogError(e, "Failed to gather release notes information");
+            }
+        }
+
+        private async Task InternalGatherAsync(
+            ValueObjects.Ingredients ingredients,
+            CancellationToken cancellationToken)
+        {
             var releaseNotesPath = Path.Combine(
                 ingredients.WorkingDirectory,
                 "RELEASE_NOTES.md");
