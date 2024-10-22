@@ -1,3 +1,7 @@
+# 0.30-beta
+
+* *Nothing yet...*
+
 # 0.29-beta
 
 * Fix: Incorrect parsing of Docker Hub image names, e.g. `rasmus/debug`
