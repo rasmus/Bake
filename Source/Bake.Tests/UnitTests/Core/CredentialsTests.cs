@@ -20,11 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
+using Bake.Services;
 using Bake.Tests.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -36,7 +33,7 @@ namespace Bake.Tests.UnitTests.Core
         [TestCase(
             "http://localhost:5555/v3/index.json",
             "bake_credentials_nuget_localhost_apikey", "acd0b30512ac4fa39f62eb7a61fcf56c")]
-        public async Task GetNuGetApiKeyAsync(
+        public async Task GetNuGetApiKey(
             string url,
             string environmentKey,
             string expectedCredentials)
@@ -56,5 +53,38 @@ namespace Bake.Tests.UnitTests.Core
             // Assert
             credentials.Should().Be(expectedCredentials);
         }
+
+        [TestCase(
+            "docker.io/rasmus/debug",
+            "dockerhub")]
+        [TestCase(
+            "artifactory.example.io/rasmus/debug",
+            "bake_credentials_docker_artifactory_example_io")]
+        public async Task GetDockerLogin(
+            string containerTagStr,
+            string environmentKeyPrefix)
+        {
+            // Arrange
+            var username = A<string>();
+            var password = A<string>();
+            Inject<IDefaults>(A<Defaults>());
+            Inject<IEnvironmentVariables>(new TestEnvironmentVariables(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                [$"{environmentKeyPrefix}_username"] = username,
+                [$"{environmentKeyPrefix}_password"] = password
+            }));
+            var containerTagParser = new ContainerTagParser();
+            containerTagParser.TryParse(containerTagStr, out var containerTag).Should().BeTrue();
+
+            // Act
+            var credentials = await Sut.TryGetDockerLoginAsync(
+                containerTag!,
+                CancellationToken.None);
+
+            // Assert
+            credentials!.Username.Should().Be(username);
+            credentials!.Password.Should().Be(password);
+        }
+
     }
 }
