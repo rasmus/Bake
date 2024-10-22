@@ -47,7 +47,7 @@ jobs:
       run: bake-it/bake run --build-version 0.30.$GITHUB_RUN_NUMBER
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: success() || failure()
       with:
         name: test-results
