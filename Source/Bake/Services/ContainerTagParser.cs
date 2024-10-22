@@ -30,7 +30,7 @@ namespace Bake.Services
     {
         private static readonly Regex ImageParser = new(
             @"^
-                (?<hostAndPort>[a-z\-0-9\.]+(:[0-9]+){0,1}/){0,1}
+                (?<hostAndPort>([a-z\-0-9]+\.[a-z\-0-9\.]+|localhost)(:[0-9]+){0,1}/){0,1}
                 (?<path>[a-z\-0-9/]+/){0,1}
                 (?<name>[a-z\-0-9]+)
                 (:(?<label>[a-z\-0-9\.]+)){0,1}

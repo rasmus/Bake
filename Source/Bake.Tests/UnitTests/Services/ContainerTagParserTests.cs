@@ -32,6 +32,12 @@ namespace Bake.Tests.UnitTests.Services
     public class ContainerTagParserTests : TestFor<ContainerTagParser>
     {
         [TestCase(
+            "rasmus/debug:latest",
+            "",
+            "rasmus",
+            "debug",
+            "latest")]
+        [TestCase(
             "registry",
             "",
             "",
@@ -49,6 +55,12 @@ namespace Bake.Tests.UnitTests.Services
             "path",
             "image",
             "latest")]
+        [TestCase(
+            "127.0.0.1/path/image:2",
+            "127.0.0.1",
+            "path",
+            "image",
+            "2")]
         [TestCase(
             "localhost/path/image:2",
             "localhost",

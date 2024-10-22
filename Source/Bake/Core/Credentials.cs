@@ -155,18 +155,18 @@ namespace Bake.Core
         {
             var environmentVariables = await _environmentVariables.GetAsync(cancellationToken);
 
-            if (containerTag.HostAndPort.StartsWith("ghcr.io/") &&
+            if (string.Equals(containerTag.HostAndPort, "ghcr.io", StringComparison.OrdinalIgnoreCase) &&
                 environmentVariables.TryGetValue("github_token", out var githubToken))
             {
                 return new DockerLogin(
-                    containerTag.HostAndPort.Split('/', StringSplitOptions.RemoveEmptyEntries)[1],
+                    containerTag.HostAndPort,
                     githubToken,
                     "ghcr.io");
             }
 
             var possibilities = new List<(string, string)>();
 
-            if (string.IsNullOrEmpty(containerTag.HostAndPort))
+            if (string.IsNullOrEmpty(containerTag.HostAndPort) || string.Equals(containerTag.HostAndPort, "docker.io", StringComparison.OrdinalIgnoreCase))
             {
                 possibilities.Add(("dockerhub", string.Empty));
             }
@@ -182,6 +182,15 @@ namespace Bake.Core
                 var (e, s) = t;
                 var username = environmentVariables.TryGetValue($"{e}_username", out var u) ? u : string.Empty;
                 var password = environmentVariables.TryGetValue($"{e}_password", out var p) ? p : string.Empty;
+
+                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                {
+                    _logger.LogInformation($"Did not find any Docker credentials at '{e}_(username/password)'");
+                }
+                else
+                {
+                    _logger.LogInformation($"Found Docker credentials at '{e}_(username/password)'");
+                }
 
                 return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)
                     ? new DockerLogin(username, password, s)

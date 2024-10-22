@@ -1,3 +1,7 @@
+# 0.29-beta
+
+* Fix: Incorrect parsing of Docker Hub image names, e.g. `rasmus/debug`
+
 # 0.28-beta
 
 * Feature: Allow setting timeouts for both ingredient gathering as well as composing
