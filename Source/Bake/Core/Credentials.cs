@@ -177,6 +177,12 @@ namespace Bake.Core
                 possibilities.Add(($"bake_credentials_docker_{cleanedHostname}", containerTag.HostAndPort));
             }
 
+            var dockerLogin = possibilities
+                .Select(Get)
+                .FirstOrDefault(l => l != null);
+
+            return dockerLogin;
+
             DockerLogin? Get((string, string) t)
             {
                 var (e, s) = t;
@@ -185,23 +191,13 @@ namespace Bake.Core
 
                 if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
                 {
-                    _logger.LogInformation($"Did not find any Docker credentials at '{e}_(username/password)'");
-                }
-                else
-                {
                     _logger.LogInformation($"Found Docker credentials at '{e}_(username/password)'");
+                    return new DockerLogin(username, password, s);
                 }
 
-                return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)
-                    ? new DockerLogin(username, password, s)
-                    : null;
+                _logger.LogInformation($"Did not find any Docker credentials at '{e}_(username/password)'");
+                return null;
             }
-
-            var dockerLogin = possibilities
-                .Select(Get)
-                .FirstOrDefault(l => l != null);
-
-            return dockerLogin;
         }
     }
 }
