@@ -1,6 +1,6 @@
 # 0.30-beta
 
-* *Nothing yet...*
+* Fix: `.dockerignore` files are now correctly copied to the build context instead of the parent directory
 
 # 0.29-beta
 
