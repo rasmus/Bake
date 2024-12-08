@@ -55,6 +55,10 @@ namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
             "1.0.129",
             "1.1,1.0-alpha,0.9",
             "1.0-alpha")]
+        [TestCase(
+            "1.0.0-alpha",
+            "1.1.0,1.0.0,0.9.0",
+            "1.0.0")]
         public async Task PickExpectedVersion(
             string version,
             string releaseNoteVersions,

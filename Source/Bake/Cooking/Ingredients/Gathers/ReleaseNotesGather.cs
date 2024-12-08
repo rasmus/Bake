@@ -133,7 +133,6 @@ namespace Bake.Cooking.Ingredients.Gathers
                 .Where(n => n.Version.IsSubset(version))
                 .OrderByDescending(n => n.Version)
                 .ToList();
-
             if (withSubset.Any())
             {
                 var notes = withSubset.First();
@@ -141,6 +140,23 @@ namespace Bake.Cooking.Ingredients.Gathers
                 _logger.LogInformation(
                     "Found {Count} release notes that matches {Version}, picking the most recent. Got {PickedVersion}",
                     withSubset.Count,
+                    version.ToString(),
+                    notes.Version.ToString());
+
+                return notes;
+            }
+
+            var withLegacyVersion = releaseNotes
+                .Where(n => n.Version.LegacyVersion == version.LegacyVersion)
+                .OrderByDescending(n => n.Version)
+                .ToList();
+            if (withLegacyVersion.Any())
+            {
+                var notes = withLegacyVersion.First();
+
+                _logger.LogInformation(
+                    "Found {Count} release notes that matches the non-meta {Version}, picking the most recent. Got {PickedVersion}",
+                    withLegacyVersion.Count,
                     version.ToString(),
                     notes.Version.ToString());
 
