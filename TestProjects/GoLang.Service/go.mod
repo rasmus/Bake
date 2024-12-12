@@ -2,7 +2,7 @@ module golang-service
 
 go 1.17
 
-require github.com/labstack/echo/v4 v4.13.0
+require github.com/labstack/echo/v4 v4.13.1
 
 require (
 	github.com/labstack/gommon v0.4.2 // indirect
