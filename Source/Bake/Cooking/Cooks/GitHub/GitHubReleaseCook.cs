@@ -79,11 +79,11 @@ namespace Bake.Cooking.Cooks.GitHub
 
             var stringBuilder = new StringBuilder();
 
-            if (recipe.ReleaseNotes != null)
+            if (recipe.Release.ReleaseNotes != null)
             {
                 stringBuilder
                     .AppendLine("### Release notes")
-                    .AppendLine(recipe.ReleaseNotes.Notes)
+                    .AppendLine(recipe.Release.ReleaseNotes.Notes)
                     .AppendLine();
             }
 
@@ -163,8 +163,8 @@ namespace Bake.Cooking.Cooks.GitHub
                 }
             }
 
-            var release = new Release(
-                recipe.Version,
+            var release = new ValueObjects.Release(
+                recipe.Release.Version,
                 recipe.Sha,
                 stringBuilder.ToString(),
                 releaseFiles);

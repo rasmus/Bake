@@ -33,6 +33,7 @@ namespace Bake.ValueObjects.Artifacts
         HelmChart,
         Container,
         DocumentationSite,
+        GitHubRelease,
         Release,
     }
 }

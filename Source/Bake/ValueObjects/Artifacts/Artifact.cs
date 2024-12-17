@@ -24,7 +24,7 @@ namespace Bake.ValueObjects.Artifacts
 {
     public abstract class Artifact : ValueObject
     {
-        public static IReadOnlyCollection<Artifact> Empty { get; } = new Artifact[] { };
+        public static IReadOnlyCollection<Artifact> Empty { get; } = [];
 
         public abstract IAsyncEnumerable<string> ValidateAsync(
             CancellationToken cancellationToken);

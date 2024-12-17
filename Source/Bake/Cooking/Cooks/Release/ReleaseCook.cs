@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,36 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
+using Bake.ValueObjects.Recipes.Release;
 
-namespace Bake.ValueObjects.Recipes.GitHub
+namespace Bake.Cooking.Cooks.Release
 {
-    [Recipe(Names.Recipes.GitHub.GitHubRelease)]
-    public class GitHubReleaseRecipe : Recipe
+    public class ReleaseCook : Cook<ReleaseRecipe>
     {
-        [YamlMember]
-        public GitHubInformation GitHubInformation { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public string Sha { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public ReleaseArtifact Release { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public GitHubReleaseRecipe() { }
-
-        public GitHubReleaseRecipe(
-            GitHubInformation gitHubInformation,
-            string sha,
-            ReleaseArtifact release)
+        protected override Task<bool> CookAsync(
+            IContext context,
+            ReleaseRecipe recipe,
+            CancellationToken cancellationToken)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            GitHubInformation = gitHubInformation;
-            Sha = sha;
-            Release = release;
-#pragma warning restore CS0612 // Type or member is obsolete
+            return Task.FromResult(true);
         }
     }
 }

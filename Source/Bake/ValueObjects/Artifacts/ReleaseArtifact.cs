@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,36 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects.Artifacts;
+using Bake.Core;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.GitHub
+namespace Bake.ValueObjects.Artifacts
 {
-    [Recipe(Names.Recipes.GitHub.GitHubRelease)]
-    public class GitHubReleaseRecipe : Recipe
+    [Artifact(Names.Artifacts.ReleaseArtifact)]
+    public class ReleaseArtifact : Artifact
     {
         [YamlMember]
-        public GitHubInformation GitHubInformation { get; [Obsolete] set; } = null!;
+        public SemVer Version { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Sha { get; [Obsolete] set; } = null!;
+        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
 
-        [YamlMember]
-        public ReleaseArtifact Release { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public GitHubReleaseRecipe() { }
-
-        public GitHubReleaseRecipe(
-            GitHubInformation gitHubInformation,
-            string sha,
-            ReleaseArtifact release)
-        {
 #pragma warning disable CS0612 // Type or member is obsolete
-            GitHubInformation = gitHubInformation;
-            Sha = sha;
-            Release = release;
+        public ReleaseArtifact(
+            SemVer version,
+            ReleaseNotes? releaseNotes)
+        {
+            Version = version;
+            ReleaseNotes = releaseNotes;
+        }
 #pragma warning restore CS0612 // Type or member is obsolete
+
+        public override IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken)
+        {
+            return AsyncEnumerable.Empty<string>();
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            yield return "release";
         }
     }
 }

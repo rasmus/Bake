@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -21,64 +21,49 @@
 // SOFTWARE.
 
 using Bake.Exceptions;
-using Bake.Services;
 using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Destinations;
 using Bake.ValueObjects.Recipes;
-using Bake.ValueObjects.Recipes.GitHub;
+using Bake.ValueObjects.Recipes.Release;
 
 namespace Bake.Cooking.Composers
 {
-    public class GitHubReleaseComposer : Composer
+    public class ReleaseComposer : Composer
     {
-        private readonly IConventionInterpreter _conventionInterpreter;
+        public override IReadOnlyCollection<ArtifactType> Consumes { get; } =
+        [
+            ArtifactType.NuGet,
+            ArtifactType.Executable,
+            ArtifactType.DocumentationSite,
+            ArtifactType.Container
+        ];
 
-        public override IReadOnlyCollection<ArtifactType> Consumes { get; } = [ArtifactType.Release];
-        public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.GitHubRelease];
-
-        public GitHubReleaseComposer(
-            IConventionInterpreter conventionInterpreter)
-        {
-            _conventionInterpreter = conventionInterpreter;
-        }
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.Release];
 
         public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
-            IContext context,
-            CancellationToken cancellationToken)
+            IContext context, CancellationToken cancellationToken)
         {
-            if (context.Ingredients.GitHub == null ||
-                context.Ingredients.Git == null)
+            if (context.Ingredients.Git == null)
             {
                 throw new BuildFailedException("Missing git or GitHub information!");
             }
 
-            if (!_conventionInterpreter.ShouldArtifactsBePublished(context.Ingredients.Convention))
-            {
-                return Task.FromResult(EmptyRecipes);
-            }
+            var artifacts = Enumerable.Empty<Artifact>()
+                .Concat(context.GetArtifacts<ExecutableArtifact>())
+                .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
+                .Concat(context.GetArtifacts<ContainerArtifact>())
+                .ToArray();
 
-            var gitHubDestination = context.Ingredients.Destinations
-                .OfType<GitHubReleaseDestination>()
-                .SingleOrDefault();
-
-            if (gitHubDestination == null)
-            {
-                return Task.FromResult(EmptyRecipes);
-            }
-
-            var release = context.GetArtifacts<ReleaseArtifact>().SingleOrDefault();
-
-            if (release == null)
+            if (!artifacts.Any())
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
             return Task.FromResult<IReadOnlyCollection<Recipe>>(
             [
-                new GitHubReleaseRecipe(
-                        context.Ingredients.GitHub,
-                        context.Ingredients.Git.Sha,
-                        release)
+                new ReleaseRecipe(
+                    context.Ingredients.Version,
+                    context.Ingredients.ReleaseNotes!,
+                    artifacts)
             ]);
         }
     }

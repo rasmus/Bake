@@ -20,35 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Recipes.GitHub
+namespace Bake.ValueObjects.Recipes.Release
 {
-    [Recipe(Names.Recipes.GitHub.GitHubRelease)]
-    public class GitHubReleaseRecipe : Recipe
+    [Recipe(Names.Recipes.Releases.Release)]
+    public class ReleaseRecipe : Recipe
     {
         [YamlMember]
-        public GitHubInformation GitHubInformation { get; [Obsolete] set; } = null!;
+        public SemVer Version { get; [Obsolete] set; } = null!;
 
         [YamlMember]
-        public string Sha { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public ReleaseArtifact Release { get; [Obsolete] set; } = null!;
+        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
 
         [Obsolete]
-        public GitHubReleaseRecipe() { }
+        public ReleaseRecipe() { }
 
-        public GitHubReleaseRecipe(
-            GitHubInformation gitHubInformation,
-            string sha,
-            ReleaseArtifact release)
+        public ReleaseRecipe(
+            SemVer version,
+            ReleaseNotes? releaseNotes,
+            Artifact[] artifacts)
+            : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            GitHubInformation = gitHubInformation;
-            Sha = sha;
-            Release = release;
+            Version = version;
+            ReleaseNotes = releaseNotes;
+            Artifacts = artifacts;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

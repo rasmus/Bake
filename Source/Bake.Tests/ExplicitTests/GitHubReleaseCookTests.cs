@@ -49,16 +49,8 @@ namespace Bake.Tests.ExplicitTests
                     "testtest",
                     new Uri("https://github.com/rasmus/testtest"),
                     new Uri("https://api.guthub.com/")),
-                SemVer.Random,
                 "a108d8a38b4ac154172cb7eeea8530e316ead798",
-                new ReleaseNotes(SemVer.Random, "This is a test"),
-                new Artifact[]
-                {
-                    new ExecutableArtifact(
-                        "test_linux",
-                        Path.Combine(WorkingDirectory, "README.md"),
-                        new Platform(ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64))
-                });
+                new ReleaseArtifact(SemVer.Random, new ReleaseNotes(SemVer.Random, string.Empty)));
 
             // Arrange
             var result = await Sut.CookAsync(

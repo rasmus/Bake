@@ -61,6 +61,7 @@ namespace Bake
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
             public const string HelmChartArtifact = "helm-chart-artifact";
+            public const string ReleaseArtifact = "release-artifact";
         }
 
         public static class ArtifactTypes
@@ -80,7 +81,7 @@ namespace Bake
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.NuGet] = NuGet,
-                    [ArtifactType.Release] = Release,
+                    [ArtifactType.GitHubRelease] = Release,
                     [ArtifactType.Executable] = Executable,
                     [ArtifactType.DocumentationSite] = DocumentationSite,
                 };
@@ -124,13 +125,18 @@ namespace Bake
 
             public static class GitHub
             {
-                public const string Release = "github-release";
+                public const string GitHubRelease = "github-release";
             }
 
             public static class Helm
             {
                 public const string Lint = "helm-lint";
                 public const string Package = "helm-package";
+            }
+
+            public static class Releases
+            {
+                public const string Release = "release";
             }
 
             public static class MkDocs
