@@ -34,15 +34,23 @@ namespace Bake.ValueObjects.Artifacts
         [YamlMember]
         public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
 
-#pragma warning disable CS0612 // Type or member is obsolete
+        [YamlMember]
+        public ReleaseFileArtifact[] Files { get; [Obsolete] set; } = null!;
+
+        [Obsolete]
+        public ReleaseArtifact() { }
+
         public ReleaseArtifact(
             SemVer version,
-            ReleaseNotes? releaseNotes)
+            ReleaseNotes? releaseNotes,
+            ReleaseFileArtifact[] files)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Version = version;
             ReleaseNotes = releaseNotes;
-        }
+            Files = files;
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
 
         public override IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken)
         {

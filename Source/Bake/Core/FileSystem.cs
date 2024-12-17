@@ -152,7 +152,7 @@ namespace Bake.Core
             return await streamReader.ReadToEndAsync();
         }
 
-        public IFile Open(string filePath)
+        public IFile Get(string filePath)
         {
             return new File(filePath);
         }

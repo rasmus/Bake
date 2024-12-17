@@ -316,7 +316,7 @@ namespace Bake.Services
         }
 
         private async Task UploadFileAsync(
-            ReleaseFile releaseFile,
+            LegacyReleaseFile legacyReleaseFile,
             Octokit.Release gitHubRelease,
             IGitHubClient gitHubClient,
             CancellationToken cancellationToken)
@@ -324,10 +324,10 @@ namespace Bake.Services
             var stopwatch = Stopwatch.StartNew();
             _logger.LogDebug(
                 "Uploading releaseFile {FileName} to GitHub release {ReleaseUrl}",
-                releaseFile.Source.FileName,
+                legacyReleaseFile.Source.FileName,
                 gitHubRelease.Url);
 
-            await using var stream = await releaseFile.Source.OpenReadAsync(cancellationToken);
+            await using var stream = await legacyReleaseFile.Source.OpenReadAsync(cancellationToken);
 
             try
             {
@@ -336,7 +336,7 @@ namespace Bake.Services
                     new ReleaseAssetUpload
                     {
                         ContentType = "application/octet-stream",
-                        FileName = releaseFile.Destination,
+                        FileName = legacyReleaseFile.Destination,
                         RawData = stream,
                     },
                     cancellationToken);
@@ -349,7 +349,7 @@ namespace Bake.Services
 
             _logger.LogInformation(
                 "Done uploading releaseFile {FileName} to GitHub release {ReleaseUrl} after {TotalSeconds} seconds",
-                releaseFile.Source.FileName,
+                legacyReleaseFile.Source.FileName,
                 gitHubRelease.Url,
                 stopwatch.Elapsed.TotalSeconds);
         }

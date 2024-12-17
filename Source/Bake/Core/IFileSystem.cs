@@ -40,7 +40,7 @@ namespace Bake.Core
             string filePath,
             CancellationToken cancellationToken);
 
-        IFile Open(string filePath);
+        IFile Get(string filePath);
 
         Task<IFile> CompressAsync(
             string fileName,

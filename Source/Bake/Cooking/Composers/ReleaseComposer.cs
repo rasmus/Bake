@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Exceptions;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Release;
+using Microsoft.Extensions.Logging;
 
 namespace Bake.Cooking.Composers
 {
@@ -39,22 +39,28 @@ namespace Bake.Cooking.Composers
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.Release];
 
-        public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
-            IContext context, CancellationToken cancellationToken)
-        {
-            if (context.Ingredients.Git == null)
-            {
-                throw new BuildFailedException("Missing git or GitHub information!");
-            }
+        private readonly ILogger<ReleaseComposer> _logger;
 
+        public ReleaseComposer(
+            ILogger<ReleaseComposer> logger)
+        {
+            _logger = logger;
+        }
+
+        public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
+            IContext context,
+            CancellationToken cancellationToken)
+        {
             var artifacts = Enumerable.Empty<Artifact>()
                 .Concat(context.GetArtifacts<ExecutableArtifact>())
                 .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
                 .Concat(context.GetArtifacts<ContainerArtifact>())
+                .Concat(context.GetArtifacts<NuGetArtifact>())
                 .ToArray();
 
             if (!artifacts.Any())
             {
+                _logger.LogWarning("No artifacts found for release, skipping release creation!");
                 return Task.FromResult(EmptyRecipes);
             }
 

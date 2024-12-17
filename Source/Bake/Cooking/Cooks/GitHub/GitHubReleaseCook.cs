@@ -74,7 +74,7 @@ namespace Bake.Cooking.Cooks.GitHub
                     Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
                 }
                 .Where(System.IO.File.Exists)
-                .Select(p => _fileSystem.Open(p))
+                .Select(_fileSystem.Get)
                 .ToArray();
 
             var stringBuilder = new StringBuilder();
@@ -130,8 +130,8 @@ namespace Bake.Cooking.Cooks.GitHub
                     "documentation.zip");
                 Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath)!);
                 ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
-                var file = _fileSystem.Open(documentationZipFilePath);
-                releaseFiles.Add(new ReleaseFile(
+                var file = _fileSystem.Get(documentationZipFilePath);
+                releaseFiles.Add(new LegacyReleaseFile(
                     file,
                     $"documentation_v{context.Ingredients.Version}.zip",
                     await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
@@ -177,7 +177,7 @@ namespace Bake.Cooking.Cooks.GitHub
             return true;
         }
 
-        private async Task<IReadOnlyCollection<ReleaseFile>> CreateReleaseFilesAsync(
+        private async Task<IReadOnlyCollection<LegacyReleaseFile>> CreateReleaseFilesAsync(
             IReadOnlyCollection<IFile> additionalFiles,
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
@@ -186,20 +186,20 @@ namespace Bake.Cooking.Cooks.GitHub
                 .OfType<ExecutableArtifact>()
                 .Select(async artifact =>
                 {
-                    var file = _fileSystem.Open(artifact.Path);
+                    var file = _fileSystem.Get(artifact.Path);
                     var fileName = CalculateArtifactFileName(artifact);
                     var compressedFile = await _fileSystem.CompressAsync(
                         fileName,
                         CompressionAlgorithm.ZIP,
                         Enumerable.Empty<IFile>()
                             .Concat(additionalFiles)
-                            .Concat(new[] {file,})
+                            .Concat([file])
                             .ToArray(),
                         cancellationToken);
                     var sha256 = await compressedFile.GetHashAsync(
                         HashAlgorithm.SHA256,
                         cancellationToken);
-                    return new ReleaseFile(
+                    return new LegacyReleaseFile(
                         compressedFile,
                         fileName,
                         sha256);

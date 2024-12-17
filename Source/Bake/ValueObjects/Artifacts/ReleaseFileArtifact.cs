@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,23 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
+using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects;
-
-public class ReleaseFile
+namespace Bake.ValueObjects.Artifacts
 {
-    public IFile Source { get; }
-    public string Destination { get; }
-    public string Sha256 { get; }
-
-    public ReleaseFile(
-        IFile source,
-        string destination,
-        string sha256)
+    [Artifact(Names.Artifacts.ReleaseFileArtifact)]
+    public class ReleaseFileArtifact : Artifact
     {
-        Source = source;
-        Destination = destination;
-        Sha256 = sha256;
+        [YamlMember]
+        public string Name { get; [Obsolete] set; } = null!;
+
+        [YamlMember]
+        public Artifact[] Sources { get; [Obsolete] set; } = null!;
+
+        [Obsolete]
+        public ReleaseFileArtifact(){}
+
+        public ReleaseFileArtifact(
+            string name,
+            Artifact[] sources)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
+            Sources = sources;
+#pragma warning restore CS0612 // Type or member is obsolete
+
+        }
+
+        public override IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken)
+        {
+            return AsyncEnumerable.Empty<string>();
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            yield return Name;
+        }
     }
 }
