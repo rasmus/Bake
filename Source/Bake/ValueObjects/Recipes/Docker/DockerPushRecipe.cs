@@ -28,15 +28,20 @@ namespace Bake.ValueObjects.Recipes.Docker
     public class DockerPushRecipe : Recipe
     {
         [YamlMember]
+        public int Retry { get; [Obsolete] set; }
+
+        [YamlMember]
         public string[] Tags { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public DockerPushRecipe() { }
 
         public DockerPushRecipe(
+            int retry,
             IEnumerable<string> tags)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
+            Retry = retry;
             Tags = tags.ToArray();
 #pragma warning restore CS0612 // Type or member is obsolete
         }
