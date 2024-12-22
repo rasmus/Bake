@@ -149,7 +149,7 @@ namespace Bake.Cooking.Composers
                     .OfType<DockerBuildRecipe>()
                     .SelectMany(b => b.Tags)
                     .Distinct();
-                recipes.Add(new DockerPushRecipe(tags));
+                recipes.Add(new DockerPushRecipe(_defaults.DockerPushRetries, tags));
             }
 
             return recipes;

@@ -86,14 +86,32 @@ namespace Bake.Cooking.Cooks.Docker
 
             foreach (var containerTag in containerTags)
             {
+                var success = false;
                 var argument = new DockerPushArgument(containerTag);
 
-                using var toolResult = await _docker.PushAsync(
-                    argument,
-                    cancellationToken);
-
-                if (!toolResult.WasSuccessful)
+                for (var i = 0; i < recipe.Retry; i++)
                 {
+                    using var toolResult = await _docker.PushAsync(
+                        argument,
+                        cancellationToken);
+
+                    if (toolResult.WasSuccessful)
+                    {
+                        success = true;
+                        break;
+                    }
+
+                    _logger.LogWarning(
+                        "Docker push of image {ImageTag} failed! Retrying",
+                        containerTag);
+                }
+
+                if (!success)
+                {
+                    _logger.LogCritical(
+                        "Docker push of image {ImageTag} failed after {RetryCount}! Giving up",
+                        containerTag,
+                        recipe.Retry);
                     return false;
                 }
             }

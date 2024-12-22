@@ -32,6 +32,7 @@ namespace Bake.Core
 
         string DockerHubUserRegistry { get; }
         bool DockerBuildCompress { get; }
+        int DockerPushRetries { get; }
 
         string GoLdFlags { get; }
         string GoEnvPrivate { get; }

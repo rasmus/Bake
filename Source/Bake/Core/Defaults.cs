@@ -36,6 +36,7 @@ namespace Bake.Core
         public string DockerHubUserRegistry { get; private set; } = "{USER}/";
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
         public bool DockerBuildCompress { get; private set; } = true;
+        public int DockerPushRetries { get; private set; } = 5;
         public string GoLdFlags { get; private set; } = "-s -w";
         public string GoEnvPrivate { get; private set; } = "direct";
         public string DotNetRollForward { get; private set; } = "LatestMajor";
@@ -58,7 +59,8 @@ namespace Bake.Core
             GitHubUserRegistry = GetString(e, "github_packages_container_url", GitHubUserRegistry);
             NuGetRegistry = GetString(e, "nuget_url", NuGetRegistry);
             DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
-            DockerBuildCompress = GetBool(e, "docker_build_compress", true);
+            DockerBuildCompress = GetBool(e, "docker_build_compress", DockerBuildCompress);
+            DockerPushRetries = GetInt(e, "docker_push_retries", DockerPushRetries);
             GoLdFlags = GetString(e, "go_ldflags", GoLdFlags);
             GoEnvPrivate = GetString(e, "go_env_goprivate", GoEnvPrivate);
             DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
@@ -91,6 +93,21 @@ namespace Bake.Core
             {
                 throw new InvalidOperationException(
                     $"Cannot parse value '{value}' to double for key '{name}'");
+            }
+
+            return d;
+        }
+
+        private static int GetInt(
+            IReadOnlyDictionary<string, string> environmentVariables,
+            string name,
+            int defaultValue)
+        {
+            var value = GetString(environmentVariables, name, defaultValue.ToString(CultureInfo.InvariantCulture));
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var d))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot parse value '{value}' to integer for key '{name}'");
             }
 
             return d;
