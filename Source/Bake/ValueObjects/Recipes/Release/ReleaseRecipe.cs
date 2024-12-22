@@ -20,33 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
 using Bake.ValueObjects.Artifacts;
-using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Release
 {
     [Recipe(Names.Recipes.Releases.Release)]
     public class ReleaseRecipe : Recipe
     {
-        [YamlMember]
-        public SemVer Version { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
-
         [Obsolete]
         public ReleaseRecipe() { }
 
         public ReleaseRecipe(
-            SemVer version,
-            ReleaseNotes? releaseNotes,
-            Artifact[] artifacts)
+            params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Version = version;
-            ReleaseNotes = releaseNotes;
             Artifacts = artifacts;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

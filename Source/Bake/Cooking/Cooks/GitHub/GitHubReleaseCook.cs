@@ -79,43 +79,6 @@ namespace Bake.Cooking.Cooks.GitHub
 
             var stringBuilder = new StringBuilder();
 
-            if (recipe.Release.ReleaseNotes != null)
-            {
-                stringBuilder
-                    .AppendLine("### Release notes")
-                    .AppendLine(recipe.Release.ReleaseNotes.Notes)
-                    .AppendLine();
-            }
-
-            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Changes.Any())
-            {
-                foreach (var a in new[]
-                     {
-                         new {changeType = ChangeType.Other, title = "Changes"},
-                         new {changeType = ChangeType.Dependency, title = "Updated dependencies"},
-                     })
-                {
-                    stringBuilder
-                        .AppendLine($"#### {a.title}")
-                        .AppendLine();
-
-                    foreach (var change in context.Ingredients.Changelog.Changes[a.changeType])
-                    {
-                        stringBuilder.AppendLine($"* {change.Text}");
-                    }
-
-                    stringBuilder.AppendLine();
-                }
-
-                stringBuilder.AppendLine();
-
-                if (context.Ingredients.GitHub != null)
-                {
-                    stringBuilder.AppendLine(
-                        $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
-                }
-            }
-
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
 
             var documentationSite = recipe.Artifacts
@@ -137,22 +100,6 @@ namespace Bake.Cooking.Cooks.GitHub
                     await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
             }
 
-            var containerArtifacts = recipe.Artifacts
-                .OfType<ContainerArtifact>()
-                .ToArray();
-            if (containerArtifacts.Any())
-            {
-                stringBuilder.AppendLine("### Containers");
-                foreach (var containerArtifact in containerArtifacts)
-                {
-                    stringBuilder.AppendLine($"* `{containerArtifact.Name}`");
-                    foreach (var tag in containerArtifact.Tags)
-                    {
-                        stringBuilder.AppendLine($"  * `{tag}`");
-                    }
-                }
-            }
-
             if (releaseFiles.Any())
             {
                 stringBuilder.AppendLine("### Files");
@@ -164,7 +111,7 @@ namespace Bake.Cooking.Cooks.GitHub
             }
 
             var release = new ValueObjects.Release(
-                recipe.Release.Version,
+                context.Ingredients.Version,
                 recipe.Sha,
                 stringBuilder.ToString(),
                 releaseFiles);

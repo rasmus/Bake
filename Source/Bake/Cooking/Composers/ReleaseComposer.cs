@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Release;
@@ -31,10 +33,11 @@ namespace Bake.Cooking.Composers
     {
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } =
         [
-            ArtifactType.NuGet,
-            ArtifactType.Executable,
+            ArtifactType.Container,
             ArtifactType.DocumentationSite,
-            ArtifactType.Container
+            ArtifactType.Executable,
+            ArtifactType.HelmChart,
+            ArtifactType.NuGet,
         ];
 
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.Release];
@@ -52,9 +55,10 @@ namespace Bake.Cooking.Composers
             CancellationToken cancellationToken)
         {
             var artifacts = Enumerable.Empty<Artifact>()
-                .Concat(context.GetArtifacts<ExecutableArtifact>())
-                .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
                 .Concat(context.GetArtifacts<ContainerArtifact>())
+                .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
+                .Concat(context.GetArtifacts<ExecutableArtifact>())
+                .Concat(context.GetArtifacts<HelmChartArtifact>())
                 .Concat(context.GetArtifacts<NuGetArtifact>())
                 .ToArray();
 
@@ -64,13 +68,91 @@ namespace Bake.Cooking.Composers
                 return Task.FromResult(EmptyRecipes);
             }
 
+            var releaseText = new StringBuilder();
+            AddReleaseNotes(context, releaseText);
+            AddChangeLog(context, releaseText);
+            AddArtifactDescriptions(context, artifacts, releaseText);
+            AddGitHubChangeLink(context, releaseText);
+
             return Task.FromResult<IReadOnlyCollection<Recipe>>(
             [
-                new ReleaseRecipe(
-                    context.Ingredients.Version,
-                    context.Ingredients.ReleaseNotes!,
-                    artifacts)
+                new ReleaseRecipe(new ReleaseArtifact(releaseText.ToString()))
             ]);
+        }
+
+        private static void AddReleaseNotes(IContext context, StringBuilder releaseText)
+        {
+            if (context.Ingredients.ReleaseNotes != null)
+            {
+                releaseText
+                    .AppendLine("### Release notes")
+                    .AppendLine(context.Ingredients.ReleaseNotes.Notes)
+                    .AppendLine();
+            }
+        }
+
+        private static void AddArtifactDescriptions(
+            IContext _,
+            Artifact[] artifacts,
+            StringBuilder releaseText)
+        {
+            foreach (var g in artifacts.GroupBy(a => a.GetType()))
+            {
+                switch (g.Key)
+                {
+                    case { } t when t == typeof(ContainerArtifact):
+                        {
+                            releaseText.AppendLine("### Containers");
+                            foreach (var artifact in g)
+                            {
+                                var containerArtifact = (ContainerArtifact) artifact;
+                                releaseText.AppendLine($"* `{containerArtifact.Name}`");
+                                foreach (var tag in containerArtifact.Tags)
+                                {
+                                    releaseText.AppendLine($"  * `{tag}`");
+                                }
+                            }
+                        }
+                        break;
+                }
+
+            }
+        }
+
+        private static void AddChangeLog(IContext context, StringBuilder releaseText)
+        {
+            if (context.Ingredients.Changelog == null || !context.Ingredients.Changelog.Changes.Any())
+            {
+                return;
+            }
+
+            foreach (var a in new[]
+                 {
+                     new {changeType = ChangeType.Other, title = "Changes"},
+                     new {changeType = ChangeType.Dependency, title = "Updated dependencies"},
+                 })
+            {
+                releaseText
+                    .AppendLine($"#### {a.title}")
+                    .AppendLine();
+
+                foreach (var change in context.Ingredients.Changelog.Changes[a.changeType])
+                {
+                    releaseText.AppendLine($"* {change.Text}");
+                }
+                releaseText.AppendLine();
+            }
+
+            releaseText.AppendLine();
+        }
+
+        private static void AddGitHubChangeLink(IContext context, StringBuilder releaseText)
+        {
+            if (context.Ingredients is {GitHub: not null, Changelog: not null})
+            {
+                releaseText.AppendLine(
+                    $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
+            }
         }
     }
 }

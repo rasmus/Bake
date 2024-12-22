@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Core;
 using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Artifacts
@@ -29,26 +28,16 @@ namespace Bake.ValueObjects.Artifacts
     public class ReleaseArtifact : Artifact
     {
         [YamlMember]
-        public SemVer Version { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public ReleaseNotes? ReleaseNotes { get; [Obsolete] set; }
-
-        [YamlMember]
-        public ReleaseFileArtifact[] Files { get; [Obsolete] set; } = null!;
+        public string Text { get; [Obsolete] set; } = null!;
 
         [Obsolete]
         public ReleaseArtifact() { }
 
         public ReleaseArtifact(
-            SemVer version,
-            ReleaseNotes? releaseNotes,
-            ReleaseFileArtifact[] files)
+            string text)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Version = version;
-            ReleaseNotes = releaseNotes;
-            Files = files;
+            Text = text;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 
@@ -59,7 +48,7 @@ namespace Bake.ValueObjects.Artifacts
 
         public override IEnumerable<string> PrettyNames()
         {
-            yield return "release";
+            yield return Names.Artifacts.ReleaseArtifact;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Bake.Tests.ExplicitTests
                     new Uri("https://github.com/rasmus/testtest"),
                     new Uri("https://api.guthub.com/")),
                 "a108d8a38b4ac154172cb7eeea8530e316ead798",
-                new ReleaseArtifact(SemVer.Random, new ReleaseNotes(SemVer.Random, string.Empty), []));
+                new ReleaseArtifact(string.Empty));
 
             // Arrange
             var result = await Sut.CookAsync(

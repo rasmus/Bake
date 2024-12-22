@@ -62,7 +62,6 @@ namespace Bake
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
             public const string HelmChartArtifact = "helm-chart-artifact";
             public const string ReleaseArtifact = "release-artifact";
-            public const string ReleaseFileArtifact = "release-file-artifact";
         }
 
         public static class ArtifactTypes
