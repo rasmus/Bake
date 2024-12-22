@@ -85,6 +85,50 @@ namespace Bake.Core
             return validPaths;
         }
 
+        public async Task CopyFileAsync(
+            string sourcePath,
+            string destinationPath,
+            CancellationToken cancellationToken)
+        {
+            var destinationParentDirectory = Path.GetDirectoryName(destinationPath);
+            if (string.IsNullOrEmpty(destinationParentDirectory))
+            {
+                throw new ArgumentException($"Cannot determine parent directory of {destinationPath}");
+            }
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationParentDirectory!);
+            }
+
+            await using var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+            await using var destinationStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+            await sourceStream.CopyToAsync(destinationStream, 81920, cancellationToken);
+        }
+
+        public async Task CopyDirectoryAsync(
+            string sourcePath,
+            string destinationPath,
+            CancellationToken cancellationToken)
+        {
+            var directoryInfo = new DirectoryInfo(sourcePath);
+            var directoryInfos = directoryInfo.GetDirectories();
+
+            Directory.CreateDirectory(destinationPath);
+
+            var files = directoryInfo.GetFiles();
+            foreach (var file in files)
+            {
+                var tempPath = Path.Combine(destinationPath, file.Name);
+                await CopyFileAsync(file.FullName, tempPath, cancellationToken);
+            }
+
+            foreach (var subDirectory in directoryInfos)
+            {
+                var tempPath = Path.Combine(destinationPath, subDirectory.Name);
+                await CopyDirectoryAsync(subDirectory.FullName, tempPath, cancellationToken);
+            }
+        }
+
         public async Task<IFile> CompressAsync(
             string fileName,
             CompressionAlgorithm algorithm,
@@ -96,7 +140,7 @@ namespace Bake.Core
                 throw new ArgumentOutOfRangeException(nameof(algorithm));
             }
 
-            if (!files.Any())
+            if (files.Count == 0)
             {
                 throw new ArgumentNullException(nameof(files));
             }

@@ -41,6 +41,7 @@ namespace Bake.Core
 
         TimeSpan BakeIngredientsGatherTimeout { get; }
         TimeSpan BakeComposeTimeout { get; }
+        string BakeReleaseOutputDirectory { get; }
 
         Task InitializeAsync(
             CancellationToken cancellationToken);

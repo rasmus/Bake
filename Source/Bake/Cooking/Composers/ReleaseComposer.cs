@@ -20,17 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Concurrent;
 using System.Text;
+using Bake.Core;
 using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.Release;
+using Bake.ValueObjects.Releases;
 using Microsoft.Extensions.Logging;
+using File = System.IO.File;
 
 namespace Bake.Cooking.Composers
 {
     public class ReleaseComposer : Composer
     {
+        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> NamingOs = new ConcurrentDictionary<ExecutableOperatingSystem, string>
+        {
+            [ExecutableOperatingSystem.Linux] = "linux",
+            [ExecutableOperatingSystem.MacOSX] = "macosx",
+            [ExecutableOperatingSystem.Windows] = "windows"
+        };
+        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> NamingArch = new ConcurrentDictionary<ExecutableArchitecture, string>
+        {
+            [ExecutableArchitecture.Intel32] = "x86",
+            [ExecutableArchitecture.Intel64] = "x86_64",
+        };
+
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } =
         [
             ArtifactType.Container,
@@ -43,11 +59,14 @@ namespace Bake.Cooking.Composers
         public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.Release];
 
         private readonly ILogger<ReleaseComposer> _logger;
+        private readonly IDefaults _defaults;
 
         public ReleaseComposer(
-            ILogger<ReleaseComposer> logger)
+            ILogger<ReleaseComposer> logger,
+            IDefaults defaults)
         {
             _logger = logger;
+            _defaults = defaults;
         }
 
         public override Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -74,10 +93,77 @@ namespace Bake.Cooking.Composers
             AddArtifactDescriptions(context, artifacts, releaseText);
             AddGitHubChangeLink(context, releaseText);
 
+            var releaseFiles = BuildReleaseFiles(context, artifacts);
+
             return Task.FromResult<IReadOnlyCollection<Recipe>>(
             [
-                new ReleaseRecipe(new ReleaseArtifact(releaseText.ToString()))
+                new ReleaseRecipe(
+                    releaseFiles.ToArray(),
+                    new ReleaseArtifact(
+                        releaseText.ToString(),
+                        releaseFiles.Select(f => f.Destination).ToArray()))
             ]);
+        }
+
+        private List<ReleaseFile> BuildReleaseFiles(
+            IContext context,
+            Artifact[] inputArtifacts)
+        {
+            var additionalSourceFiles = new[]
+                {
+                    Path.Combine(context.Ingredients.WorkingDirectory, "README.md"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "LICENSE"),
+                    Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
+                }
+                .Where(File.Exists)
+                .ToArray();
+
+            var releaseFiles = new List<ReleaseFile>();
+
+            foreach (var g in inputArtifacts.GroupBy(a => a.GetType()))
+            {
+                switch (g.Key)
+                {
+                    case { } t when t == typeof(DocumentationSiteArtifact):
+                        {
+                            foreach (var artifact in g)
+                            {
+                                var documentationSiteArtifact = (DocumentationSiteArtifact)artifact;
+                                var fileName = $"documentation_v{context.Ingredients.Version}.zip";
+                                releaseFiles.Add(new ReleaseFile(
+                                    fileName,
+                                    AppendFiles(documentationSiteArtifact.Path),
+                                    Path.Combine(_defaults.BakeReleaseOutputDirectory, fileName)));
+                            }
+                        }
+                        break;
+
+                    case { } t when t == typeof(ExecutableArtifact):
+                        {
+                            foreach (var artifact in g)
+                            {
+                                var executableArtifact = (ExecutableArtifact) artifact;
+                                var fileName = CalculateArtifactFileName(executableArtifact);
+                                releaseFiles.Add(new ReleaseFile(
+                                    fileName,
+                                    AppendFiles(executableArtifact.Path),
+                                    Path.Combine(_defaults.BakeReleaseOutputDirectory, fileName)));
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return releaseFiles;
+
+            string[] AppendFiles(params string[] paths)
+            {
+                return Enumerable.Empty<string>()
+                    .Concat(additionalSourceFiles)
+                    .Concat(paths)
+                    .OrderBy(p => p, StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+            }
         }
 
         private static void AddReleaseNotes(IContext context, StringBuilder releaseText)
@@ -115,7 +201,6 @@ namespace Bake.Cooking.Composers
                         }
                         break;
                 }
-
             }
         }
 
@@ -153,6 +238,18 @@ namespace Bake.Cooking.Composers
                 releaseText.AppendLine(
                     $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
             }
+        }
+
+        private static string CalculateArtifactFileName(ExecutableArtifact artifact)
+        {
+            var parts = new[]
+            {
+                artifact.Name,
+                NamingOs[artifact.Platform.Os],
+                NamingArch[artifact.Platform.Arch]
+            };
+
+            return $"{string.Join("_", parts)}.zip";
         }
     }
 }

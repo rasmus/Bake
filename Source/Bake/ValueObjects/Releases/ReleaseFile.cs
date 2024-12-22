@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,44 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
-
-namespace Bake.Core
+namespace Bake.ValueObjects.Releases
 {
-    public interface IFileSystem
+    public class ReleaseFile
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
+        public string Name { get; }
+        public string[] Sources { get; }
+        public string Destination { get; }
 
-        IFile OpenTempFile();
-
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken cancellationToken);
-
-        IFile Get(string filePath);
-
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
-
-        bool FileExists(string filePath);
-
-        Task CopyFileAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
-
-        Task CopyDirectoryAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
+        public ReleaseFile(
+            string name,
+            string[] sources,
+            string destination)
+        {
+            Name = name;
+            Sources = sources;
+            Destination = destination;
+        }
     }
 }

@@ -20,18 +20,72 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
 using Bake.ValueObjects.Recipes.Release;
+using Bake.ValueObjects.Releases;
+using Microsoft.Extensions.Logging;
+using System.IO.Compression;
+using File = System.IO.File;
 
 namespace Bake.Cooking.Cooks.Release
 {
     public class ReleaseCook : Cook<ReleaseRecipe>
     {
-        protected override Task<bool> CookAsync(
+        private readonly ILogger<ReleaseCook> _logger;
+        private readonly IFileSystem _fileSystem;
+
+        public ReleaseCook(
+            ILogger<ReleaseCook> logger,
+            IFileSystem fileSystem)
+        {
+            _logger = logger;
+            _fileSystem = fileSystem;
+        }
+
+        protected override async Task<bool> CookAsync(
             IContext context,
             ReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
-            return Task.FromResult(true);
+            foreach (var releaseFile in recipe.Files)
+            {
+                if (!await CompressReleaseFilesAsync(releaseFile, cancellationToken))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<bool> CompressReleaseFilesAsync(ReleaseFile releaseFile, CancellationToken cancellationToken)
+        {
+            var tmpDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            _logger.LogInformation("Creating temporary directory at {TmpDirectory}", tmpDirectory);
+            foreach (var source in releaseFile.Sources)
+            {
+                if (File.Exists(source))
+                {
+                    var fileName = Path.GetFileName(source);
+                    var destination = Path.Combine(tmpDirectory, fileName);
+                    _logger.LogInformation("Copying file from {Source} to {Destination}", source, destination);
+                    await _fileSystem.CopyFileAsync(source, destination, cancellationToken);
+                }
+                else if (Directory.Exists(source))
+                {
+                    _logger.LogInformation("Copying directory from {Source} to {Destination}", source, tmpDirectory);
+                    await _fileSystem.CopyDirectoryAsync(source, tmpDirectory, cancellationToken);
+                }
+                else
+                {
+                    _logger.LogError("The source {Source} does not exist", source);
+                    return false;
+                }
+            }
+
+            ZipFile.CreateFromDirectory(tmpDirectory, releaseFile.Destination);
+
+            return true;
         }
     }
 }

@@ -77,43 +77,12 @@ namespace Bake.Cooking.Cooks.GitHub
                 .Select(_fileSystem.Get)
                 .ToArray();
 
-            var stringBuilder = new StringBuilder();
-
             var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
-
-            var documentationSite = recipe.Artifacts
-                .OfType<DocumentationSiteArtifact>()
-                .FirstOrDefault();
-            if (documentationSite != null)
-            {
-                _logger.LogInformation("Documentation site built, packing it into a release file");
-                var documentationZipFilePath = Path.Combine(
-                    Path.GetTempPath(),
-                    Guid.NewGuid().ToString("N"),
-                    "documentation.zip");
-                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath)!);
-                ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
-                var file = _fileSystem.Get(documentationZipFilePath);
-                releaseFiles.Add(new LegacyReleaseFile(
-                    file,
-                    $"documentation_v{context.Ingredients.Version}.zip",
-                    await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
-            }
-
-            if (releaseFiles.Any())
-            {
-                stringBuilder.AppendLine("### Files");
-                foreach (var releaseFile in releaseFiles)
-                {
-                    stringBuilder.AppendLine($"* `{releaseFile.Destination}`");
-                    stringBuilder.AppendLine($"  * SHA256: `{releaseFile.Sha256}`");
-                }
-            }
 
             var release = new ValueObjects.Release(
                 context.Ingredients.Version,
                 recipe.Sha,
-                stringBuilder.ToString(),
+                string.Empty,
                 releaseFiles);
 
             await _gitHub.CreateReleaseAsync(

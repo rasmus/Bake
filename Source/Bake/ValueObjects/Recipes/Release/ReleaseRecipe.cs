@@ -21,20 +21,27 @@
 // SOFTWARE.
 
 using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Releases;
+using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Release
 {
     [Recipe(Names.Recipes.Releases.Release)]
     public class ReleaseRecipe : Recipe
     {
+        [YamlMember]
+        public ReleaseFile[] Files { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public ReleaseRecipe() { }
 
         public ReleaseRecipe(
+            ReleaseFile[] files,
             params Artifact[] artifacts)
             : base(artifacts)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
+            Files = files;
             Artifacts = artifacts;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

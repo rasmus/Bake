@@ -30,20 +30,30 @@ namespace Bake.ValueObjects.Artifacts
         [YamlMember]
         public string Text { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public string[] Files { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public ReleaseArtifact() { }
 
         public ReleaseArtifact(
-            string text)
+            string text,
+            string[] files)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Text = text;
+            Files = files;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public override IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken)
         {
-            return AsyncEnumerable.Empty<string>();
+            var missingFiles = Files
+                .Where(file => !File.Exists(file))
+                .Select(f => $"File '{f}' is missing!")
+                .ToArray();
+
+            return missingFiles.ToAsyncEnumerable();
         }
 
         public override IEnumerable<string> PrettyNames()
