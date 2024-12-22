@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright (c) 2021-2024 Rasmus Mikkelsen
 // 
@@ -20,35 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.ValueObjects.Artifacts;
-using Bake.ValueObjects.Releases;
-using YamlDotNet.Serialization;
+using Bake.Cooking.Cooks.Release;
+using Bake.Core;
+using Bake.Tests.Helpers;
+using Bake.ValueObjects.Recipes.Release;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 
-namespace Bake.ValueObjects.Recipes.Release
+namespace Bake.Tests.UnitTests.Cooking.Cooks
 {
-    [Recipe(Names.Recipes.Releases.Release)]
-    public class ReleaseRecipe : Recipe
+    public class ReleaseCookTests : TestService<ReleaseCook>
     {
-        [YamlMember]
-        public string Text { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public ReleaseFile[] Files { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public ReleaseRecipe() { }
-
-        public ReleaseRecipe(
-            string text,
-            ReleaseFile[] files,
-            params Artifact[] artifacts)
-            : base(artifacts)
+        [Test]
+        public async Task Empty()
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Text = text;
-            Files = files;
-            Artifacts = artifacts;
-#pragma warning restore CS0612 // Type or member is obsolete
+            // Arrange
+            var context = NewContext();
+
+            // Act
+            var success = await Sut.CookAsync(
+                context,
+                new ReleaseRecipe(
+                    string.Empty,
+                    []),
+                Timeout);
+
+            // Assert
+            success.Should().BeTrue();
+        }
+
+        private static Context NewContext()
+        {
+            return Context.New(ValueObjects.Ingredients.New(SemVer.Random, Path.GetTempPath()));
+        }
+
+        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
+        {
+            return base.Configure(serviceCollection)
+                .AddTransient<IFileSystem, FileSystem>();
         }
     }
 }

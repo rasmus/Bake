@@ -33,11 +33,8 @@ namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
     {
-        private CancellationTokenSource? _timeout;
-
         private List<Release> _releases = null!;
         protected IReadOnlyCollection<Release> Releases => _releases;
-        protected CancellationToken Timeout => _timeout!.Token;
 
         protected BakeTest(string projectName) : base(projectName)
         {
@@ -46,15 +43,7 @@ namespace Bake.Tests.Helpers
         [SetUp]
         public void SetUpBakeTest()
         {
-            _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             _releases = new List<Release>();
-        }
-
-        [TearDown]
-        public void TearDownBakeTest()
-        {
-            _timeout?.Dispose();
-            _timeout = null;
         }
 
         protected Task<int> ExecuteAsync(

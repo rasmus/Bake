@@ -87,20 +87,22 @@ namespace Bake.Cooking.Composers
                 return Task.FromResult(EmptyRecipes);
             }
 
-            var releaseText = new StringBuilder();
-            AddReleaseNotes(context, releaseText);
-            AddChangeLog(context, releaseText);
-            AddArtifactDescriptions(context, artifacts, releaseText);
-            AddGitHubChangeLink(context, releaseText);
+            var releaseTextBuilder = new StringBuilder();
+            AddReleaseNotes(context, releaseTextBuilder);
+            AddChangeLog(context, releaseTextBuilder);
+            AddArtifactDescriptions(context, artifacts, releaseTextBuilder);
+            AddGitHubChangeLink(context, releaseTextBuilder);
 
             var releaseFiles = BuildReleaseFiles(context, artifacts);
+            var releaseText = releaseTextBuilder.ToString();
 
             return Task.FromResult<IReadOnlyCollection<Recipe>>(
             [
                 new ReleaseRecipe(
+                    releaseText,
                     releaseFiles.ToArray(),
                     new ReleaseArtifact(
-                        releaseText.ToString(),
+                        releaseText,
                         releaseFiles.Select(f => f.Destination).ToArray()))
             ]);
         }

@@ -32,10 +32,11 @@ namespace Bake.Tests.Helpers
 {
     public class TestFor<T> : TestIt
     {
-        private Lazy<T> _lazySut = null!;
-        private ServiceProvider _serviceProvider = null!;
-        private Logger _logger = null!;
+        protected IServiceProvider ServiceProvider { get; private set; } = null!;
         protected T Sut => _lazySut.Value;
+
+        private Lazy<T> _lazySut = null!;
+        private Logger _logger = null!;
         
         [SetUp]
         public void SetUpTestFor()
@@ -45,18 +46,18 @@ namespace Bake.Tests.Helpers
                 .MinimumLevel.Verbose()
                 .WriteTo.Sink(new LogSink(A<ILogCollector>()))
                 .CreateLogger();
-            _serviceProvider = Configure(new ServiceCollection())
+            ServiceProvider = Configure(new ServiceCollection())
                 .AddLogging(b => b.AddSerilog(_logger))
                 .BuildServiceProvider();
 
-            Inject(_serviceProvider.GetRequiredService<ILogger<T>>());
-            Inject<IServiceProvider>(_serviceProvider);
+            Inject(ServiceProvider.GetRequiredService<ILogger<T>>());
+            Inject(ServiceProvider);
         }
 
         [TearDown]
         public void TearDownTestFor()
         {
-            _serviceProvider.Dispose();
+            ((IDisposable)ServiceProvider).Dispose();
             _logger.Dispose();
         }
 

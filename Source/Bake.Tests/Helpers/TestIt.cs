@@ -31,13 +31,16 @@ namespace Bake.Tests.Helpers
 {
     public abstract class TestIt
     {
+        private CancellationTokenSource? _timeout;
         private List<string> _filesToDelete = null!;
 
         protected IFixture Fixture { get; private set; } = null!;
+        protected CancellationToken Timeout => _timeout!.Token;
 
         [SetUp]
         public void SetUpTestIt()
         {
+            _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             _filesToDelete = new List<string>();
 
             Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
@@ -46,6 +49,9 @@ namespace Bake.Tests.Helpers
         [TearDown]
         public void TearDownTestIt()
         {
+            _timeout?.Dispose();
+            _timeout = null;
+
             foreach (var file in _filesToDelete)
             {
                 if (File.Exists(file))
