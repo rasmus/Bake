@@ -60,14 +60,12 @@ namespace Bake.Cooking.Composers
             var gitHubDestination = context.Ingredients.Destinations
                 .OfType<GitHubReleaseDestination>()
                 .SingleOrDefault();
-
             if (gitHubDestination == null)
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
             var release = context.GetArtifacts<ReleaseArtifact>().SingleOrDefault();
-
             if (release == null)
             {
                 return Task.FromResult(EmptyRecipes);
@@ -76,9 +74,10 @@ namespace Bake.Cooking.Composers
             return Task.FromResult<IReadOnlyCollection<Recipe>>(
             [
                 new GitHubReleaseRecipe(
-                        context.Ingredients.GitHub,
-                        context.Ingredients.Git.Sha,
-                        release)
+                    release.Text,
+                    context.Ingredients.GitHub,
+                    context.Ingredients.Git.Sha,
+                    release.Files)
             ]);
         }
     }

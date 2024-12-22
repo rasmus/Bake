@@ -22,21 +22,22 @@
 
 using Bake.Core;
 
-namespace Bake.ValueObjects;
-
-public class LegacyReleaseFile
+namespace Bake.ValueObjects
 {
-    public IFile Source { get; }
-    public string Destination { get; }
-    public string Sha256 { get; }
-
-    public LegacyReleaseFile(
-        IFile source,
-        string destination,
-        string sha256)
+    public class GitHubRelease : Tag
     {
-        Source = source;
-        Destination = destination;
-        Sha256 = sha256;
+        public string Body { get; }
+        public IReadOnlyCollection<GitHubReleaseFile> Files { get; }
+
+        public GitHubRelease(
+            SemVer version,
+            string sha,
+            string body,
+            IReadOnlyCollection<GitHubReleaseFile> files)
+            : base(version, sha)
+        {
+            Body = body;
+            Files = files;
+        }
     }
 }

@@ -89,10 +89,16 @@ namespace Bake.Tests.UnitTests.Cooking.Cooks
                 destinationPath);
         }
 
-        private string NewFile()
+        private string NewFile(params string[] path)
         {
+            var parentDirectory = path.Aggregate(Path.GetTempPath(), Path.Combine);
+            if (!Directory.Exists(parentDirectory))
+            {
+                Directory.CreateDirectory(parentDirectory);
+            }
+
             var filePath = Path.Combine(
-                Path.GetTempPath(),
+                parentDirectory,
                 $"{Guid.NewGuid():N}.txt");
 
             File.WriteAllText(filePath, "Hello there!");

@@ -20,15 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Concurrent;
-using System.IO.Compression;
-using System.Text;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
-using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -36,28 +31,13 @@ namespace Bake.Cooking.Cooks.GitHub
 {
     public class GitHubReleaseCook : Cook<GitHubReleaseRecipe>
     {
-        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> NamingOs = new ConcurrentDictionary<ExecutableOperatingSystem, string>
-            {
-                [ExecutableOperatingSystem.Linux] = "linux",
-                [ExecutableOperatingSystem.MacOSX] = "macosx",
-                [ExecutableOperatingSystem.Windows] = "windows"
-            };
-        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> NamingArch = new ConcurrentDictionary<ExecutableArchitecture, string>
-            {
-                [ExecutableArchitecture.Intel32] = "x86",
-                [ExecutableArchitecture.Intel64] = "x86_64",
-            };
-
-        private readonly ILogger<GitHubReleaseCook> _logger;
         private readonly IGitHub _gitHub;
         private readonly IFileSystem _fileSystem;
 
         public GitHubReleaseCook(
-            ILogger<GitHubReleaseCook> logger,
             IGitHub gitHub,
             IFileSystem fileSystem)
         {
-            _logger = logger;
             _gitHub = gitHub;
             _fileSystem = fileSystem;
         }
@@ -67,71 +47,24 @@ namespace Bake.Cooking.Cooks.GitHub
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var additionalFiles = new[]
-                {
-                    Path.Combine(context.Ingredients.WorkingDirectory, "README.md"),
-                    Path.Combine(context.Ingredients.WorkingDirectory, "LICENSE"),
-                    Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
-                }
-                .Where(System.IO.File.Exists)
-                .Select(_fileSystem.Get)
+            var releaseFiles = recipe.Files
+                .Select(f => new GitHubReleaseFile(
+                    _fileSystem.Get(f),
+                    Path.GetFileName(f)))
                 .ToArray();
 
-            var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
-
-            var release = new ValueObjects.Release(
+            var gitHubRelease = new GitHubRelease(
                 context.Ingredients.Version,
                 recipe.Sha,
-                string.Empty,
+                recipe.Text,
                 releaseFiles);
 
             await _gitHub.CreateReleaseAsync(
-                release,
+                gitHubRelease,
                 recipe.GitHubInformation,
                 cancellationToken);
 
             return true;
-        }
-
-        private async Task<IReadOnlyCollection<LegacyReleaseFile>> CreateReleaseFilesAsync(
-            IReadOnlyCollection<IFile> additionalFiles,
-            GitHubReleaseRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            return await Task.WhenAll(recipe.Artifacts
-                .OfType<ExecutableArtifact>()
-                .Select(async artifact =>
-                {
-                    var file = _fileSystem.Get(artifact.Path);
-                    var fileName = CalculateArtifactFileName(artifact);
-                    var compressedFile = await _fileSystem.CompressAsync(
-                        fileName,
-                        CompressionAlgorithm.ZIP,
-                        Enumerable.Empty<IFile>()
-                            .Concat(additionalFiles)
-                            .Concat([file])
-                            .ToArray(),
-                        cancellationToken);
-                    var sha256 = await compressedFile.GetHashAsync(
-                        HashAlgorithm.SHA256,
-                        cancellationToken);
-                    return new LegacyReleaseFile(
-                        compressedFile,
-                        fileName,
-                        sha256);
-                }));
-        }
-
-        private static string CalculateArtifactFileName(ExecutableArtifact artifact)
-        {
-            var parts = new[]
-                {
-                    artifact.Name,
-                    NamingOs[artifact.Platform.Os],
-                    NamingArch[artifact.Platform.Arch]
-                };
-
-            return $"{string.Join("_", parts)}.zip";
         }
     }
 }

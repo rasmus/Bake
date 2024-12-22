@@ -25,7 +25,6 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -44,13 +43,14 @@ namespace Bake.Tests.ExplicitTests
         {
             // Arrange
             var recipe = new GitHubReleaseRecipe(
+                string.Empty,
                 new GitHubInformation(
                     "rasmus",
                     "testtest",
                     new Uri("https://github.com/rasmus/testtest"),
                     new Uri("https://api.guthub.com/")),
                 "a108d8a38b4ac154172cb7eeea8530e316ead798",
-                new ReleaseArtifact(string.Empty, []));
+                []);
 
             // Arrange
             var result = await Sut.CookAsync(
