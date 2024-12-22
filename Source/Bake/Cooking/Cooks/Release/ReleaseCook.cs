@@ -25,6 +25,7 @@ using Bake.ValueObjects.Recipes.Release;
 using Bake.ValueObjects.Releases;
 using Microsoft.Extensions.Logging;
 using System.IO.Compression;
+using Bake.Extensions;
 using File = System.IO.File;
 
 namespace Bake.Cooking.Cooks.Release
@@ -83,7 +84,10 @@ namespace Bake.Cooking.Cooks.Release
                 }
             }
 
+            _logger.LogInformation("Creating ZIP file at {Destination}", releaseFile.Destination);
             ZipFile.CreateFromDirectory(tmpDirectory, releaseFile.Destination);
+            var fileInfo = new FileInfo(releaseFile.Destination);
+            _logger.LogInformation("Created ZIP file {Destination} with size {Size}", releaseFile.Destination, fileInfo.Length.BytesToString());
 
             return true;
         }

@@ -24,9 +24,11 @@ using Bake.Cooking.Cooks.Release;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Recipes.Release;
+using Bake.ValueObjects.Releases;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using File = System.IO.File;
 
 namespace Bake.Tests.UnitTests.Cooking.Cooks
 {
@@ -50,9 +52,54 @@ namespace Bake.Tests.UnitTests.Cooking.Cooks
             success.Should().BeTrue();
         }
 
+        [Test]
+        public async Task Files()
+        {
+            // Arrange
+            var context = NewContext();
+
+            // Act
+            var success = await Sut.CookAsync(
+                context,
+                new ReleaseRecipe(
+                    string.Empty,
+                    [
+                        NewReleaseFile()
+                    ]),
+                Timeout);
+
+            // Assert
+            success.Should().BeTrue();
+        }
+
         private static Context NewContext()
         {
             return Context.New(ValueObjects.Ingredients.New(SemVer.Random, Path.GetTempPath()));
+        }
+
+        private ReleaseFile NewReleaseFile(int fileCount = 3)
+        {
+            var fileName = $"{Guid.NewGuid():N}.zip";
+            var destinationPath = Path.Combine(Path.GetTempPath(), fileName);
+            DeleteAfter(destinationPath);
+
+            return new ReleaseFile(
+                fileName,
+                Enumerable.Range(0, fileCount).Select(_ => NewFile()).ToArray(),
+                destinationPath);
+        }
+
+        private string NewFile()
+        {
+            var filePath = Path.Combine(
+                Path.GetTempPath(),
+                $"{Guid.NewGuid():N}.txt");
+
+            File.WriteAllText(filePath, "Hello there!");
+
+            DeleteAfter(filePath);
+
+            return filePath;
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
