@@ -1,5 +1,6 @@
 # 0.31-beta
 
+* New: Retry `docker push` commands as it seems Docker Hub is a bit flaky
 * Fix: If we have no exact match, we should try to find one that matches regardless of metadata
 
 # 0.30-beta
