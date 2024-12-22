@@ -60,12 +60,12 @@ namespace Bake.Services.Tools
 
             foreach (var secretMount in argument.SecretMounts)
             {
-                arguments.AddRange(new[]{"--secret", $"id={secretMount.Key},src={secretMount.Value}"});   
+                arguments.AddRange(["--secret", $"id={secretMount.Key},src={secretMount.Value}"]);   
             }
 
-            foreach (var label in argument.Labels)
+            foreach (var label in argument.Labels.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase))
             {
-                arguments.AddRange(new[]{"--label", $"\"{label.Key}={label.Value}\""});
+                arguments.AddRange(["--label", $"\"{label.Key}={label.Value}\""]);
             }
 
             var runner = _runnerFactory.CreateRunner(
