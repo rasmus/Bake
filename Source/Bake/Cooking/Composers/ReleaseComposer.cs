@@ -194,6 +194,11 @@ namespace Bake.Cooking.Composers
                             foreach (var artifact in g)
                             {
                                 var containerArtifact = (ContainerArtifact) artifact;
+                                if (containerArtifact.Name.StartsWith("bake.local", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    continue;
+                                }
+
                                 releaseText.AppendLine($"* `{containerArtifact.Name}`");
                                 foreach (var tag in containerArtifact.Tags)
                                 {
