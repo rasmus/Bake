@@ -42,7 +42,7 @@ namespace Bake.Core
         public string DotNetRollForward { get; private set; } = "LatestMajor";
         public TimeSpan BakeIngredientsGatherTimeout { get; private set; } = TimeSpan.FromMinutes(5);
         public TimeSpan BakeComposeTimeout { get; private set; } = TimeSpan.FromMinutes(5);
-        public string BakeReleaseOutputDirectory { get; private set; } = Path.Combine(Path.GetTempPath(), "bake-release");
+        public string BakeReleaseOutputDirectory { get; private set; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "bake-release");
 
         public Defaults(
             IEnvironmentVariables environmentVariables)
