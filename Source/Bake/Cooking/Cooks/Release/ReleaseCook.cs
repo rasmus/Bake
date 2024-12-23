@@ -84,6 +84,12 @@ namespace Bake.Cooking.Cooks.Release
                 }
             }
 
+            var destinationDirectory = Path.GetDirectoryName(releaseFile.Destination);
+            if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+
             _logger.LogInformation("Creating ZIP file at {Destination}", releaseFile.Destination);
             ZipFile.CreateFromDirectory(tmpDirectory, releaseFile.Destination);
             var fileInfo = new FileInfo(releaseFile.Destination);
