@@ -20,22 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using YamlDotNet.Serialization;
+
 namespace Bake.ValueObjects.Releases
 {
     public class ReleaseFile
     {
-        public string Name { get; }
-        public string[] Sources { get; }
-        public string Destination { get; }
+        [YamlMember]
+        public string Name { get; [Obsolete] set; } = null!;
+
+        [YamlMember]
+        public string[] Sources { get; [Obsolete] set; } = null!;
+
+        [YamlMember]
+        public string Destination { get; [Obsolete] set; } = null!;
+
+        [Obsolete]
+        public ReleaseFile() { }
 
         public ReleaseFile(
             string name,
             string[] sources,
             string destination)
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
             Sources = sources;
             Destination = destination;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }
