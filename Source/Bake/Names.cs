@@ -70,6 +70,7 @@ namespace Bake
                 [NuGetArtifact] = "nuget packages",
                 [DocumentationSiteArtifact] = "documentation sites",
                 [HelmChartArtifact] = "helm charts",
+                [ReleaseArtifact] = "released files",
             };
         }
 
