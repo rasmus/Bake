@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using Bake.ValueObjects.Artifacts;
 
 namespace Bake
@@ -61,6 +60,16 @@ namespace Bake
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
             public const string HelmChartArtifact = "helm-chart-artifact";
+
+            public static readonly IReadOnlyDictionary<string, string> PluralNames = new ConcurrentDictionary<string, string>
+            {
+                [ContainerArtifact] = "containers",
+                [ExecutableArtifact] = "docker files",
+                [DockerfileArtifact] = "directories",
+                [NuGetArtifact] = "nuget packages",
+                [DocumentationSiteArtifact] = "documentation sites",
+                [HelmChartArtifact] = "helm charts",
+            };
         }
 
         public static class ArtifactTypes
