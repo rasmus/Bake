@@ -139,6 +139,11 @@ namespace Bake.Cooking
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
         }
 
+        private static readonly IReadOnlySet<string> IntermediateArtifacts = new HashSet<string>
+        {
+            Names.Artifacts.DockerfileArtifact,
+        };
+
         private static void PrintArtifacts(IEnumerable<CookResult> cookResults)
         {
             var groupedArtifacts = cookResults
@@ -155,6 +160,11 @@ namespace Bake.Cooking
 
             foreach (var artifactGroup in groupedArtifacts)
             {
+                if (IntermediateArtifacts.Contains(artifactGroup.Key))
+                {
+                    continue;
+                }
+
                 var prettyNames = artifactGroup
                     .SelectMany(a => a.PrettyNames())
                     .Distinct()
@@ -166,7 +176,8 @@ namespace Bake.Cooking
                     continue;
                 }
 
-                Console.WriteLine(artifactGroup.Key);
+                var prettyGroupName = Names.Artifacts.PluralNames.TryGetValue(artifactGroup.Key, out var pn) ? pn : artifactGroup.Key;
+                Console.WriteLine(prettyGroupName);
                 foreach (var prettyName in prettyNames)
                 {
                     Console.WriteLine($"  {prettyName}");
