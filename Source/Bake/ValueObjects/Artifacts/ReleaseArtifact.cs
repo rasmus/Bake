@@ -58,7 +58,7 @@ namespace Bake.ValueObjects.Artifacts
 
         public override IEnumerable<string> PrettyNames()
         {
-            yield return Names.Artifacts.ReleaseArtifact;
+            return Files;
         }
     }
 }
