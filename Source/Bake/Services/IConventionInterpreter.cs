@@ -27,5 +27,6 @@ namespace Bake.Services
     public interface IConventionInterpreter
     {
         bool ShouldArtifactsBePublished(Convention convention);
+        bool ShouldGitHubInformationBeFetched(Convention convention);
     }
 }

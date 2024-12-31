@@ -20,13 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.ValueObjects;
 
 namespace Bake.Services
 {
     public class ConventionInterpreter : IConventionInterpreter
     {
+        public bool ShouldGitHubInformationBeFetched(Convention convention)
+        {
+            return convention switch
+            {
+                Convention.Default => false,
+                Convention.Release => true,
+                _ => throw new ArgumentOutOfRangeException(nameof(convention), convention, null)
+            };
+        }
+
         public bool ShouldArtifactsBePublished(Convention convention)
         {
             return convention switch
