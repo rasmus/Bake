@@ -37,34 +37,21 @@ namespace Bake.Cooking.Ingredients.Gathers
         private readonly ILogger<GitHubGather> _logger;
         private readonly IDefaults _defaults;
         private readonly IGitHub _gitHub;
-        private readonly IConventionInterpreter _conventionInterpreter;
 
         public GitHubGather(
             ILogger<GitHubGather> logger,
             IDefaults defaults,
-            IGitHub gitHub,
-            IConventionInterpreter conventionInterpreter)
+            IGitHub gitHub)
         {
             _logger = logger;
             _defaults = defaults;
             _gitHub = gitHub;
-            _conventionInterpreter = conventionInterpreter;
         }
 
         public async Task GatherAsync(
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
-            if (!_conventionInterpreter.ShouldGitHubInformationBeFetched(ingredients.Convention))
-            {
-                _logger.LogInformation(
-                    "Skipping GitHub information gathering as its disabled by convention {Convention}",
-                    ingredients.Convention);
-                ingredients.FailGitHub();
-                ingredients.FailPullRequest();
-                return;
-            }
-
             try
             {
                 await InternalGatherAsync(ingredients, cancellationToken);

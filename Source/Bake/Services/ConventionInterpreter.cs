@@ -26,7 +26,7 @@ namespace Bake.Services
 {
     public class ConventionInterpreter : IConventionInterpreter
     {
-        public bool ShouldGitHubInformationBeFetched(Convention convention)
+        public bool ShouldBuildChangeLog(Convention convention)
         {
             return convention switch
             {
