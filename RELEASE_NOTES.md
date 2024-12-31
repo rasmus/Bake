@@ -1,3 +1,7 @@
+# 0.32-beta
+
+- *Nothing yet*
+
 # 0.31-beta
 
 * New: Retry `docker push` commands as it seems Docker Hub is a bit flaky
