@@ -31,15 +31,18 @@ namespace Bake.Cooking.Ingredients.Gathers
         private readonly ILogger<ChangelogGather> _logger;
         private readonly IGitHub _gitHub;
         private readonly IChangeLogBuilder _changeLogBuilder;
+        private readonly IConventionInterpreter _conventionInterpreter;
 
         public ChangelogGather(
             ILogger<ChangelogGather> logger,
             IGitHub gitHub,
-            IChangeLogBuilder changeLogBuilder)
+            IChangeLogBuilder changeLogBuilder,
+            IConventionInterpreter conventionInterpreter)
         {
             _logger = logger;
             _gitHub = gitHub;
             _changeLogBuilder = changeLogBuilder;
+            _conventionInterpreter = conventionInterpreter;
         }
 
         public async Task GatherAsync(
@@ -53,7 +56,13 @@ namespace Bake.Cooking.Ingredients.Gathers
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed to gather changelog information");
-                ingredients.FailChangelog();
+            }
+            finally
+            {
+                if (ingredients.Changelog == null)
+                {
+                    ingredients.FailChangelog();
+                }
             }
         }
 
@@ -61,6 +70,15 @@ namespace Bake.Cooking.Ingredients.Gathers
             ValueObjects.Ingredients ingredients,
             CancellationToken cancellationToken)
         {
+            if (!_conventionInterpreter.ShouldBuildChangeLog(ingredients.Convention))
+            {
+                _logger.LogInformation(
+                    "Skipping GitHub changelog information gathering as its disabled by convention {Convention}",
+                    ingredients.Convention);
+                ingredients.FailChangelog();
+                return;
+            }
+
             GitInformation gitInformation;
             GitHubInformation gitHubInformation;
 
@@ -100,7 +118,8 @@ namespace Bake.Cooking.Ingredients.Gathers
             var pullRequests = await _gitHub.GetPullRequestsAsync(
                 previousReleaseTag.Sha,
                 gitInformation.Sha,
-                gitHubInformation, cancellationToken);
+                gitHubInformation,
+                cancellationToken);
 
             var changes = _changeLogBuilder.Build(pullRequests);
             ingredients.Changelog = new ChangeLog(
