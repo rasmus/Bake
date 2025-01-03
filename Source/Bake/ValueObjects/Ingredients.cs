@@ -199,15 +199,61 @@ namespace Bake.ValueObjects
 #pragma warning restore CS0612 // Type or member is obsolete
         }
 
-        public void FailGit() => _git.SetCanceled();
-        public void FailGitHub() => _gitHub.SetCanceled();
-        public void FailChangelog() => _changelog.SetCanceled();
-        public void FailDescription() => _description.SetCanceled();
-        public void FailReleaseNotes() => _releaseNotes.SetCanceled();
-        public void FailPullRequest() => _pullRequest.SetCanceled();
+        public void FailGit()
+        {
+            if (!_git.Task.IsCompleted)
+            {
+                _git.SetCanceled();
+            }
+        }
+
+        public void FailGitHub()
+        {
+            if (!_gitHub.Task.IsCompleted)
+            {
+                _gitHub.SetCanceled();
+            }
+        }
+
+        public void FailChangelog()
+        {
+            if (!_changelog.Task.IsCompleted)
+            {
+                _changelog.SetCanceled();
+            }
+        }
+
+        public void FailDescription()
+        {
+            if (!_description.Task.IsCompleted)
+            {
+                _description.SetCanceled();
+            }
+        }
+
+        public void FailReleaseNotes()
+        {
+            if (!_releaseNotes.Task.IsCompleted)
+            {
+                _releaseNotes.SetCanceled();
+            }
+        }
+
+        public void FailPullRequest()
+        {
+            if (!_pullRequest.Task.IsCompleted)
+            {
+                _pullRequest.SetCanceled();
+            }
+        }
 
         public void FailOutstanding()
         {
+            if (!_description.Task.IsCompleted)
+            {
+                _description.SetCanceled();
+            }
+
             if (!_git.Task.IsCompleted)
             {
                 _git.SetCanceled();
@@ -226,6 +272,11 @@ namespace Bake.ValueObjects
             if (!_changelog.Task.IsCompleted)
             {
                 _changelog.SetCanceled();
+            }
+
+            if (!_releaseNotes.Task.IsCompleted)
+            {
+                _releaseNotes.SetCanceled();
             }
         }
     }

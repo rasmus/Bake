@@ -1,7 +1,12 @@
+# 0.32-beta
+
+- *Nothing yet*
+
 # 0.31-beta
 
 * New: Retry `docker push` commands as it seems Docker Hub is a bit flaky
 * Fix: If we have no exact match, we should try to find one that matches regardless of metadata
+* Fix: Only pull GitHub pull-request data for release as not to hit GitHub rate limits
 
 # 0.30-beta
 

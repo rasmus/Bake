@@ -58,12 +58,18 @@ namespace Bake.Cooking.Ingredients.Gathers
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Failed to gather GitHub information");
+            }
+            finally
+            {
                 if (ingredients.GitHub == null)
                 {
                     ingredients.FailGitHub();
                 }
-                ingredients.FailPullRequest();
-                _logger.LogError(e, "Failed to gather GitHub information");
+                if (ingredients.PullRequest == null)
+                {
+                    ingredients.FailPullRequest();
+                }
             }
         }
 
