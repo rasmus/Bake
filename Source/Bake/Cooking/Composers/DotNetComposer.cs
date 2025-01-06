@@ -234,6 +234,7 @@ namespace Bake.Cooking.Composers
                     {
                         yield return new DotNetNuGetPushRecipe(
                             CalculateNuGetPath(ingredients, visualStudioProject, configuration),
+                            _defaults.NuGetSkipDuplicate,
                             nuGetRegistryDestination.Url);
                     }
                 }

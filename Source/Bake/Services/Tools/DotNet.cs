@@ -239,6 +239,8 @@ namespace Bake.Services.Tools
                     "--source", argument.Source.AbsoluteUri,
                 };
 
+            AddIf(argument.SkipDuplicate, arguments, "--skip-duplicate");
+
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
