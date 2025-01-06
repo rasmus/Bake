@@ -72,9 +72,75 @@ namespace Bake.Tests.UnitTests.Cooking.Cooks
             success.Should().BeTrue();
         }
 
+        [Test]
+        public async Task Directories()
+        {
+            // Arrange
+            var context = NewContext();
+
+            // Act
+            var success = await Sut.CookAsync(
+                context,
+                new ReleaseRecipe(
+                    string.Empty,
+                    [
+                        NewReleaseDirectory()
+                    ]),
+                Timeout);
+
+            // Assert
+            success.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Mixed()
+        {
+            // Arrange
+            var context = NewContext();
+
+            // Act
+            var success = await Sut.CookAsync(
+                context,
+                new ReleaseRecipe(
+                    string.Empty,
+                    [
+                        NewMixedRelease(),
+                        NewReleaseDirectory(),
+                        NewReleaseFile(),
+                    ]),
+                Timeout);
+
+            // Assert
+            success.Should().BeTrue();
+        }
+
         private static Context NewContext()
         {
             return Context.New(ValueObjects.Ingredients.New(SemVer.Random, Path.GetTempPath()));
+        }
+
+        private ReleaseFile NewMixedRelease()
+        {
+            var fileName = $"{Guid.NewGuid():N}.zip";
+            var destinationPath = Path.Combine(Path.GetTempPath(), fileName);
+            DeleteAfter(destinationPath);
+
+            return new ReleaseFile(
+                fileName,
+                [NewDirectory(), NewFile(), NewFile(), NewDirectory()],
+                destinationPath);
+        }
+
+        private ReleaseFile NewReleaseDirectory()
+        {
+            var fileName = $"{Guid.NewGuid():N}.zip";
+            var destinationPath = Path.Combine(Path.GetTempPath(), fileName);
+            DeleteAfter(destinationPath);
+
+            return new ReleaseFile(
+                fileName,
+                [NewDirectory()],
+                destinationPath);
         }
 
         private ReleaseFile NewReleaseFile(int fileCount = 3)
@@ -87,6 +153,21 @@ namespace Bake.Tests.UnitTests.Cooking.Cooks
                 fileName,
                 Enumerable.Range(0, fileCount).Select(_ => NewFile()).ToArray(),
                 destinationPath);
+        }
+
+        private string NewDirectory(params string[] path)
+        {
+            var name = Guid.NewGuid().ToString("N");
+            path = path.Concat([name]).ToArray();
+            var directory = path.Aggregate(Path.GetTempPath(), Path.Combine);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            _ = Enumerable.Range(0, 3).Select(_ => NewFile(directory)).ToArray();
+
+            return directory;
         }
 
         private string NewFile(params string[] path)
