@@ -44,7 +44,9 @@ namespace Bake.Cooking.Composers
         private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> NamingArch = new ConcurrentDictionary<ExecutableArchitecture, string>
         {
             [ExecutableArchitecture.Intel32] = "x86",
-            [ExecutableArchitecture.Intel64] = "x86_64",
+            [ExecutableArchitecture.Intel64] = "x64",
+            [ExecutableArchitecture.Arm32] = "arm32",
+            [ExecutableArchitecture.Arm64] = "arm64",
         };
 
         public override IReadOnlyCollection<ArtifactType> Consumes { get; } =
