@@ -1,6 +1,7 @@
 # 0.32-beta
 
-- *Nothing yet*
+- New: Add `--skip-duplicate` to NuGet push to skip pushing packages that already exist in
+  order to make it easier to retry released that have failed partially
 
 # 0.31-beta
 
