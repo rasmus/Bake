@@ -1,6 +1,6 @@
 // MIT License
 // 
-// Copyright (c) 2021-2024 Rasmus Mikkelsen
+// Copyright (c) 2021-2025 Rasmus Mikkelsen
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -58,6 +55,7 @@ namespace Bake.Cooking.Cooks.DotNet
 
             var argument = new DotNetNuGetPushArgument(
                 recipe.Source!,
+                recipe.SkipDuplicate,
                 recipe.FilePath);
 
             using var toolResult = await _dotNet.NuGetPushAsync(
