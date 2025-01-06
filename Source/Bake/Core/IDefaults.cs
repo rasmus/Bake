@@ -29,6 +29,7 @@ namespace Bake.Core
         string GitHubUserRegistry { get; }
 
         string NuGetRegistry { get; }
+        bool NuGetSkipDuplicate { get; }
 
         string DockerHubUserRegistry { get; }
         bool DockerBuildCompress { get; }

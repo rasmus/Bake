@@ -30,6 +30,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string FilePath { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public bool SkipDuplicate { get; [Obsolete] set; }
+
         [YamlMember(typeof(string))]
         public Uri? Source { get; [Obsolete] set; }
 
@@ -38,10 +41,12 @@ namespace Bake.ValueObjects.Recipes.DotNet
 
         public DotNetNuGetPushRecipe(
             string filePath,
+            bool skipDuplicate,
             Uri? source = null)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             FilePath = filePath;
+            SkipDuplicate = skipDuplicate;
             Source = source;
 #pragma warning restore CS0612 // Type or member is obsolete
         }

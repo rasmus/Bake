@@ -31,6 +31,7 @@ namespace Bake.Core
         public string GitHubUrl { get; private set; } = "https://github.com/";
         public string GitHubNuGetRegistry { get; private set; } = "https://nuget.pkg.github.com/OWNER/index.json";
         public string NuGetRegistry { get; private set; } = "https://api.nuget.org/v3/index.json";
+        public bool NuGetSkipDuplicate { get; private set; } = true;
         public string DockerHubUserRegistry { get; private set; } = "{USER}/";
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
         public bool DockerBuildCompress { get; private set; } = true;
@@ -56,6 +57,7 @@ namespace Bake.Core
             GitHubNuGetRegistry = GetString(e, "github_packages_nuget_url", GitHubNuGetRegistry);
             GitHubUserRegistry = GetString(e, "github_packages_container_url", GitHubUserRegistry);
             NuGetRegistry = GetString(e, "nuget_url", NuGetRegistry);
+            NuGetSkipDuplicate = GetBool(e, "nuget_skip_duplicate", NuGetSkipDuplicate);
             DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
             DockerBuildCompress = GetBool(e, "docker_build_compress", DockerBuildCompress);
             DockerPushRetries = GetInt(e, "docker_push_retries", DockerPushRetries);
