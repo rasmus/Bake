@@ -133,9 +133,6 @@ namespace Bake.Services.Tools
                      argument.FilePath,
                      "--nologo",
                      "--configuration", argument.Configuration,
-                     $"-p:Version={argument.Version}",
-                     $"-p:AssemblyVersion={argument.Version.Major}.0.0.0",
-                     $"-p:FileVersion={argument.Version.LegacyVersion}"
                 };
 
             foreach (var (property, value) in argument.Properties)
@@ -145,6 +142,8 @@ namespace Bake.Services.Tools
 
             AddIf(!argument.Incremental, arguments, "--no-incremental");
             AddIf(!argument.Restore, arguments, "--no-restore");
+
+            arguments.AddRange(VersionArguments(argument.Version));
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
@@ -277,7 +276,9 @@ namespace Bake.Services.Tools
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");
-            
+
+            arguments.AddRange(VersionArguments(argument.Version));
+
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
@@ -287,6 +288,14 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
+        }
+
+        private static IEnumerable<string> VersionArguments(SemVer version)
+        {
+            yield return $"-p:Version={version}";
+            yield return $"-p:ApplicationVersion={version}";
+            yield return $"-p:AssemblyVersion={version.Major}.0.0.0";
+            yield return $"-p:FileVersion={version.LegacyVersion}";
         }
 
         private static void AddIf(bool predicate, List<string> arguments, params string[] args)
