@@ -20,14 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services.Tools.HelmArguments;
 
 namespace Bake.Services.Tools
 {
     public interface IHelm
     {
+        Task<IToolResult> DependenciesUpdateAsync(
+            HelmDependenciesUpdateArgument argument,
+            CancellationToken cancellationToken);
+
         Task<IToolResult> LintAsync(
             HelmLintArgument argument,
             CancellationToken cancellationToken);

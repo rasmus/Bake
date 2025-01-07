@@ -20,37 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Services.Tools;
-using Bake.Services.Tools.HelmArguments;
-using Bake.ValueObjects.Recipes.Helm;
-
-namespace Bake.Cooking.Cooks.Helm
+namespace Bake.Services.Tools
 {
-    public class HelmPackageCook : Cook<HelmPackageRecipe>
+    public abstract class Tool
     {
-        private readonly IHelm _helm;
-
-        public HelmPackageCook(
-            IHelm helm)
+        protected static void AddIf(bool predicate, List<string> arguments, params string[] args)
         {
-            _helm = helm;
-        }
+            if (!predicate)
+            {
+                return;
+            }
 
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            HelmPackageRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new HelmPackageArgument(
-                recipe.ChartDirectory,
-                recipe.OutputDirectory,
-                recipe.Version);
-
-            var toolResult = await _helm.PackageAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+            arguments.AddRange(args);
         }
     }
 }

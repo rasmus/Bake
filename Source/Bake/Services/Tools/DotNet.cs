@@ -31,7 +31,7 @@ using Bake.ValueObjects;
 
 namespace Bake.Services.Tools
 {
-    public class DotNet : IDotNet
+    public class DotNet : Tool, IDotNet
     {
         private readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable;
         private readonly IRunnerFactory _runnerFactory;
@@ -296,16 +296,6 @@ namespace Bake.Services.Tools
             yield return $"-p:ApplicationVersion={version}";
             yield return $"-p:AssemblyVersion={version.Major}.0.0.0";
             yield return $"-p:FileVersion={version.LegacyVersion}";
-        }
-
-        private static void AddIf(bool predicate, List<string> arguments, params string[] args)
-        {
-            if (!predicate)
-            {
-                return;
-            }
-
-            arguments.AddRange(args);
         }
     }
 }

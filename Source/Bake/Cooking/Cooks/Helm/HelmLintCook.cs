@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services.Tools;
 using Bake.Services.Tools.HelmArguments;
 using Bake.ValueObjects.Recipes.Helm;
@@ -44,7 +42,8 @@ namespace Bake.Cooking.Cooks.Helm
             CancellationToken cancellationToken)
         {
             var argument = new HelmLintArgument(
-                recipe.ChartDirectory);
+                recipe.ChartDirectory,
+                recipe.Strict);
 
             var toolResult = await _helm.LintAsync(
                 argument,

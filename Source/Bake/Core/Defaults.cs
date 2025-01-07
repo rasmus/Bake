@@ -36,6 +36,8 @@ namespace Bake.Core
         public string GitHubUserRegistry { get; private set; } = "ghcr.io/{USER}/";
         public bool DockerBuildCompress { get; private set; } = true;
         public int DockerPushRetries { get; private set; } = 5;
+        public bool HelmLintEnabled { get; private set; } = true;
+        public bool HelmLintStrict { get; private set; }
         public string GoLdFlags { get; private set; } = "-s -w";
         public string GoEnvPrivate { get; private set; } = "direct";
         public string DotNetRollForward { get; private set; } = "LatestMajor";
@@ -61,6 +63,8 @@ namespace Bake.Core
             DockerHubUserRegistry = GetString(e, "dockerhub_user_url", DockerHubUserRegistry);
             DockerBuildCompress = GetBool(e, "docker_build_compress", DockerBuildCompress);
             DockerPushRetries = GetInt(e, "docker_push_retries", DockerPushRetries);
+            HelmLintEnabled = GetBool(e, "helm_lint_enabled", HelmLintEnabled);
+            HelmLintStrict = GetBool(e, "helm_lint_strict", HelmLintStrict);
             GoLdFlags = GetString(e, "go_ldflags", GoLdFlags);
             GoEnvPrivate = GetString(e, "go_env_goprivate", GoEnvPrivate);
             DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
