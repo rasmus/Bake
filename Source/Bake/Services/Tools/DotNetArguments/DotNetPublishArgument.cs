@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
 using Bake.ValueObjects;
 
 namespace Bake.Services.Tools.DotNetArguments
@@ -32,6 +33,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public string Configuration { get; }
         public Platform Platform { get; }
         public string Output { get; }
+        public SemVer Version { get; }
 
         public DotNetPublishArgument(
             string filePath,
@@ -40,7 +42,8 @@ namespace Bake.Services.Tools.DotNetArguments
             bool build,
             string configuration,
             Platform platform,
-            string output)
+            string output,
+            SemVer version)
             : base(filePath)
         {
             PublishSingleFile = publishSingleFile;
@@ -49,6 +52,7 @@ namespace Bake.Services.Tools.DotNetArguments
             Configuration = configuration;
             Platform = platform;
             Output = output;
+            Version = version;
         }
     }
 }
