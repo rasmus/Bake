@@ -24,7 +24,7 @@ using YamlDotNet.Serialization;
 
 namespace Bake.ValueObjects.Recipes.Helm
 {
-    [Recipe(Names.Recipes.Helm.Package)]
+    [Recipe(Names.Recipes.Helm.DependenciesUpdate)]
     public class HelmDependenciesUpdateRecipe : Recipe
     {
         [YamlMember]

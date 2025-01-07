@@ -140,6 +140,7 @@ namespace Bake
             {
                 public const string Lint = "helm-lint";
                 public const string Package = "helm-package";
+                public const string DependenciesUpdate = "helm-dependencies-update";
             }
 
             public static class MkDocs
