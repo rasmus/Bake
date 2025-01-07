@@ -2,6 +2,7 @@
 
 - New: Add `--skip-duplicate` to NuGet push to skip pushing packages that already exist in
   order to make it easier to retry released that have failed partially
+- Fix: Properly set version when publishing `.csproj` projects
 
 # 0.31-beta
 
