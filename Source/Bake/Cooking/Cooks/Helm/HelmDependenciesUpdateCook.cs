@@ -26,11 +26,11 @@ using Bake.ValueObjects.Recipes.Helm;
 
 namespace Bake.Cooking.Cooks.Helm
 {
-    public class HelmPackageCook : Cook<HelmPackageRecipe>
+    public class HelmDependenciesUpdateCook : Cook<HelmDependenciesUpdateRecipe>
     {
         private readonly IHelm _helm;
 
-        public HelmPackageCook(
+        public HelmDependenciesUpdateCook(
             IHelm helm)
         {
             _helm = helm;
@@ -38,15 +38,13 @@ namespace Bake.Cooking.Cooks.Helm
 
         protected override async Task<bool> CookAsync(
             IContext context,
-            HelmPackageRecipe recipe,
+            HelmDependenciesUpdateRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var argument = new HelmPackageArgument(
-                recipe.ChartDirectory,
-                recipe.OutputDirectory,
-                recipe.Version);
+            var argument = new HelmDependenciesUpdateArgument(
+                recipe.ChartDirectory);
 
-            var toolResult = await _helm.PackageAsync(
+            var toolResult = await _helm.DependenciesUpdateAsync(
                 argument,
                 cancellationToken);
 

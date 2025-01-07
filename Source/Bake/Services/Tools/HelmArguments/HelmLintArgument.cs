@@ -25,11 +25,14 @@ namespace Bake.Services.Tools.HelmArguments
     public class HelmLintArgument
     {
         public string ChartDirectory { get; }
+        public bool Strict { get; }
 
         public HelmLintArgument(
-            string chartDirectory)
+            string chartDirectory,
+            bool strict)
         {
             ChartDirectory = chartDirectory;
+            Strict = strict;
         }
     }
 }

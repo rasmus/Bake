@@ -20,37 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Bake.Services.Tools;
-using Bake.Services.Tools.HelmArguments;
-using Bake.ValueObjects.Recipes.Helm;
+using YamlDotNet.Serialization;
 
-namespace Bake.Cooking.Cooks.Helm
+namespace Bake.ValueObjects.Recipes.Helm
 {
-    public class HelmPackageCook : Cook<HelmPackageRecipe>
+    [Recipe(Names.Recipes.Helm.Package)]
+    public class HelmDependenciesUpdateRecipe : Recipe
     {
-        private readonly IHelm _helm;
+        [YamlMember]
+        public string ChartDirectory { get; [Obsolete] set; } = null!;
 
-        public HelmPackageCook(
-            IHelm helm)
+        [Obsolete]
+        public HelmDependenciesUpdateRecipe() { }
+
+        public HelmDependenciesUpdateRecipe(
+            string chartDirectory)
         {
-            _helm = helm;
-        }
-
-        protected override async Task<bool> CookAsync(
-            IContext context,
-            HelmPackageRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            var argument = new HelmPackageArgument(
-                recipe.ChartDirectory,
-                recipe.OutputDirectory,
-                recipe.Version);
-
-            var toolResult = await _helm.PackageAsync(
-                argument,
-                cancellationToken);
-
-            return toolResult.WasSuccessful;
+#pragma warning disable CS0612 // Type or member is obsolete
+            ChartDirectory = chartDirectory;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

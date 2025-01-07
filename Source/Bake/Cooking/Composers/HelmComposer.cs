@@ -32,18 +32,18 @@ namespace Bake.Cooking.Composers
     {
         private readonly IFileSystem _fileSystem;
         private readonly IYaml _yaml;
+        private readonly IDefaults _defaults;
 
-        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
-        {
-            ArtifactType.HelmChart
-        };
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ ArtifactType.HelmChart ];
 
         public HelmComposer(
             IFileSystem fileSystem,
-            IYaml yaml)
+            IYaml yaml,
+            IDefaults defaults)
         {
             _fileSystem = fileSystem;
             _yaml = yaml;
+            _defaults = defaults;
         }
 
         public override async Task<IReadOnlyCollection<Recipe>> ComposeAsync(
@@ -79,8 +79,14 @@ namespace Bake.Cooking.Composers
             var chartFileName = $"{chart.Name}-{ingredients.Version}.tgz";
             var parentDirectory = Path.GetDirectoryName(chartDirectory)!;
 
-            recipes.Add(new HelmLintRecipe(
+            recipes.Add(new HelmDependenciesUpdateRecipe(
                 chartDirectory));
+            if (_defaults.HelmLintEnabled)
+            {
+                recipes.Add(new HelmLintRecipe(
+                    chartDirectory,
+                    _defaults.HelmLintStrict));
+            }
             recipes.Add(new HelmPackageRecipe(
                 chartDirectory,
                 parentDirectory,

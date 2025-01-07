@@ -30,14 +30,19 @@ namespace Bake.ValueObjects.Recipes.Helm
         [YamlMember]
         public string ChartDirectory { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public bool Strict { get; [Obsolete] set; }
+
         [Obsolete]
         public HelmLintRecipe() { }
 
         public HelmLintRecipe(
-            string chartDirectory)
+            string chartDirectory,
+            bool strict)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             ChartDirectory = chartDirectory;
+            Strict = strict;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }
