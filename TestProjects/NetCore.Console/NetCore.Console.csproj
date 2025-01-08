@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <PackageId>awesome-cli-tool</PackageId>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsTool>true</IsTool>
     <PackAsTool>true</PackAsTool>

@@ -47,15 +47,5 @@ namespace Bake.ValueObjects.Artifacts
             Platform = platform;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
-
-        public override IEnumerable<string> PrettyNames()
-        {
-            var relativePath = System.IO.Path.GetRelativePath(
-                Directory.GetCurrentDirectory(),
-                Path);
-            var filename = System.IO.Path.GetFileName(Path);
-
-            yield return $"{filename} ({Platform} {relativePath})";
-        }
     }
 }

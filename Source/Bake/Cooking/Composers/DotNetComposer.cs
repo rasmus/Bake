@@ -419,11 +419,15 @@ namespace Bake.Cooking.Composers
             VisualStudioProject visualStudioProject,
             string configuration)
         {
+            var packageId = string.IsNullOrEmpty(visualStudioProject.CsProj.PackageId)
+                ? visualStudioProject.Name
+                : visualStudioProject.CsProj.PackageId;
+
             return Path.Combine(
                 visualStudioProject.Directory,
                 "bin",
                 configuration,
-                $"{visualStudioProject.Name}.{ingredients.Version}.nupkg");
+                $"{packageId}.{ingredients.Version}.nupkg");
         }
     }
 }

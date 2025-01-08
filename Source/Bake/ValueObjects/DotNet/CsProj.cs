@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-
 namespace Bake.ValueObjects.DotNet
 {
     public class CsProj
@@ -31,6 +29,7 @@ namespace Bake.ValueObjects.DotNet
         public string AssemblyName { get; }
         public bool IsPackable { get; }
         public bool IsPublishable { get; }
+        public string PackageId { get; }
         public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
 
         public CsProj(
@@ -39,6 +38,7 @@ namespace Bake.ValueObjects.DotNet
             string assemblyName,
             bool isPackable,
             bool isPublishable,
+            string packageId,
             IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
         {
             PackAsTool = packAsTool;
@@ -46,6 +46,7 @@ namespace Bake.ValueObjects.DotNet
             AssemblyName = assemblyName;
             IsPackable = isPackable;
             IsPublishable = isPublishable;
+            PackageId = packageId;
             TargetFrameworkVersions = targetFrameworkVersions;
         }
     }
