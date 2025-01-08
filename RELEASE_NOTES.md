@@ -1,3 +1,8 @@
+# 0.33-beta
+
+- Fix: File artifacts are now actually validated
+- Fix. NuGet packages are now correctly named if the `PackageId` property is set
+
 # 0.32-beta
 
 - New: Add `--skip-duplicate` to NuGet push to skip pushing packages that already exist in

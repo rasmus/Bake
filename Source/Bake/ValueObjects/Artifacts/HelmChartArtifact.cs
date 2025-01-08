@@ -20,10 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.HelmChartArtifact)]
@@ -36,16 +32,6 @@ namespace Bake.ValueObjects.Artifacts
             string path)
             : base(path)
         {
-        }
-
-        public override IEnumerable<string> PrettyNames()
-        {
-            var relativePath = System.IO.Path.GetRelativePath(
-                Directory.GetCurrentDirectory(),
-                Path);
-            var filename = System.IO.Path.GetFileName(Path);
-
-            yield return $"{filename} ({relativePath})";
         }
     }
 }
