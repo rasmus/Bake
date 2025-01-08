@@ -1,6 +1,6 @@
 # 0.34-beta
 
-* *Nothing yet...*
+* Fix: Group name for pretty printed artifats in build report, especially executables
 
 # 0.33-beta
 
