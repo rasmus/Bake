@@ -64,8 +64,9 @@ namespace Bake
             public static readonly IReadOnlyDictionary<string, string> PluralNames = new ConcurrentDictionary<string, string>
             {
                 [ContainerArtifact] = "containers",
-                [ExecutableArtifact] = "docker files",
-                [DockerfileArtifact] = "directories",
+                [ExecutableArtifact] = "executables",
+                [DockerfileArtifact] = "docker files",
+                [DirectoryArtifact] = "output directories",
                 [NuGetArtifact] = "nuget packages",
                 [DocumentationSiteArtifact] = "documentation sites",
                 [HelmChartArtifact] = "helm charts",
