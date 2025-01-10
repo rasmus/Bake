@@ -1,6 +1,7 @@
 # 0.34-beta
 
-* Fix: Group name for pretty printed artifats in build report, especially executables
+* Fix: Group name for pretty printed artifacts in build report, especially executables
+* Fix: Helm charts with dependencies could not update them
 
 # 0.33-beta
 
