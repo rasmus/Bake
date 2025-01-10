@@ -42,7 +42,7 @@ namespace Bake.Services.Tools
         {
             var arguments = new[]
             {
-                "dependency", "dependency",
+                "dependency", "update",
                 argument.ChartDirectory,
             };
 
