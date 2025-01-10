@@ -1,6 +1,6 @@
 # 0.35-beta
 
-* *Nothing yet...*
+* New: Set application icon
 
 # 0.34-beta
 
