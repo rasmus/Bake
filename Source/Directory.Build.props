@@ -5,6 +5,18 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
+
+    <PackageIcon>icon-128.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>https://github.com/rasmus/Bake</RepositoryUrl>
+    <Copyright>Copyright (c) Rasmus Mikkelsen 2021-2025</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildProjectDirectory)\..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="$(MSBuildProjectDirectory)\..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>
