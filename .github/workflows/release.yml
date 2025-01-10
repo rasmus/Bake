@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        lfs: true
 
     - name: Start Docker services
       run: docker compose up -d --force-recreate

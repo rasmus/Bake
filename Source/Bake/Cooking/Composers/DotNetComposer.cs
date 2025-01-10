@@ -355,6 +355,7 @@ namespace Bake.Cooking.Composers
                 properties["RepositoryType"] = "git";
                 properties["RepositoryCommit"] = git.Sha;
                 properties["RepositoryUrl"] = git.OriginUrl.AbsoluteUri;
+                properties["PublishRepositoryUrl"] = "true";
             }
             if (ingredients.GitHub != null)
             {
