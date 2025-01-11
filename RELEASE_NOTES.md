@@ -1,6 +1,7 @@
 # 0.35-beta
 
 * New: Set application icon
+* Fix: Correctly set assembly version for .NET projects
 
 # 0.34-beta
 
