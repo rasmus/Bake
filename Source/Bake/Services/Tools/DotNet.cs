@@ -294,7 +294,7 @@ namespace Bake.Services.Tools
         {
             yield return $"-p:Version={version}";
             yield return $"-p:ApplicationVersion={version}";
-            yield return $"-p:AssemblyVersion={version.Major}.0.0.0";
+            yield return $"-p:AssemblyVersion={version.LegacyVersion}";
             yield return $"-p:FileVersion={version.LegacyVersion}";
         }
     }
