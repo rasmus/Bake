@@ -1,4 +1,4 @@
-# 0.36-beta
+# 0.36
 
 * *Nothing yet...*
 
