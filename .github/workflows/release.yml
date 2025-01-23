@@ -15,3 +15,5 @@ jobs:
     uses: ./.github/workflows/pipeline.yaml
     with:
       version: 0.36.${{ github.run_number }}
+    secrets:
+      nuget-apikey: ${{ secrets.NUGET_APIKEY }}
