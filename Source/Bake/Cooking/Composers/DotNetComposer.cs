@@ -369,8 +369,13 @@ namespace Bake.Cooking.Composers
             }
 
             var legacyVersion = ingredients.Version.LegacyVersion.ToString();
+
+            // CRITICAL for NuGet packages!
+            // Setting the AssemblyVersion to [MAJOR].0.0.0 ensures that the assembly version remains stable
+            // across minor and patch updates, which is important for binding redirects and compatibility.
+            properties["AssemblyVersion"] = $"{ingredients.Version.Major}.0.0.0";
+
             properties["Version"] = legacyVersion;
-            properties["AssemblyVersion"] = $"{ingredients.Version.Major}.0.0.0"; // CRITICAL for NuGet packages!
             properties["ApplicationVersion"] = legacyVersion;
             properties["FileVersion"] = legacyVersion;
             properties["AssemblyFileVersion"] = legacyVersion;
