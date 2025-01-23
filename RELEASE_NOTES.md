@@ -1,3 +1,7 @@
+# 0.37
+
+* *Nothing yet...*
+
 # 0.36
 
 * New: Dropped the `-beta` on Bake version, version `0.x` says as much 
