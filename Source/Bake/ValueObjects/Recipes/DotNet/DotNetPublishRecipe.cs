@@ -53,6 +53,9 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public SemVer Version { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public Dictionary<string, string> Properties { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public DotNetPublishRecipe() { }
 
@@ -65,6 +68,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Platform platform,
             string output,
             SemVer version,
+            Dictionary<string, string> properties,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -77,6 +81,7 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Platform = platform;
             Output = output;
             Version = version;
+            Properties = properties;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

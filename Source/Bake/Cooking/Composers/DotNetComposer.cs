@@ -252,6 +252,7 @@ namespace Bake.Cooking.Composers
                     Platform.Any,
                     path,
                     ingredients.Version,
+                    properties,
                     new DirectoryArtifact(
                         Path.Combine(visualStudioProject.Directory, path)));
 
@@ -293,6 +294,7 @@ namespace Bake.Cooking.Composers
                     targetPlatform,
                     path,
                     ingredients.Version,
+                    properties,
                     new ExecutableArtifact(
                         visualStudioProject.CsProj.ToolCommandName,
                         Path.Combine(
@@ -368,7 +370,9 @@ namespace Bake.Cooking.Composers
 
             var legacyVersion = ingredients.Version.LegacyVersion.ToString();
             properties["Version"] = legacyVersion;
-            properties["AssemblyVersion"] = legacyVersion;
+            properties["AssemblyVersion"] = $"{ingredients.Version.Major}.0.0.0"; // CRITICAL for NuGet packages!
+            properties["ApplicationVersion"] = legacyVersion;
+            properties["FileVersion"] = legacyVersion;
             properties["AssemblyFileVersion"] = legacyVersion;
             properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
 

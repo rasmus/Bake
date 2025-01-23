@@ -34,6 +34,7 @@ namespace Bake.Services.Tools.DotNetArguments
         public Platform Platform { get; }
         public string Output { get; }
         public SemVer Version { get; }
+        public IReadOnlyDictionary<string, string> Properties { get; }
 
         public DotNetPublishArgument(
             string filePath,
@@ -43,7 +44,8 @@ namespace Bake.Services.Tools.DotNetArguments
             string configuration,
             Platform platform,
             string output,
-            SemVer version)
+            SemVer version,
+            IReadOnlyDictionary<string, string> properties)
             : base(filePath)
         {
             PublishSingleFile = publishSingleFile;
@@ -53,6 +55,7 @@ namespace Bake.Services.Tools.DotNetArguments
             Platform = platform;
             Output = output;
             Version = version;
+            Properties = properties;
         }
     }
 }
