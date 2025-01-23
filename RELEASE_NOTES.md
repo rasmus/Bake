@@ -1,6 +1,7 @@
 # 0.36
 
-* *Nothing yet...*
+* New: Dropped the `-beta` on Bake version, version `0.x` says as much 
+* Fix: `AssemblyVersion` must always be `[MAJOR].0.0.0` to limit assembly load errors
 
 # 0.35-beta
 

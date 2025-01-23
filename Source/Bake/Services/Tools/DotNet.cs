@@ -135,15 +135,10 @@ namespace Bake.Services.Tools
                      "--configuration", argument.Configuration,
                 };
 
-            foreach (var (property, value) in argument.Properties)
-            {
-                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
-            }
+            arguments.AddRange(AsPropertyArguments(argument.Properties));
 
             AddIf(!argument.Incremental, arguments, "--no-incremental");
             AddIf(!argument.Restore, arguments, "--no-restore");
-
-            arguments.AddRange(VersionArguments(argument.Version));
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
@@ -154,6 +149,14 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
+        }
+
+        private static IEnumerable<string> AsPropertyArguments(IReadOnlyDictionary<string, string> properties)
+        {
+            foreach (var (property, value) in properties)
+            {
+                yield return $"-p:{property}={value.ToMsBuildEscaped()}";
+            }
         }
 
         public async Task<IToolResult> TestAsync(
@@ -262,22 +265,18 @@ namespace Bake.Services.Tools
                     "--configuration", argument.Configuration,
                     "--nologo",
                     "--output", argument.Output,
-                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
             {
-                arguments.AddRange(new []
-                    {
-                        "--runtime", argument.Platform.GetDotNetRuntimeIdentifier()
-                    });
+                arguments.AddRange(["--runtime", argument.Platform.GetDotNetRuntimeIdentifier()]);
             }
+
+            arguments.AddRange(AsPropertyArguments(argument.Properties));
 
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");
-
-            arguments.AddRange(VersionArguments(argument.Version));
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
@@ -288,14 +287,6 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
-        }
-
-        private static IEnumerable<string> VersionArguments(SemVer version)
-        {
-            yield return $"-p:Version={version}";
-            yield return $"-p:ApplicationVersion={version}";
-            yield return $"-p:AssemblyVersion={version.LegacyVersion}";
-            yield return $"-p:FileVersion={version.LegacyVersion}";
         }
     }
 }
