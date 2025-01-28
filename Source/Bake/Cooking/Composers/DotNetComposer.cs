@@ -251,6 +251,8 @@ namespace Bake.Cooking.Composers
                     configuration,
                     Platform.Any,
                     path,
+                    ingredients.Version,
+                    properties,
                     new DirectoryArtifact(
                         Path.Combine(visualStudioProject.Directory, path)));
 
@@ -291,6 +293,8 @@ namespace Bake.Cooking.Composers
                     configuration,
                     targetPlatform,
                     path,
+                    ingredients.Version,
+                    properties,
                     new ExecutableArtifact(
                         visualStudioProject.CsProj.ToolCommandName,
                         Path.Combine(
@@ -353,6 +357,7 @@ namespace Bake.Cooking.Composers
                 properties["RepositoryType"] = "git";
                 properties["RepositoryCommit"] = git.Sha;
                 properties["RepositoryUrl"] = git.OriginUrl.AbsoluteUri;
+                properties["PublishRepositoryUrl"] = "true";
             }
             if (ingredients.GitHub != null)
             {
@@ -364,8 +369,15 @@ namespace Bake.Cooking.Composers
             }
 
             var legacyVersion = ingredients.Version.LegacyVersion.ToString();
+
+            // CRITICAL for NuGet packages!
+            // Setting the AssemblyVersion to [MAJOR].0.0.0 ensures that the assembly version remains stable
+            // across minor and patch updates, which is important for binding redirects and compatibility.
+            properties["AssemblyVersion"] = $"{ingredients.Version.Major}.0.0.0";
+
             properties["Version"] = legacyVersion;
-            properties["AssemblyVersion"] = legacyVersion;
+            properties["ApplicationVersion"] = legacyVersion;
+            properties["FileVersion"] = legacyVersion;
             properties["AssemblyFileVersion"] = legacyVersion;
             properties["Description"] = BuildDescription(visualStudioSolution, ingredients);
 
@@ -417,11 +429,15 @@ namespace Bake.Cooking.Composers
             VisualStudioProject visualStudioProject,
             string configuration)
         {
+            var packageId = string.IsNullOrEmpty(visualStudioProject.CsProj.PackageId)
+                ? visualStudioProject.Name
+                : visualStudioProject.CsProj.PackageId;
+
             return Path.Combine(
                 visualStudioProject.Directory,
                 "bin",
                 configuration,
-                $"{visualStudioProject.Name}.{ingredients.Version}.nupkg");
+                $"{packageId}.{ingredients.Version}.nupkg");
         }
     }
 }

@@ -31,7 +31,7 @@ using Bake.ValueObjects;
 
 namespace Bake.Services.Tools
 {
-    public class DotNet : IDotNet
+    public class DotNet : Tool, IDotNet
     {
         private readonly IReadOnlyDictionary<string, string> DotNetEnvironmentVariable;
         private readonly IRunnerFactory _runnerFactory;
@@ -133,15 +133,9 @@ namespace Bake.Services.Tools
                      argument.FilePath,
                      "--nologo",
                      "--configuration", argument.Configuration,
-                     $"-p:Version={argument.Version}",
-                     $"-p:AssemblyVersion={argument.Version.Major}.0.0.0",
-                     $"-p:FileVersion={argument.Version.LegacyVersion}"
                 };
 
-            foreach (var (property, value) in argument.Properties)
-            {
-                arguments.Add($"-p:{property}={value.ToMsBuildEscaped()}");
-            }
+            arguments.AddRange(AsPropertyArguments(argument.Properties));
 
             AddIf(!argument.Incremental, arguments, "--no-incremental");
             AddIf(!argument.Restore, arguments, "--no-restore");
@@ -155,6 +149,14 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
+        }
+
+        private static IEnumerable<string> AsPropertyArguments(IReadOnlyDictionary<string, string> properties)
+        {
+            foreach (var (property, value) in properties)
+            {
+                yield return $"-p:{property}={value.ToMsBuildEscaped()}";
+            }
         }
 
         public async Task<IToolResult> TestAsync(
@@ -263,21 +265,19 @@ namespace Bake.Services.Tools
                     "--configuration", argument.Configuration,
                     "--nologo",
                     "--output", argument.Output,
-                    "-p:CheckEolTargetFramework=false"
                 };
 
             if (argument.Platform.Os != ExecutableOperatingSystem.Any)
             {
-                arguments.AddRange(new []
-                    {
-                        "--runtime", argument.Platform.GetDotNetRuntimeIdentifier()
-                    });
+                arguments.AddRange(["--runtime", argument.Platform.GetDotNetRuntimeIdentifier()]);
             }
+
+            arguments.AddRange(AsPropertyArguments(argument.Properties));
 
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
             AddIf(argument.SelfContained, arguments, "--self-contained", "true");
-            
+
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",
                 argument.WorkingDirectory,
@@ -287,16 +287,6 @@ namespace Bake.Services.Tools
             var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
 
             return new ToolResult(runnerResult);
-        }
-
-        private static void AddIf(bool predicate, List<string> arguments, params string[] args)
-        {
-            if (!predicate)
-            {
-                return;
-            }
-
-            arguments.AddRange(args);
         }
     }
 }

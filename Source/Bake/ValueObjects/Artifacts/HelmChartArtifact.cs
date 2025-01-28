@@ -33,15 +33,5 @@ namespace Bake.ValueObjects.Artifacts
             : base(path)
         {
         }
-
-        public override IEnumerable<string> PrettyNames()
-        {
-            var relativePath = System.IO.Path.GetRelativePath(
-                Directory.GetCurrentDirectory(),
-                Path);
-            var filename = System.IO.Path.GetFileName(Path);
-
-            yield return $"{filename} ({relativePath})";
-        }
     }
 }

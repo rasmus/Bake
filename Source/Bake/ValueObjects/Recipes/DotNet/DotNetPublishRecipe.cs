@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Core;
 using Bake.ValueObjects.Artifacts;
 using YamlDotNet.Serialization;
 
@@ -49,6 +50,12 @@ namespace Bake.ValueObjects.Recipes.DotNet
         [YamlMember]
         public string Output { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public SemVer Version { get; [Obsolete] set; } = null!;
+
+        [YamlMember]
+        public Dictionary<string, string> Properties { get; [Obsolete] set; } = null!;
+
         [Obsolete]
         public DotNetPublishRecipe() { }
 
@@ -60,6 +67,8 @@ namespace Bake.ValueObjects.Recipes.DotNet
             string configuration,
             Platform platform,
             string output,
+            SemVer version,
+            Dictionary<string, string> properties,
             params Artifact[] artifacts)
             : base(artifacts)
         {
@@ -71,6 +80,8 @@ namespace Bake.ValueObjects.Recipes.DotNet
             Configuration = configuration;
             Platform = platform;
             Output = output;
+            Version = version;
+            Properties = properties;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

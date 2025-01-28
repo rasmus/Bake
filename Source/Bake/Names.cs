@@ -65,8 +65,9 @@ namespace Bake
             public static readonly IReadOnlyDictionary<string, string> PluralNames = new ConcurrentDictionary<string, string>
             {
                 [ContainerArtifact] = "containers",
-                [ExecutableArtifact] = "docker files",
-                [DockerfileArtifact] = "directories",
+                [ExecutableArtifact] = "executables",
+                [DockerfileArtifact] = "docker files",
+                [DirectoryArtifact] = "output directories",
                 [NuGetArtifact] = "nuget packages",
                 [DocumentationSiteArtifact] = "documentation sites",
                 [HelmChartArtifact] = "helm charts",
@@ -142,6 +143,7 @@ namespace Bake
             {
                 public const string Lint = "helm-lint";
                 public const string Package = "helm-package";
+                public const string DependenciesUpdate = "helm-dependencies-update";
             }
 
             public static class Releases

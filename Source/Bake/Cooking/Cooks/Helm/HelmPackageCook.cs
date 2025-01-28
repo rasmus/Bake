@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services.Tools;
 using Bake.Services.Tools.HelmArguments;
 using Bake.ValueObjects.Recipes.Helm;

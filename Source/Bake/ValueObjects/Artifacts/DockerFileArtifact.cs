@@ -50,7 +50,7 @@ namespace Bake.ValueObjects.Artifacts
 
         public override IEnumerable<string> PrettyNames()
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
     }
 }

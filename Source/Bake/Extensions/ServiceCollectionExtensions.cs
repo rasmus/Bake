@@ -138,6 +138,7 @@ namespace Bake.Extensions
                 // Cooks - Python
                 .AddTransient<ICook, PythonFlaskDockerfileCook>()
                 // Cooks - Helm
+                .AddTransient<ICook, HelmDependenciesUpdateCook>()
                 .AddTransient<ICook, HelmLintCook>()
                 .AddTransient<ICook, HelmPackageCook>()
                 // Cooks - GitHub

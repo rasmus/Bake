@@ -20,15 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Extensions;
 using Bake.Services.Tools.HelmArguments;
 
 namespace Bake.Services.Tools
 {
-    public class Helm : IHelm
+    public class Helm : Tool, IHelm
     {
         private readonly IRunnerFactory _runnerFactory;
 
@@ -39,15 +36,37 @@ namespace Bake.Services.Tools
         }
 
 
+        public async Task<IToolResult> DependenciesUpdateAsync(
+            HelmDependenciesUpdateArgument argument,
+            CancellationToken cancellationToken)
+        {
+            var arguments = new[]
+            {
+                "dependency", "update",
+                argument.ChartDirectory,
+            };
+
+            var buildRunner = _runnerFactory.CreateRunner(
+                "helm",
+                Directory.GetCurrentDirectory(),
+                arguments);
+
+            var runnerResult = await buildRunner.ExecuteAsync(cancellationToken);
+
+            return new ToolResult(runnerResult);
+        }
+
         public async Task<IToolResult> LintAsync(
             HelmLintArgument argument,
             CancellationToken cancellationToken)
         {
-            var arguments = new[]
+            var arguments = new List<string>
                 {
                     "lint",
                     argument.ChartDirectory,
                 };
+
+            AddIf(argument.Strict, arguments, "--strict");
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "helm",
@@ -67,7 +86,6 @@ namespace Bake.Services.Tools
                 {
                     "package",
                     argument.ChartDirectory,
-                    "--dependency-update",
                     "--version", argument.Version.ToString(),
                     "--destination", argument.OutputDirectory
                 };

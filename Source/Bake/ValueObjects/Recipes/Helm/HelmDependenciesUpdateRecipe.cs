@@ -22,29 +22,22 @@
 
 using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.ValueObjects.Recipes.Helm
 {
-    [Artifact(Names.Artifacts.ExecutableArtifact)]
-    public class ExecutableArtifact : FileArtifact
+    [Recipe(Names.Recipes.Helm.DependenciesUpdate)]
+    public class HelmDependenciesUpdateRecipe : Recipe
     {
         [YamlMember]
-        public string Name { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public Platform Platform { get; [Obsolete] set; } = null!;
+        public string ChartDirectory { get; [Obsolete] set; } = null!;
 
         [Obsolete]
-        public ExecutableArtifact() { }
+        public HelmDependenciesUpdateRecipe() { }
 
-        public ExecutableArtifact(
-            string name,
-            string path,
-            Platform platform)
-            : base(path)
+        public HelmDependenciesUpdateRecipe(
+            string chartDirectory)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
-            Name = name;
-            Platform = platform;
+            ChartDirectory = chartDirectory;
 #pragma warning restore CS0612 // Type or member is obsolete
         }
     }

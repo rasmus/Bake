@@ -20,32 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools.HelmArguments
 {
-    [Artifact(Names.Artifacts.ExecutableArtifact)]
-    public class ExecutableArtifact : FileArtifact
+    public class HelmDependenciesUpdateArgument
     {
-        [YamlMember]
-        public string Name { get; [Obsolete] set; } = null!;
+        public string ChartDirectory { get; }
 
-        [YamlMember]
-        public Platform Platform { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public ExecutableArtifact() { }
-
-        public ExecutableArtifact(
-            string name,
-            string path,
-            Platform platform)
-            : base(path)
+        public HelmDependenciesUpdateArgument(
+            string chartDirectory)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Name = name;
-            Platform = platform;
-#pragma warning restore CS0612 // Type or member is obsolete
+            ChartDirectory = chartDirectory;
         }
     }
 }

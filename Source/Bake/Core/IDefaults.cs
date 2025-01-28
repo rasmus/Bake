@@ -35,6 +35,9 @@ namespace Bake.Core
         bool DockerBuildCompress { get; }
         int DockerPushRetries { get; }
 
+        bool HelmLintEnabled { get; }
+        bool HelmLintStrict { get; }
+
         string GoLdFlags { get; }
         string GoEnvPrivate { get; }
         

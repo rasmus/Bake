@@ -1,7 +1,34 @@
+# 0.37
+
+* *Nothing yet...*
+
+# 0.36
+
+* New: Dropped the `-beta` on Bake version, version `0.x` says as much 
+* Fix: `AssemblyVersion` must always be `[MAJOR].0.0.0` to limit assembly load errors
+
+# 0.35-beta
+
+* New: Set application icon
+* Fix: Correctly set assembly version for .NET projects
+
+# 0.34-beta
+
+* Fix: Group name for pretty printed artifacts in build report, especially executables
+* Fix: Helm charts with dependencies could not update them
+
+# 0.33-beta
+
+- Fix: File artifacts are now actually validated
+- Fix. NuGet packages are now correctly named if the `PackageId` property is set
+
 # 0.32-beta
 
 - New: Add `--skip-duplicate` to NuGet push to skip pushing packages that already exist in
   order to make it easier to retry released that have failed partially
+- New: Make it possible to disable Helm chart linting as well as enable strict linting
+- Fix: Update Helm charts before linting them
+- Fix: Properly set version when publishing `.csproj` projects
 
 # 0.31-beta
 

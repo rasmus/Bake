@@ -20,32 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using YamlDotNet.Serialization;
-
-namespace Bake.ValueObjects.Artifacts
+namespace Bake.Services.Tools
 {
-    [Artifact(Names.Artifacts.ExecutableArtifact)]
-    public class ExecutableArtifact : FileArtifact
+    public abstract class Tool
     {
-        [YamlMember]
-        public string Name { get; [Obsolete] set; } = null!;
-
-        [YamlMember]
-        public Platform Platform { get; [Obsolete] set; } = null!;
-
-        [Obsolete]
-        public ExecutableArtifact() { }
-
-        public ExecutableArtifact(
-            string name,
-            string path,
-            Platform platform)
-            : base(path)
+        protected static void AddIf(bool predicate, List<string> arguments, params string[] args)
         {
-#pragma warning disable CS0612 // Type or member is obsolete
-            Name = name;
-            Platform = platform;
-#pragma warning restore CS0612 // Type or member is obsolete
+            if (!predicate)
+            {
+                return;
+            }
+
+            arguments.AddRange(args);
         }
     }
 }

@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services.Tools;
 using Bake.Services.Tools.DotNetArguments;
 using Bake.ValueObjects.Recipes.DotNet;
@@ -50,7 +48,9 @@ namespace Bake.Cooking.Cooks.DotNet
                 recipe.Build,
                 recipe.Configuration,
                 recipe.Platform,
-                recipe.Output);
+                recipe.Output,
+                recipe.Version,
+                recipe.Properties);
 
             using var toolResult = await _dotNet.PublishAsync(
                 argument,

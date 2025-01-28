@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Bake.Extensions;
+
 namespace Bake.ValueObjects.Artifacts
 {
     public abstract class FileArtifact : Artifact
@@ -41,8 +43,23 @@ namespace Bake.ValueObjects.Artifacts
             /*[EnumeratorCancellation]*/ CancellationToken _)
         {
             return !File.Exists(Path)
-                ? AsyncEnumerable.Repeat($"File {Path} does not exist", 0)
+                ? AsyncEnumerable.Repeat($"File {Path} does not exist", 1)
                 : AsyncEnumerable.Empty<string>();
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            var relativePath = System.IO.Path.GetRelativePath(
+                Directory.GetCurrentDirectory(),
+                Path);
+            var filename = System.IO.Path.GetFileName(Path);
+
+            yield return $"{filename} ({relativePath})";
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().PrettyPrint()}: {Path}";
         }
     }
 }

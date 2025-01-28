@@ -75,7 +75,7 @@ namespace Bake.Cooking
                     recipe,
                     cancellationToken);
 
-                if (recipe.Artifacts != null && recipe.Artifacts.Any())
+                if (recipe.Artifacts.Length > 0)
                 {
                     _logger.LogDebug("Checking artifacts for {RecipeName}", recipeName);
                     var errors = await recipe.Artifacts
