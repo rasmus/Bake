@@ -25,10 +25,10 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.ExplicitTests
 {
@@ -84,7 +84,7 @@ namespace Bake.Tests.ExplicitTests
                 CancellationToken.None);
 
             // Assert
-            pullRequest.Should().BeNull();
+            pullRequest.ShouldBeNull();
         }
 
         private static string GetToken()

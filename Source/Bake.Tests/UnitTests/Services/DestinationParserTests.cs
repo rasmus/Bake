@@ -24,8 +24,8 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Destinations;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -50,10 +50,10 @@ namespace Bake.Tests.UnitTests.Services
             string expectedRegistryUrl)
         {
             // Act
-            Sut.TryParse(input, out var destination).Should().BeTrue();
+            Sut.TryParse(input, out var destination).ShouldBeTrue();
 
             // Assert
-            ((NuGetRegistryDestination) destination!).Url.AbsoluteUri.Should().Be(expectedRegistryUrl);
+            ((NuGetRegistryDestination) destination!).Url.AbsoluteUri.ShouldBe(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -70,10 +70,10 @@ namespace Bake.Tests.UnitTests.Services
             string expectedRegistryUrl)
         {
             // Act
-            Sut.TryParse(input, out var destination).Should().BeTrue();
+            Sut.TryParse(input, out var destination).ShouldBeTrue();
 
             // Assert
-            ((ContainerRegistryDestination)destination!).Url.Should().Be(expectedRegistryUrl);
+            ((ContainerRegistryDestination)destination!).Url.ShouldBe(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -84,10 +84,10 @@ namespace Bake.Tests.UnitTests.Services
             string expectedRegistryUrl)
         {
             // Act
-            Sut.TryParse(input, out var destination).Should().BeTrue();
+            Sut.TryParse(input, out var destination).ShouldBeTrue();
 
             // Assert
-            ((OctopusDeployDestination)destination!).Url.Should().Be(expectedRegistryUrl);
+            ((OctopusDeployDestination)destination!).Url.ShouldBe(expectedRegistryUrl);
         }
 
         [TestCase(
@@ -108,12 +108,12 @@ namespace Bake.Tests.UnitTests.Services
             string expectedDestination)
         {
             // Act
-            Sut.TryParse(input, out var destination).Should().BeTrue();
+            Sut.TryParse(input, out var destination).ShouldBeTrue();
 
             // Assert
             var dynamicDestination = (DynamicDestination)destination!;
-            dynamicDestination.ArtifactType.Should().Be(expectedArtifactType);
-            dynamicDestination.Destination.Should().Be(expectedDestination);
+            dynamicDestination.ArtifactType.ShouldBe(expectedArtifactType);
+            dynamicDestination.Destination.ShouldBe(expectedDestination);
         }
     }
 }

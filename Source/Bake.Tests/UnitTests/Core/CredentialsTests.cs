@@ -23,8 +23,8 @@
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Core
 {
@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Core
                 CancellationToken.None);
 
             // Assert
-            credentials.Should().Be(expectedCredentials);
+            credentials.ShouldBe(expectedCredentials);
         }
 
         [TestCase(
@@ -74,7 +74,7 @@ namespace Bake.Tests.UnitTests.Core
                 [$"{environmentKeyPrefix}_password"] = password
             }));
             var containerTagParser = new ContainerTagParser();
-            containerTagParser.TryParse(containerTagStr, out var containerTag).Should().BeTrue();
+            containerTagParser.TryParse(containerTagStr, out var containerTag).ShouldBeTrue();
 
             // Act
             var credentials = await Sut.TryGetDockerLoginAsync(
@@ -82,8 +82,8 @@ namespace Bake.Tests.UnitTests.Core
                 CancellationToken.None);
 
             // Assert
-            credentials!.Username.Should().Be(username);
-            credentials!.Password.Should().Be(password);
+            credentials!.Username.ShouldBe(username);
+            credentials!.Password.ShouldBe(password);
         }
 
     }

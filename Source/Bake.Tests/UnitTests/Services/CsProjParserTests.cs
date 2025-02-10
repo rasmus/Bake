@@ -20,12 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -47,9 +45,9 @@ namespace Bake.Tests.UnitTests.Services
             var csProj = await Sut.ParseAsync(path, CancellationToken.None);
 
             // Assert
-            csProj.PackAsTool.Should().BeTrue();
-            csProj.IsPackable.Should().BeFalse();
-            csProj.IsPublishable.Should().BeFalse();
+            csProj.PackAsTool.ShouldBeTrue();
+            csProj.IsPackable.ShouldBeFalse();
+            csProj.IsPublishable.ShouldBeFalse();
         }
     }
 }

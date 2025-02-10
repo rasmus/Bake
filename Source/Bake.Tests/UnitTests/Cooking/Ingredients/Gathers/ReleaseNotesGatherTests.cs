@@ -25,9 +25,9 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
 {
@@ -84,7 +84,7 @@ namespace Bake.Tests.UnitTests.Cooking.Ingredients.Gathers
             await Sut.GatherAsync(ingredients, CancellationToken.None);
 
             // Assert
-            ingredients.ReleaseNotes!.Version.ToString().Should().Be(expectedVersion);
+            ingredients.ReleaseNotes!.Version.ToString().ShouldBe(expectedVersion);
         }
     }
 }

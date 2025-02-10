@@ -22,8 +22,8 @@
 
 using Bake.Extensions;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -40,7 +40,7 @@ namespace Bake.Tests.UnitTests.Extensions
             var result = input.ToSlug();
 
             // Assert
-            result.Should().Be(expectedOutput);
+            result.ShouldBe(expectedOutput);
         }
     }
 }

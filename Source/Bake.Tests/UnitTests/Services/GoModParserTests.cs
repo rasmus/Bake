@@ -22,8 +22,8 @@
 
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -66,11 +66,11 @@ namespace Bake.Tests.UnitTests.Services
         public void Success(string str, string expectedName, string expectedVersion)
         {
             // Act
-            Sut.TryParse(str, out var goModuleName).Should().BeTrue();
+            Sut.TryParse(str, out var goModuleName).ShouldBeTrue();
 
             // Assert
-            goModuleName!.Name.Should().Be(expectedName);
-            goModuleName.Version.Should().Be(expectedVersion);
+            goModuleName!.Name.ShouldBe(expectedName);
+            goModuleName.Version.ShouldBe(expectedVersion);
         }
     }
 }

@@ -20,14 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.BakeProjects;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -55,8 +53,8 @@ service:
                 CancellationToken.None);
 
             // Assert
-            bakeProject.Type.Should().Be(BakeProjectType.Service);
-            bakeProject.Service.Port.Should().Be(8080);
+            bakeProject.Type.ShouldBe(BakeProjectType.Service);
+            bakeProject.Service.Port.ShouldBe(8080);
         }
     }
 }

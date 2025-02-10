@@ -23,9 +23,9 @@
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Core
 {
@@ -48,7 +48,7 @@ namespace Bake.Tests.UnitTests.Core
             var xml = await Sut.GenerateAsync(nuGetSources, CancellationToken.None);
 
             // Assert
-            xml.Should().Be(@"
+            xml.ShouldBe(@"
 <configuration>
   <packageSources>
     <clear />

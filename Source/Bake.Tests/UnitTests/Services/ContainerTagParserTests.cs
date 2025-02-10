@@ -22,8 +22,8 @@
 
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -93,13 +93,13 @@ namespace Bake.Tests.UnitTests.Services
             string expectedTag)
         {
             // Act
-            Sut.TryParse(image, out var containerImage).Should().BeTrue();
+            Sut.TryParse(image, out var containerImage).ShouldBeTrue();
 
             // Assert
-            containerImage!.HostAndPort.Should().Be(expectedHostAndPort);
-            containerImage.Path.Should().Be(expectedPath);
-            containerImage.Name.Should().Be(expectedName);
-            containerImage.Label.Should().Be(expectedTag);
+            containerImage!.HostAndPort.ShouldBe(expectedHostAndPort);
+            containerImage.Path.ShouldBe(expectedPath);
+            containerImage.Name.ShouldBe(expectedName);
+            containerImage.Label.ShouldBe(expectedTag);
         }
     }
 }

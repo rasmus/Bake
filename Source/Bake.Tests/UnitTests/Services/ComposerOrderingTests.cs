@@ -26,14 +26,14 @@ using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
     public class ComposerOrderingTests : TestFor<ComposerOrdering>
     {
-        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = new ArtifactType[] { };
+        private static readonly IReadOnlyCollection<ArtifactType> EmptyArtifactTypes = [];
 
         [Test]
         public void BasicOrdering()
@@ -55,7 +55,7 @@ namespace Bake.Tests.UnitTests.Services
         {
             // Arrange
             var composers = typeof(Program).Assembly
-                .Types()
+                .DefinedTypes
                 .Where(t => t.IsAssignableTo(typeof(IComposer)) && !t.IsAbstract)
                 .Select(t => new SpecimenContext(Fixture).Resolve(t))
                 .Cast<IComposer>()
@@ -64,8 +64,8 @@ namespace Bake.Tests.UnitTests.Services
             // Act
             IReadOnlyCollection<IComposer>? ordered = null;
             Assert.DoesNotThrow(() => ordered = Sut.Order(composers));
-            ordered.Should().NotBeNull();
-            ordered.Should().HaveCount(composers.Count);
+            ordered.ShouldNotBeNull();
+            ordered.Count.ShouldBe(composers.Count);
         }
 
         private void Test(
@@ -74,9 +74,8 @@ namespace Bake.Tests.UnitTests.Services
         {
             composers = Sut.Order(composers);
             var names = GetNames(composers);
-            names.Should().BeEquivalentTo(
+            names.ShouldBe(
                 expectedOrder,
-                o => o.WithStrictOrdering(),
                 $"{string.Join(",", names)} != {string.Join(",", expectedOrder)}");
         }
 
@@ -87,19 +86,12 @@ namespace Bake.Tests.UnitTests.Services
                 .Select(d => d.Name)
                 .ToList();
         }
-
-        private IReadOnlyCollection<ArtifactType> A(params ArtifactType[] artifactTypes) => artifactTypes;
-
+        
         private static IComposer DummyProducer(string name, params ArtifactType[] artifactTypes) => new DummyComposer(
             name,
             EmptyArtifactTypes,
             artifactTypes);
         
-        private static IComposer DummyConsumer(string name, params ArtifactType[] artifactTypes) => new DummyComposer(
-            name,
-            artifactTypes,
-            EmptyArtifactTypes);
-
         private static IComposer Dummy(string name, ArtifactType consume, ArtifactType produce) => new DummyComposer(
             name,
             new[] { consume },
