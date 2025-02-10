@@ -100,6 +100,22 @@ namespace Bake.Cooking.Ingredients.Gathers
                     gitInformation.OriginUrl,
                     apiUrl);
             }
+            else if (gitInformation.OriginUrl.Host.EndsWith(".ghe.com", StringComparison.OrdinalIgnoreCase))
+            {
+                apiUrl = new UriBuilder
+                    {
+                        Scheme = "https",
+                        Host = $"api.{gitInformation.OriginUrl.Host}",
+                    }.Uri;
+                gitHubUrl = new UriBuilder(gitInformation.OriginUrl)
+                    {
+                        Scheme = "https",
+                    }.Uri;
+                _logger.LogInformation(
+                    "GitHub data residency version detected on origin {Url}. Setting API URL to {ApiUrl}",
+                    gitInformation.OriginUrl,
+                    apiUrl);
+            }
             else if (string.Equals(
                 "github",
                 gitInformation.OriginUrl.Host.Split('.', StringSplitOptions.RemoveEmptyEntries).First(),
