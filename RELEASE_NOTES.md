@@ -1,3 +1,7 @@
+# 0.38
+
+* *Nothing yet...*
+
 # 0.37
 
 * Fix: Handle cases where there's no GitHub information
