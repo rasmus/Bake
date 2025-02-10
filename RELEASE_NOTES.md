@@ -1,6 +1,7 @@
 # 0.37
 
-* *Nothing yet...*
+* Fix: Handle cases where there's no GitHub information
+* Fix: Support GitHub data residency versions (hosted on `[something].ghe.com`)
 
 # 0.36
 
