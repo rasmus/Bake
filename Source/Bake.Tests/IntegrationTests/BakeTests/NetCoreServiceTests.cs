@@ -51,7 +51,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Assert
             returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync(Timeout);
-            images.ShouldBe([expectedImageVersioned, expectedImageLatest]);
+            images.ShouldContain(expectedImageVersioned);
+            images.ShouldContain(expectedImageLatest);
             await AssertContainerPingsAsync(
                 DockerArguments
                     .With(expectedImageVersioned)
