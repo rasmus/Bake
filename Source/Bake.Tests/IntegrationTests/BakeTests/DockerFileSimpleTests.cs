@@ -61,10 +61,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Assert
             returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync();
-            images.ShouldBeSubsetOf([
-                $"bake.local/{expectedContainerNameAndTag}",
-                $"localhost:5000/{expectedContainerNameAndTag}"
-            ]);
+            images.ShouldContain($"bake.local/{expectedContainerNameAndTag}");
+            images.ShouldContain($"localhost:5000/{expectedContainerNameAndTag}");
         }
 
         [Test]
@@ -96,10 +94,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             // Assert
             returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync();
-            images.ShouldBeSubsetOf([
-                $"bake.local/{expectedContainerNameAndTag}",
-                $"localhost:5000/{expectedContainerNameAndTag}"
-            ]);
+            images.ShouldContain($"bake.local/{expectedContainerNameAndTag}");
+            images.ShouldContain($"localhost:5000/{expectedContainerNameAndTag}");
         }
     }
 }
