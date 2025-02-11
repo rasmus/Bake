@@ -23,8 +23,8 @@
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.DotNet;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -73,13 +73,13 @@ namespace Bake.Tests.UnitTests.Services
             TargetFramework expectedTargetFramework)
         {
             // Act
-            Sut.TryParse(moniker, out var targetFrameworkVersion).Should().BeTrue();
+            Sut.TryParse(moniker, out var targetFrameworkVersion).ShouldBeTrue();
 
             // Assert
-            targetFrameworkVersion.Should().NotBeNull();
-            targetFrameworkVersion!.Moniker.Should().Be(moniker);
-            targetFrameworkVersion.Version.ToString().Should().Be(expectedVersion);
-            targetFrameworkVersion.Framework.Should().Be(expectedTargetFramework);
+            targetFrameworkVersion.ShouldNotBeNull();
+            targetFrameworkVersion!.Moniker.ShouldBe(moniker);
+            targetFrameworkVersion.Version.ToString().ShouldBe(expectedVersion);
+            targetFrameworkVersion.Framework.ShouldBe(expectedTargetFramework);
         }
     }
 }

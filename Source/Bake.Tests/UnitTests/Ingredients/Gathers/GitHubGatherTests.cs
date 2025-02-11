@@ -24,8 +24,8 @@ using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -50,7 +50,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             "rasmus-mikkelsen", "Bake", "https://github.schibsted.com/api/v3")]
         [TestCase(
             "https://schibsted.ghe.com/rasmus-mikkelsen/Bake",
-            "rasmus-mikkelsen", "Bake", "https://api.schibsted.ghe.com")]
+            "rasmus-mikkelsen", "Bake", "https://api.schibsted.ghe.com/")]
         public async Task Verify(
             string url,
             string expectedOwner,
@@ -73,10 +73,10 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             var gitHubInformation = await ingredients.GitHubTask;
 
             // Assert
-            gitHubInformation.Owner.Should().Be(expectedOwner);
-            gitHubInformation.Repository.Should().Be(expectedRepository);
-            gitHubInformation.ApiUrl.Should().Be(expectedApiUrl);
-            gitHubInformation.Url.Should().Be(expectedGitHubUrl);
+            gitHubInformation.Owner.ShouldBe(expectedOwner);
+            gitHubInformation.Repository.ShouldBe(expectedRepository);
+            gitHubInformation.ApiUrl.ToString().ShouldBe(expectedApiUrl);
+            gitHubInformation.Url.ToString().ShouldBe(expectedGitHubUrl);
         }
     }
 }

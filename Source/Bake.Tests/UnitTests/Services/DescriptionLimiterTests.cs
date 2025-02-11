@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -42,7 +41,7 @@ namespace Bake.Tests.UnitTests.Services
             var output = Sut.Limit(text, int.MaxValue);
 
             // Assert
-            output.Should().Be(text);
+            output.ShouldBe(text);
         }
 
         [Test]
@@ -101,7 +100,7 @@ namespace Bake.Tests.UnitTests.Services
             var output = Sut.Limit(text, 40);
 
             // Assert
-            output.Should().Be(new string('x', 40));
+            output.ShouldBe(new string('x', 40));
         }
 
         private static string Concat(params string[] texts) => string.Join(Environment.NewLine, texts);
@@ -111,7 +110,7 @@ namespace Bake.Tests.UnitTests.Services
             params string[] expected)
         {
             var inputLines = input.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
-            inputLines.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering());
+            inputLines.ShouldBe(expected);
         }
     }
 }

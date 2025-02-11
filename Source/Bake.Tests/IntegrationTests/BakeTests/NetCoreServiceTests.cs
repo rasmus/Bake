@@ -22,8 +22,8 @@
 
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
@@ -49,9 +49,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--push-container-latest-tag=true");
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync(Timeout);
-            images.Should().Contain(new[] {expectedImageVersioned, expectedImageLatest});
+            images.ShouldContain(expectedImageVersioned);
+            images.ShouldContain(expectedImageLatest);
             await AssertContainerPingsAsync(
                 DockerArguments
                     .With(expectedImageVersioned)

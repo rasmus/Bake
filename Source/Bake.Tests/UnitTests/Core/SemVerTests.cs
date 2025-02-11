@@ -20,10 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
 using Bake.Core;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Core
 {
@@ -76,10 +75,10 @@ namespace Bake.Tests.UnitTests.Core
             var version = SemVer.Parse(str, true);
 
             // Assert
-            version.Major.Should().Be(expectedMajor);
-            version.Minor.Should().Be(expectedMinor);
-            version.Patch.Should().Be(expectedPatch);
-            version.Meta.Should().Be(expectedMeta ?? string.Empty);
+            version.Major.ShouldBe(expectedMajor);
+            version.Minor.ShouldBe(expectedMinor);
+            version.Patch.ShouldBe(expectedPatch);
+            version.Meta.ShouldBe(expectedMeta ?? string.Empty);
         }
 
         [TestCase("1.2"  , "1.2.0", true)]
@@ -100,7 +99,7 @@ namespace Bake.Tests.UnitTests.Core
             var result = version.IsSubset(other);
 
             // Assert
-            result.Should().Be(expectedResult);
+            result.ShouldBe(expectedResult);
         }
 
         [TestCase(
@@ -127,7 +126,7 @@ namespace Bake.Tests.UnitTests.Core
                 .OrderBy(v => v);
 
             // Assert
-            string.Join(" ", list.Select(v => v.ToString())).Should().Be(expectedSorting);
+            string.Join(" ", list.Select(v => v.ToString())).ShouldBe(expectedSorting);
         }
     }
 }

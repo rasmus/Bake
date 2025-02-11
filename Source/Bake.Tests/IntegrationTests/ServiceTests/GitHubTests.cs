@@ -24,9 +24,9 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
 {
@@ -43,7 +43,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 }
                 .FirstOrDefault(t => !string.IsNullOrEmpty(t));
 
-            testToken.Should().NotBeNullOrEmpty();
+            testToken.ShouldNotBeNullOrEmpty();
             var credentials = Substitute.For<ICredentials>();
             credentials
                 .TryGetGitHubTokenAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
@@ -70,8 +70,8 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
                 CancellationToken.None);
 
             // Assert
-            pullRequestInformation.Should().NotBeNull();
-            pullRequestInformation!.Labels.Should().NotBeEmpty();
+            pullRequestInformation.ShouldNotBeNull();
+            pullRequestInformation!.Labels.ShouldNotBeEmpty();
         }
     }
 }

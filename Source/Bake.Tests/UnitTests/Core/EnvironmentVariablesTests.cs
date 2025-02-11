@@ -20,15 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Core
 {
@@ -55,8 +50,8 @@ namespace Bake.Tests.UnitTests.Core
             // Assert
             foreach (var (expectedKey, expectedValue) in expectedEnvironmentVariables)
             {
-                environmentVariables.TryGetValue(expectedKey, out var value).Should().BeTrue();
-                value.Should().Be(expectedValue);
+                environmentVariables.TryGetValue(expectedKey, out var value).ShouldBeTrue();
+                value.ShouldBe(expectedValue);
             }
         }
 

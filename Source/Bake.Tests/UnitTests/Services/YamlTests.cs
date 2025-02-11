@@ -24,8 +24,8 @@ using Bake.Core;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -41,7 +41,7 @@ namespace Bake.Tests.UnitTests.Services
             var yaml = await Sut.SerializeAsync(semVer, CancellationToken.None);
 
             // Assert
-            yaml.Trim().Should().Be($"\"{str}\"");
+            yaml.Trim().ShouldBe($"\"{str}\"");
         }
 
         [TestCase("1.2.3")]
@@ -51,7 +51,7 @@ namespace Bake.Tests.UnitTests.Services
             var semVer = await Sut.DeserializeAsync<SemVer>(str, CancellationToken.None);
 
             // Assert
-            semVer.ToString().Should().Be(str);
+            semVer.ToString().ShouldBe(str);
         }
 
         [Test]
@@ -81,9 +81,9 @@ namespace Bake.Tests.UnitTests.Services
 
             // Assert
             var dotNetRestore = recipe as DotNetRestoreSolutionRecipe;
-            dotNetRestore.Should().NotBeNull();
-            dotNetRestore!.Path.Should().Be("/tmp");
-            dotNetRestore.ClearLocalHttpCache.Should().BeTrue();
+            dotNetRestore.ShouldNotBeNull();
+            dotNetRestore!.Path.ShouldBe("/tmp");
+            dotNetRestore.ClearLocalHttpCache.ShouldBeTrue();
         }
     }
 }

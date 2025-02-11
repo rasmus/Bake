@@ -22,8 +22,8 @@
 
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -48,12 +48,12 @@ namespace Bake.Tests.UnitTests.Core
             string expectedPath)
         {
             // Act
-            GitRemoteParser.TryParse(input, out var url).Should().BeTrue();
+            GitRemoteParser.TryParse(input, out var url).ShouldBeTrue();
 
             // Assert
-            url!.Scheme.Should().Be(expectedScheme, url.AbsoluteUri);
-            url.Host.Should().Be(expectedHost, url.AbsoluteUri);
-            url.PathAndQuery.Should().Be(expectedPath, url.AbsoluteUri);
+            url!.Scheme.ShouldBe(expectedScheme, url.AbsoluteUri);
+            url.Host.ShouldBe(expectedHost, url.AbsoluteUri);
+            url.PathAndQuery.ShouldBe(expectedPath, url.AbsoluteUri);
         }
     }
 }

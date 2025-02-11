@@ -25,9 +25,9 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects.Destinations;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Shouldly;
 using ICommand = Bake.Commands.ICommand;
 
 namespace Bake.Tests.UnitTests.Commands
@@ -80,7 +80,7 @@ namespace Bake.Tests.UnitTests.Commands
                 });
 
             // Assert
-            result.Should().Be(42);
+            result.ShouldBe(42);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace Bake.Tests.UnitTests.Commands
                 });
 
             // Assert
-            result.Should().Be(ExitCodes.Core.UnexpectedError);
+            result.ShouldBe(ExitCodes.Core.UnexpectedError);
         }
     }
 }

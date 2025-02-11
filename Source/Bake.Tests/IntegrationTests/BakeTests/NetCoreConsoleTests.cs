@@ -23,9 +23,9 @@
 using Bake.Core;
 using Bake.Extensions;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
 using Serilog.Events;
+using Shouldly;
 
 namespace Bake.Tests.IntegrationTests.BakeTests
 {
@@ -45,9 +45,9 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(testState);
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             AssertSuccessfulArtifacts();
-            Releases.Should().HaveCount(0);
+            Releases.Count.ShouldBe(0);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(testState);
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             AssertFileExists(
                 50L.MB(),
                 "bin", "Release", "publish", "linux-x64", "NetCore.Console");
@@ -88,9 +88,9 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(testState);
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             AssertSuccessfulArtifacts();
-            Releases.Should().HaveCount(1);
+            Releases.Count.ShouldBe(1);
         }
 
         [TestCase(LogEventLevel.Verbose)]
@@ -111,7 +111,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--plan-path", $"\"{planPath}\"");
 
             // Assert - plan
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
 
             // Act - apply
             returnCode = await ExecuteAsync(
@@ -119,7 +119,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--plan-path", $"\"{planPath}\"");
 
             // Assert - apply
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             AssertSuccessfulArtifacts();
         }
 
@@ -142,7 +142,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(args);
 
             // Assert
-            returnCode.Should().Be(expectedExitCode);
+            returnCode.ShouldBe(expectedExitCode);
         }
 
         [TestCase("-h")]
@@ -159,7 +159,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
             var returnCode = await ExecuteAsync(args);
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
         }
     }
 }
