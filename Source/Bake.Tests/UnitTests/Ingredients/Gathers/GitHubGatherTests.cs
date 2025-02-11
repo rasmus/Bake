@@ -50,7 +50,7 @@ namespace Bake.Tests.UnitTests.Ingredients.Gathers
             "rasmus-mikkelsen", "Bake", "https://github.schibsted.com/api/v3")]
         [TestCase(
             "https://schibsted.ghe.com/rasmus-mikkelsen/Bake",
-            "rasmus-mikkelsen", "Bake", "https://api.schibsted.ghe.com")]
+            "rasmus-mikkelsen", "Bake", "https://api.schibsted.ghe.com/")]
         public async Task Verify(
             string url,
             string expectedOwner,
