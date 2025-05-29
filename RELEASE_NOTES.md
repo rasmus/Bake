@@ -1,6 +1,6 @@
 # 0.38
 
-* Fix: Project project `IncludeSymbols` should be respected if set
+* Fix: Project `IncludeSymbols` should be respected if set
 
 # 0.37
 
