@@ -47,6 +47,7 @@ namespace Bake.Services
             var xDocument = XDocument.Parse(xml);
 
             var packAsTool = ReadBool(xDocument ,"/Project/PropertyGroup/IsTool");
+            var includeSymbols = ReadBoolOptional(xDocument, "/Project/PropertyGroup/IncludeSymbols");
             var isPackable = ReadBool(xDocument, "/Project/PropertyGroup/IsPackable");
             var isPublishable = ReadBool(xDocument, "/Project/PropertyGroup/IsPublishable");
             var toolCommandName = ReadString(xDocument ,"/Project/PropertyGroup/ToolCommandName");
@@ -65,7 +66,8 @@ namespace Bake.Services
                 isPackable,
                 isPublishable,
                 packageId,
-                targetFrameworkVersions!);
+                targetFrameworkVersions!,
+                includeSymbols);
         }
 
         private static string ReadString(
@@ -73,6 +75,22 @@ namespace Bake.Services
             string xPath)
         {
             return xDocument.XPathSelectElement(xPath)?.Value ?? string.Empty;
+        }
+
+        private static bool? ReadBoolOptional(
+            XDocument xDocument,
+            string xPath,
+            bool defaultValue = false)
+        {
+            var value = xDocument.XPathSelectElement(xPath)?.Value;
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+
+            return bool.TryParse(value, out var b)
+                ? b
+                : defaultValue;
         }
 
         private static bool ReadBool(

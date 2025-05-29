@@ -1,6 +1,6 @@
 # 0.38
 
-* *Nothing yet...*
+* Fix: Project project `IncludeSymbols` should be respected if set
 
 # 0.37
 
