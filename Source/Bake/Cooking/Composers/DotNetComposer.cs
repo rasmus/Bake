@@ -205,7 +205,7 @@ namespace Bake.Cooking.Composers
                     visualStudioProject.Path,
                     false,
                     false,
-                    true,
+                    visualStudioProject.CsProj.IncludeSymbols.GetValueOrDefault(true),
                     true,
                     configuration,
                     ingredients.Version,
