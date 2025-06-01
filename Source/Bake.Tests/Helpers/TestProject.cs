@@ -23,8 +23,8 @@
 using System.Diagnostics;
 using Bake.Core;
 using Bake.Extensions;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.Helpers
 {
@@ -85,7 +85,7 @@ namespace Bake.Tests.Helpers
             var filePath = AssertFileExists(path);
             var fileInfo = new FileInfo(filePath);
 
-            fileInfo.Length.Should().BeGreaterThan(minimumSize, $"File {fileInfo} should be at least {minimumSize.BytesToString()}, but is only {fileInfo.Length.BytesToString()}");
+            fileInfo.Length.ShouldBeGreaterThan(minimumSize, $"File {fileInfo} should be at least {minimumSize.BytesToString()}, but is only {fileInfo.Length.BytesToString()}");
             
             Console.WriteLine($"File {filePath} of size {fileInfo.Length.BytesToString()} is a minimum of {minimumSize.BytesToString()}");
 
@@ -98,7 +98,7 @@ namespace Bake.Tests.Helpers
                 WorkingDirectory,
                 Path.Combine);
 
-            System.IO.File.Exists(filePath).Should().BeTrue(
+            System.IO.File.Exists(filePath).ShouldBeTrue(
                 $"'{Path.GetFileName(filePath)}' should be among: {Environment.NewLine}{PrettyPrintDirectory(Path.GetDirectoryName(filePath)!)}'");
 
             Console.WriteLine($"File {filePath} exists");
@@ -166,7 +166,7 @@ namespace Bake.Tests.Helpers
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
 
-            success.Should().BeTrue();
+            success.ShouldBeTrue();
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName)

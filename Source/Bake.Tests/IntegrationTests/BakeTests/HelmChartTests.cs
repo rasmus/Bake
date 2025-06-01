@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -49,7 +48,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--build-version", version));
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
         }
 
         [TestCase("octopus_deploy_apikey")]
@@ -71,8 +70,8 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 .WithEnvironmentVariable(environmentNamesForApiKey, octopusDeploy.ApiKey));
 
             // Assert
-            returnCode.Should().Be(0);
-            octopusDeploy.ReceivedPackages.Should().HaveCount(1);
+            returnCode.ShouldBe(0);
+            octopusDeploy.ReceivedPackages.Count.ShouldBe(1);
         }
 
         [Test]
@@ -89,7 +88,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                     "--build-version", version));
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
         }
     }
 }

@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using Bake.Core;
+using Bake.ValueObjects;
 using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Destinations;
 using Microsoft.Extensions.Logging;
@@ -93,7 +94,11 @@ namespace Bake.Cooking.Ingredients.Gathers
             switch (dynamicDestination.Destination)
             {
                 case Names.DynamicDestinations.GitHub:
-                    var gitHubInformation = await ingredients.GitHubTask;
+                    var gitHubInformation = await GetGitHubInformationAsync(ingredients);
+                    if (gitHubInformation == null)
+                    {
+                        return;
+                    }
 
                     var gitHubReleaseDestination = new GitHubReleaseDestination(
                         gitHubInformation.Owner,
@@ -121,7 +126,12 @@ namespace Bake.Cooking.Ingredients.Gathers
             switch (dynamicDestination.Destination)
             {
                 case Names.DynamicDestinations.GitHub:
-                    var gitHubInformation = await ingredients.GitHubTask;
+                    var gitHubInformation = await GetGitHubInformationAsync(ingredients);
+                    if (gitHubInformation == null)
+                    {
+                        return;
+                    }
+
                     var tag = _defaults.GitHubUserRegistry.Replace("{USER}", gitHubInformation.Owner);
 
                     var containerRegistryDestination = new ContainerRegistryDestination(tag);
@@ -148,7 +158,12 @@ namespace Bake.Cooking.Ingredients.Gathers
             switch (dynamicDestination.Destination)
             {
                 case Names.DynamicDestinations.GitHub:
-                    var gitHubInformation = await ingredients.GitHubTask;
+                    var gitHubInformation = await GetGitHubInformationAsync(ingredients);
+                    if (gitHubInformation == null)
+                    {
+                        return;
+                    }
+
                     var url = new Uri(_defaults.GitHubNuGetRegistry.Replace("/OWNER/", $"/{gitHubInformation.Owner}/"), UriKind.Absolute);
 
                     var nugetRegistryDestination = new NuGetRegistryDestination(url);
@@ -165,6 +180,18 @@ namespace Bake.Cooking.Ingredients.Gathers
 
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private async Task<GitHubInformation?> GetGitHubInformationAsync(ValueObjects.Ingredients ingredients)
+        {
+            try
+            {
+                return await ingredients.GitHubTask;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
             }
         }
     }

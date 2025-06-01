@@ -21,11 +21,10 @@
 // SOFTWARE.
 
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 // ReSharper disable StringLiteralTypo
 
@@ -52,7 +51,7 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "--build-version", version));
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

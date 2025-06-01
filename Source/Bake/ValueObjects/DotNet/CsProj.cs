@@ -31,15 +31,16 @@ namespace Bake.ValueObjects.DotNet
         public bool IsPublishable { get; }
         public string PackageId { get; }
         public IReadOnlyCollection<TargetFrameworkVersion> TargetFrameworkVersions { get; }
+        public bool? IncludeSymbols { get; }
 
-        public CsProj(
-            bool packAsTool,
+        public CsProj(bool packAsTool,
             string toolCommandName,
             string assemblyName,
             bool isPackable,
             bool isPublishable,
             string packageId,
-            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions)
+            IReadOnlyCollection<TargetFrameworkVersion> targetFrameworkVersions,
+            bool? includeSymbols)
         {
             PackAsTool = packAsTool;
             ToolCommandName = toolCommandName;
@@ -48,6 +49,7 @@ namespace Bake.ValueObjects.DotNet
             IsPublishable = isPublishable;
             PackageId = packageId;
             TargetFrameworkVersions = targetFrameworkVersions;
+            IncludeSymbols = includeSymbols;
         }
     }
 }

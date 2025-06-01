@@ -25,8 +25,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 using File = System.IO.File;
 
 // ReSharper disable StringLiteralTypo
@@ -59,13 +59,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                     }));
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync();
-            images.Should().Contain(new[]
-            {
-                $"bake.local/{expectedContainerNameAndTag}",
-                $"localhost:5000/{expectedContainerNameAndTag}"
-            });
+            images.ShouldContain($"bake.local/{expectedContainerNameAndTag}");
+            images.ShouldContain($"localhost:5000/{expectedContainerNameAndTag}");
         }
 
         [Test]
@@ -95,13 +92,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 }));
 
             // Assert
-            returnCode.Should().Be(0);
+            returnCode.ShouldBe(0);
             var images = await DockerHelper.ListImagesAsync();
-            images.Should().Contain(new []
-            {
-                $"bake.local/{expectedContainerNameAndTag}",
-                $"localhost:5000/{expectedContainerNameAndTag}"
-            });
+            images.ShouldContain($"bake.local/{expectedContainerNameAndTag}");
+            images.ShouldContain($"localhost:5000/{expectedContainerNameAndTag}");
         }
     }
 }

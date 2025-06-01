@@ -24,9 +24,9 @@ using System.Reactive.Linq;
 using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -60,9 +60,9 @@ namespace Bake.Tests.UnitTests.Services
                 }
 
                 // Assert
-                runnerResult.ReturnCode.Should().Be(0);
-                output.Should().HaveCount(1, string.Join(Environment.NewLine, output));
-                output.Single().Should().Be("black magic");
+                runnerResult.ReturnCode.ShouldBe(0);
+                output.Count.ShouldBe(1, string.Join(Environment.NewLine, output));
+                output.Single().ShouldBe("black magic");
             }
             finally
             {

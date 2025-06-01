@@ -23,8 +23,8 @@
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -40,11 +40,11 @@ namespace Bake.Tests.UnitTests.Services
             var changes = Sut.Build(pullRequests);
 
             // Assert
-            changes.Should().HaveCount(2);
-            changes[ChangeType.Dependency].Should().HaveCount(21);
-            changes[ChangeType.Dependency].Select(d => d.Text).Should().Contain("Bump flask 2.3.2 to 3.0.0 in /TestProjects/Python3.Flask (#265, #282, by @dependabot)");
-            changes[ChangeType.Dependency].Select(d => d.Text).Should().Contain("Bump NUnit 3.13.3 to 4.2.0 (#297, #317, #402, by @dependabot)");
-            changes[ChangeType.Dependency].Select(d => d.Text).Should().Contain("Bump WireMock.Net 1.5.28 to 1.6.1 (#240, #242, #250, #253, #258, #264, #279, #281, #286, #299, #314, #318, #323, #328, #330, #400, #401, by @dependabot)");
+            changes.Count.ShouldBe(2);
+            changes[ChangeType.Dependency].Count.ShouldBe(21);
+            changes[ChangeType.Dependency].Select(d => d.Text).ShouldContain("Bump flask 2.3.2 to 3.0.0 in /TestProjects/Python3.Flask (#265, #282, by @dependabot)");
+            changes[ChangeType.Dependency].Select(d => d.Text).ShouldContain("Bump NUnit 3.13.3 to 4.2.0 (#297, #317, #402, by @dependabot)");
+            changes[ChangeType.Dependency].Select(d => d.Text).ShouldContain("Bump WireMock.Net 1.5.28 to 1.6.1 (#240, #242, #250, #253, #258, #264, #279, #281, #286, #299, #314, #318, #323, #328, #330, #400, #401, by @dependabot)");
         }
 
         private static IReadOnlyCollection<PullRequest> Get()

@@ -23,8 +23,8 @@
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Services
 {
@@ -38,11 +38,11 @@ namespace Bake.Tests.UnitTests.Services
             ExecutableArchitecture expectedArch)
         {
             // Act
-            Sut.TryParse(str, out var targetPlatform).Should().BeTrue();
+            Sut.TryParse(str, out var targetPlatform).ShouldBeTrue();
 
             // Assert
-            targetPlatform!.Os.Should().Be(executableOs);
-            targetPlatform.Arch.Should().Be(expectedArch);
+            targetPlatform!.Os.ShouldBe(executableOs);
+            targetPlatform.Arch.ShouldBe(expectedArch);
         }
     }
 }

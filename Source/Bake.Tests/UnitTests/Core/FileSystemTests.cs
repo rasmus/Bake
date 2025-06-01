@@ -22,8 +22,8 @@
 
 using Bake.Core;
 using Bake.Tests.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.UnitTests.Core
 {
@@ -48,7 +48,7 @@ namespace Bake.Tests.UnitTests.Core
                 CancellationToken.None);
 
             // Assert
-            files.Should().HaveCount(3);
+            files.Count.ShouldBe(3);
         }
 
         private static async Task<Folder> CreateFolderStructureAsync(
