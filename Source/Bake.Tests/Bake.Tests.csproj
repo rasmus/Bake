@@ -22,7 +22,7 @@
     </PackageReference>
     <PackageReference Include="Shouldly" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-    <PackageReference Include="WireMock.Net" Version="1.10.1" />
+    <PackageReference Include="WireMock.Net" Version="1.11.1" />
   </ItemGroup>
 
   <ItemGroup>
