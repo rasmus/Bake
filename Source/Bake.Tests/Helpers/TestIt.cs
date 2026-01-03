@@ -31,13 +31,16 @@ namespace Bake.Tests.Helpers
 {
     public abstract class TestIt
     {
+        private CancellationTokenSource? _timeout;
         private List<string> _filesToDelete = null!;
 
         protected IFixture Fixture { get; private set; } = null!;
+        protected CancellationToken Timeout => _timeout!.Token;
 
         [SetUp]
         public void SetUpTestIt()
         {
+            _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             _filesToDelete = new List<string>();
 
             Fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
@@ -46,6 +49,9 @@ namespace Bake.Tests.Helpers
         [TearDown]
         public void TearDownTestIt()
         {
+            _timeout?.Dispose();
+            _timeout = null;
+
             foreach (var file in _filesToDelete)
             {
                 if (File.Exists(file))
@@ -96,7 +102,7 @@ namespace Bake.Tests.Helpers
             var resourceName = resourceNames.Single(n => n.EndsWith(fileEnding, StringComparison.OrdinalIgnoreCase));
             await using var stream = assembly.GetManifestResourceStream(resourceName);
             using var streamReader = new StreamReader(stream!);
-            return await streamReader.ReadToEndAsync();
+            return await streamReader.ReadToEndAsync(Timeout);
         }
 
         protected string Lines(
@@ -105,12 +111,17 @@ namespace Bake.Tests.Helpers
             return string.Join(Environment.NewLine, lines);
         }
 
+        protected void DeleteAfter(string filePath)
+        {
+            _filesToDelete.Add(filePath);
+        }
+
         protected async Task<string> WriteEmbeddedAsync(
             string fileEnding)
         {
             var content = await ReadEmbeddedAsync(fileEnding);
             var path = Path.GetTempFileName();
-            await System.IO.File.WriteAllTextAsync(path, content);
+            await File.WriteAllTextAsync(path, content, Timeout);
             _filesToDelete.Add(path);
             return path;
         }

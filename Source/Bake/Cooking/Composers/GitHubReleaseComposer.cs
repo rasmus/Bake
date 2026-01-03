@@ -33,17 +33,8 @@ namespace Bake.Cooking.Composers
     {
         private readonly IConventionInterpreter _conventionInterpreter;
 
-        public override IReadOnlyCollection<ArtifactType> Consumes { get; } = new[]
-            {
-                ArtifactType.NuGet,
-                ArtifactType.Executable,
-                ArtifactType.DocumentationSite,
-                ArtifactType.Container
-            };
-        public override IReadOnlyCollection<ArtifactType> Produces { get; } = new[]
-            {
-                ArtifactType.Release,
-            };
+        public override IReadOnlyCollection<ArtifactType> Consumes { get; } = [ArtifactType.Release];
+        public override IReadOnlyCollection<ArtifactType> Produces { get; } = [ArtifactType.GitHubRelease];
 
         public GitHubReleaseComposer(
             IConventionInterpreter conventionInterpreter)
@@ -69,32 +60,25 @@ namespace Bake.Cooking.Composers
             var gitHubDestination = context.Ingredients.Destinations
                 .OfType<GitHubReleaseDestination>()
                 .SingleOrDefault();
-
             if (gitHubDestination == null)
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
-            var artifacts = Enumerable.Empty<Artifact>()
-                .Concat(context.GetArtifacts<ExecutableArtifact>())
-                .Concat(context.GetArtifacts<DocumentationSiteArtifact>())
-                .Concat(context.GetArtifacts<ContainerArtifact>())
-                .ToArray();
-
-            if (!artifacts.Any())
+            var release = context.GetArtifacts<ReleaseArtifact>().SingleOrDefault();
+            if (release == null)
             {
                 return Task.FromResult(EmptyRecipes);
             }
 
-            return Task.FromResult<IReadOnlyCollection<Recipe>>(new[]
-                {
-                    new GitHubReleaseRecipe(
-                        context.Ingredients.GitHub,
-                        context.Ingredients.Version,
-                        context.Ingredients.Git.Sha,
-                        context.Ingredients.ReleaseNotes!,
-                        artifacts)
-                });
+            return Task.FromResult<IReadOnlyCollection<Recipe>>(
+            [
+                new GitHubReleaseRecipe(
+                    release.Text,
+                    context.Ingredients.GitHub,
+                    context.Ingredients.Git.Sha,
+                    release.Files)
+            ]);
         }
     }
 }

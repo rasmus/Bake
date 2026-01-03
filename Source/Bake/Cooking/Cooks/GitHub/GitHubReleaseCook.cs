@@ -20,15 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Concurrent;
-using System.IO.Compression;
-using System.Text;
 using Bake.Core;
 using Bake.Services;
 using Bake.ValueObjects;
-using Bake.ValueObjects.Artifacts;
 using Bake.ValueObjects.Recipes.GitHub;
-using Microsoft.Extensions.Logging;
 
 // ReSharper disable StringLiteralTypo
 
@@ -36,28 +31,13 @@ namespace Bake.Cooking.Cooks.GitHub
 {
     public class GitHubReleaseCook : Cook<GitHubReleaseRecipe>
     {
-        private static readonly IReadOnlyDictionary<ExecutableOperatingSystem, string> NamingOs = new ConcurrentDictionary<ExecutableOperatingSystem, string>
-            {
-                [ExecutableOperatingSystem.Linux] = "linux",
-                [ExecutableOperatingSystem.MacOSX] = "macosx",
-                [ExecutableOperatingSystem.Windows] = "windows"
-            };
-        private static readonly IReadOnlyDictionary<ExecutableArchitecture, string> NamingArch = new ConcurrentDictionary<ExecutableArchitecture, string>
-            {
-                [ExecutableArchitecture.Intel32] = "x86",
-                [ExecutableArchitecture.Intel64] = "x86_64",
-            };
-
-        private readonly ILogger<GitHubReleaseCook> _logger;
         private readonly IGitHub _gitHub;
         private readonly IFileSystem _fileSystem;
 
         public GitHubReleaseCook(
-            ILogger<GitHubReleaseCook> logger,
             IGitHub gitHub,
             IFileSystem fileSystem)
         {
-            _logger = logger;
             _gitHub = gitHub;
             _fileSystem = fileSystem;
         }
@@ -67,155 +47,24 @@ namespace Bake.Cooking.Cooks.GitHub
             GitHubReleaseRecipe recipe,
             CancellationToken cancellationToken)
         {
-            var additionalFiles = new[]
-                {
-                    Path.Combine(context.Ingredients.WorkingDirectory, "README.md"),
-                    Path.Combine(context.Ingredients.WorkingDirectory, "LICENSE"),
-                    Path.Combine(context.Ingredients.WorkingDirectory, "RELEASE_NOTES.md"),
-                }
-                .Where(System.IO.File.Exists)
-                .Select(p => _fileSystem.Open(p))
+            var releaseFiles = recipe.Files
+                .Select(f => new GitHubReleaseFile(
+                    _fileSystem.Get(f),
+                    Path.GetFileName(f)))
                 .ToArray();
 
-            var stringBuilder = new StringBuilder();
-
-            if (recipe.ReleaseNotes != null)
-            {
-                stringBuilder
-                    .AppendLine("### Release notes")
-                    .AppendLine(recipe.ReleaseNotes.Notes)
-                    .AppendLine();
-            }
-
-            if (context.Ingredients.Changelog != null && context.Ingredients.Changelog.Changes.Any())
-            {
-                foreach (var a in new[]
-                     {
-                         new {changeType = ChangeType.Other, title = "Changes"},
-                         new {changeType = ChangeType.Dependency, title = "Updated dependencies"},
-                     })
-                {
-                    stringBuilder
-                        .AppendLine($"#### {a.title}")
-                        .AppendLine();
-
-                    foreach (var change in context.Ingredients.Changelog.Changes[a.changeType])
-                    {
-                        stringBuilder.AppendLine($"* {change.Text}");
-                    }
-
-                    stringBuilder.AppendLine();
-                }
-
-                stringBuilder.AppendLine();
-
-                if (context.Ingredients.GitHub != null)
-                {
-                    stringBuilder.AppendLine(
-                        $"Full Changelog: {context.Ingredients.GitHub.Url.AbsoluteUri.TrimEnd('/')}/compare/{context.Ingredients.Changelog.PreviousReleaseTag.Sha}...{context.Ingredients.Git!.Sha}");
-                }
-            }
-
-            var releaseFiles = (await CreateReleaseFilesAsync(additionalFiles, recipe, cancellationToken)).ToList();
-
-            var documentationSite = recipe.Artifacts
-                .OfType<DocumentationSiteArtifact>()
-                .FirstOrDefault();
-            if (documentationSite != null)
-            {
-                _logger.LogInformation("Documentation site built, packing it into a release file");
-                var documentationZipFilePath = Path.Combine(
-                    Path.GetTempPath(),
-                    Guid.NewGuid().ToString("N"),
-                    "documentation.zip");
-                Directory.CreateDirectory(Path.GetDirectoryName(documentationZipFilePath)!);
-                ZipFile.CreateFromDirectory(documentationSite.Path, documentationZipFilePath);
-                var file = _fileSystem.Open(documentationZipFilePath);
-                releaseFiles.Add(new ReleaseFile(
-                    file,
-                    $"documentation_v{context.Ingredients.Version}.zip",
-                    await file.GetHashAsync(HashAlgorithm.SHA256, cancellationToken)));
-            }
-
-            var containerArtifacts = recipe.Artifacts
-                .OfType<ContainerArtifact>()
-                .ToArray();
-            if (containerArtifacts.Any())
-            {
-                stringBuilder.AppendLine("### Containers");
-                foreach (var containerArtifact in containerArtifacts)
-                {
-                    stringBuilder.AppendLine($"* `{containerArtifact.Name}`");
-                    foreach (var tag in containerArtifact.Tags)
-                    {
-                        stringBuilder.AppendLine($"  * `{tag}`");
-                    }
-                }
-            }
-
-            if (releaseFiles.Any())
-            {
-                stringBuilder.AppendLine("### Files");
-                foreach (var releaseFile in releaseFiles)
-                {
-                    stringBuilder.AppendLine($"* `{releaseFile.Destination}`");
-                    stringBuilder.AppendLine($"  * SHA256: `{releaseFile.Sha256}`");
-                }
-            }
-
-            var release = new Release(
-                recipe.Version,
+            var gitHubRelease = new GitHubRelease(
+                context.Ingredients.Version,
                 recipe.Sha,
-                stringBuilder.ToString(),
+                recipe.Text,
                 releaseFiles);
 
             await _gitHub.CreateReleaseAsync(
-                release,
+                gitHubRelease,
                 recipe.GitHubInformation,
                 cancellationToken);
 
             return true;
-        }
-
-        private async Task<IReadOnlyCollection<ReleaseFile>> CreateReleaseFilesAsync(
-            IReadOnlyCollection<IFile> additionalFiles,
-            GitHubReleaseRecipe recipe,
-            CancellationToken cancellationToken)
-        {
-            return await Task.WhenAll(recipe.Artifacts
-                .OfType<ExecutableArtifact>()
-                .Select(async artifact =>
-                {
-                    var file = _fileSystem.Open(artifact.Path);
-                    var fileName = CalculateArtifactFileName(artifact);
-                    var compressedFile = await _fileSystem.CompressAsync(
-                        fileName,
-                        CompressionAlgorithm.ZIP,
-                        Enumerable.Empty<IFile>()
-                            .Concat(additionalFiles)
-                            .Concat(new[] {file,})
-                            .ToArray(),
-                        cancellationToken);
-                    var sha256 = await compressedFile.GetHashAsync(
-                        HashAlgorithm.SHA256,
-                        cancellationToken);
-                    return new ReleaseFile(
-                        compressedFile,
-                        fileName,
-                        sha256);
-                }));
-        }
-
-        private static string CalculateArtifactFileName(ExecutableArtifact artifact)
-        {
-            var parts = new[]
-                {
-                    artifact.Name,
-                    NamingOs[artifact.Platform.Os],
-                    NamingArch[artifact.Platform.Arch]
-                };
-
-            return $"{string.Join("_", parts)}.zip";
         }
     }
 }

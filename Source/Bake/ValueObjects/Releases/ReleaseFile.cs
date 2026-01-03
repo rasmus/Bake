@@ -20,44 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using YamlDotNet.Serialization;
 
-namespace Bake.Core
+namespace Bake.ValueObjects.Releases
 {
-    public interface IFileSystem
+    public class ReleaseFile
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Name { get; [Obsolete] set; } = null!;
 
-        IFile OpenTempFile();
+        [YamlMember]
+        public string[] Sources { get; [Obsolete] set; } = null!;
 
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Destination { get; [Obsolete] set; } = null!;
 
-        IFile Get(string filePath);
+        [Obsolete]
+        public ReleaseFile() { }
 
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
-
-        bool FileExists(string filePath);
-
-        Task CopyFileAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
-
-        Task CopyDirectoryAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
+        public ReleaseFile(
+            string name,
+            string[] sources,
+            string destination)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Name = name;
+            Sources = sources;
+            Destination = destination;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
     }
 }

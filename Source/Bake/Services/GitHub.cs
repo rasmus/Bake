@@ -30,7 +30,6 @@ using Octokit;
 using Author = Bake.ValueObjects.Author;
 using Commit = Bake.ValueObjects.Commit;
 using PullRequest = Bake.ValueObjects.PullRequest;
-using Release = Bake.ValueObjects.Release;
 
 namespace Bake.Services
 {
@@ -57,7 +56,7 @@ namespace Bake.Services
         }
 
         public async Task CreateReleaseAsync(
-            Release release,
+            GitHubRelease gitHubRelease,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken)
         {
@@ -68,33 +67,33 @@ namespace Bake.Services
                     "Could not create a GitHub release due to missing credentials");
             }
 
-            var tag = $"v{release.Version}";
+            var tag = $"v{gitHubRelease.Version}";
 
-            var gitHubRelease = await gitHubClient.Repository.Release.Create(
+            var octoKitRelease = await gitHubClient.Repository.Release.Create(
                 gitHubInformation.Owner,
                 gitHubInformation.Repository,
                 new NewRelease(tag)
                 {
-                    Prerelease = release.Version.IsPrerelease,
-                    TargetCommitish = release.Sha,
-                    Body = release.Body,
+                    Prerelease = gitHubRelease.Version.IsPrerelease,
+                    TargetCommitish = gitHubRelease.Sha,
+                    Body = gitHubRelease.Body,
                     Draft = true,
-                    Name = $"v{release.Version}",
+                    Name = $"v{gitHubRelease.Version}",
                 });
 
-            if (release.Files.Count != 0)
+            if (gitHubRelease.Files.Count != 0)
             {
-                var uploadTasks = release.Files
-                    .Select(f => UploadFileAsync(f, gitHubRelease, gitHubClient, cancellationToken));
+                var uploadTasks = gitHubRelease.Files
+                    .Select(f => UploadFileAsync(f, octoKitRelease, gitHubClient, cancellationToken));
                 await Task.WhenAll(uploadTasks);
             }
 
-            var gitHubReleaseUpdate = gitHubRelease.ToUpdate();
+            var gitHubReleaseUpdate = octoKitRelease.ToUpdate();
             gitHubReleaseUpdate.Draft = false;
             await gitHubClient.Repository.Release.Edit(
                 gitHubInformation.Owner,
                 gitHubInformation.Repository,
-                gitHubRelease.Id,
+                octoKitRelease.Id,
                 gitHubReleaseUpdate);
         }
 
@@ -316,18 +315,18 @@ namespace Bake.Services
         }
 
         private async Task UploadFileAsync(
-            ReleaseFile releaseFile,
-            Octokit.Release gitHubRelease,
+            GitHubReleaseFile gitHubReleaseFile,
+            Release gitHubRelease,
             IGitHubClient gitHubClient,
             CancellationToken cancellationToken)
         {
             var stopwatch = Stopwatch.StartNew();
             _logger.LogDebug(
                 "Uploading releaseFile {FileName} to GitHub release {ReleaseUrl}",
-                releaseFile.Source.FileName,
+                gitHubReleaseFile.Source.FileName,
                 gitHubRelease.Url);
 
-            await using var stream = await releaseFile.Source.OpenReadAsync(cancellationToken);
+            await using var stream = await gitHubReleaseFile.Source.OpenReadAsync(cancellationToken);
 
             try
             {
@@ -336,7 +335,7 @@ namespace Bake.Services
                     new ReleaseAssetUpload
                     {
                         ContentType = "application/octet-stream",
-                        FileName = releaseFile.Destination,
+                        FileName = gitHubReleaseFile.ReleaseFileName,
                         RawData = stream,
                     },
                     cancellationToken);
@@ -349,7 +348,7 @@ namespace Bake.Services
 
             _logger.LogInformation(
                 "Done uploading releaseFile {FileName} to GitHub release {ReleaseUrl} after {TotalSeconds} seconds",
-                releaseFile.Source.FileName,
+                gitHubReleaseFile.Source.FileName,
                 gitHubRelease.Url,
                 stopwatch.Elapsed.TotalSeconds);
         }

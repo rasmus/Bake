@@ -20,44 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using Bake.Core;
 
-namespace Bake.Core
+namespace Bake.ValueObjects;
+
+public class GitHubReleaseFile
 {
-    public interface IFileSystem
+    public IFile Source { get; }
+    public string ReleaseFileName { get; }
+
+    public GitHubReleaseFile(
+        IFile source,
+        string releaseFileName)
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
-
-        IFile OpenTempFile();
-
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken cancellationToken);
-
-        IFile Get(string filePath);
-
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
-
-        bool FileExists(string filePath);
-
-        Task CopyFileAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
-
-        Task CopyDirectoryAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
+        Source = source;
+        ReleaseFileName = releaseFileName;
     }
 }

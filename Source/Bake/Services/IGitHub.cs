@@ -27,7 +27,7 @@ namespace Bake.Services
     public interface IGitHub
     {
         Task CreateReleaseAsync(
-            Release release,
+            GitHubRelease gitHubRelease,
             GitHubInformation gitHubInformation,
             CancellationToken cancellationToken);
 

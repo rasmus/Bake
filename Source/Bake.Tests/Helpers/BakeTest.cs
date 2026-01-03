@@ -33,11 +33,8 @@ namespace Bake.Tests.Helpers
 {
     public abstract class BakeTest : TestProject
     {
-        private CancellationTokenSource? _timeout;
-
-        private List<Release> _releases = null!;
-        protected IReadOnlyCollection<Release> Releases => _releases;
-        protected CancellationToken Timeout => _timeout!.Token;
+        private List<GitHubRelease> _releases = null!;
+        protected IReadOnlyCollection<GitHubRelease> Releases => _releases;
 
         protected BakeTest(string projectName) : base(projectName)
         {
@@ -46,15 +43,7 @@ namespace Bake.Tests.Helpers
         [SetUp]
         public void SetUpBakeTest()
         {
-            _timeout = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-            _releases = new List<Release>();
-        }
-
-        [TearDown]
-        public void TearDownBakeTest()
-        {
-            _timeout?.Dispose();
-            _timeout = null;
+            _releases = new List<GitHubRelease>();
         }
 
         protected Task<int> ExecuteAsync(
@@ -107,20 +96,20 @@ namespace Bake.Tests.Helpers
 
         private class TestGitHub : IGitHub
         {
-            private readonly List<Release> _releases;
+            private readonly List<GitHubRelease> _releases;
 
             public TestGitHub(
-                List<Release> releases)
+                List<GitHubRelease> releases)
             {
                 _releases = releases;
             }
 
             public Task CreateReleaseAsync(
-                Release release, 
+                GitHubRelease gitHubRelease, 
                 GitHubInformation gitHubInformation,
                 CancellationToken cancellationToken)
             {
-                _releases.Add(release);
+                _releases.Add(gitHubRelease);
                 return Task.CompletedTask;
             }
 

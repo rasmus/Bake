@@ -20,44 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using YamlDotNet.Serialization;
 
-namespace Bake.Core
+namespace Bake.ValueObjects.Artifacts
 {
-    public interface IFileSystem
+    [Artifact(Names.Artifacts.ReleaseArtifact)]
+    public class ReleaseArtifact : Artifact
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
+        [YamlMember]
+        public string Text { get; [Obsolete] set; } = null!;
 
-        IFile OpenTempFile();
+        [YamlMember]
+        public string[] Files { get; [Obsolete] set; } = null!;
 
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken cancellationToken);
+        [Obsolete]
+        public ReleaseArtifact() { }
 
-        IFile Get(string filePath);
+        public ReleaseArtifact(
+            string text,
+            string[] files)
+        {
+#pragma warning disable CS0612 // Type or member is obsolete
+            Text = text;
+            Files = files;
+#pragma warning restore CS0612 // Type or member is obsolete
+        }
 
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
+        public override IAsyncEnumerable<string> ValidateAsync(CancellationToken cancellationToken)
+        {
+            var missingFiles = Files
+                .Where(file => !File.Exists(file))
+                .Select(f => $"File '{f}' is missing!")
+                .ToArray();
 
-        bool FileExists(string filePath);
+            return missingFiles.ToAsyncEnumerable();
+        }
 
-        Task CopyFileAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
-
-        Task CopyDirectoryAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
+        public override IEnumerable<string> PrettyNames()
+        {
+            return Files;
+        }
     }
 }

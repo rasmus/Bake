@@ -67,7 +67,7 @@ namespace Bake.Services
             Uri url,
             CancellationToken cancellationToken)
         {
-            var file = _fileSystem.Open(filePath);
+            var file = _fileSystem.Get(filePath);
             var fileName = Path.GetFileName(filePath);
             var fileExtension = Path.GetExtension(filePath).Trim('.');
             var mediaType = MediaTypes.TryGetValue(fileExtension, out var t) ? t : DefaultMediaType;

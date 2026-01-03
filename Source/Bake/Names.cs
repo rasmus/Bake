@@ -60,6 +60,7 @@ namespace Bake
             public const string DirectoryArtifact = "directory-artifact";
             public const string DocumentationSiteArtifact = "documentation-site-artifact";
             public const string HelmChartArtifact = "helm-chart-artifact";
+            public const string ReleaseArtifact = "release-artifact";
 
             public static readonly IReadOnlyDictionary<string, string> PluralNames = new ConcurrentDictionary<string, string>
             {
@@ -70,6 +71,7 @@ namespace Bake
                 [NuGetArtifact] = "nuget packages",
                 [DocumentationSiteArtifact] = "documentation sites",
                 [HelmChartArtifact] = "helm charts",
+                [ReleaseArtifact] = "released files",
             };
         }
 
@@ -90,7 +92,7 @@ namespace Bake
                     [ArtifactType.Dockerfile] = Dockerfile,
                     [ArtifactType.DotNetPublishedDirectory] = DotNetPublishedDirectory,
                     [ArtifactType.NuGet] = NuGet,
-                    [ArtifactType.Release] = Release,
+                    [ArtifactType.GitHubRelease] = Release,
                     [ArtifactType.Executable] = Executable,
                     [ArtifactType.DocumentationSite] = DocumentationSite,
                 };
@@ -134,7 +136,7 @@ namespace Bake
 
             public static class GitHub
             {
-                public const string Release = "github-release";
+                public const string GitHubRelease = "github-release";
             }
 
             public static class Helm
@@ -142,6 +144,11 @@ namespace Bake
                 public const string Lint = "helm-lint";
                 public const string Package = "helm-package";
                 public const string DependenciesUpdate = "helm-dependencies-update";
+            }
+
+            public static class Releases
+            {
+                public const string Release = "release";
             }
 
             public static class MkDocs

@@ -20,25 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using Bake.Core;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Releases;
+using YamlDotNet.Serialization;
 
-namespace Bake.ValueObjects
+namespace Bake.ValueObjects.Recipes.Release
 {
-    public class Release : Tag
+    [Recipe(Names.Recipes.Releases.Release)]
+    public class ReleaseRecipe : Recipe
     {
-        public string Body { get; }
-        public IReadOnlyCollection<ReleaseFile> Files { get; }
+        [YamlMember]
+        public string Text { get; [Obsolete] set; } = null!;
 
-        public Release(
-            SemVer version,
-            string sha,
-            string body,
-            IReadOnlyCollection<ReleaseFile> files)
-            : base(version, sha)
+        [YamlMember]
+        public ReleaseFile[] Files { get; [Obsolete] set; } = null!;
+
+        [Obsolete]
+        public ReleaseRecipe() { }
+
+        public ReleaseRecipe(
+            string text,
+            ReleaseFile[] files,
+            params Artifact[] artifacts)
+            : base(artifacts)
         {
-            Body = body;
+#pragma warning disable CS0612 // Type or member is obsolete
+            Text = text;
             Files = files;
+            Artifacts = artifacts;
+#pragma warning restore CS0612 // Type or member is obsolete
         }
     }
 }

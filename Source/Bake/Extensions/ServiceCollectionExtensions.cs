@@ -38,6 +38,7 @@ using Bake.Cooking.Cooks.NodeJS;
 using Bake.Cooking.Cooks.OctopusDeploy;
 using Bake.Cooking.Cooks.Pip;
 using Bake.Cooking.Cooks.Python;
+using Bake.Cooking.Cooks.Release;
 using Bake.Cooking.Ingredients.Gathers;
 using Bake.Core;
 using Bake.Services;
@@ -112,6 +113,7 @@ namespace Bake.Extensions
                 .AddTransient<IComposer, PythonFlaskComposer>()
                 .AddTransient<IComposer, NodeJsComposer>()
                 .AddTransient<IComposer, ChartMuseumComposer>()
+                .AddTransient<IComposer, ReleaseComposer>()
 
                 // Cooks - .NET
                 .AddTransient<ICook, DotNetCleanCook>()
@@ -141,6 +143,8 @@ namespace Bake.Extensions
                 .AddTransient<ICook, HelmPackageCook>()
                 // Cooks - GitHub
                 .AddTransient<ICook, GitHubReleaseCook>()
+                // Cooks - Releases
+                .AddTransient<ICook, ReleaseCook>()
                 // NodeJS / NPM
                 .AddTransient<ICook, NpmCICook>()
                 .AddTransient<ICook, NodeJSDockerfileCook>()

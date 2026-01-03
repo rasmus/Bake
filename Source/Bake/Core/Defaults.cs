@@ -43,6 +43,7 @@ namespace Bake.Core
         public string DotNetRollForward { get; private set; } = "LatestMajor";
         public TimeSpan BakeIngredientsGatherTimeout { get; private set; } = TimeSpan.FromMinutes(5);
         public TimeSpan BakeComposeTimeout { get; private set; } = TimeSpan.FromMinutes(5);
+        public string BakeReleaseOutputDirectory { get; private set; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "bake-release");
 
         public Defaults(
             IEnvironmentVariables environmentVariables)
@@ -70,6 +71,7 @@ namespace Bake.Core
             DotNetRollForward = GetString(e, "dotnet_roll_forward", DotNetRollForward);
             BakeIngredientsGatherTimeout = TimeSpan.FromSeconds(GetDouble(e, "bake_ingredients_gather_timeout_seconds", BakeIngredientsGatherTimeout.TotalSeconds));
             BakeComposeTimeout = TimeSpan.FromSeconds(GetDouble(e, "bake_compose_timeout_seconds", BakeComposeTimeout.TotalSeconds));
+            BakeReleaseOutputDirectory = GetString(e, "bake_release_output_directory", BakeReleaseOutputDirectory);
         }
 
         private static bool GetBool(

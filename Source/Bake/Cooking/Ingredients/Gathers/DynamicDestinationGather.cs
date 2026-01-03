@@ -77,7 +77,7 @@ namespace Bake.Cooking.Ingredients.Gathers
                         await ExtractContainerDestinationAsync(ingredients, dynamicDestination);
                         break;
 
-                    case ArtifactType.Release:
+                    case ArtifactType.GitHubRelease:
                         await ExtractReleaseDestinationAsync(ingredients, dynamicDestination);
                         break;
 

@@ -86,7 +86,7 @@ namespace Bake.Cooking.Cooks.OctopusDeploy
             CancellationToken cancellationToken)
         {
             url = new Uri(url, "/api/packages/raw?replace=false");
-            var file = _fileSystem.Open(packagePath);
+            var file = _fileSystem.Get(packagePath);
             await using var stream = await file.OpenReadAsync(cancellationToken);
             using var request = new HttpRequestMessage(HttpMethod.Post, url)
                 {

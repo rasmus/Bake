@@ -42,7 +42,7 @@ namespace Bake.Tests.UnitTests.Services
             var composers = new[]
                 {
                     DummyProducer("E", ArtifactType.Executable),
-                    Dummy("R", ArtifactType.Executable, ArtifactType.Release),
+                    Dummy("R", ArtifactType.Executable, ArtifactType.GitHubRelease),
                     DummyProducer("E", ArtifactType.Executable),
                 };
 
@@ -94,12 +94,12 @@ namespace Bake.Tests.UnitTests.Services
         
         private static IComposer Dummy(string name, ArtifactType consume, ArtifactType produce) => new DummyComposer(
             name,
-            new[] { consume },
-            new[] { produce });
+            [consume],
+            [produce]);
 
         private class DummyComposer : IComposer
         {
-            private static readonly Task<IReadOnlyCollection<Recipe>> EmptyRecipes = Task.FromResult<IReadOnlyCollection<Recipe>>(new Recipe[] { });
+            private static readonly Task<IReadOnlyCollection<Recipe>> EmptyRecipes = Task.FromResult<IReadOnlyCollection<Recipe>>([]);
 
             public string Name { get; }
             public IReadOnlyCollection<ArtifactType> Produces { get; }

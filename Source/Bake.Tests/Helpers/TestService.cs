@@ -20,44 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Bake.ValueObjects;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Bake.Core
+namespace Bake.Tests.Helpers
 {
-    public interface IFileSystem
+    public abstract class TestService<T> : TestFor<T>
+        where T : class
     {
-        Task<IReadOnlyCollection<string>> FindFilesAsync(
-            string directoryPath,
-            string searchPattern,
-            CancellationToken cancellationToken);
+        protected override T CreateSut()
+        {
+            return ServiceProvider.GetRequiredService<T>();
+        }
 
-        IFile OpenTempFile();
-
-        Task<string> ReadAllTextAsync(
-            string filePath,
-            CancellationToken cancellationToken);
-
-        IFile Get(string filePath);
-
-        Task<IFile> CompressAsync(
-            string fileName,
-            CompressionAlgorithm algorithm,
-            IReadOnlyCollection<IFile> files,
-            CancellationToken cancellationToken);
-
-        bool FileExists(string filePath);
-
-        Task CopyFileAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
-
-        Task CopyDirectoryAsync(
-            string sourcePath,
-            string destinationPath,
-            CancellationToken cancellationToken);
+        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
+        {
+            return base.Configure(serviceCollection)
+                .AddTransient<T>();
+        }
     }
 }

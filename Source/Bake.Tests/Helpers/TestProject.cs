@@ -46,7 +46,7 @@ namespace Bake.Tests.Helpers
         }
 
         [SetUp]
-        public void SetUpTestProject()
+        public async Task SetUpTestProject()
         {
             _folder = Folder.New;
 
@@ -54,12 +54,19 @@ namespace Bake.Tests.Helpers
             {
                 Sha = GitHelper.Create(_folder.Path);
 
+                var destination = Path.Join(_folder.Path, ProjectName);
+
                 DirectoryCopy(
                     Path.Combine(
                         ProjectHelper.GetRoot(),
                         "TestProjects",
                         ProjectName),
-                    Path.Join(_folder.Path, ProjectName));
+                    destination);
+
+                var nugetConfig = await ReadEmbeddedAsync("nuget-config.xml");
+                await System.IO.File.WriteAllTextAsync(
+                    Path.Combine(destination, "nuget.config"),
+                    nugetConfig);
             }
 
             _previousCurrentDirectory = Directory.GetCurrentDirectory();

@@ -20,17 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 using HashAlgorithm = Bake.ValueObjects.HashAlgorithm;
 
 namespace Bake.Core
 {
     public class File : IFile
     {
+        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> CachedHashes = new();
+
         public string Path { get; }
         public string FileName => System.IO.Path.GetFileName(Path);
         public long Size => new FileInfo(Path).Length;
@@ -72,16 +71,24 @@ namespace Bake.Core
                 throw new ArgumentOutOfRangeException(nameof(hashAlgorithm));
             }
 
-            await using var stream = await OpenReadAsync(cancellationToken);
+            return await CachedHashes.GetOrAdd(
+                $"{hashAlgorithm}:{Path}",
+                _ => new Lazy<Task<string>>(
+                    async () =>
+                    {
+                        await using var stream = await OpenReadAsync(cancellationToken);
 
-            using var sha256 = SHA256.Create();
-            var checksum = await sha256.ComputeHashAsync(stream, cancellationToken);
-            return BitConverter.ToString(checksum).Replace("-", string.Empty);
+                        using var sha256 = SHA256.Create();
+                        var checksum = await sha256.ComputeHashAsync(stream, cancellationToken);
+                        return BitConverter.ToString(checksum).Replace("-", string.Empty);
+                    },
+                    LazyThreadSafetyMode.ExecutionAndPublication)).Value;
         }
 
         public void Dispose()
         {
             System.IO.File.Delete(Path);
+            GC.SuppressFinalize(this);
         }
     }
 }
