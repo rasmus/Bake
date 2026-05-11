@@ -1,3 +1,9 @@
+# 0.39
+
+* Fix: Exit codes above 255 were silently truncated to zero, causing failed builds
+  to report success
+* Fix: `apply` command now returns the correct `CookingFailed` exit code on failure
+
 # 0.38
 
 * Fix: Project `IncludeSymbols` should be respected if set

@@ -10,6 +10,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) Rasmus Mikkelsen 2021-2025</Copyright>
+    <NoWarn>1701;1702;1705;1591;NU1901</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
