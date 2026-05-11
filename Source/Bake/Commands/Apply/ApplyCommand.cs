@@ -92,7 +92,7 @@ namespace Bake.Commands.Apply
                 book,
                 cancellationToken);
 
-            return success ? 0 : -1;
+            return success ? 0 : ExitCodes.Core.CookingFailed;
         }
     }
 }
