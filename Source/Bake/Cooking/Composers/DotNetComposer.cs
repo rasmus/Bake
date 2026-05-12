@@ -30,6 +30,7 @@ using Bake.ValueObjects.Recipes;
 using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Xml.Linq;
 
 // ReSharper disable StringLiteralTypo
 
@@ -92,19 +93,33 @@ namespace Bake.Cooking.Composers
             IContext context,
             CancellationToken cancellationToken)
         {
-            var solutionFilesTask = _fileSystem.FindFilesAsync(
+            var slnxFiles = await _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
-                "*.sln",
-                cancellationToken);
-            var projectFilesTask = _fileSystem.FindFilesAsync(
-                context.Ingredients.WorkingDirectory,
-                "*.csproj",
+                "*.slnx",
                 cancellationToken);
 
-            await Task.WhenAll(solutionFilesTask, projectFilesTask);
+            IReadOnlyCollection<VisualStudioSolution> visualStudioSolutions;
 
-            var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
-                .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
+            if (slnxFiles.Any())
+            {
+                visualStudioSolutions = await Task.WhenAll(slnxFiles
+                    .Select(p => LoadVisualStudioSolutionFromSlnxAsync(p, cancellationToken)));
+            }
+            else
+            {
+                var solutionFilesTask = _fileSystem.FindFilesAsync(
+                    context.Ingredients.WorkingDirectory,
+                    "*.sln",
+                    cancellationToken);
+                var projectFilesTask = _fileSystem.FindFilesAsync(
+                    context.Ingredients.WorkingDirectory,
+                    "*.csproj",
+                    cancellationToken);
+                await Task.WhenAll(solutionFilesTask, projectFilesTask);
+
+                visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
+                    .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
+            }
 
             var labels = await _dockerLabels.FromIngredientsAsync(
                 context.Ingredients,
@@ -132,6 +147,27 @@ namespace Bake.Cooking.Composers
             return new VisualStudioSolution(
                 solutionPath,
                 projectFilesInSolution);
+        }
+
+        private async Task<VisualStudioSolution> LoadVisualStudioSolutionFromSlnxAsync(
+            string slnxPath,
+            CancellationToken cancellationToken)
+        {
+            var content = await System.IO.File.ReadAllTextAsync(slnxPath, cancellationToken);
+            var document = XDocument.Parse(content);
+            var solutionDirectory = Path.GetDirectoryName(slnxPath)!;
+
+            var projectPaths = document.Descendants("Project")
+                .Select(e => e.Attribute("Path")?.Value)
+                .Where(p => !string.IsNullOrEmpty(p))
+                .Select(p => Path.GetFullPath(Path.Combine(solutionDirectory, p!)))
+                .Where(p => p.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var projects = await Task.WhenAll(projectPaths
+                .Select(p => LoadVisualStudioProjectAsync(p, cancellationToken)));
+
+            return new VisualStudioSolution(slnxPath, projects);
         }
 
         private async Task<VisualStudioProject> LoadVisualStudioProjectAsync(
