@@ -1,3 +1,7 @@
+# 0.40
+
+* _Nothing yet_
+
 # 0.39
 
 * Fix: Exit codes above 255 were silently truncated to zero, causing failed builds
