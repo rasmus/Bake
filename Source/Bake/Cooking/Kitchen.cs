@@ -124,16 +124,29 @@ namespace Bake.Cooking
 
         private static void PrintTimings(List<CookResult> cookResults)
         {
-            var totalSeconds = cookResults.Sum(r => r.Time.TotalSeconds);
-            foreach (var cookResult in cookResults)
+            var groupedCookResults = cookResults
+                .GroupBy(r => r.Name)
+                .Select(g => new
+                {
+                    Name = g.Key,
+                    Count = g.Count(),
+                    Time = TimeSpan.FromSeconds(g.Sum(r => r.Time.TotalSeconds)),
+                    Success = g.All(r => r.Success),
+                });
+
+            var totalSeconds = groupedCookResults.Sum(r => r.Time.TotalSeconds);
+            foreach (var cookResult in groupedCookResults)
             {
                 var status = cookResult.Success
                     ? "success"
                     : "failed";
                 var percent = cookResult.Time.TotalSeconds / totalSeconds;
+                var name = cookResult.Count > 1
+                    ? $"{cookResult.Name} x{cookResult.Count}"
+                    : cookResult.Name;
                 var barWidth = (int) Math.Round(percent * BarWidth, MidpointRounding.AwayFromZero);
                 Console.WriteLine(
-                    $"[{new string('#', barWidth),BarWidth}] {percent * 100.0,5:0.0}%  {cookResult.Name,-32} {status,7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
+                    $"[{new string('#', barWidth),BarWidth}] {percent * 100.0,5:0.0}%  {name,-32} {status,7} {cookResult.Time.TotalSeconds,6:0.##} seconds");
             }
 
             Console.WriteLine($"total {totalSeconds:0.##} seconds");
