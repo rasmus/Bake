@@ -53,7 +53,7 @@ jobs:
         python-version: '3.x'
     - uses: actions/setup-node@v4
       with:
-        node-version: 16
+        node-version: 24
 
     - name: Create a CLI version of Bake to use
       run: dotnet publish -o bake-it Source/Bake
