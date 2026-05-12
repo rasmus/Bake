@@ -29,6 +29,7 @@ using Bake.Tests.Helpers;
 using Bake.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Bake.Tests.IntegrationTests.ServiceTests
 {
@@ -48,12 +49,54 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
 
             // Act
             var recipesTask = Sut.ComposeAsync(
-                Context.New(ingredients), 
+                Context.New(ingredients),
                 CancellationToken.None);
             ingredients.FailOutstanding();
 
             // Arrange
             var _ = await recipesTask;
+        }
+
+        protected override IServiceCollection Configure(IServiceCollection serviceCollection)
+        {
+            return base.Configure(serviceCollection)
+                .AddTransient<ICsProjParser, CsProjParser>()
+                .AddTransient<IFileSystem, FileSystem>()
+                .AddTransient<ICredentials, Credentials>()
+                .AddTransient<IDefaults, Defaults>()
+                .AddTransient<IDescriptionLimiter, DescriptionLimiter>()
+                .AddSingleton(TestEnvironmentVariables.None)
+                .AddTransient<IConventionInterpreter, ConventionInterpreter>()
+                .AddTransient<IDotNetTfmParser, DotNetTfmParser>()
+                .AddTransient<IDockerLabels, DockerLabels>()
+                .AddTransient<IBakeProjectParser, BakeProjectParser>()
+                .AddTransient<IYaml, Yaml>();
+        }
+    }
+
+    public class DotNetComposerSlnxServiceTests : ServiceTest<DotNetComposer>
+    {
+        public DotNetComposerSlnxServiceTests() : base("NetCore.SlnX")
+        {
+        }
+
+        [Test]
+        public async Task TestIt()
+        {
+            // Arrange
+            var ingredients = Ingredients.New(
+                SemVer.With(1, 2, 3),
+                WorkingDirectory);
+
+            // Act
+            var recipesTask = Sut.ComposeAsync(
+                Context.New(ingredients),
+                CancellationToken.None);
+            ingredients.FailOutstanding();
+
+            // Assert
+            var recipes = await recipesTask;
+            recipes.ShouldNotBeEmpty();
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)

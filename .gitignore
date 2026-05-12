@@ -352,3 +352,6 @@ MigrationBackup/
 
 # Bake specific
 /bake-it
+
+# Claude Code
+settings.local.json
