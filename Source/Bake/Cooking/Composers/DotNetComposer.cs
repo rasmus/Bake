@@ -96,14 +96,22 @@ namespace Bake.Cooking.Composers
                 context.Ingredients.WorkingDirectory,
                 "*.sln",
                 cancellationToken);
+            var solutionXFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.slnx",
+                cancellationToken);
             var projectFilesTask = _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "*.csproj",
                 cancellationToken);
 
-            await Task.WhenAll(solutionFilesTask, projectFilesTask);
+            await Task.WhenAll(solutionFilesTask, solutionXFilesTask, projectFilesTask);
 
-            var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
+            var solutionPaths = solutionFilesTask.Result
+                .Concat(solutionXFilesTask.Result)
+                .ToList();
+
+            var visualStudioSolutions = await Task.WhenAll(solutionPaths
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
 
             var labels = await _dockerLabels.FromIngredientsAsync(
