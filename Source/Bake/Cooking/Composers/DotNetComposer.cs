@@ -96,12 +96,23 @@ namespace Bake.Cooking.Composers
                 context.Ingredients.WorkingDirectory,
                 "*.sln",
                 cancellationToken);
+            var slnxFilesTask = _fileSystem.FindFilesAsync(
+                context.Ingredients.WorkingDirectory,
+                "*.slnx",
+                cancellationToken);
             var projectFilesTask = _fileSystem.FindFilesAsync(
                 context.Ingredients.WorkingDirectory,
                 "*.csproj",
                 cancellationToken);
 
-            await Task.WhenAll(solutionFilesTask, projectFilesTask);
+            await Task.WhenAll(solutionFilesTask, slnxFilesTask, projectFilesTask);
+
+            foreach (var slnxFile in slnxFilesTask.Result)
+            {
+                _logger.LogWarning(
+                    "Found Visual Studio solution file {SlnxFile} in the new SLNX format, which is not yet supported by Bake - please convert it to the classic .sln format",
+                    slnxFile);
+            }
 
             var visualStudioSolutions = await Task.WhenAll(solutionFilesTask.Result
                 .Select(p => LoadVisualStudioSolutionAsync(p, projectFilesTask.Result, cancellationToken)));
