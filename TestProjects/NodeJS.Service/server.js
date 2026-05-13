@@ -15,7 +15,13 @@ fastify.get('/ping', async (request, reply) => {
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen({ port: Number(PORT), host: "0.0.0.0" })
+    const port = Number.parseInt(PORT, 10)
+
+    if (Number.isNaN(port)) {
+      throw new Error(`Invalid PORT value: ${PORT}`)
+    }
+
+    await fastify.listen({ port, host: "0.0.0.0" })
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
