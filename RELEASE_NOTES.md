@@ -1,6 +1,9 @@
 # 0.40
 
-* _Nothing yet_
+* Fix: GitHub release ZIPs for .NET tools now include native DLLs from the
+  publish output directory, ensuring tools with native dependencies (e.g.,
+  LibGit2Sharp) are functional
+* Fix: Go release ZIP filenames no longer contain path separators
 
 # 0.39
 
