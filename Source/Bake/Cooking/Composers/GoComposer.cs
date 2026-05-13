@@ -120,17 +120,20 @@ namespace Bake.Cooking.Composers
             recipes.AddRange(context.Ingredients.Platforms
                 .Select(p =>
                 {
-                    var output = p.Os == ExecutableOperatingSystem.Windows
-                        ? Path.Combine(p.GetSlug(), windowsOutput)
-                        : Path.Combine(p.GetSlug(), goModuleName.Name);
+                    var executableFileName = p.Os == ExecutableOperatingSystem.Windows
+                        ? windowsOutput
+                        : goModuleName.Name;
+                    var output = Path.Combine(p.GetSlug(), executableFileName);
+                    var outputDirectory = Path.Combine(directoryPath, p.GetSlug());
 
                     return new GoBuildRecipe(
                         output,
                         directoryPath,
                         p,
                         new ExecutableArtifact(
-                            output,
-                            Path.Combine(directoryPath, output),
+                            goModuleName.Name,
+                            outputDirectory,
+                            executableFileName,
                             p));
                 }));
 

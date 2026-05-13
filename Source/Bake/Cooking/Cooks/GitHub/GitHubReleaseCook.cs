@@ -186,14 +186,16 @@ namespace Bake.Cooking.Cooks.GitHub
                 .OfType<ExecutableArtifact>()
                 .Select(async artifact =>
                 {
-                    var file = _fileSystem.Open(artifact.Path);
+                    var publishedFiles = System.IO.Directory.GetFiles(artifact.Directory)
+                        .Select(f => _fileSystem.Open(f))
+                        .ToArray();
                     var fileName = CalculateArtifactFileName(artifact);
                     var compressedFile = await _fileSystem.CompressAsync(
                         fileName,
                         CompressionAlgorithm.ZIP,
                         Enumerable.Empty<IFile>()
                             .Concat(additionalFiles)
-                            .Concat(new[] {file,})
+                            .Concat(publishedFiles)
                             .ToArray(),
                         cancellationToken);
                     var sha256 = await compressedFile.GetHashAsync(

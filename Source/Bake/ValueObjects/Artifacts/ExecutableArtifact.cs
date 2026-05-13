@@ -1,17 +1,17 @@
 // MIT License
-// 
+//
 // Copyright (c) 2021-2026 Rasmus Mikkelsen
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +25,7 @@ using YamlDotNet.Serialization;
 namespace Bake.ValueObjects.Artifacts
 {
     [Artifact(Names.Artifacts.ExecutableArtifact)]
-    public class ExecutableArtifact : FileArtifact
+    public class ExecutableArtifact : Artifact
     {
         [YamlMember]
         public string Name { get; [Obsolete] set; } = null!;
@@ -33,19 +33,53 @@ namespace Bake.ValueObjects.Artifacts
         [YamlMember]
         public Platform Platform { get; [Obsolete] set; } = null!;
 
+        [YamlMember]
+        public string Directory { get; [Obsolete] set; } = null!;
+
+        [YamlMember]
+        public string ExecutableFileName { get; [Obsolete] set; } = null!;
+
+        public string ExecutablePath => Path.Combine(Directory, ExecutableFileName);
+
         [Obsolete]
         public ExecutableArtifact() { }
 
         public ExecutableArtifact(
             string name,
-            string path,
+            string directory,
+            string executableFileName,
             Platform platform)
-            : base(path)
         {
 #pragma warning disable CS0612 // Type or member is obsolete
             Name = name;
+            Directory = directory;
+            ExecutableFileName = executableFileName;
             Platform = platform;
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        public override IAsyncEnumerable<string> ValidateAsync(
+            /*[EnumeratorCancellation]*/ CancellationToken _)
+        {
+            if (!System.IO.Directory.Exists(Directory))
+                return AsyncEnumerable.Repeat($"Directory {Directory} does not exist", 1);
+            if (!File.Exists(ExecutablePath))
+                return AsyncEnumerable.Repeat($"Executable {ExecutablePath} does not exist", 1);
+            return AsyncEnumerable.Empty<string>();
+        }
+
+        public override IEnumerable<string> PrettyNames()
+        {
+            var relativePath = Path.GetRelativePath(
+                System.IO.Directory.GetCurrentDirectory(),
+                ExecutablePath);
+
+            yield return $"{ExecutableFileName} ({relativePath})";
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}: {ExecutablePath}";
         }
     }
 }

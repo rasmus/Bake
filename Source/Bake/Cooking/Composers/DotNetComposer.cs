@@ -321,6 +321,11 @@ namespace Bake.Cooking.Composers
                     "publish",
                     targetPlatform.GetDotNetRuntimeIdentifier());
 
+                var outputDirectory = Path.Combine(visualStudioProject.Directory, path);
+                var executableFileName = targetPlatform.Os == ExecutableOperatingSystem.Windows
+                    ? $"{visualStudioProject.AssemblyName}.exe"
+                    : visualStudioProject.AssemblyName;
+
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
                     true,
@@ -333,12 +338,8 @@ namespace Bake.Cooking.Composers
                     properties,
                     new ExecutableArtifact(
                         visualStudioProject.CsProj.ToolCommandName,
-                        Path.Combine(
-                            visualStudioProject.Directory,
-                            path,
-                            targetPlatform.Os == ExecutableOperatingSystem.Windows
-                                ? $"{visualStudioProject.AssemblyName}.exe"
-                                : visualStudioProject.AssemblyName),
+                        outputDirectory,
+                        executableFileName,
                         targetPlatform));
             }
         }
