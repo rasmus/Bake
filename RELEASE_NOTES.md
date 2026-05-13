@@ -1,3 +1,7 @@
+# 0.41
+
+* _Nothing yet_
+
 # 0.40
 
 * Fix: GitHub release ZIPs for .NET tools now include native DLLs from the
