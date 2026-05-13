@@ -30,7 +30,7 @@ namespace Bake.Cooking.Cooks.NodeJS
     public class NodeJSDockerfileCook : Cook<NodeJSDockerfileRecipe>
     {
         private const string Dockerfile = @"
-FROM node:lts-alpine3.15
+FROM node:lts-alpine
 
 ENV NODE_ENV production
 
