@@ -60,6 +60,10 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "golang-service");
             AssertFileExists(
                 1L.MB(),
+                "osx-arm64",
+                "golang-service");
+            AssertFileExists(
+                1L.MB(),
                 "win-x64",
                 "golang-service.exe");
 

@@ -1,3 +1,10 @@
+# 0.41
+
+* New: macOS ARM64 (`osx-arm64`) is now a default platform target for tool
+  builds, alongside `win-x64`, `linux-x64`, and `osx-x64`
+* Fix: GitHub release filename generation now supports ARM64 architecture,
+  preventing a crash when releasing ARM64 artifacts
+
 # 0.40
 
 * Fix: GitHub release ZIPs for .NET tools now include native DLLs from the
