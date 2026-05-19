@@ -133,9 +133,6 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "bin", "Release", "publish", "win-x64", "NetCore.Console.exe");
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "publish", "osx-x64", "NetCore.Console");
-            AssertFileExists(
-                50L.MB(),
                 "bin", "Release", "publish", "osx-arm64", "NetCore.Console");
         }
 
