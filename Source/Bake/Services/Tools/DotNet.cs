@@ -276,7 +276,14 @@ namespace Bake.Services.Tools
 
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
-            AddIf(argument.SelfContained, arguments, "--self-contained", "true");
+            if (argument.SelfContained)
+            {
+                arguments.AddRange(["--self-contained", "true"]);
+            }
+            else if (argument.Platform.Os != ExecutableOperatingSystem.Any)
+            {
+                arguments.AddRange(["--self-contained", "false"]);
+            }
 
             var buildRunner = _runnerFactory.CreateRunner(
                 "dotnet",

@@ -315,6 +315,10 @@ namespace Bake.Cooking.Composers
             foreach (var visualStudioProject in visualStudioSolution.Projects.Where(p => p.CsProj.PackAsTool))
             foreach (var targetPlatform in ingredients.Platforms)
             {
+                var useFrameworkDependentPublish = OperatingSystem.IsLinux() &&
+                                                   targetPlatform.Os == ExecutableOperatingSystem.MacOSX &&
+                                                   targetPlatform.Arch == ExecutableArchitecture.Arm64;
+
                 var path = Path.Combine(
                     "bin",
                     configuration,
@@ -324,18 +328,26 @@ namespace Bake.Cooking.Composers
                 var outputDirectory = Path.Combine(visualStudioProject.Directory, path);
                 var executableFileName = targetPlatform.Os == ExecutableOperatingSystem.Windows
                     ? $"{visualStudioProject.AssemblyName}.exe"
-                    : visualStudioProject.AssemblyName;
+                    : useFrameworkDependentPublish
+                        ? $"{visualStudioProject.AssemblyName}.dll"
+                        : visualStudioProject.AssemblyName;
+                var publishProperties = useFrameworkDependentPublish
+                    ? new Dictionary<string, string>(properties)
+                        {
+                            ["UseAppHost"] = "false"
+                        }
+                    : properties;
 
                 yield return new DotNetPublishRecipe(
                     visualStudioProject.Path,
-                    true,
-                    true,
+                    !useFrameworkDependentPublish,
+                    !useFrameworkDependentPublish,
                     true,
                     configuration,
                     targetPlatform,
                     path,
                     ingredients.Version,
-                    properties,
+                    publishProperties,
                     new ExecutableArtifact(
                         visualStudioProject.CsProj.ToolCommandName,
                         outputDirectory,

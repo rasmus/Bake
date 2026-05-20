@@ -133,7 +133,13 @@ namespace Bake.Tests.IntegrationTests.BakeTests
                 "bin", "Release", "publish", "win-x64", "NetCore.Console.exe");
             AssertFileExists(
                 50L.MB(),
-                "bin", "Release", "publish", "osx-arm64", "NetCore.Console");
+                "bin",
+                "Release",
+                "publish",
+                "osx-arm64",
+                OperatingSystem.IsLinux()
+                    ? "NetCore.Console.dll"
+                    : "NetCore.Console");
         }
 
         [TestCase(ExitCodes.Core.NoCommand)]

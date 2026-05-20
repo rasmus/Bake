@@ -27,6 +27,8 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Artifacts;
+using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;
@@ -55,6 +57,42 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
 
             // Arrange
             var _ = await recipesTask;
+        }
+
+        [Test]
+        public async Task OsxArm64PublishRecipeUsesFrameworkDependentSettingsOnLinux()
+        {
+            if (!OperatingSystem.IsLinux())
+            {
+                Assert.Ignore("This behavior is only expected on Linux hosts.");
+            }
+
+            // Arrange
+            var ingredients = Ingredients.New(
+                SemVer.With(1, 2, 3),
+                WorkingDirectory);
+
+            // Act
+            var recipesTask = Sut.ComposeAsync(
+                Context.New(ingredients),
+                CancellationToken.None);
+            ingredients.FailOutstanding();
+            var recipes = await recipesTask;
+
+            // Assert
+            var osxArm64PublishRecipe = recipes
+                .OfType<DotNetPublishRecipe>()
+                .Single(r => r.Platform.Os == ExecutableOperatingSystem.MacOSX &&
+                             r.Platform.Arch == ExecutableArchitecture.Arm64);
+
+            osxArm64PublishRecipe.PublishSingleFile.ShouldBeFalse();
+            osxArm64PublishRecipe.SelfContained.ShouldBeFalse();
+            osxArm64PublishRecipe.Properties["UseAppHost"].ShouldBe("false");
+            osxArm64PublishRecipe.Artifacts
+                .OfType<ExecutableArtifact>()
+                .Single()
+                .ExecutableFileName
+                .ShouldBe("NetCore.Console.dll");
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
