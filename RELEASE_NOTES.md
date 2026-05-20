@@ -1,6 +1,10 @@
 # 0.41
 
-* _Nothing yet_
+* New: Default macOS platform target changed from `osx-x64` to `osx-arm64`
+  (Apple Silicon). Users on Intel Macs can still target `osx-x64` via
+  `--target-platform`
+* Fix: GitHub release filename generation now supports ARM64 architecture,
+  preventing a crash when releasing ARM64 artifacts
 
 # 0.40
 

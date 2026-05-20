@@ -32,6 +32,8 @@ namespace Bake.Tests.UnitTests.Services
     {
         [TestCase("win/x86", ExecutableOperatingSystem.Windows, ExecutableArchitecture.Intel32)]
         [TestCase("linux/x64", ExecutableOperatingSystem.Linux, ExecutableArchitecture.Intel64)]
+        [TestCase("mac/arm64", ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64)]
+        [TestCase("macos/arm64", ExecutableOperatingSystem.MacOSX, ExecutableArchitecture.Arm64)]
         public void Success(
             string str,
             ExecutableOperatingSystem executableOs,

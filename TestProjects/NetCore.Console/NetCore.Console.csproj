@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <PackageId>awesome-cli-tool</PackageId>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IsTool>true</IsTool>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>magic-command</ToolCommandName>

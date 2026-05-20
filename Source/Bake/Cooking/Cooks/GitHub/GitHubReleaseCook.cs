@@ -46,6 +46,7 @@ namespace Bake.Cooking.Cooks.GitHub
             {
                 [ExecutableArchitecture.Intel32] = "x86",
                 [ExecutableArchitecture.Intel64] = "x86_64",
+                [ExecutableArchitecture.Arm64] = "arm64",
             };
 
         private readonly ILogger<GitHubReleaseCook> _logger;
