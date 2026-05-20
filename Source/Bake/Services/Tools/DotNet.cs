@@ -276,11 +276,13 @@ namespace Bake.Services.Tools
 
             AddIf(!argument.Build, arguments, "--no-build");
             AddIf(argument.PublishSingleFile, arguments, "-p:PublishSingleFile=true");
+            var useAppHostDisabled = argument.Properties.TryGetValue("UseAppHost", out var useAppHost) &&
+                                     useAppHost.Equals("false", StringComparison.OrdinalIgnoreCase);
             if (argument.SelfContained)
             {
                 arguments.AddRange(["--self-contained", "true"]);
             }
-            else if (argument.Platform.Os != ExecutableOperatingSystem.Any)
+            else if (useAppHostDisabled)
             {
                 arguments.AddRange(["--self-contained", "false"]);
             }
