@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "NetV8.Service": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:58193;http://localhost:58194"
+    }
+  }
+}

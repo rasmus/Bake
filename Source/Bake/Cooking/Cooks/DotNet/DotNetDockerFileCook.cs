@@ -73,6 +73,7 @@ CMD [""dotnet"", ""{{NAME}}""]
             var baseImage = targetFrameworkVersion!.Version.Major switch
             {
                 6 or 8 => $"mcr.microsoft.com/dotnet/aspnet:{version}-jammy-chiseled-extra",
+                10 => $"mcr.microsoft.com/dotnet/aspnet:{version}-noble-chiseled-composite-extra",
                 _ => $"mcr.microsoft.com/dotnet/aspnet:{version}-alpine"
             };
 
