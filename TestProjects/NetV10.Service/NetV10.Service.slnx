@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/Source/">
+    <Project Path="Source/NetV10.Service.csproj" />
+  </Folder>
+</Solution>
