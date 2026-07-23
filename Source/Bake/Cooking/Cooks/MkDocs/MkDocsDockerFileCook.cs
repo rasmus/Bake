@@ -36,6 +36,7 @@ RUN \
   apk add gcc musl-dev make && \
   wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
   tar xzf thttpd-${THTTPD_VERSION}.tar.gz && \
+  rm thttpd-${THTTPD_VERSION}.tar.gz && \
   mv /thttpd-${THTTPD_VERSION} /thttpd && \
   cd /thttpd && \
   ./configure && \
