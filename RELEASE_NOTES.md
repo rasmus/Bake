@@ -1,3 +1,7 @@
+# 0.42
+
+* *Nothing yet...*
+
 # 0.41
 
 * New: Default macOS platform target changed from `osx-x64` to `osx-arm64`
