@@ -1,6 +1,6 @@
 # 0.42
 
-* *Nothing yet...*
+* Fix: Retry download of thttpd
 
 # 0.41
 

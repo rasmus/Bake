@@ -33,9 +33,10 @@ FROM alpine:3.13.2 AS builder
 ARG THTTPD_VERSION=2.29
 
 RUN \
-  apk add gcc musl-dev make && \
-  wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
+  apk add curl gcc musl-dev make && \
+  curl --fail --location --retry 5 --retry-connrefused --retry-delay 1 --connect-timeout 15 --max-time 20 --output thttpd-${THTTPD_VERSION}.tar.gz http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
   tar xzf thttpd-${THTTPD_VERSION}.tar.gz && \
+  rm thttpd-${THTTPD_VERSION}.tar.gz && \
   mv /thttpd-${THTTPD_VERSION} /thttpd && \
   cd /thttpd && \
   ./configure && \
