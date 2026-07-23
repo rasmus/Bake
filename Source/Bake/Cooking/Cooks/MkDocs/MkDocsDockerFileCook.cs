@@ -34,7 +34,7 @@ ARG THTTPD_VERSION=2.29
 
 RUN \
   apk add gcc musl-dev make && \
-  wget http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
+  wget --no-dns-cache --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 http://www.acme.com/software/thttpd/thttpd-${THTTPD_VERSION}.tar.gz && \
   tar xzf thttpd-${THTTPD_VERSION}.tar.gz && \
   rm thttpd-${THTTPD_VERSION}.tar.gz && \
   mv /thttpd-${THTTPD_VERSION} /thttpd && \
