@@ -27,6 +27,7 @@ using Bake.Core;
 using Bake.Services;
 using Bake.Tests.Helpers;
 using Bake.ValueObjects;
+using Bake.ValueObjects.Recipes.DotNet;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;
@@ -97,6 +98,7 @@ namespace Bake.Tests.IntegrationTests.ServiceTests
             // Assert
             var recipes = await recipesTask;
             recipes.ShouldNotBeEmpty();
+            recipes.OfType<DotNetPackProjectRecipe>().ShouldAllBe(recipe => recipe.Build);
         }
 
         protected override IServiceCollection Configure(IServiceCollection serviceCollection)
