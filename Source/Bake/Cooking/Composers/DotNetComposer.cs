@@ -240,7 +240,8 @@ namespace Bake.Cooking.Composers
                 yield return new DotNetPackProjectRecipe(
                     visualStudioProject.Path,
                     false,
-                    false,
+                    // Rebuild with the release properties instead of trusting outputs that earlier recipes may have rewritten.
+                    true,
                     visualStudioProject.CsProj.IncludeSymbols.GetValueOrDefault(true),
                     true,
                     configuration,
